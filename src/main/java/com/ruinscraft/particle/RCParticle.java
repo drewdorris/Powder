@@ -9,8 +9,6 @@ import org.bukkit.Sound;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ruinscraft.particle.commands.PrtCommand;
-import com.ruinscraft.particle.events.PlayerLeaveEvent;
 import com.ruinscraft.particle.objects.ParticleMap;
 import com.ruinscraft.particle.objects.SoundEffect;
 

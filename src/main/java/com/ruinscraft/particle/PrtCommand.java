@@ -1,4 +1,4 @@
-package com.ruinscraft.particle.commands;
+package com.ruinscraft.particle;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +14,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.ruinscraft.particle.ParticleHandler;
-import com.ruinscraft.particle.RCParticle;
 import com.ruinscraft.particle.objects.ParticleMap;
 import com.ruinscraft.particle.objects.ParticleTask;
 import com.ruinscraft.particle.objects.SoundEffect;

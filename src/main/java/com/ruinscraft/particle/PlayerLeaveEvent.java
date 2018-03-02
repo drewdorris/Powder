@@ -1,12 +1,10 @@
-package com.ruinscraft.particle.events;
+package com.ruinscraft.particle;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.ruinscraft.particle.ParticleHandler;
-import com.ruinscraft.particle.RCParticle;
 import com.ruinscraft.particle.objects.ParticleTask;
 
 public class PlayerLeaveEvent implements Listener {
