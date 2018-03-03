@@ -1,8 +1,8 @@
-package com.ruinscraft.particle.objects;
+package com.ruinscraft.powder.objects;
 
 import java.util.List;
 
-public class ParticleMap {
+public class PowderMap {
 	
 	private String name;
 	private int playerLeft;
@@ -14,7 +14,7 @@ public class ParticleMap {
 	private boolean repeating;
 	private long delay;
 	
-	public ParticleMap(String name, int playerLeft, int playerUp, 
+	public PowderMap(String name, int playerLeft, int playerUp, 
 			float spacing, List<String> smap, List<SoundEffect> sounds, 
 				boolean pitch, boolean repeating, long delay) {
 		
@@ -35,14 +35,14 @@ public class ParticleMap {
 	}
 	
 	/*/
-	 * how many units over it should start for creating the map
+	 * how many units over it should start when creating the map
 	 */
 	public int getPlayerLeft() {
 		return playerLeft;
 	}
 	
 	/*/
-	 * how many units up it should start for creating the map
+	 * how many units up it should start when creating the map
 	 */
 	public int getPlayerUp() {
 		return playerUp;

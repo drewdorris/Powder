@@ -1,20 +1,20 @@
-package com.ruinscraft.particle;
+package com.ruinscraft.powder;
 
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import com.ruinscraft.particle.objects.ParticleTask;
+import com.ruinscraft.powder.objects.PowderTask;
 
 public class PlayerLeaveEvent implements Listener {
 	
-	ParticleHandler phandler = RCParticle.getInstance().getParticleHandler();
+	PowderHandler phandler = Powder.getInstance().getPowderHandler();
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLeave(PlayerQuitEvent event) {
-		for (ParticleTask ptask : phandler.getParticleTasks(event.getPlayer())) {
-			phandler.removeParticleTask(ptask);
+		for (PowderTask ptask : phandler.getPowderTasks(event.getPlayer())) {
+			phandler.removePowderTask(ptask);
 		}
 	}
 	

@@ -1,33 +1,33 @@
-package com.ruinscraft.particle;
+package com.ruinscraft.powder;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.particle.objects.ParticleMap;
-import com.ruinscraft.particle.objects.ParticleTask;
+import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.PowderTask;
 
-public class ParticleHandler {
+public class PowderHandler {
 	
-	private List<ParticleMap> particleMaps;
-	private List<ParticleTask> particleTasks;
+	private List<PowderMap> powderMaps;
+	private List<PowderTask> powderTasks;
 	
-	public ParticleHandler() {
-		particleMaps = new ArrayList<>();
-		particleTasks = new ArrayList<>();
+	public PowderHandler() {
+		powderMaps = new ArrayList<>();
+		powderTasks = new ArrayList<>();
 	}
 	
-	public List<ParticleMap> getParticleMaps() {
-		return particleMaps;
+	public List<PowderMap> getPowderMaps() {
+		return powderMaps;
 	}
 	
-	public void addParticleMap(ParticleMap ps) {
-		particleMaps.add(ps);
+	public void addPowderMap(PowderMap ps) {
+		powderMaps.add(ps);
 	}
 	
-	public ParticleMap getParticleMap(String name) {
-		for (ParticleMap pmap : particleMaps) {
+	public PowderMap getPowderMap(String name) {
+		for (PowderMap pmap : powderMaps) {
 			if (pmap.getName().equalsIgnoreCase(name)) {
 				return pmap;
 			}
@@ -35,22 +35,22 @@ public class ParticleHandler {
 		return null;
 	}
 	
-	public List<ParticleTask> getParticleTasks() {
-		return particleTasks;
+	public List<PowderTask> getPowderTasks() {
+		return powderTasks;
 	}
 	
 	public void clearAllTasks() {
-		for (ParticleTask ptask : particleTasks) {
+		for (PowderTask ptask : powderTasks) {
 			for (Integer taskid : ptask.getTaskIds()) {
-				RCParticle.getInstance().getServer().getScheduler().cancelTask(taskid);
+				Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
 			}
 		}
 	}
 	
-	public void addParticleTask(ParticleTask task) {
-		List<ParticleTask> existingTasks = getParticleTasks(task.getPlayer(), task.getMap());
+	public void addPowderTask(PowderTask task) {
+		List<PowderTask> existingTasks = getPowderTasks(task.getPlayer(), task.getMap());
 		if (existingTasks.isEmpty()) {
-			particleTasks.add(task);
+			powderTasks.add(task);
 		} else {
 			for (Integer taskid : task.getTaskIds()) {
 				existingTasks.get(0).addTask(taskid);
@@ -58,15 +58,15 @@ public class ParticleHandler {
 		}
 	}
 	
-	public void removeParticleTask(ParticleTask ptask) {
+	public void removePowderTask(PowderTask ptask) {
 		for (Integer taskid : ptask.getTaskIds()) {
-			RCParticle.getInstance().getServer().getScheduler().cancelTask(taskid);
+			Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
 		}
-		particleTasks.remove(ptask);
+		powderTasks.remove(ptask);
 	}
 	
-	public ParticleTask getParticleTask(int task) {
-		for (ParticleTask ptask : particleTasks) {
+	public PowderTask getPowderTask(int task) {
+		for (PowderTask ptask : powderTasks) {
 			for (Integer taskid : ptask.getTaskIds()) {
 				if (taskid == task) {
 					return ptask;
@@ -76,9 +76,9 @@ public class ParticleHandler {
 		return null;
 	}
 	
-	public List<ParticleTask> getParticleTasks(Player player) {
-		List<ParticleTask> ptasks = new ArrayList<>();
-		for (ParticleTask ptask : particleTasks) {
+	public List<PowderTask> getPowderTasks(Player player) {
+		List<PowderTask> ptasks = new ArrayList<>();
+		for (PowderTask ptask : powderTasks) {
 			if (ptask.getPlayer().equals(player)) {
 				ptasks.add(ptask);
 			}
@@ -86,9 +86,9 @@ public class ParticleHandler {
 		return ptasks;
 	}
 	
-	public List<ParticleTask> getParticleTasks(Player player, ParticleMap map) {
-		List<ParticleTask> ptasks = new ArrayList<>();
-		for (ParticleTask ptask : getParticleTasks(player)) {
+	public List<PowderTask> getPowderTasks(Player player, PowderMap map) {
+		List<PowderTask> ptasks = new ArrayList<>();
+		for (PowderTask ptask : getPowderTasks(player)) {
 			if (ptask.getMap().equals(map)) {
 				ptasks.add(ptask);
 			}
@@ -96,9 +96,9 @@ public class ParticleHandler {
 		return ptasks;
 	}
 	
-	public List<Player> getParticleTaskUsers(ParticleMap map) {
+	public List<Player> getPowderTaskUsers(PowderMap map) {
 		List<Player> players = new ArrayList<>();
-		for (ParticleTask ptask : particleTasks) {
+		for (PowderTask ptask : powderTasks) {
 			if (ptask.getMap().equals(map)) {
 				players.add(ptask.getPlayer());
 			}

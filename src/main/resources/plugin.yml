@@ -1,6 +1,6 @@
 main: com.ruinscraft.particle.RCParticle
-name: Ruinscraft-Particle
-version: 0.0.1-SNAPSHOT
-depends: [Ruinscraft-Data-Bukkit]
+name: ${name}
+version: ${project.version}
 commands: 
-  prt:
+  powder:
+    aliases: [pow, pdr, powders]

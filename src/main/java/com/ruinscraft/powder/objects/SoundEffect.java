@@ -1,4 +1,4 @@
-package com.ruinscraft.particle.objects;
+package com.ruinscraft.powder.objects;
 
 import org.bukkit.Sound;
 

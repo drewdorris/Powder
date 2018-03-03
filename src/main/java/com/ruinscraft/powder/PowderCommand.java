@@ -1,4 +1,4 @@
-package com.ruinscraft.particle;
+package com.ruinscraft.powder;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,81 +15,82 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.ruinscraft.particle.objects.ParticleMap;
-import com.ruinscraft.particle.objects.ParticleName;
-import com.ruinscraft.particle.objects.ParticleTask;
-import com.ruinscraft.particle.objects.SoundEffect;
+import com.ruinscraft.powder.objects.ParticleName;
+import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.PowderTask;
+import com.ruinscraft.powder.objects.SoundEffect;
 
-public class PrtCommand implements CommandExecutor {
+public class PowderCommand implements CommandExecutor {
 
-	BukkitScheduler scheduler = RCParticle.getInstance().getServer().getScheduler();
+	BukkitScheduler scheduler = Powder.getInstance().getServer().getScheduler();
 
 	private List<Player> recentCommandSenders = new ArrayList<Player>();
 
 	@Override
-	public boolean onCommand(CommandSender sender, Command cmd, String bleh, String[] args) {
+	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
 		if (!(sender instanceof Player)) {
-			return false;
+			sender.sendMessage(Powder.getInstance().getName() + " | " + Powder.getInstance().getDescription());
+			return true;
 		}
 
 		Player player = (Player) sender;
 
-		ParticleHandler phandler = RCParticle.getInstance().getParticleHandler();
+		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
 
 		if (args.length < 1) {
-			particleList(player, phandler);
+			powderList(player, powderHandler, label);
 			return false;
 		}
 
 		if (args[0].equals("reload")) {
-			RCParticle.getInstance().reloadConfig();
-			RCParticle.getInstance().handleStuff();
-			player.sendMessage(RCParticle.PREFIX + 
-					ChatColor.GRAY + "Particle config.yml reloaded!");
+			Powder.getInstance().reloadConfig();
+			Powder.getInstance().handleConfig();
+			player.sendMessage(Powder.PREFIX + 
+					ChatColor.GRAY + "Powder config.yml reloaded!");
 			return true;
 		}
 
-		ParticleMap map = phandler.getParticleMap(args[0]);
+		PowderMap map = powderHandler.getPowderMap(args[0]);
 
 		if (map == null) {
-			particleList(player, phandler);
+			powderList(player, powderHandler, label);
 			return false;
 		}
 
 		if (!(player.hasPermission("rcp.effect." + map.getName()))) {
-			player.sendMessage(RCParticle.PREFIX + 
-					ChatColor.RED + "You don't have permission for this particle.");
+			player.sendMessage(Powder.PREFIX + 
+					ChatColor.RED + "You don't have permission for this Powder.");
 			return false;
 		}
 
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
-				player.sendMessage(RCParticle.PREFIX + 
-						ChatColor.GRAY + "Particles '" + map.getName() + "' cancelled!");
-				for (ParticleTask ptask : phandler.getParticleTasks(player, map)) {
-					phandler.removeParticleTask(ptask);
+				player.sendMessage(Powder.PREFIX + 
+						ChatColor.GRAY + "Powders '" + map.getName() + "' cancelled!");
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player, map)) {
+					powderHandler.removePowderTask(powderTask);
 				}
 			}
 			return false;
 		}
 
-		if (phandler.getParticleTasks(player).size() >= 3) {
-			player.sendMessage(RCParticle.PREFIX + 
-					ChatColor.RED + "You already have 3 particles in use!");
-			for (ParticleTask ptask : phandler.getParticleTasks(player)) {
-				player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + ptask.getMap().getName());
+		if (powderHandler.getPowderTasks(player).size() >= 3) {
+			player.sendMessage(Powder.PREFIX + 
+					ChatColor.RED + "You already have 3 Powders in use!");
+			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+				player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + powderTask.getMap().getName());
 			}
 			return false;
 		}
 
 		// 5 sec between each command
 		if (recentCommandSenders.contains(player)) {
-			player.sendMessage(RCParticle.PREFIX + 
-					ChatColor.RED + "Please wait 5 seconds between using each particle.");
+			player.sendMessage(Powder.PREFIX + 
+					ChatColor.RED + "Please wait 5 seconds between using each Powder.");
 			return false;
 		}
-		scheduler.scheduleSyncDelayedTask(RCParticle.getInstance(), new Runnable() {
+		scheduler.scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 
 			public void run() {
 				recentCommandSenders.remove(player);
@@ -103,9 +104,9 @@ public class PrtCommand implements CommandExecutor {
 		
 		if (map.isRepeating()) {
 			
-			task = scheduler.scheduleSyncRepeatingTask(RCParticle.getInstance(), new Runnable() {
+			task = scheduler.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
 				public void run() {
-					createEverything(player, map);
+					createEverything(player, map, powderHandler, label);
 				}
 			}, 0L, map.getDelay());
 			
@@ -113,66 +114,64 @@ public class PrtCommand implements CommandExecutor {
 			
 		} else {
 			
-			createEverything(player, map);
+			createEverything(player, map, powderHandler, label);
 			
 		}
 
-		ParticleTask ptask = new ParticleTask(player, tasks, map);
-		phandler.addParticleTask(ptask);
+		PowderTask powderTask = new PowderTask(player, tasks, map);
+		powderHandler.addPowderTask(powderTask);
 
 		return true;
 
 	}
 
-	public void particleList(Player player, ParticleHandler phandler) {
+	public void powderList(Player player, PowderHandler phandler, String label) {
 
-		player.sendMessage(ChatColor.RED + "Please send a valid particle name " + 
-							ChatColor.GRAY + "(/prt <particle>)" + ChatColor.RED + ":");
+		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
+							ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 		// change this to a textcomponent when appropriate
-		for (ParticleMap pmap : phandler.getParticleMaps()) {
+		StringBuilder powderMaps = new StringBuilder();
+		powderMaps.append(ChatColor.BLACK + "| ");
+		for (PowderMap pmap : phandler.getPowderMaps()) {
 			if (!(player.hasPermission("rcp.effect." + pmap.getName()))) {
+				powderMaps.append(ChatColor.DARK_GRAY + pmap.getName() + ChatColor.BLACK + " | ");
 				continue;
 			}
-			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + pmap.getName());
+			powderMaps.append(ChatColor.GRAY + pmap.getName() + ChatColor.BLACK + " | ");
 		}
-		if (phandler.getParticleTasks(player).isEmpty()) {
+		player.sendMessage(powderMaps.toString());
+		if (phandler.getPowderTasks(player).isEmpty()) {
 			return;
 		}
-		player.sendMessage(ChatColor.RED + "Running particles:");
-		for (ParticleTask ptask : phandler.getParticleTasks(player)) {
+		player.sendMessage(ChatColor.RED + "Running Powders:");
+		for (PowderTask ptask : phandler.getPowderTasks(player)) {
 			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + ptask.getMap().getName());
 		}
-		if (!phandler.getParticleTasks(player).isEmpty()) {
-			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "/prt <particle> cancel" +
-					ChatColor.RED + " to cancel a particle.");
+		if (!phandler.getPowderTasks(player).isEmpty()) {
+			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
+					ChatColor.RED + " to cancel a Powder.");
 		}
-		return;
 
 	}
 	
-	public void createEverything(Player player, ParticleMap map) {
-		createParticles(player, map);
+	public static void createEverything(Player player, PowderMap map, PowderHandler powderHandler, String label) {
+		
+		createParticles(player, map, powderHandler);
 		for (SoundEffect sound : map.getSounds()) {
-			createSound(player, sound);
+			createSound(player, map, sound, powderHandler);
 		}
 		if (map.isRepeating() || map.getStringMaps().size() > 1) {
 			Random random = new Random();
-			if (random.nextInt(5) == 1) {
-				player.sendMessage(RCParticle.PREFIX + ChatColor.GRAY + 
-						"Tip: Use '/prt <particle> cancel' to cancel a particle.");
+			if (random.nextInt(8) == 1) {
+				player.sendMessage(Powder.PREFIX + ChatColor.GRAY + 
+						"Tip: Use '/" + label + " <powder> cancel' to cancel a Powder.");
 			}
 		}
 	}
 
-	public void createParticles(final Player player, final ParticleMap map) {
-
-		ParticleHandler phandler = RCParticle.getInstance().getParticleHandler();
+	public static void createParticles(final Player player, final PowderMap map, PowderHandler powderHandler) {
 		
 		final float spacing = map.getSpacing();
-
-		for (SoundEffect sound : map.getSounds()) {
-			createSound(player, sound);
-		}
 
 		List<String> smaps = map.getStringMaps();
 
@@ -184,7 +183,8 @@ public class PrtCommand implements CommandExecutor {
 				waitTime = Long.parseLong(smap.substring(0, smap.indexOf(";")));
 			} catch (Exception e) { }
 
-			int task = scheduler.scheduleSyncDelayedTask(RCParticle.getInstance(), new Runnable() {
+			int task = Powder.getInstance().getServer()
+					.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 
 				@Override
 				public void run() {
@@ -255,7 +255,7 @@ public class PrtCommand implements CommandExecutor {
 							try {
 								Integer.parseInt(sb.toString());
 							} catch (Exception e) {
-								RCParticle.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
+								Powder.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
 								sb.setLength(0);
 								continue;
 							}
@@ -315,8 +315,8 @@ public class PrtCommand implements CommandExecutor {
 					}
 
 					if (!(map.isRepeating()) && (smaps.get(smaps.size() - 1) == smap)) {
-						for (ParticleTask task : phandler.getParticleTasks(player, map)) {
-							phandler.removeParticleTask(task);
+						for (PowderTask task : powderHandler.getPowderTasks(player, map)) {
+							powderHandler.removePowderTask(task);
 						}
 					}
 
@@ -325,7 +325,7 @@ public class PrtCommand implements CommandExecutor {
 			},waitTime);
 			
 			boolean trigger = false;
-			for (ParticleTask ptask : phandler.getParticleTasks(player)) {
+			for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
 				if (map.equals(ptask.getMap())) {
 					ptask.addTask(task);
 					trigger = true;
@@ -334,17 +334,18 @@ public class PrtCommand implements CommandExecutor {
 			if (trigger == false) {
 				List<Integer> tasks = new ArrayList<Integer>();
 				tasks.add(task);
-				ParticleTask ptask = new ParticleTask(player, tasks, map);
-				phandler.addParticleTask(ptask);
+				PowderTask ptask = new PowderTask(player, tasks, map);
+				powderHandler.addPowderTask(ptask);
 			}
 
 		}
 
 	}
 
-	public void createSound(Player player, SoundEffect sound) {
+	public static void createSound(Player player, PowderMap map, SoundEffect sound, PowderHandler phandler) {
 
-		scheduler.scheduleSyncDelayedTask(RCParticle.getInstance(), new Runnable() {
+		int task = Powder.getInstance().getServer()
+			.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
@@ -355,16 +356,30 @@ public class PrtCommand implements CommandExecutor {
 			}
 
 		},((long) sound.getWaitTime()));
+		
+		boolean trigger = false;
+		for (PowderTask ptask : phandler.getPowderTasks(player)) {
+			if (map.equals(ptask.getMap())) {
+				ptask.addTask(task);
+				trigger = true;
+			}
+		}
+		if (trigger == false) {
+			List<Integer> tasks = new ArrayList<Integer>();
+			tasks.add(task);
+			PowderTask ptask = new PowderTask(player, tasks, map);
+			phandler.addPowderTask(ptask);
+		}
 
 	}
 
-	public double getDirLengthX(double rot, double spacing) {
+	public static double getDirLengthX(double rot, double spacing) {
 
 		return (spacing * Math.cos(rot));
 
 	}
 
-	public double getDirLengthZ(double rot, double spacing) {
+	public static double getDirLengthZ(double rot, double spacing) {
 
 		return (spacing * Math.sin(rot));
 

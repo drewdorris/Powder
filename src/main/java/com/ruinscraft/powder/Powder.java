@@ -1,4 +1,4 @@
-package com.ruinscraft.particle;
+package com.ruinscraft.powder;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -9,20 +9,20 @@ import org.bukkit.Sound;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ruinscraft.particle.objects.ParticleMap;
-import com.ruinscraft.particle.objects.SoundEffect;
+import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.SoundEffect;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class RCParticle extends JavaPlugin {
+public class Powder extends JavaPlugin {
 	
-	private static RCParticle instance;
-	private ParticleHandler phandler;
+	private static Powder instance;
+	private PowderHandler phandler;
 	
 	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.BLUE + 
-											"Ruinscraft" + ChatColor.DARK_GRAY + "] " + ChatColor.RESET;
+											"Powder" + ChatColor.DARK_GRAY + "] " + ChatColor.RESET;
 	
-	public static RCParticle getInstance() {
+	public static Powder getInstance() {
 		return instance;
 	}
 	
@@ -36,9 +36,9 @@ public class RCParticle extends JavaPlugin {
 		    saveDefaultConfig();
 		}
 		
-		handleStuff();
+		handleConfig();
 		
-		getCommand("prt").setExecutor(new PrtCommand());
+		getCommand("powder").setExecutor(new PowderCommand());
 		
 		getServer().getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
 		
@@ -50,12 +50,12 @@ public class RCParticle extends JavaPlugin {
 		
 	}
 	
-	public void handleStuff() {
+	public void handleConfig() {
 		
 		if (!(phandler == null)) {
 			phandler.clearAllTasks();
 		}
-		phandler = new ParticleHandler();
+		phandler = new PowderHandler();
 		
 		List<String> effects = new ArrayList<>();
 		
@@ -137,9 +137,9 @@ public class RCParticle extends JavaPlugin {
 			}
 			
 			effects.add(name);
-			ParticleMap pmap = new ParticleMap(name, left + 1, up, spacing, 
+			PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
 									smaps, sounds, ptch, repeating, delay);
-			getParticleHandler().addParticleMap(pmap);
+			getPowderHandler().addPowderMap(pmap);
 	    	
 	    }
 	    
@@ -156,7 +156,7 @@ public class RCParticle extends JavaPlugin {
 		
 	}
 	
-	public ParticleHandler getParticleHandler() {
+	public PowderHandler getPowderHandler() {
 		return phandler;
 	}
 	

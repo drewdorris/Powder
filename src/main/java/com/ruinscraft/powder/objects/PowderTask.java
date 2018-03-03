@@ -1,16 +1,16 @@
-package com.ruinscraft.particle.objects;
+package com.ruinscraft.powder.objects;
 
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
-public class ParticleTask {
+public class PowderTask {
 	
 	private Player player;
 	private List<Integer> tasks;
-	private ParticleMap map;
+	private PowderMap map;
 	
-	public ParticleTask(Player player, List<Integer> tasks, ParticleMap map) {
+	public PowderTask(Player player, List<Integer> tasks, PowderMap map) {
 		this.player = player;
 		this.tasks = tasks;
 		this.map = map;
@@ -24,7 +24,7 @@ public class ParticleTask {
 		return tasks;
 	}
 	
-	public ParticleMap getMap() {
+	public PowderMap getMap() {
 		return map;
 	}
 	
