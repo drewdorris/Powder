@@ -1,8 +1,9 @@
-# ruinscraft-particle
+# Powder
 
-Create particle effects in a config.yml that players can use
+Create versatile "Powders" with particles and sound effects that players can have fun with
 
-Particles can:
+Powders can:
+* Have a 3D map of particles
 * Have motion
 * Create sound effects
 * Create a dust/glow effect (todo)
