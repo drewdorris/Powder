@@ -2,6 +2,7 @@ package com.ruinscraft.powder;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 import java.util.logging.Level;
 
@@ -101,21 +102,26 @@ public class PowderCommand implements CommandExecutor {
 
 		int task;
 		List<Integer> tasks = new ArrayList<Integer>();
-		
+
 		if (map.isRepeating()) {
-			
+
 			task = scheduler.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
 				public void run() {
-					createEverything(player, map, powderHandler, label);
+					createEverything(player, map, powderHandler);
 				}
 			}, 0L, map.getDelay());
-			
+
 			tasks.add(task);
-			
+
 		} else {
-			
-			createEverything(player, map, powderHandler, label);
-			
+			createEverything(player, map, powderHandler);
+		}
+		
+		if (map.isRepeating() || map.getStringMaps().size() > 1) {
+			if (new Random().nextInt(6) == 1) {
+				player.sendMessage(Powder.PREFIX + ChatColor.GRAY + 
+						"Tip: Use '/" + label + " <powder> cancel' to cancel a Powder.");
+			}
 		}
 
 		PowderTask powderTask = new PowderTask(player, tasks, map);
@@ -125,15 +131,15 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 
-	public void powderList(Player player, PowderHandler phandler, String label) {
+	public static void powderList(Player player, PowderHandler phandler, String label) {
 
 		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
-							ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
+				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 		// change this to a textcomponent when appropriate
 		StringBuilder powderMaps = new StringBuilder();
 		powderMaps.append(ChatColor.BLACK + "| ");
 		for (PowderMap pmap : phandler.getPowderMaps()) {
-			if (!(player.hasPermission("rcp.effect." + pmap.getName()))) {
+			if (!(player.hasPermission("rcp.powder." + pmap.getName().toLowerCase(Locale.US)))) {
 				powderMaps.append(ChatColor.DARK_GRAY + pmap.getName() + ChatColor.BLACK + " | ");
 				continue;
 			}
@@ -153,24 +159,16 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 	}
-	
-	public static void createEverything(Player player, PowderMap map, PowderHandler powderHandler, String label) {
-		
+
+	public static void createEverything(final Player player, final PowderMap map, PowderHandler powderHandler) {
+
 		createParticles(player, map, powderHandler);
-		for (SoundEffect sound : map.getSounds()) {
-			createSound(player, map, sound, powderHandler);
-		}
-		if (map.isRepeating() || map.getStringMaps().size() > 1) {
-			Random random = new Random();
-			if (random.nextInt(8) == 1) {
-				player.sendMessage(Powder.PREFIX + ChatColor.GRAY + 
-						"Tip: Use '/" + label + " <powder> cancel' to cancel a Powder.");
-			}
-		}
+		createSounds(player, map, powderHandler);
+		
 	}
 
 	public static void createParticles(final Player player, final PowderMap map, PowderHandler powderHandler) {
-		
+
 		final float spacing = map.getSpacing();
 
 		List<String> smaps = map.getStringMaps();
@@ -186,144 +184,144 @@ public class PowderCommand implements CommandExecutor {
 			int task = Powder.getInstance().getServer()
 					.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 
-				@Override
-				public void run() {
+						@Override
+						public void run() {
 
-					if (!player.isOnline()) {
-						return;
-					}
-					Location location = Bukkit.getPlayer(player.getName()).getEyeLocation();
-
-					final double rot = ((player.getLocation().getYaw()) % 360) * (Math.PI / 180);
-					final double pitch;
-
-					final double ydist;
-					final double xzdist;
-
-					if (map.getPitch()) {
-						pitch = (player.getLocation().getPitch() * (Math.PI / 180));
-						ydist = ((Math.sin((Math.PI / 2) - pitch)) * spacing);
-						xzdist = ((Math.cos((Math.PI / 2) + pitch)) * spacing);
-					} else {
-						pitch = 0;
-						ydist = spacing;
-						xzdist = 0;
-					}
-
-					// more doubles
-					final double fx = getDirLengthX(rot, spacing);
-					final double fz = getDirLengthZ(rot, spacing);
-					final double rfx = getDirLengthX(rot + (Math.PI / 2), spacing);
-					final double rfz = getDirLengthZ(rot + (Math.PI / 2), spacing);
-					final double gx = getDirLengthX(rot - (Math.PI / 2), xzdist);
-					final double gz = getDirLengthZ(rot - (Math.PI / 2), xzdist);
-					final double rgx = getDirLengthX(rot, xzdist);
-					final double rgz = getDirLengthZ(rot, xzdist);
-					final double rgy = (Math.sin(0 - pitch) * spacing);
-
-					final double sx = location.getX() - (fx * map.getPlayerLeft()) + (gx * map.getPlayerUp());
-					final double sy = location.getY() + (ydist * map.getPlayerUp());
-					final double sz = location.getZ() - (fz * map.getPlayerLeft()) + (gz * map.getPlayerUp());
-
-					double ssx = sx;
-					double ssy = sy;
-					double ssz = sz;
-
-					StringBuilder sb = new StringBuilder();
-					double result = 0;
-					boolean buildAnInt = false;
-					boolean lastCharInt = false;
-					int downSoFar = 0;
-
-					for (char a : smap.toCharArray()) {
-
-						String aa = String.valueOf(a);
-
-						if (aa.equals(".")) {
-							ssx = ssx + fx;
-							ssz = ssz + fz;
-							lastCharInt = false;
-							continue;
-						}
-
-						if (aa.equals("{")) {
-							buildAnInt = true;
-							continue;
-						}
-						if (aa.equals("}")) {
-							buildAnInt = false;
-							try {
-								Integer.parseInt(sb.toString());
-							} catch (Exception e) {
-								Powder.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
-								sb.setLength(0);
-								continue;
+							if (!player.isOnline()) {
+								return;
 							}
-						}
+							Location location = Bukkit.getPlayer(player.getName()).getEyeLocation();
 
-						if (buildAnInt == true) {
-							lastCharInt = true;
-							sb.append(aa);
-							continue;
-						} else {
-							lastCharInt = false;
-						}
+							final double rot = ((player.getLocation().getYaw()) % 360) * (Math.PI / 180);
+							final double pitch;
 
-						if ((buildAnInt == false) && !(sb.length() == 0)) {
+							final double ydist;
+							final double xzdist;
 
-							downSoFar = 0;
-							result = Integer.parseInt(sb.toString());
-
-							ssy = sy + (rgy * result);
-
-							ssx = sx + (rfx * result) + (rgz * result);
-							ssz = sz + (rfz * result) + (rgx * result);
-
-							sb.setLength(0);
-
-							continue;
-
-						}
-
-						if (aa.equals(";")) {
-
-							if (lastCharInt == true) {
-								ssy = sy;
+							if (map.getPitch()) {
+								pitch = (player.getLocation().getPitch() * (Math.PI / 180));
+								ydist = ((Math.sin((Math.PI / 2) - pitch)) * spacing);
+								xzdist = ((Math.cos((Math.PI / 2) + pitch)) * spacing);
 							} else {
-								downSoFar++;
-								ssx = sx + (rfx * result) - (gx * downSoFar);
-								ssz = sz + (rfz * result) - (gz * downSoFar);
-								ssy = ssy - ydist;
+								pitch = 0;
+								ydist = spacing;
+								xzdist = 0;
 							}
-							continue;
+
+							// more doubles
+							final double fx = getDirLengthX(rot, spacing);
+							final double fz = getDirLengthZ(rot, spacing);
+							final double rfx = getDirLengthX(rot + (Math.PI / 2), spacing);
+							final double rfz = getDirLengthZ(rot + (Math.PI / 2), spacing);
+							final double gx = getDirLengthX(rot - (Math.PI / 2), xzdist);
+							final double gz = getDirLengthZ(rot - (Math.PI / 2), xzdist);
+							final double rgx = getDirLengthX(rot, xzdist);
+							final double rgz = getDirLengthZ(rot, xzdist);
+							final double rgy = (Math.sin(0 - pitch) * spacing);
+
+							final double sx = location.getX() - (fx * map.getPlayerLeft()) + (gx * map.getPlayerUp());
+							final double sy = location.getY() + (ydist * map.getPlayerUp());
+							final double sz = location.getZ() - (fz * map.getPlayerLeft()) + (gz * map.getPlayerUp());
+
+							double ssx = sx;
+							double ssy = sy;
+							double ssz = sz;
+
+							StringBuilder sb = new StringBuilder();
+							double result = 0;
+							boolean buildAnInt = false;
+							boolean lastCharInt = false;
+							int downSoFar = 0;
+
+							for (char a : smap.toCharArray()) {
+
+								String aa = String.valueOf(a);
+
+								if (aa.equals(".")) {
+									ssx = ssx + fx;
+									ssz = ssz + fz;
+									lastCharInt = false;
+									continue;
+								}
+
+								if (aa.equals("{")) {
+									buildAnInt = true;
+									continue;
+								}
+								if (aa.equals("}")) {
+									buildAnInt = false;
+									try {
+										Integer.parseInt(sb.toString());
+									} catch (Exception e) {
+										Powder.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
+										sb.setLength(0);
+										continue;
+									}
+								}
+
+								if (buildAnInt == true) {
+									lastCharInt = true;
+									sb.append(aa);
+									continue;
+								} else {
+									lastCharInt = false;
+								}
+
+								if ((buildAnInt == false) && !(sb.length() == 0)) {
+
+									downSoFar = 0;
+									result = Integer.parseInt(sb.toString());
+
+									ssy = sy + (rgy * result);
+
+									ssx = sx + (rfx * result) + (rgz * result);
+									ssz = sz + (rfz * result) + (rgx * result);
+
+									sb.setLength(0);
+
+									continue;
+
+								}
+
+								if (aa.equals(";")) {
+
+									if (lastCharInt == true) {
+										ssy = sy;
+									} else {
+										downSoFar++;
+										ssx = sx + (rfx * result) - (gx * downSoFar);
+										ssz = sz + (rfz * result) - (gz * downSoFar);
+										ssy = ssy - ydist;
+									}
+									continue;
+
+								}
+
+								ssx = ssx + fx;
+								ssz = ssz + fz;
+								lastCharInt = false;
+
+								String pname = null;
+								try {
+									pname = ParticleName.valueOf(aa).getName();
+								} catch (Exception e) {
+									continue;
+								}
+
+								player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 3, null);
+
+							}
+
+							if (!(map.isRepeating()) && (smaps.get(smaps.size() - 1) == smap)) {
+								for (PowderTask task : powderHandler.getPowderTasks(player, map)) {
+									powderHandler.removePowderTask(task);
+								}
+							}
 
 						}
 
-						ssx = ssx + fx;
-						ssz = ssz + fz;
-						lastCharInt = false;
+					},waitTime);
 
-						String pname = null;
-						try {
-							pname = ParticleName.valueOf(aa).getName();
-						} catch (Exception e) {
-							continue;
-						}
-
-						player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 3, null);
-
-					}
-
-					if (!(map.isRepeating()) && (smaps.get(smaps.size() - 1) == smap)) {
-						for (PowderTask task : powderHandler.getPowderTasks(player, map)) {
-							powderHandler.removePowderTask(task);
-						}
-					}
-
-				}
-
-			},waitTime);
-			
 			boolean trigger = false;
 			for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
 				if (map.equals(ptask.getMap())) {
@@ -342,33 +340,25 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 
-	public static void createSound(Player player, PowderMap map, SoundEffect sound, PowderHandler phandler) {
+	public static void createSounds(final Player player, final PowderMap map, PowderHandler powderHandler) {
 
-		int task = Powder.getInstance().getServer()
-			.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
+		for (SoundEffect sound : map.getSounds()) {
 
-			@Override
-			public void run() {
+			int task = Powder.getInstance().getServer().getScheduler()
+					.scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 
-				player.getWorld().playSound(player.getLocation(), sound.getSound(),
-						sound.getVolume(), sound.getPitch());
+						@Override
+						public void run() {
 
-			}
+							player.getWorld().playSound(player.getLocation(), sound.getSound(),
+									sound.getVolume(), sound.getPitch());
 
-		},((long) sound.getWaitTime()));
-		
-		boolean trigger = false;
-		for (PowderTask ptask : phandler.getPowderTasks(player)) {
-			if (map.equals(ptask.getMap())) {
-				ptask.addTask(task);
-				trigger = true;
-			}
-		}
-		if (trigger == false) {
-			List<Integer> tasks = new ArrayList<Integer>();
-			tasks.add(task);
-			PowderTask ptask = new PowderTask(player, tasks, map);
-			phandler.addPowderTask(ptask);
+						}
+
+					},((long) sound.getWaitTime()));
+
+			addToTask(player, map, powderHandler, task);
+
 		}
 
 	}
@@ -383,6 +373,22 @@ public class PowderCommand implements CommandExecutor {
 
 		return (spacing * Math.sin(rot));
 
+	}
+	
+	public static void addToTask(Player player, PowderMap map, PowderHandler powderHandler, Integer task) {
+		boolean trigger = false;
+		for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
+			if (map.equals(ptask.getMap())) {
+				ptask.addTask(task);
+				trigger = true;
+			}
+		}
+		if (trigger == false) {
+			List<Integer> tasks = new ArrayList<Integer>();
+			tasks.add(task);
+			PowderTask ptask = new PowderTask(player, tasks, map);
+			powderHandler.addPowderTask(ptask);
+		}
 	}
 
 }
