@@ -64,7 +64,7 @@ public class ParticleMap {
 		return pitch;
 	}
 	
-	public boolean getRepeating() {
+	public boolean isRepeating() {
 		return repeating;
 	}
 	

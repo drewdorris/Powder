@@ -12,10 +12,15 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.ruinscraft.particle.objects.ParticleMap;
 import com.ruinscraft.particle.objects.SoundEffect;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class RCParticle extends JavaPlugin {
 	
 	private static RCParticle instance;
 	private ParticleHandler phandler;
+	
+	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.BLUE + 
+											"Ruinscraft" + ChatColor.DARK_GRAY + "] " + ChatColor.RESET;
 	
 	public static RCParticle getInstance() {
 		return instance;
@@ -52,6 +57,8 @@ public class RCParticle extends JavaPlugin {
 		}
 		phandler = new ParticleHandler();
 		
+		List<String> effects = new ArrayList<>();
+		
 	    for (String s : getConfig().getConfigurationSection("effects").getKeys(false)) {
 	    	
 			if (Bukkit.getPluginManager().getPermission("rcp.effect." + s) == null) {
@@ -72,7 +79,8 @@ public class RCParticle extends JavaPlugin {
 				soundName = t.substring(0, t.indexOf(";"));
 				sound = Sound.valueOf(soundName);
 				if ((Sound.valueOf(soundName) == null)) {
-					getLogger().warning("Invalid sound name '" + soundName + "' for " + name + " in config.yml!");
+					getLogger().warning("Invalid sound name '" + soundName + 
+							"' for " + name + " in config.yml!");
 					continue;
 				}
 				t = t.replaceFirst(soundName + ";", "");
@@ -128,12 +136,23 @@ public class RCParticle extends JavaPlugin {
 				smaps.add(sb.toString());
 			}
 			
-			getLogger().info(name);
+			effects.add(name);
 			ParticleMap pmap = new ParticleMap(name, left + 1, up, spacing, 
 									smaps, sounds, ptch, repeating, delay);
 			getParticleHandler().addParticleMap(pmap);
 	    	
 	    }
+	    
+	    StringBuilder msg = new StringBuilder();
+	    msg.append("Loaded effects: ");
+	    for (String effect : effects) {
+	    	if (effects.get(effects.size() - 1).equals(effect)) {
+	    		msg.append(effect + ". " + effects.size() + " total!");
+	    	} else {
+	    		msg.append(effect + ", ");
+	    	}
+	    }
+	    getLogger().info(msg.toString());
 		
 	}
 	

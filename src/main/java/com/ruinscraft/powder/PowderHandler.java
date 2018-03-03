@@ -1,9 +1,7 @@
 package com.ruinscraft.particle;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import org.bukkit.entity.Player;
 
@@ -12,15 +10,15 @@ import com.ruinscraft.particle.objects.ParticleTask;
 
 public class ParticleHandler {
 	
-	private Set<ParticleMap> particleMaps;
-	private Set<ParticleTask> particleTasks;
+	private List<ParticleMap> particleMaps;
+	private List<ParticleTask> particleTasks;
 	
 	public ParticleHandler() {
-		particleMaps = new HashSet<>();
-		particleTasks = new HashSet<>();
+		particleMaps = new ArrayList<>();
+		particleTasks = new ArrayList<>();
 	}
 	
-	public Set<ParticleMap> getParticleMaps() {
+	public List<ParticleMap> getParticleMaps() {
 		return particleMaps;
 	}
 	
@@ -37,29 +35,42 @@ public class ParticleHandler {
 		return null;
 	}
 	
-	public Set<ParticleTask> getParticleTasks() {
+	public List<ParticleTask> getParticleTasks() {
 		return particleTasks;
 	}
 	
 	public void clearAllTasks() {
 		for (ParticleTask ptask : particleTasks) {
-			RCParticle.getInstance().getServer().getScheduler().cancelTask(ptask.getTaskId());
+			for (Integer taskid : ptask.getTaskIds()) {
+				RCParticle.getInstance().getServer().getScheduler().cancelTask(taskid);
+			}
 		}
 	}
 	
 	public void addParticleTask(ParticleTask task) {
-		particleTasks.add(task);
+		List<ParticleTask> existingTasks = getParticleTasks(task.getPlayer(), task.getMap());
+		if (existingTasks.isEmpty()) {
+			particleTasks.add(task);
+		} else {
+			for (Integer taskid : task.getTaskIds()) {
+				existingTasks.get(0).addTask(taskid);
+			}
+		}
 	}
 	
-	public void removeParticleTask(ParticleTask task) {
-		RCParticle.getInstance().getServer().getScheduler().cancelTask(task.getTaskId());
-		particleTasks.remove(task);
+	public void removeParticleTask(ParticleTask ptask) {
+		for (Integer taskid : ptask.getTaskIds()) {
+			RCParticle.getInstance().getServer().getScheduler().cancelTask(taskid);
+		}
+		particleTasks.remove(ptask);
 	}
 	
 	public ParticleTask getParticleTask(int task) {
 		for (ParticleTask ptask : particleTasks) {
-			if (ptask.getTaskId() == task) {
-				return ptask;
+			for (Integer taskid : ptask.getTaskIds()) {
+				if (taskid == task) {
+					return ptask;
+				}
 			}
 		}
 		return null;
