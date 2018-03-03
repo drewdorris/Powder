@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
 import com.ruinscraft.particle.objects.ParticleMap;
+import com.ruinscraft.particle.objects.ParticleName;
 import com.ruinscraft.particle.objects.ParticleTask;
 import com.ruinscraft.particle.objects.SoundEffect;
 
@@ -282,14 +283,14 @@ public class PrtCommand implements CommandExecutor {
 									
 								}
 								
-								String pname = readCharacter(aa);
-								
 								ssx = ssx + fx;
 								ssz = ssz + fz;
 								lastCharInt = false;
 								
-								if (pname == null) {
-									lastCharInt = false;
+								String pname = null;
+								try {
+									pname = ParticleName.valueOf(aa).getName();
+								} catch (Exception e) {
 									continue;
 								}
 								
@@ -322,28 +323,6 @@ public class PrtCommand implements CommandExecutor {
 			}
 			
 		},((long) sound.getWaitTime()));
-		
-	}
-	
-	public String readCharacter(String a) {
-
-		switch (a) {
-			case ".":
-				return null;
-			case "A":
-				return Particle.HEART.name();
-			case "B":
-				return Particle.NOTE.name();
-			case "C":
-				return Particle.EXPLOSION_NORMAL.name();
-			case "D":
-				return Particle.EXPLOSION_LARGE.name();
-			case "E":
-				return Particle.EXPLOSION_HUGE.name();
-			// etc
-		}
-		
-		return null;
 		
 	}
 	

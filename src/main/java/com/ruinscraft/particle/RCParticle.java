@@ -116,8 +116,8 @@ public class RCParticle extends JavaPlugin {
 						main = false;
 					}
 				}
-				if (t.contains("P")) {
-					left = (t.indexOf("P"));
+				if (t.contains("?")) {
+					left = (t.indexOf("?"));
 					main = false;
 				}
 				sb.append(t).append(";");
@@ -132,36 +132,6 @@ public class RCParticle extends JavaPlugin {
 			ParticleMap pmap = new ParticleMap(name, left + 1, up, spacing, 
 									smaps, sounds, ptch, repeating, delay);
 			getParticleHandler().addParticleMap(pmap);
-			
-			/*
-			StringBuilder sb = new StringBuilder();
-			boolean main = false;
-			int left = 0;
-			int up = 0;
-			
-			for (String t : getConfig().getStringList("effects." + s + ".map")) {
-				
-				if (main == true) {
-					up++;
-				}
-				if (t.equals("{0}")) {
-					main = true;
-				}
-				if (t.contains("P")) {
-					left = (t.indexOf("P"));
-					main = false;
-				}
-				sb.append(t).append(";");
-				
-			}
-			
-			ParticleMap pmap = new ParticleMap(name, left + 1, up, spacing, sb.toString(), sounds, ptch);
-			getParticleHandler().addParticleMap(pmap);
-			/*/
-			
-			/*/
-
-			 */
 	    	
 	    }
 		
