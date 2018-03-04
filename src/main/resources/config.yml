@@ -54,6 +54,9 @@ powders:
       - 'BLOCK_NOTE_PLING;1;1.65;36'
       - 'BLOCK_NOTE_PLING;1;1.60;37'
       - 'BLOCK_NOTE_PLING;1;1.55;38'
+    dusts:
+      - 'FLAME;2;1;80'
+      - 'NOTE;2;1;30'
     spacing: .35
     map:
       - '{0}'

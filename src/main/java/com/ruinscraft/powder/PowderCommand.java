@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
@@ -45,6 +46,7 @@ public class PowderCommand implements CommandExecutor {
 		if (!(player.hasPermission("powder.command"))) {
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.RED + "You don't have permission to use /" + label + ".");
+			return false;
 		}
 
 		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
@@ -66,6 +68,30 @@ public class PowderCommand implements CommandExecutor {
 					ChatColor.GRAY + "Powder config.yml reloaded!");
 			return true;
 		}
+		
+		if (args[0].equals("*")) {
+			
+			if (args.length < 2) {
+				player.sendMessage(Powder.PREFIX + 
+						ChatColor.GRAY + "Use '* cancel' to cancel all current active Powders.");
+				return false;
+			} else {
+				if (powderHandler.getPowderTasks(player).isEmpty()) {
+					player.sendMessage(Powder.PREFIX + 
+							ChatColor.RED + "There are no Powders currently active.");
+					return false;
+				}
+				int amount = powderHandler.getPowderTasks(player).size();
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+					powderHandler.removePowderTask(powderTask);
+				}
+				player.sendMessage(Powder.PREFIX + 
+						ChatColor.GRAY + "Successfully cancelled all Powders! (" + 
+						amount + " total)");
+				return true;
+			}
+			
+		}
 
 		PowderMap map = powderHandler.getPowderMap(args[0]);
 
@@ -79,7 +105,7 @@ public class PowderCommand implements CommandExecutor {
 					ChatColor.RED + "You don't have permission to use the Powder '" + map.getName() + "'.");
 			return false;
 		}
-
+		
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
 				boolean success = false;
@@ -94,7 +120,7 @@ public class PowderCommand implements CommandExecutor {
 							taskAmount + " total)");
 				} else {
 					player.sendMessage(Powder.PREFIX + 
-							ChatColor.GRAY + "There are no '" + map.getName() + "' Powders currently active.");
+							ChatColor.RED + "There are no '" + map.getName() + "' Powders currently active.");
 				}
 			}
 			return false;
@@ -105,7 +131,14 @@ public class PowderCommand implements CommandExecutor {
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.RED + "You already have " + maxSize + " Powders active!");
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
-				player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + powderTask.getMap().getName());
+				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
+							+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getMap().getName());
+				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+						new ComponentBuilder("'" + powderTask.getMap().getName() + "' is currently active. Click to cancel")
+						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+						"/" + label + " " + powderTask.getMap().getName() + " cancel" ) );
+				player.spigot().sendMessage(runningTaskText);
 			}
 			return false;
 		}
@@ -141,8 +174,10 @@ public class PowderCommand implements CommandExecutor {
 			tasks.addAll(createEverything(player, map, powderHandler));
 		}
 		
+		tasks.addAll(createDusts(player, map, powderHandler));
+		
 		if (map.isRepeating() || map.getStringMaps().size() > 1) {
-			if (new Random().nextInt(6) == 1) {
+			if (new Random().nextInt(12) == 1) {
 				player.sendMessage(Powder.PREFIX + ChatColor.GRAY + 
 						"Tip: Use '/" + label + " <powder> cancel' to cancel a Powder.");
 			}
@@ -188,8 +223,9 @@ public class PowderCommand implements CommandExecutor {
 			powderMaps.addExtra("    ");
 		}
 		player.spigot().sendMessage(powderMaps);
-		if (phandler.getPowderTasks(player).isEmpty()) {
-			return;
+		if (!(phandler.getPowderTasks(player).isEmpty())) {
+			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
+					ChatColor.RED + " to cancel a Powder.");
 		}
 		/*/
 		player.sendMessage(ChatColor.RED + "Running Powders:");
@@ -209,7 +245,6 @@ public class PowderCommand implements CommandExecutor {
 		List<Integer> tasks = new ArrayList<>();
 		tasks.addAll(createParticles(player, map, powderHandler));
 		tasks.addAll(createSounds(player, map, powderHandler));
-		tasks.addAll(createDusts(player, map, powderHandler));
 		return tasks;
 		
 	}
@@ -359,7 +394,7 @@ public class PowderCommand implements CommandExecutor {
 									continue;
 								}
 
-								player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 3, null);
+								player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 1, null);
 
 							}
 
@@ -406,7 +441,30 @@ public class PowderCommand implements CommandExecutor {
 		
 		List<Integer> tasks = new ArrayList<Integer>();
 		
-		// stuff here
+		for (Dust dust : map.getDusts()) {
+			
+			// frequency is particles per min
+			// translate to ticks
+			long frequency = 1200 / dust.getFrequency();
+			
+			int task = Powder.getInstance().getServer().getScheduler()
+					.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
+						
+				public void run() {
+					double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());
+					double radiusZoneZ = (Math.random() - .5) * (2 * dust.getRadius());
+					double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
+					Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
+					if (particleLocation.getBlock().isEmpty()) {
+						player.getWorld().spawnParticle(dust.getParticle(), particleLocation, 1, null);
+					}
+				}
+				
+			}, frequency, frequency);
+			
+			tasks.add(task);
+			
+		}
 		
 		return tasks;
 		

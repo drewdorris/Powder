@@ -5,11 +5,13 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
@@ -99,6 +101,7 @@ public class Powder extends JavaPlugin {
 			boolean repeating = getConfig().getBoolean(powders + s + ".repeating");
 			long delay = getConfig().getLong(powders + s + ".delay");
 			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
+			List<Dust> dusts = new ArrayList<Dust>();
 			
 			for (String t : getConfig().getStringList(powders + s + ".sounds")) {
 				
@@ -122,7 +125,25 @@ public class Powder extends JavaPlugin {
 				
 			}
 			
-			// add dusts
+			for (String t : getConfig().getStringList(powders + s + ".dusts")) {
+				
+				String dustName = t.substring(0, t.indexOf(";"));
+				Particle particle = Particle.valueOf(dustName);
+				if (particle == null) {
+					getLogger().warning("Invalid dust name '" + dustName + 
+							"' for " + name + " in config.yml!");
+					continue;
+				}
+				t = t.replaceFirst(dustName + ";", "");
+				double radius = Double.valueOf(t.substring(0, t.indexOf(";")));
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				double height = Float.valueOf(t.substring(0, t.indexOf(";")));
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				long frequency = Long.valueOf(t);
+				Dust dust = new Dust(particle, radius, height, frequency);
+				dusts.add(dust);
+				
+			}
 			
 			StringBuilder sb = new StringBuilder();
 			boolean main = false;
@@ -168,7 +189,7 @@ public class Powder extends JavaPlugin {
 			
 			powderNames.add(name);
 			PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
-									smaps, sounds, ptch, repeating, delay);
+									smaps, sounds, dusts, ptch, repeating, delay);
 			getPowderHandler().addPowderMap(pmap);
 	    	
 	    }
