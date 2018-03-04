@@ -48,14 +48,7 @@ public class PowderHandler {
 	}
 	
 	public void addPowderTask(PowderTask task) {
-		List<PowderTask> existingTasks = getPowderTasks(task.getPlayer(), task.getMap());
-		if (existingTasks.isEmpty()) {
-			powderTasks.add(task);
-		} else {
-			for (Integer taskid : task.getTaskIds()) {
-				existingTasks.get(0).addTask(taskid);
-			}
-		}
+		powderTasks.add(task);
 	}
 	
 	public void removePowderTask(PowderTask ptask) {

@@ -8,8 +8,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitScheduler;
 
 import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
 
 import net.md_5.bungee.api.ChatColor;
@@ -17,10 +19,9 @@ import net.md_5.bungee.api.ChatColor;
 public class Powder extends JavaPlugin {
 	
 	private static Powder instance;
-	private PowderHandler phandler;
+	private PowderHandler powderHandler;
 	
-	public static final String PREFIX = ChatColor.DARK_GRAY + "[" + ChatColor.BLUE + 
-											"Powder" + ChatColor.DARK_GRAY + "] " + ChatColor.RESET;
+	public static String PREFIX;
 	
 	public static Powder getInstance() {
 		return instance;
@@ -42,6 +43,27 @@ public class Powder extends JavaPlugin {
 		
 		getServer().getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
 		
+		PREFIX = color(getConfig().getString("prefix"));
+		
+		BukkitScheduler scheduler = getServer().getScheduler();
+		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
+			public void run() {
+				List<PowderTask> toBeRemoved = new ArrayList<PowderTask>();
+				for (PowderTask powderTask : powderHandler.getPowderTasks()) {
+					boolean active = false;
+					for (Integer task : powderTask.getTaskIds()) {
+						if (scheduler.isQueued(task) || scheduler.isCurrentlyRunning(task)) {
+							active = true;
+						}
+					}
+					if (!(active)) {
+						toBeRemoved.add(powderTask);
+					}
+				}
+				powderHandler.getPowderTasks().removeAll(toBeRemoved);
+			}
+		}, 0L, 100L);
+		
 	}
 	
 	public void onDisable() {
@@ -50,29 +72,35 @@ public class Powder extends JavaPlugin {
 		
 	}
 	
+	public static String color(String msg) {
+		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
+	
 	public void handleConfig() {
 		
-		if (!(phandler == null)) {
-			phandler.clearAllTasks();
+		if (!(powderHandler == null)) {
+			powderHandler.clearAllTasks();
 		}
-		phandler = new PowderHandler();
+		powderHandler = new PowderHandler();
 		
-		List<String> effects = new ArrayList<>();
+		List<String> powderNames = new ArrayList<>();
 		
-	    for (String s : getConfig().getConfigurationSection("effects").getKeys(false)) {
+		String powders = "powders.";
+		
+	    for (String s : getConfig().getConfigurationSection("powders").getKeys(false)) {
 	    	
 			if (Bukkit.getPluginManager().getPermission("rcp.effect." + s) == null) {
 				Bukkit.getPluginManager().addPermission(new Permission("rcp.effect." + s));
 			}
 			
-			float spacing = (float) getConfig().getDouble("effects." + s + ".spacing");
-			String name = getConfig().getString("effects." + s + ".name");
-			boolean ptch = getConfig().getBoolean("effects." + s + ".pitch");
-			boolean repeating = getConfig().getBoolean("effects." + s + ".repeating");
-			long delay = getConfig().getLong("effects." + s + ".delay");
+			float spacing = (float) getConfig().getDouble(powders + s + ".spacing");
+			String name = getConfig().getString(powders + s + ".name");
+			boolean ptch = getConfig().getBoolean(powders + s + ".pitch");
+			boolean repeating = getConfig().getBoolean(powders + s + ".repeating");
+			long delay = getConfig().getLong(powders + s + ".delay");
 			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
 			
-			for (String t : getConfig().getStringList("effects." + s + ".sounds")) {
+			for (String t : getConfig().getStringList(powders + s + ".sounds")) {
 				
 				Sound sound;
 				String soundName;
@@ -101,7 +129,7 @@ public class Powder extends JavaPlugin {
 			int up = 0;
 			List<String> smaps = new ArrayList<String>();
 			
-			for (String t : getConfig().getStringList("effects." + s + ".map")) {
+			for (String t : getConfig().getStringList(powders + s + ".map")) {
 				
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
@@ -136,7 +164,7 @@ public class Powder extends JavaPlugin {
 				smaps.add(sb.toString());
 			}
 			
-			effects.add(name);
+			powderNames.add(name);
 			PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
 									smaps, sounds, ptch, repeating, delay);
 			getPowderHandler().addPowderMap(pmap);
@@ -144,10 +172,10 @@ public class Powder extends JavaPlugin {
 	    }
 	    
 	    StringBuilder msg = new StringBuilder();
-	    msg.append("Loaded effects: ");
-	    for (String effect : effects) {
-	    	if (effects.get(effects.size() - 1).equals(effect)) {
-	    		msg.append(effect + ". " + effects.size() + " total!");
+	    msg.append("Loaded Powders: ");
+	    for (String effect : powderNames) {
+	    	if (powderNames.get(powderNames.size() - 1).equals(effect)) {
+	    		msg.append(effect + ". " + powderNames.size() + " total!");
 	    	} else {
 	    		msg.append(effect + ", ");
 	    	}
@@ -157,7 +185,7 @@ public class Powder extends JavaPlugin {
 	}
 	
 	public PowderHandler getPowderHandler() {
-		return phandler;
+		return powderHandler;
 	}
 	
 }

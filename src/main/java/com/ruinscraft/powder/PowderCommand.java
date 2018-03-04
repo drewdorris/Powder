@@ -36,6 +36,11 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
+		
+		if (!(player.hasPermission("powder.command"))) {
+			player.sendMessage(Powder.PREFIX + 
+					ChatColor.RED + "You don't have permission to use /" + label + ".");
+		}
 
 		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
 
@@ -45,6 +50,11 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		if (args[0].equals("reload")) {
+			if (!(player.hasPermission("powder.reload"))) {
+				player.sendMessage(Powder.PREFIX + 
+						ChatColor.RED + "You don't have permission to do this.");
+				return false;
+			}
 			Powder.getInstance().reloadConfig();
 			Powder.getInstance().handleConfig();
 			player.sendMessage(Powder.PREFIX + 
@@ -59,45 +69,54 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 
-		if (!(player.hasPermission("rcp.effect." + map.getName()))) {
+		if (!(player.hasPermission("powder.powder." + map.getName()))) {
 			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "You don't have permission for this Powder.");
+					ChatColor.RED + "You don't have permission to use the Powder '" + map.getName() + "'.");
 			return false;
 		}
 
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
-				player.sendMessage(Powder.PREFIX + 
-						ChatColor.GRAY + "Powders '" + map.getName() + "' cancelled!");
+				boolean success = false;
+				int taskAmount = powderHandler.getPowderTasks(player, map).size();
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player, map)) {
 					powderHandler.removePowderTask(powderTask);
+					success = true;
+				}
+				if (success) {
+					player.sendMessage(Powder.PREFIX + 
+							ChatColor.GRAY + "Powder '" + map.getName() + "' cancelled! (" + 
+							taskAmount + " total)");
+				} else {
+					player.sendMessage(Powder.PREFIX + 
+							ChatColor.GRAY + "There are no '" + map.getName() + "' Powders currently active.");
 				}
 			}
 			return false;
 		}
 
-		if (powderHandler.getPowderTasks(player).size() >= 3) {
+		int maxSize = Powder.getInstance().getConfig().getInt("maxPowdersAtOneTime");
+		if ((powderHandler.getPowderTasks(player).size() >= maxSize)) {
 			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "You already have 3 Powders in use!");
+					ChatColor.RED + "You already have " + maxSize + " Powders active!");
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
 				player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + powderTask.getMap().getName());
 			}
 			return false;
 		}
 
-		// 5 sec between each command
+		// wait time between each command
+		int waitTime = Powder.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
 		if (recentCommandSenders.contains(player)) {
 			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "Please wait 5 seconds between using each Powder.");
+					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.");
 			return false;
 		}
 		scheduler.scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
-
 			public void run() {
 				recentCommandSenders.remove(player);
 			}
-
-		}, 100L);
+		}, (waitTime * 20));
 		recentCommandSenders.add(player);
 
 		int task;
@@ -107,14 +126,14 @@ public class PowderCommand implements CommandExecutor {
 
 			task = scheduler.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
 				public void run() {
-					createEverything(player, map, powderHandler);
+					tasks.addAll(createEverything(player, map, powderHandler));
 				}
 			}, 0L, map.getDelay());
 
 			tasks.add(task);
 
 		} else {
-			createEverything(player, map, powderHandler);
+			tasks.addAll(createEverything(player, map, powderHandler));
 		}
 		
 		if (map.isRepeating() || map.getStringMaps().size() > 1) {
@@ -137,13 +156,13 @@ public class PowderCommand implements CommandExecutor {
 				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 		// change this to a textcomponent when appropriate
 		StringBuilder powderMaps = new StringBuilder();
-		powderMaps.append(ChatColor.BLACK + "| ");
+		powderMaps.append(ChatColor.BLACK + "    ");
 		for (PowderMap pmap : phandler.getPowderMaps()) {
 			if (!(player.hasPermission("rcp.powder." + pmap.getName().toLowerCase(Locale.US)))) {
-				powderMaps.append(ChatColor.DARK_GRAY + pmap.getName() + ChatColor.BLACK + " | ");
+				powderMaps.append(ChatColor.DARK_GRAY + pmap.getName() + ChatColor.BLACK + "    ");
 				continue;
 			}
-			powderMaps.append(ChatColor.GRAY + pmap.getName() + ChatColor.BLACK + " | ");
+			powderMaps.append(ChatColor.GRAY + pmap.getName() + ChatColor.BLACK + "    ");
 		}
 		player.sendMessage(powderMaps.toString());
 		if (phandler.getPowderTasks(player).isEmpty()) {
@@ -160,18 +179,22 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 
-	public static void createEverything(final Player player, final PowderMap map, PowderHandler powderHandler) {
+	public static List<Integer> createEverything(final Player player, final PowderMap map, PowderHandler powderHandler) {
 
-		createParticles(player, map, powderHandler);
-		createSounds(player, map, powderHandler);
+		List<Integer> tasks = new ArrayList<>();
+		tasks.addAll(createParticles(player, map, powderHandler));
+		tasks.addAll(createSounds(player, map, powderHandler));
+		return tasks;
 		
 	}
 
-	public static void createParticles(final Player player, final PowderMap map, PowderHandler powderHandler) {
+	public static List<Integer> createParticles(final Player player, final PowderMap map, PowderHandler powderHandler) {
 
 		final float spacing = map.getSpacing();
 
 		List<String> smaps = map.getStringMaps();
+		
+		List<Integer> tasks = new ArrayList<>();
 
 		for (String smap : smaps) {
 
@@ -219,9 +242,11 @@ public class PowderCommand implements CommandExecutor {
 							final double rgz = getDirLengthZ(rot, xzdist);
 							final double rgy = (Math.sin(0 - pitch) * spacing);
 
-							final double sx = location.getX() - (fx * map.getPlayerLeft()) + (gx * map.getPlayerUp());
+							final double sx = location.getX() - 
+									(fx * map.getPlayerLeft()) + (gx * map.getPlayerUp());
 							final double sy = location.getY() + (ydist * map.getPlayerUp());
-							final double sz = location.getZ() - (fz * map.getPlayerLeft()) + (gz * map.getPlayerUp());
+							final double sz = location.getZ() - 
+									(fz * map.getPlayerLeft()) + (gz * map.getPlayerUp());
 
 							double ssx = sx;
 							double ssy = sy;
@@ -312,36 +337,22 @@ public class PowderCommand implements CommandExecutor {
 
 							}
 
-							if (!(map.isRepeating()) && (smaps.get(smaps.size() - 1) == smap)) {
-								for (PowderTask task : powderHandler.getPowderTasks(player, map)) {
-									powderHandler.removePowderTask(task);
-								}
-							}
-
 						}
 
 					},waitTime);
 
-			boolean trigger = false;
-			for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
-				if (map.equals(ptask.getMap())) {
-					ptask.addTask(task);
-					trigger = true;
-				}
-			}
-			if (trigger == false) {
-				List<Integer> tasks = new ArrayList<Integer>();
-				tasks.add(task);
-				PowderTask ptask = new PowderTask(player, tasks, map);
-				powderHandler.addPowderTask(ptask);
-			}
+			tasks.add(task);
 
 		}
+		
+		return tasks;
 
 	}
 
-	public static void createSounds(final Player player, final PowderMap map, PowderHandler powderHandler) {
+	public static List<Integer> createSounds(final Player player, final PowderMap map, PowderHandler powderHandler) {
 
+		List<Integer> tasks = new ArrayList<>();
+		
 		for (SoundEffect sound : map.getSounds()) {
 
 			int task = Powder.getInstance().getServer().getScheduler()
@@ -357,9 +368,11 @@ public class PowderCommand implements CommandExecutor {
 
 					},((long) sound.getWaitTime()));
 
-			addToTask(player, map, powderHandler, task);
+			tasks.add(task);
 
 		}
+		
+		return tasks;
 
 	}
 
@@ -375,6 +388,7 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 	
+	/*/
 	public static void addToTask(Player player, PowderMap map, PowderHandler powderHandler, Integer task) {
 		boolean trigger = false;
 		for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
@@ -390,5 +404,6 @@ public class PowderCommand implements CommandExecutor {
 			powderHandler.addPowderTask(ptask);
 		}
 	}
+	*/
 
 }

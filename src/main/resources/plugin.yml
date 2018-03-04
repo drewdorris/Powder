@@ -1,4 +1,4 @@
-main: com.ruinscraft.particle.RCParticle
+main: com.ruinscraft.powder.Powder
 name: ${name}
 version: ${project.version}
 commands: 

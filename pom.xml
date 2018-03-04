@@ -3,11 +3,11 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<groupId>com.ruinscraft</groupId>
-	<artifactId>ruinscraft-particle</artifactId>
+	<artifactId>powder</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<packaging>jar</packaging>
 
-	<name>ruinscraft-particle</name>
+	<name>Powder</name>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
