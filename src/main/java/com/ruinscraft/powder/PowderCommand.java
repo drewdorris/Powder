@@ -21,6 +21,11 @@ import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
 
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+
 public class PowderCommand implements CommandExecutor {
 
 	BukkitScheduler scheduler = Powder.getInstance().getServer().getScheduler();
@@ -155,19 +160,38 @@ public class PowderCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
 				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 		// change this to a textcomponent when appropriate
-		StringBuilder powderMaps = new StringBuilder();
-		powderMaps.append(ChatColor.BLACK + "    ");
-		for (PowderMap pmap : phandler.getPowderMaps()) {
-			if (!(player.hasPermission("rcp.powder." + pmap.getName().toLowerCase(Locale.US)))) {
-				powderMaps.append(ChatColor.DARK_GRAY + pmap.getName() + ChatColor.BLACK + "    ");
-				continue;
+		TextComponent powderMaps = new TextComponent("    ");
+		powderMaps.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+		for (PowderMap powderMap : phandler.getPowderMaps()) {
+			TextComponent powderMapText = new TextComponent(powderMap.getName());
+			if (!(player.hasPermission("rcp.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
+				powderMapText.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
+				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+						new ComponentBuilder("You don't have permission to use '" + powderMap.getName() + "'.")
+						.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
+			} else if (!(phandler.getPowderTasks(player, powderMap).isEmpty())) {
+				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
+				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+						new ComponentBuilder("'" + powderMap.getName() + "' is currently active. Click to cancel")
+						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+						"/" + label + " " + powderMap.getName() + " cancel" ) );
+			} else {
+				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+						new ComponentBuilder("Click to use '" + powderMap.getName() + "'.")
+						.color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
+				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+						"/" + label + " " + powderMap.getName()) );
 			}
-			powderMaps.append(ChatColor.GRAY + pmap.getName() + ChatColor.BLACK + "    ");
+			powderMaps.addExtra(powderMapText);
+			powderMaps.addExtra("    ");
 		}
-		player.sendMessage(powderMaps.toString());
+		player.spigot().sendMessage(powderMaps);
 		if (phandler.getPowderTasks(player).isEmpty()) {
 			return;
 		}
+		/*/
 		player.sendMessage(ChatColor.RED + "Running Powders:");
 		for (PowderTask ptask : phandler.getPowderTasks(player)) {
 			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + ptask.getMap().getName());
@@ -176,6 +200,7 @@ public class PowderCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
 					ChatColor.RED + " to cancel a Powder.");
 		}
+		*/
 
 	}
 

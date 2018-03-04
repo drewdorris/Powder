@@ -31,8 +31,8 @@ public class Powder extends JavaPlugin {
 		
 		instance = this;
 		
-		File file = new File(getDataFolder(), "config.yml");
-		if (!file.exists()) {
+		File config = new File(getDataFolder(), "config.yml");
+		if (!config.exists()) {
 		    getLogger().info("config.yml not found, creating!");
 		    saveDefaultConfig();
 		}
@@ -89,8 +89,8 @@ public class Powder extends JavaPlugin {
 		
 	    for (String s : getConfig().getConfigurationSection("powders").getKeys(false)) {
 	    	
-			if (Bukkit.getPluginManager().getPermission("rcp.effect." + s) == null) {
-				Bukkit.getPluginManager().addPermission(new Permission("rcp.effect." + s));
+			if (Bukkit.getPluginManager().getPermission("powder.powder." + s) == null) {
+				Bukkit.getPluginManager().addPermission(new Permission("powder.powder." + s));
 			}
 			
 			float spacing = (float) getConfig().getDouble(powders + s + ".spacing");

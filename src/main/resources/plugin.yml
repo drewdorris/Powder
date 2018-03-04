@@ -4,3 +4,10 @@ version: ${project.version}
 commands: 
   powder:
     aliases: [pow, pdr, powders]
+permissions:
+  powder.reload:
+    default: op
+    description: Allow usage of /powder reload
+  powder.command:
+    default: false
+    description: Allow usage of /powder
