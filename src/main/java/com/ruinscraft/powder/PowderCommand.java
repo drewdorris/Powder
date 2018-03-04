@@ -209,6 +209,7 @@ public class PowderCommand implements CommandExecutor {
 		List<Integer> tasks = new ArrayList<>();
 		tasks.addAll(createParticles(player, map, powderHandler));
 		tasks.addAll(createSounds(player, map, powderHandler));
+		tasks.addAll(createDusts(player, map, powderHandler));
 		return tasks;
 		
 	}
@@ -219,7 +220,7 @@ public class PowderCommand implements CommandExecutor {
 
 		List<String> smaps = map.getStringMaps();
 		
-		List<Integer> tasks = new ArrayList<>();
+		List<Integer> tasks = new ArrayList<Integer>();
 
 		for (String smap : smaps) {
 
@@ -376,7 +377,7 @@ public class PowderCommand implements CommandExecutor {
 
 	public static List<Integer> createSounds(final Player player, final PowderMap map, PowderHandler powderHandler) {
 
-		List<Integer> tasks = new ArrayList<>();
+		List<Integer> tasks = new ArrayList<Integer>();
 		
 		for (SoundEffect sound : map.getSounds()) {
 
@@ -399,6 +400,16 @@ public class PowderCommand implements CommandExecutor {
 		
 		return tasks;
 
+	}
+	
+	public static List<Integer> createDusts(final Player player, final PowderMap map, PowderHandler powderHandler) {
+		
+		List<Integer> tasks = new ArrayList<Integer>();
+		
+		// stuff here
+		
+		return tasks;
+		
 	}
 
 	public static double getDirLengthX(double rot, double spacing) {

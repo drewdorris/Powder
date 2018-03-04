@@ -122,6 +122,8 @@ public class Powder extends JavaPlugin {
 				
 			}
 			
+			// add dusts
+			
 			StringBuilder sb = new StringBuilder();
 			boolean main = false;
 			boolean alreadyDone = false;
