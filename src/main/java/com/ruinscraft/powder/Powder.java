@@ -91,13 +91,9 @@ public class Powder extends JavaPlugin {
 		String powders = "powders.";
 		
 	    for (String s : getConfig().getConfigurationSection("powders").getKeys(false)) {
-	    	
-			if (Bukkit.getPluginManager().getPermission("powder.powder." + s) == null) {
-				Bukkit.getPluginManager().addPermission(new Permission("powder.powder." + s));
-			}
 			
-			float spacing = (float) getConfig().getDouble(powders + s + ".spacing");
 			String name = getConfig().getString(powders + s + ".name");
+			float spacing = (float) getConfig().getDouble(powders + s + ".spacing");
 			boolean ptch = getConfig().getBoolean(powders + s + ".pitch");
 			boolean repeating = getConfig().getBoolean(powders + s + ".repeating");
 			long delay = getConfig().getLong(powders + s + ".delay");

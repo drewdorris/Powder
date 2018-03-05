@@ -110,7 +110,7 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 
-		if (!(player.hasPermission("powder.powder." + map.getName()))) {
+		if (!(player.hasPermission("powder.powder." + map.getName().toLowerCase(Locale.US)))) {
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.RED + "You don't have permission to use the Powder '" + map.getName() + "'.");
 			return false;
@@ -217,7 +217,7 @@ public class PowderCommand implements CommandExecutor {
 		powderMaps.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 		for (PowderMap powderMap : phandler.getPowderMaps()) {
 			TextComponent powderMapText = new TextComponent(powderMap.getName());
-			if (!(player.hasPermission("rcp.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
+			if (!(player.hasPermission("powder.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("You don't have permission to use '" + powderMap.getName() + "'.")

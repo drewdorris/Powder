@@ -9,10 +9,10 @@ import com.ruinscraft.powder.objects.PowderTask;
 
 public class PlayerLeaveEvent implements Listener {
 	
-	PowderHandler phandler = Powder.getInstance().getPowderHandler();
 	
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onPlayerLeave(PlayerQuitEvent event) {
+		PowderHandler phandler = Powder.getInstance().getPowderHandler();
 		for (PowderTask ptask : phandler.getPowderTasks(event.getPlayer())) {
 			phandler.removePowderTask(ptask);
 		}
