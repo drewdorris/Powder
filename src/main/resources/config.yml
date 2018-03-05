@@ -8,9 +8,68 @@
 ## 2nd float: pitch
 ## 3rd float: how many ticks to wait
 
+## Prefix before each message
 prefix: '&7[&9Powder&7] '
+## Maximum amount of Powders that a user can be using at one time
 maxPowdersAtOneTime: 3
+## Toggle whether users can use the same Powder multiple times at once
+allowSamePowdersAtOneTime: true
+## Minimum time allowed between usage of Powders
 secondsBetweenPowderUsage: 5
+## Powder configuration
+## name:
+##   Display name of the Powder (no spaces)
+## pitch:
+##   If true, the Powder will follow the height of a player's eye direction
+## repeating:
+##   If true, the Powder will repeat every given amount of ticks ("delay" value is required)
+## delay:
+##   Sets the amount of ticks between each iteration, if "repeating" is true
+## sounds:
+##   Example: 'BLOCK_NOTE_PLING;4.0;1.50;20'
+##   This will send the BLOCK_NOTE_PLING sound effect at volume 4.0 and pitch 1.50 after 20 ticks.
+##     BLOCK_NOTE_PLING:
+##       The sound effect to play
+##       List of sounds: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+##     4.0:
+##       Volume of the sound effect played
+##       1.0 is the loudest a sound effect can be, but a value higher than 1 increases the area the sound effect is heard
+##     1.50:
+##       Pitch of the sound effect played
+##       Ranges from 0.5-2.0
+##     20:
+##       How many ticks to wait after the command is sent before sending the sound effect
+## dusts:
+##   Example: 'NOTE;2;1;30'
+##   This will randomly spawn the NOTE particle in a random location within the radius of 2 blocks and height of 1 block, 30 particles a minute.
+##     NOTE:
+##       The particle to send
+##       List of particles: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
+##     2:
+##       Sets the radius of where the particle can be spawned from the player
+##     1:
+##       Sets the height & depth of where the particle can be spawned
+##     30:
+##       How many particles to spawn per minute (max 1200)
+## spacing:
+##   How far apart each particle in the particle map should be
+##   A value of .5 will spawn particles in the map .5 blocks apart from each other
+## map:
+##   A layer is a list of particles like:
+##   '......AAA......'
+##   '.......A.......'
+##   Each section separated by {value} is treated as a layer
+##   Each section separated by [value] is treated as a set of layers
+##   All layers in a set of layers should be the same size
+##   {value} -- How much spacing in front of/behind the user the following layer should be
+##   [value] -- How many ticks the following set of layers should be sent after the command is sent
+##   
+##   
+##   
+##   
+##   
+##   
+##   
 powders:
   test1:
     name: 'Test'
@@ -67,6 +126,55 @@ powders:
       - '...AAA...'
       - '....A....'
       - '....?....'
+  colortest:
+    name: 'colortest'
+    spacing: .08
+    map:
+      - '{0}'
+      - '............BBBBBBBBBBB............'
+      - '.........BBBBBBBBDBBBBBBBB.........'
+      - '......BBBBBBBBBBBDBBBBBBBBBBB......'
+      - '.....BBBBBBBBBBBBDBBBBBBBBBBBB.....'
+      - '....BBBBBBBBBBBBBDBBBBBBBBBBBBB....'
+      - '...BBBBBEEEBBBBBBDBBBBBBEEEBBBBB...'
+      - '...BBEEEEEBBBBBBBDBBBBBBBEEEEEBB...'
+      - '..BBEEEEBBBBBBBBBDBBBBBBBBBEEEEBB..'
+      - '..BEEEBBBEEEEEBBBDBBBEEEEEBBBEEEB..'
+      - '.BBEEEBEEEEEEEEBBDBBEEEEEEEEBEEEBB.'
+      - '.BBBEBBECCEEEEEEBDBEEEEEECCEBBEBBB.'
+      - '.BBBBBCCCCCBBEEBBDBBEEBBCCCCCBBBBB.'
+      - 'BBBBBCCCCCCBBBBBBDBBBBBBCCCCCCBBBBB'
+      - 'BBBBBCCCCCCBBBBBBDBBBBBBCCCCCCBBBBB'
+      - 'BBBCCCCCCCEEEEEBBDBBEEEEECCCCCCCBBB'
+      - 'BBCCCCCCCCGGGEEEEEEEEEGGGCCCCCCCCBB'
+      - 'BCCCCCCCCGGGGGGGGGGGGGGGGGCCCCCCCCB'
+      - 'CCCCCCCCCEGGGGGGGGGGGGGGGECCCCCCCCC'
+      - '.CCCCCCCEEEEEEEGGGGGEEEEEEECCCCCCC.'
+      - '..CCCCBEEEEEEEEEEEEEEEEEEEEEBCCCC..'
+      - '..BBBBBBEEEEEEEEEEEEEEEEEEEBBBBBB..'
+      - '...BBBBBBBEEEEEEEEEEEEEEEBBBBBBB...'
+      - '...BBBBBBBBBBEEEEEEEEEBBBBBBBBBB...'
+      - '....BBBBBBBBBBBBBDBBBBBBBBBBBBB....'
+      - '......BBBBBBBBBBBDBBBBBBBBBBB......'
+      - '.........BBBBBBBBDBBBBBBBB.........'
+      - '............BBBBBDBBBBB............'
+      - '...................................'
+      - '...................................'
+      - '...................................'
+      - '...................................'
+      - '...................................'
+      - '...................................'
+      - '...................................'
+      - '.................?.................'
+    changes:
+      - 'B;REDSTONE;255;255;0'
+      - 'D;REDSTONE;255;255;0'
+      - 'H;REDSTONE;-255;-255;0'
+      - 'C;REDSTONE;-255;-255;255'
+##      - 'E;REDSTONE;-255;0;0'
+      - 'E;REDSTONE;-255;-255;0'
+      - 'F;REDSTONE;-255;-100;0'
+      - 'G;REDSTONE;255;255;255'
   everything:
     name: 'everything'
     spacing: .6

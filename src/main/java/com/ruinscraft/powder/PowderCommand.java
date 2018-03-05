@@ -16,6 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.PowderMap;
@@ -66,6 +67,15 @@ public class PowderCommand implements CommandExecutor {
 			Powder.getInstance().handleConfig();
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.GRAY + "Powder config.yml reloaded!");
+			List<Player> playersDoneAlready = new ArrayList<Player>();
+			for (PowderTask powderTask : powderHandler.getPowderTasks()) {
+				if (playersDoneAlready.contains(powderTask.getPlayer())) {
+					continue;
+				}
+				playersDoneAlready.add(powderTask.getPlayer());
+				powderTask.getPlayer().sendMessage(Powder.PREFIX + ChatColor.GRAY + "Your Powders were cancelled due to " +
+						"a reload.");
+			}
 			return true;
 		}
 		
@@ -142,6 +152,15 @@ public class PowderCommand implements CommandExecutor {
 			}
 			return false;
 		}
+		if (!(Powder.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
+			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+				if (powderTask.getMap().equals(map)) {
+					player.sendMessage(Powder.PREFIX + 
+							ChatColor.RED + "'" + map.getName() + "' is already active!");
+					return false;
+				}
+			}
+		}
 
 		// wait time between each command
 		int waitTime = Powder.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
@@ -194,7 +213,6 @@ public class PowderCommand implements CommandExecutor {
 
 		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
 				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
-		// change this to a textcomponent when appropriate
 		TextComponent powderMaps = new TextComponent("    ");
 		powderMaps.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 		for (PowderMap powderMap : phandler.getPowderMaps()) {
@@ -227,16 +245,6 @@ public class PowderCommand implements CommandExecutor {
 			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
 					ChatColor.RED + " to cancel a Powder.");
 		}
-		/*/
-		player.sendMessage(ChatColor.RED + "Running Powders:");
-		for (PowderTask ptask : phandler.getPowderTasks(player)) {
-			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.ITALIC + ptask.getMap().getName());
-		}
-		if (!phandler.getPowderTasks(player).isEmpty()) {
-			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
-					ChatColor.RED + " to cancel a Powder.");
-		}
-		*/
 
 	}
 
@@ -388,13 +396,34 @@ public class PowderCommand implements CommandExecutor {
 								lastCharInt = false;
 
 								String pname = null;
+								boolean success = false;
+								for (ChangedParticle changedParticle : map.getChangedParticles()) {
+									if (changedParticle.getEnumName().equals(aa)) {
+										Particle particle = changedParticle.getParticle();
+										if (changedParticle.getData() == null) {
+											if (changedParticle.getXOff() == 0) {
+												player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, Double.MIN_NORMAL, 
+														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
+											} else {
+												player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, (changedParticle.getXOff() / 255), 
+														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
+											}
+										} else {
+											// player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 1, changedParticle.getXOff(), 
+											//		changedParticle.getYOff(), changedParticle.getZOff(), changedParticle.getData());
+										}
+										success = true;
+										break;
+									}
+								}
+								if (success) continue;
 								try {
 									pname = ParticleName.valueOf(aa).getName();
 								} catch (Exception e) {
 									continue;
 								}
 
-								player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 1, null);
+								player.getWorld().spawnParticle(Particle.valueOf(pname), ssx, ssy, ssz, 1, 0, 0, 0, 0);
 
 							}
 
@@ -481,23 +510,5 @@ public class PowderCommand implements CommandExecutor {
 		return (spacing * Math.sin(rot));
 
 	}
-	
-	/*/
-	public static void addToTask(Player player, PowderMap map, PowderHandler powderHandler, Integer task) {
-		boolean trigger = false;
-		for (PowderTask ptask : powderHandler.getPowderTasks(player)) {
-			if (map.equals(ptask.getMap())) {
-				ptask.addTask(task);
-				trigger = true;
-			}
-		}
-		if (trigger == false) {
-			List<Integer> tasks = new ArrayList<Integer>();
-			tasks.add(task);
-			PowderTask ptask = new PowderTask(player, tasks, map);
-			powderHandler.addPowderTask(ptask);
-		}
-	}
-	*/
 
 }

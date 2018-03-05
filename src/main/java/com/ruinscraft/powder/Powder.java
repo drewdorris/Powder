@@ -11,6 +11,7 @@ import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
+import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
@@ -102,6 +103,7 @@ public class Powder extends JavaPlugin {
 			long delay = getConfig().getLong(powders + s + ".delay");
 			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
 			List<Dust> dusts = new ArrayList<Dust>();
+			List<ChangedParticle> changedParticles = new ArrayList<ChangedParticle>();
 			
 			for (String t : getConfig().getStringList(powders + s + ".sounds")) {
 				
@@ -142,6 +144,37 @@ public class Powder extends JavaPlugin {
 				long frequency = Long.valueOf(t);
 				Dust dust = new Dust(particle, radius, height, frequency);
 				dusts.add(dust);
+				
+			}
+			
+			for (String t : getConfig().getStringList(powders + s + ".changes")) {
+				
+				String enumName = t.substring(0, t.indexOf(";"));
+				t = t.replaceFirst(enumName + ";", "");
+				String particleName = t.substring(0, t.indexOf(";"));
+				Particle particle = Particle.valueOf(particleName);
+				if (particle == null) {
+					getLogger().warning("Invalid particle name '" + particleName + 
+							"' for " + name + " in config.yml!");
+					continue;
+				}
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				int xOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				int yOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				int zOff;
+				ChangedParticle changedParticle;
+				try {
+					zOff = Integer.valueOf(t);
+					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff);
+				} catch (Exception e) {
+					zOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					Object data = t;
+					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff, data);
+				}
+				changedParticles.add(changedParticle);
 				
 			}
 			
@@ -188,8 +221,8 @@ public class Powder extends JavaPlugin {
 			}
 			
 			powderNames.add(name);
-			PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
-									smaps, sounds, dusts, ptch, repeating, delay);
+			final PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
+									smaps, sounds, dusts, changedParticles, ptch, repeating, delay);
 			getPowderHandler().addPowderMap(pmap);
 	    	
 	    }

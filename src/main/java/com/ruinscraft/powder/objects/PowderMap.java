@@ -11,13 +11,14 @@ public class PowderMap {
 	private List<String> smap;
 	private List<SoundEffect> sounds;
 	private List<Dust> dusts;
+	private List<ChangedParticle> changedParticles;
 	private boolean pitch;
 	private boolean repeating;
 	private long delay;
 	
 	public PowderMap(String name, int playerLeft, int playerUp, 
-			float spacing, List<String> smap, List<SoundEffect> sounds, 
-				List<Dust> dusts, boolean pitch, boolean repeating, long delay) {
+			float spacing, List<String> smap, List<SoundEffect> sounds, List<Dust> dusts,
+				List<ChangedParticle> changedParticles, boolean pitch, boolean repeating, long delay) {
 		
 		this.name = name;
 		this.playerLeft = playerLeft;
@@ -26,6 +27,7 @@ public class PowderMap {
 		this.smap = smap;
 		this.sounds = sounds;
 		this.dusts = dusts;
+		this.changedParticles = changedParticles;
 		this.pitch = pitch;
 		this.repeating = repeating;
 		this.delay = delay;
@@ -64,6 +66,10 @@ public class PowderMap {
 	
 	public List<Dust> getDusts() {
 		return dusts;
+	}
+	
+	public List<ChangedParticle> getChangedParticles() {
+		return changedParticles;
 	}
 	
 	public boolean getPitch() {
