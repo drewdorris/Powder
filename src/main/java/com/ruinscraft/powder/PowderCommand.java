@@ -30,7 +30,6 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderCommand implements CommandExecutor {
 
-	BukkitScheduler scheduler = Powder.getInstance().getServer().getScheduler();
 
 	private List<Player> recentCommandSenders = new ArrayList<Player>();
 
@@ -53,7 +52,7 @@ public class PowderCommand implements CommandExecutor {
 		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
 
 		if (args.length < 1) {
-			powderList(player, powderHandler, label);
+			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
 
@@ -102,11 +101,22 @@ public class PowderCommand implements CommandExecutor {
 			}
 			
 		}
+		
+		if (args[0].equals("list")) {
+			int page;
+			try {
+				page = Integer.valueOf(args[1]);
+			} catch (Exception e) {
+				page = 1;
+			}
+			powderList(player, powderHandler, page, 5, label);
+			return false;
+		}
 
 		PowderMap map = powderHandler.getPowderMap(args[0]);
 
 		if (map == null) {
-			powderList(player, powderHandler, label);
+			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
 
@@ -169,7 +179,7 @@ public class PowderCommand implements CommandExecutor {
 					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.");
 			return false;
 		}
-		scheduler.scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
+		Powder.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
 			public void run() {
 				recentCommandSenders.remove(player);
 			}
@@ -181,7 +191,7 @@ public class PowderCommand implements CommandExecutor {
 
 		if (map.isRepeating()) {
 
-			task = scheduler.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
+			task = Powder.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
 				public void run() {
 					tasks.addAll(createEverything(player, map, powderHandler));
 				}
@@ -208,13 +218,66 @@ public class PowderCommand implements CommandExecutor {
 		return true;
 
 	}
-
-	public static void powderList(Player player, PowderHandler phandler, String label) {
-
+	
+	public static void paginate(Player player, List<TextComponent> list, int page, int pageLength, String label) {
 		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
 				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
-		TextComponent powderMaps = new TextComponent("    ");
-		powderMaps.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+		List<TextComponent> pageList = new ArrayList<TextComponent>();
+		for (int i = 1; i <= pageLength; i++) {
+			TextComponent current;
+			try {
+				current = list.get((page * pageLength) + i - pageLength - 1);
+			} catch (Exception e) {
+				break;
+			}
+			pageList.add(current);
+			TextComponent combinedMessage = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + 
+					"| " + net.md_5.bungee.api.ChatColor.RESET);;
+			combinedMessage.addExtra(current);
+			player.spigot().sendMessage(combinedMessage);
+		}
+		
+		TextComponent leftArrow = new TextComponent("<<   ");
+		leftArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
+		leftArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+				"/" + label + " list " + (page - 1) ) );
+		leftArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder("Previous Page")
+				.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+		
+		TextComponent middle = new TextComponent("||");
+		middle.setColor(net.md_5.bungee.api.ChatColor.RED);
+		
+		TextComponent rightArrow = new TextComponent("   >>");
+		rightArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
+		rightArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+				"/" + label + " list " + (page + 1) ) );
+		rightArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder("Next Page")
+				.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+		
+		TextComponent fullArrows = new TextComponent();
+		if (pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1)) || 
+				(!(pageList.contains(list.get(0))) && !(pageList.contains(list.get(list.size() - 1))))) {
+			fullArrows.addExtra(leftArrow);
+			fullArrows.addExtra(middle);
+			fullArrows.addExtra(rightArrow);
+		} else if (pageList.contains(list.get(0)) && !pageList.contains(list.get(list.size() - 1))) {
+			fullArrows.addExtra(middle);
+			fullArrows.addExtra(rightArrow);
+		} else if (!pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1))) {
+			fullArrows.addExtra(leftArrow);
+			fullArrows.addExtra(middle);
+		}
+		player.spigot().sendMessage(fullArrows);
+	}
+
+	public static void powderList(Player player, PowderHandler phandler, int page, int pageLength, String label) {
+
+		List<TextComponent> listOfPowders = new ArrayList<TextComponent>();
+		List<TextComponent> activePowders = new ArrayList<TextComponent>();
+		List<TextComponent> ableToPowders = new ArrayList<TextComponent>();
+		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
 		for (PowderMap powderMap : phandler.getPowderMaps()) {
 			TextComponent powderMapText = new TextComponent(powderMap.getName());
 			if (!(player.hasPermission("powder.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
@@ -222,6 +285,7 @@ public class PowderCommand implements CommandExecutor {
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("You don't have permission to use '" + powderMap.getName() + "'.")
 						.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
+				noPermPowders.add(powderMapText);
 			} else if (!(phandler.getPowderTasks(player, powderMap).isEmpty())) {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -229,6 +293,7 @@ public class PowderCommand implements CommandExecutor {
 						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
 				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 						"/" + label + " " + powderMap.getName() + " cancel" ) );
+				activePowders.add(powderMapText);
 			} else {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -236,15 +301,13 @@ public class PowderCommand implements CommandExecutor {
 						.color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
 				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 						"/" + label + " " + powderMap.getName()) );
+				ableToPowders.add(powderMapText);
 			}
-			powderMaps.addExtra(powderMapText);
-			powderMaps.addExtra("    ");
 		}
-		player.spigot().sendMessage(powderMaps);
-		if (!(phandler.getPowderTasks(player).isEmpty())) {
-			player.sendMessage(ChatColor.RED + "Use " + ChatColor.GRAY + "'/" + label + " <powder> cancel'" +
-					ChatColor.RED + " to cancel a Powder.");
-		}
+		listOfPowders.addAll(activePowders);
+		listOfPowders.addAll(ableToPowders);
+		listOfPowders.addAll(noPermPowders);
+		paginate(player, listOfPowders, page, pageLength, label);
 
 	}
 
@@ -401,16 +464,11 @@ public class PowderCommand implements CommandExecutor {
 									if (changedParticle.getEnumName().equals(aa)) {
 										Particle particle = changedParticle.getParticle();
 										if (changedParticle.getData() == null) {
-											if (changedParticle.getXOff() == 0) {
-												player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, Double.MIN_NORMAL, 
-														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
-											} else {
-												player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, (changedParticle.getXOff() / 255), 
-														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
-											}
+											player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, (changedParticle.getXOff() / 255), 
+													changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
 										} else {
-											// player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 1, changedParticle.getXOff(), 
-											//		changedParticle.getYOff(), changedParticle.getZOff(), changedParticle.getData());
+											player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 1, changedParticle.getXOff(), 
+													changedParticle.getYOff(), changedParticle.getZOff(), (double) changedParticle.getData());
 										}
 										success = true;
 										break;

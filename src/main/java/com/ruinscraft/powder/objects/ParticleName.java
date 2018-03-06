@@ -4,10 +4,10 @@ public enum ParticleName {
 	
 	A("HEART"), // heart
 	B("NOTE"), // note
-	C("BARRIER"), // barrier
+	C("BARRIER"), // barrier block
 	D("BLOCK_CRACK"), // purple empty
 	E("CLOUD"), // smoke boom
-	F("CRIT"), // crit  yeah
+	F("CRIT"), // critical hit
 	G("CRIT_MAGIC"), // thingy blue dark
 	H("DAMAGE_INDICATOR"), // blak hearts
 	I("DRAGON_BREATH"), // purple immediate goes out
@@ -21,7 +21,7 @@ public enum ParticleName {
 	Q("FALLING_DUST"), // black goes into ur head
 	R("FIREWORKS_SPARK"), // spark
 	S("FLAME"), // everywhere flame
-	T("FOOTSTEP"), // a little line?
+	T("FOOTSTEP"), // a little line 
 	U("ITEM_CRACK"), // purple black bursts
 	V("ITEM_TAKE"), // 
 	W("LAVA"), // boom lava

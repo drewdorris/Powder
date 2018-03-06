@@ -32,4 +32,8 @@ public class PowderTask {
 		tasks.add(task);
 	}
 	
+	public void removeTask(Integer task) {
+		tasks.remove(task);
+	}
+	
 }

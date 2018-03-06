@@ -6,13 +6,13 @@ public class ChangedParticle {
 	
 	private String particleName;
 	private Particle particle;
-	private int xOff;
-	private int yOff;
-	private int zOff;
+	private double xOff;
+	private double yOff;
+	private double zOff;
 	private Object data;
 	
 	public ChangedParticle(String particleName, Particle particle, 
-			int xOff, int yOff, int zOff, Object data) {
+			double xOff, double yOff, double zOff, Object data) {
 		
 		this.particleName = particleName;
 		this.particle = particle;
@@ -24,7 +24,7 @@ public class ChangedParticle {
 	}
 	
 	public ChangedParticle(String particleName, Particle particle,
-			int xOff, int yOff, int zOff) {
+			double xOff, double yOff, double zOff) {
 		
 		this.particleName = particleName;
 		this.particle = particle;
@@ -42,15 +42,15 @@ public class ChangedParticle {
 		return particle;
 	}
 	
-	public Integer getXOff() {
+	public Double getXOff() {
 		return xOff;
 	}
 	
-	public Integer getYOff() {
+	public Double getYOff() {
 		return yOff;
 	}
 	
-	public Integer getZOff() {
+	public Double getZOff() {
 		return zOff;
 	}
 	

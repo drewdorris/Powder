@@ -4,10 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
-import org.bukkit.permissions.Permission;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -155,19 +153,24 @@ public class Powder extends JavaPlugin {
 					continue;
 				}
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				int xOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+				double xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				int yOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+				double yOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				int zOff;
+				double zOff;
 				ChangedParticle changedParticle;
 				try {
-					zOff = Integer.valueOf(t);
+					zOff = Double.valueOf(t);
 					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff);
 				} catch (Exception e) {
-					zOff = Integer.valueOf(t.substring(0, t.indexOf(";")));
+					zOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					Object data = t;
+					Object data;
+					try {
+						data = Double.valueOf(t);
+					} catch (Exception ex) {
+						data = t;
+					}
 					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff, data);
 				}
 				changedParticles.add(changedParticle);
@@ -204,7 +207,7 @@ public class Powder extends JavaPlugin {
 						main = false;
 					}
 				}
-				if (t.contains("?")) {
+				if (t.contains("?") && main == true) {
 					left = (t.indexOf("?"));
 					main = false;
 				}
