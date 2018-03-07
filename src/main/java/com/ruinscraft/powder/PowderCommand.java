@@ -1,6 +1,8 @@
 package com.ruinscraft.powder;
 
+import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Locale;
 import java.util.Random;
@@ -14,7 +16,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.scheduler.BukkitScheduler;
+import org.bukkit.inventory.ItemStack;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
@@ -219,6 +221,30 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 	
+	public static List<TextComponent> sortAlphabetically(List<TextComponent> powders) {
+		
+		List<String> names = new ArrayList<String>(powders.size()); 
+		
+		for (TextComponent powderName : powders) {
+			names.add(powderName.getText());
+		}
+		
+		Collections.sort(names, Collator.getInstance());
+		List<TextComponent> newList = new ArrayList<TextComponent>(powders.size());
+		
+		for (String name : names) {
+			for (TextComponent powderName : powders) {
+				if (powderName.getText() == name) {
+					newList.add(powderName);
+					break;
+				}
+			}
+		}
+		
+		return newList;
+		
+	}
+	
 	public static void paginate(Player player, List<TextComponent> list, int page, int pageLength, String label) {
 		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
 				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
@@ -304,6 +330,9 @@ public class PowderCommand implements CommandExecutor {
 				ableToPowders.add(powderMapText);
 			}
 		}
+		activePowders = sortAlphabetically(activePowders);
+		ableToPowders = sortAlphabetically(ableToPowders);
+		noPermPowders = sortAlphabetically(noPermPowders);
 		listOfPowders.addAll(activePowders);
 		listOfPowders.addAll(ableToPowders);
 		listOfPowders.addAll(noPermPowders);
