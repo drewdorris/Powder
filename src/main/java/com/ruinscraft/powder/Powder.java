@@ -35,6 +35,11 @@ public class Powder extends JavaPlugin {
 		
 		instance = this;
 		
+		if (!(powderHandler == null)) {
+			powderHandler.clearEverything();
+		}
+		powderHandler = new PowderHandler();
+		
 		handleConfig();
 		
 		getCommand("powder").setExecutor(new PowderCommand());
@@ -85,11 +90,6 @@ public class Powder extends JavaPlugin {
 		}
 		reloadConfig();
 		config = getConfig();
-		
-		if (!(powderHandler == null)) {
-			powderHandler.clearEverything();
-		}
-		powderHandler = new PowderHandler();
 		
 		List<String> powderNames = new ArrayList<>();
 		
@@ -223,6 +223,7 @@ public class Powder extends JavaPlugin {
 			
 			if (smaps.isEmpty() && sounds.isEmpty() && dusts.isEmpty()) {
 				getLogger().warning("Powder " + name + " appears empty and was not loaded.");
+				continue;
 			}
 			powderNames.add(name);
 			final PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
