@@ -16,7 +16,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
@@ -54,6 +53,8 @@ public class PowderCommand implements CommandExecutor {
 		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
 
 		if (args.length < 1) {
+			player.sendMessage(ChatColor.RED + "List of Powders " + 
+					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
@@ -64,7 +65,6 @@ public class PowderCommand implements CommandExecutor {
 						ChatColor.RED + "You don't have permission to do this.");
 				return false;
 			}
-			Powder.getInstance().reloadConfig();
 			Powder.getInstance().handleConfig();
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.GRAY + "Powder config.yml reloaded!");
@@ -111,6 +111,8 @@ public class PowderCommand implements CommandExecutor {
 			} catch (Exception e) {
 				page = 1;
 			}
+			player.sendMessage(ChatColor.RED + "List of Powders " + 
+					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, page, 5, label);
 			return false;
 		}
@@ -118,6 +120,8 @@ public class PowderCommand implements CommandExecutor {
 		PowderMap map = powderHandler.getPowderMap(args[0]);
 
 		if (map == null) {
+			player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
+					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
@@ -246,8 +250,6 @@ public class PowderCommand implements CommandExecutor {
 	}
 	
 	public static void paginate(Player player, List<TextComponent> list, int page, int pageLength, String label) {
-		player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
-				ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
 		List<TextComponent> pageList = new ArrayList<TextComponent>();
 		for (int i = 1; i <= pageLength; i++) {
 			TextComponent current;
@@ -263,24 +265,24 @@ public class PowderCommand implements CommandExecutor {
 			player.spigot().sendMessage(combinedMessage);
 		}
 		
-		TextComponent leftArrow = new TextComponent("<<   ");
+		TextComponent leftArrow = new TextComponent("<<  ");
 		leftArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
 		leftArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 				"/" + label + " list " + (page - 1) ) );
 		leftArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("Previous Page")
-				.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+				.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 		
-		TextComponent middle = new TextComponent("||");
+		TextComponent middle = new TextComponent("Page");
 		middle.setColor(net.md_5.bungee.api.ChatColor.RED);
 		
-		TextComponent rightArrow = new TextComponent("   >>");
+		TextComponent rightArrow = new TextComponent("  >>");
 		rightArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
 		rightArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 				"/" + label + " list " + (page + 1) ) );
 		rightArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("Next Page")
-				.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+				.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 		
 		TextComponent fullArrows = new TextComponent();
 		if (pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1)) || 
@@ -316,7 +318,7 @@ public class PowderCommand implements CommandExecutor {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("'" + powderMap.getName() + "' is currently active. Click to cancel")
-						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+						.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 						"/" + label + " " + powderMap.getName() + " cancel" ) );
 				activePowders.add(powderMapText);
@@ -496,8 +498,9 @@ public class PowderCommand implements CommandExecutor {
 											player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 0, (changedParticle.getXOff() / 255), 
 													changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
 										} else {
-											player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 1, changedParticle.getXOff(), 
-													changedParticle.getYOff(), changedParticle.getZOff(), (double) changedParticle.getData());
+											player.getWorld().spawnParticle(particle, ssx, ssy, ssz, 1, (changedParticle.getXOff() / 255), 
+													changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
+													(double) changedParticle.getData());
 										}
 										success = true;
 										break;
@@ -572,7 +575,30 @@ public class PowderCommand implements CommandExecutor {
 					double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
 					Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
 					if (particleLocation.getBlock().isEmpty()) {
-						player.getWorld().spawnParticle(dust.getParticle(), particleLocation, 1, null);
+						boolean success = false;
+						for (ChangedParticle changedParticle : map.getChangedParticles()) {
+							if (changedParticle.getEnumName().equals(dust.getParticle())) {
+								Particle particle = changedParticle.getParticle();
+								if (changedParticle.getData() == null) {
+									player.getWorld().spawnParticle(particle, particleLocation, 0, (changedParticle.getXOff() / 255), 
+											changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
+								} else {
+									player.getWorld().spawnParticle(particle, particleLocation, 1, (changedParticle.getXOff() / 255), 
+											changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
+											(double) changedParticle.getData());
+								}
+								success = true;
+								break;
+							}
+						}
+						Particle particle;
+						if (success) return;
+						try {
+							particle = Particle.valueOf(dust.getParticle());
+						} catch (Exception e) {
+							return;
+						}
+						player.getWorld().spawnParticle(particle, particleLocation, 1, null);
 					}
 				}
 				

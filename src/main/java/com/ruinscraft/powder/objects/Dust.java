@@ -1,23 +1,21 @@
 package com.ruinscraft.powder.objects;
 
-import org.bukkit.Particle;
-
 public class Dust {
 	
-	private Particle particle;
+	private String particle;
 	private double radius;
 	private double height;
 	
 	private long frequency;
 	
-	public Dust(Particle particle, double radius, double height, long frequency) {
+	public Dust(String particle, double radius, double height, long frequency) {
 		this.particle = particle;
 		this.radius = radius;
 		this.height = height;
 		this.frequency = frequency;
 	}
 	
-	public Particle getParticle() {
+	public String getParticle() {
 		return particle;
 	}
 	

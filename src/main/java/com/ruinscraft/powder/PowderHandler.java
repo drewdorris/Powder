@@ -39,11 +39,17 @@ public class PowderHandler {
 		return powderTasks;
 	}
 	
+	public void clearEverything() {
+		powderMaps = null;
+		clearAllTasks();
+	}
+	
 	public void clearAllTasks() {
 		for (PowderTask ptask : powderTasks) {
 			for (Integer taskid : ptask.getTaskIds()) {
 				Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
 			}
+			ptask = null;
 		}
 	}
 	
