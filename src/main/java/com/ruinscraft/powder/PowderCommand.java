@@ -24,13 +24,13 @@ import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
 
+import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderCommand implements CommandExecutor {
-
 
 	private List<Player> recentCommandSenders = new ArrayList<Player>();
 
@@ -47,6 +47,7 @@ public class PowderCommand implements CommandExecutor {
 		if (!(player.hasPermission("powder.command"))) {
 			player.sendMessage(Powder.PREFIX + 
 					ChatColor.RED + "You don't have permission to use /" + label + ".");
+			sendPrefixMessage(player, ChatColor.RED + "You don't have permission to use /" + label + ".", label);
 			return false;
 		}
 
@@ -54,28 +55,26 @@ public class PowderCommand implements CommandExecutor {
 
 		if (args.length < 1) {
 			player.sendMessage(ChatColor.RED + "List of Powders " + 
-					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
 
 		if (args[0].equals("reload")) {
 			if (!(player.hasPermission("powder.reload"))) {
-				player.sendMessage(Powder.PREFIX + 
-						ChatColor.RED + "You don't have permission to do this.");
+				sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 				return false;
 			}
 			Powder.getInstance().handleConfig();
-			player.sendMessage(Powder.PREFIX + 
-					ChatColor.GRAY + "Powder config.yml reloaded!");
+			sendPrefixMessage(player, ChatColor.GRAY + "Powder config.yml reloaded!", label);
 			List<Player> playersDoneAlready = new ArrayList<Player>();
 			for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 				if (playersDoneAlready.contains(powderTask.getPlayer())) {
 					continue;
 				}
 				playersDoneAlready.add(powderTask.getPlayer());
-				powderTask.getPlayer().sendMessage(Powder.PREFIX + ChatColor.GRAY + "Your Powders were cancelled due to " +
-						"a reload.");
+				sendPrefixMessage(powderTask.getPlayer(), ChatColor.GRAY 
+						+ "Your Powders were cancelled due to " + "a reload.", label);
 			}
 			return true;
 		}
@@ -83,22 +82,20 @@ public class PowderCommand implements CommandExecutor {
 		if (args[0].equals("*")) {
 			
 			if (args.length < 2) {
-				player.sendMessage(Powder.PREFIX + 
-						ChatColor.GRAY + "Use '* cancel' to cancel all current active Powders.");
+				sendPrefixMessage(player, ChatColor.GRAY 
+						+ "Use '* cancel' to cancel all current active Powders.", label);
 				return false;
 			} else {
 				if (powderHandler.getPowderTasks(player).isEmpty()) {
-					player.sendMessage(Powder.PREFIX + 
-							ChatColor.RED + "There are no Powders currently active.");
+					sendPrefixMessage(player, ChatColor.RED + "There are no Powders currently active.", label);
 					return false;
 				}
 				int amount = powderHandler.getPowderTasks(player).size();
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
 					powderHandler.removePowderTask(powderTask);
 				}
-				player.sendMessage(Powder.PREFIX + 
-						ChatColor.GRAY + "Successfully cancelled all Powders! (" + 
-						amount + " total)");
+				sendPrefixMessage(player, ChatColor.GRAY + "Successfully cancelled all Powders! (" + 
+						amount + " total)", label);
 				return true;
 			}
 			
@@ -112,7 +109,7 @@ public class PowderCommand implements CommandExecutor {
 				page = 1;
 			}
 			player.sendMessage(ChatColor.RED + "List of Powders " + 
-					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, page, 5, label);
 			return false;
 		}
@@ -121,14 +118,14 @@ public class PowderCommand implements CommandExecutor {
 
 		if (map == null) {
 			player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
-					ChatColor.GRAY + "(/" + label +  " <powder>)" + ChatColor.RED + ":");
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
 			powderList(player, powderHandler, 1, 5, label);
 			return false;
 		}
 
 		if (!(player.hasPermission("powder.powder." + map.getName().toLowerCase(Locale.US)))) {
-			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "You don't have permission to use the Powder '" + map.getName() + "'.");
+			sendPrefixMessage(player, ChatColor.RED 
+					+ "You don't have permission to use the Powder '" + map.getName() + "'.", label);
 			return false;
 		}
 		
@@ -141,12 +138,11 @@ public class PowderCommand implements CommandExecutor {
 					success = true;
 				}
 				if (success) {
-					player.sendMessage(Powder.PREFIX + 
-							ChatColor.GRAY + "Powder '" + map.getName() + "' cancelled! (" + 
-							taskAmount + " total)");
+					sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + map.getName() + "' cancelled! (" + 
+							taskAmount + " total)", label);
 				} else {
-					player.sendMessage(Powder.PREFIX + 
-							ChatColor.RED + "There are no '" + map.getName() + "' Powders currently active.");
+					sendPrefixMessage(player, ChatColor.RED 
+							+ "There are no '" + map.getName() + "' Powders currently active.", label);
 				}
 			}
 			return false;
@@ -154,8 +150,8 @@ public class PowderCommand implements CommandExecutor {
 
 		int maxSize = Powder.getInstance().getConfig().getInt("maxPowdersAtOneTime");
 		if ((powderHandler.getPowderTasks(player).size() >= maxSize)) {
-			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "You already have " + maxSize + " Powders active!");
+			sendPrefixMessage(player, 
+					ChatColor.RED + "You already have " + maxSize + " Powders active!", label);
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
 				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
 							+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getMap().getName());
@@ -171,8 +167,8 @@ public class PowderCommand implements CommandExecutor {
 		if (!(Powder.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
 				if (powderTask.getMap().equals(map)) {
-					player.sendMessage(Powder.PREFIX + 
-							ChatColor.RED + "'" + map.getName() + "' is already active!");
+					sendPrefixMessage(player, 
+							ChatColor.RED + "'" + map.getName() + "' is already active!", label);
 					return false;
 				}
 			}
@@ -181,8 +177,8 @@ public class PowderCommand implements CommandExecutor {
 		// wait time between each command
 		int waitTime = Powder.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
 		if (recentCommandSenders.contains(player)) {
-			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.");
+			sendPrefixMessage(player, 
+					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.", label);
 			return false;
 		}
 		Powder.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
@@ -211,10 +207,19 @@ public class PowderCommand implements CommandExecutor {
 		
 		tasks.addAll(createDusts(player, map, powderHandler));
 		
+		TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
+				+ "Powder '" + map.getName() + "' created! Click to cancel.");
+		particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+			new ComponentBuilder("Click to cancel '" + map.getName() + "'.")
+			.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
+		particleSentText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+			"/" + label + " " + map.getName() + " cancel" ) );
+		sendPrefixMessage(player, particleSentText, label);
+		
 		if (map.isRepeating() || map.getStringMaps().size() > 1) {
 			if (new Random().nextInt(12) == 1) {
-				player.sendMessage(Powder.PREFIX + ChatColor.GRAY + 
-						"Tip: Use '/" + label + " <powder> cancel' to cancel a Powder.");
+				sendPrefixMessage(player, ChatColor.GRAY + 
+						"Tip: Use '/" + label + " <Powder> cancel' to cancel a Powder.", label);
 			}
 		}
 
@@ -223,6 +228,28 @@ public class PowderCommand implements CommandExecutor {
 
 		return true;
 
+	}
+	
+	public void sendPrefixMessage(Player player, Object message, String label) {
+		
+		if (!(message instanceof String) && !(message instanceof BaseComponent)) {
+			return;
+		}
+		if (message instanceof String) {
+			String messageText = (String) message;
+			message = new TextComponent(messageText);
+		}
+		
+		BaseComponent fullMessage = new TextComponent();
+		TextComponent prefix = new TextComponent(Powder.PREFIX);
+		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+			new ComponentBuilder("/" + label).color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
+		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
+		fullMessage.addExtra(prefix);
+		fullMessage.addExtra((TextComponent) message);
+		
+		player.spigot().sendMessage(fullMessage);
+		
 	}
 	
 	public static List<TextComponent> sortAlphabetically(List<TextComponent> powders) {

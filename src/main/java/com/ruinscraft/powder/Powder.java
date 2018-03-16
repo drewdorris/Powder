@@ -35,11 +35,6 @@ public class Powder extends JavaPlugin {
 		
 		instance = this;
 		
-		if (!(powderHandler == null)) {
-			powderHandler.clearEverything();
-		}
-		powderHandler = new PowderHandler();
-		
 		handleConfig();
 		
 		getCommand("powder").setExecutor(new PowderCommand());
@@ -80,6 +75,14 @@ public class Powder extends JavaPlugin {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 	
+	public void cleanHandlers() {
+		// put other handlers if those exist in the future
+		if (!(powderHandler == null)) {
+			powderHandler.clearEverything();
+		}
+		powderHandler = new PowderHandler();
+	}
+	
 	@SuppressWarnings("unchecked")
 	public void handleConfig() {
 		
@@ -90,6 +93,8 @@ public class Powder extends JavaPlugin {
 		}
 		reloadConfig();
 		config = getConfig();
+		
+		cleanHandlers();
 		
 		List<String> powderNames = new ArrayList<>();
 		

@@ -47,7 +47,9 @@ public class PowderHandler {
 	public void clearAllTasks() {
 		for (PowderTask ptask : powderTasks) {
 			for (Integer taskid : ptask.getTaskIds()) {
-				Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
+				try {
+					Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
+				} catch (Exception e) { }
 			}
 			ptask = null;
 		}
