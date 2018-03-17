@@ -43,20 +43,21 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
-		
 		if (!(player.hasPermission("powder.command"))) {
-			player.sendMessage(Powder.PREFIX + 
-					ChatColor.RED + "You don't have permission to use /" + label + ".");
+			sendPrefixMessage(player, Powder.PREFIX + 
+					ChatColor.RED + "You don't have permission to use /" + label + ".", label);
 			sendPrefixMessage(player, ChatColor.RED + "You don't have permission to use /" + label + ".", label);
 			return false;
 		}
 
 		PowderHandler powderHandler = Powder.getInstance().getPowderHandler();
+		
+		int pageLength = Powder.getInstance().getConfig().getInt("pageLength");
 
 		if (args.length < 1) {
-			player.sendMessage(ChatColor.RED + "List of Powders " + 
-					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
-			powderList(player, powderHandler, 1, 5, label);
+			sendPrefixMessage(player, ChatColor.RED + "List of Powders " + 
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":", label);
+			powderList(player, powderHandler, 1, pageLength, label);
 			return false;
 		}
 
@@ -108,18 +109,18 @@ public class PowderCommand implements CommandExecutor {
 			} catch (Exception e) {
 				page = 1;
 			}
-			player.sendMessage(ChatColor.RED + "List of Powders " + 
-					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
-			powderList(player, powderHandler, page, 5, label);
+			sendPrefixMessage(player, ChatColor.RED + "List of Powders " + 
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":", label);
+			powderList(player, powderHandler, page, pageLength, label);
 			return false;
 		}
 
 		PowderMap map = powderHandler.getPowderMap(args[0]);
 
 		if (map == null) {
-			player.sendMessage(ChatColor.RED + "Please send a valid Powder name " + 
-					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":");
-			powderList(player, powderHandler, 1, 5, label);
+			sendPrefixMessage(player, ChatColor.RED + "Please send a valid Powder name " + 
+					ChatColor.GRAY + "(/" + label +  " <Powder>)" + ChatColor.RED + ":", label);
+			powderList(player, powderHandler, 1, pageLength, label);
 			return false;
 		}
 
@@ -148,6 +149,23 @@ public class PowderCommand implements CommandExecutor {
 				}
 			}
 			return false;
+		}
+		
+		if (!(powderHandler.getPowderTasks(player, map).isEmpty())) {
+			if (!(Powder.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
+				boolean success = false;
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player, map)) {
+					powderHandler.removePowderTask(powderTask);
+					success = true;
+				}
+				if (success) {
+					sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + map.getName() + "' cancelled!", label);
+				} else {
+					sendPrefixMessage(player, ChatColor.RED 
+							+ "There are no '" + map.getName() + "' Powders currently active.", label);
+				}
+				return false;
+			}
 		}
 
 		int maxSize = Powder.getInstance().getConfig().getInt("maxPowdersAtOneTime");
@@ -338,6 +356,9 @@ public class PowderCommand implements CommandExecutor {
 		for (PowderMap powderMap : phandler.getPowderMaps()) {
 			TextComponent powderMapText = new TextComponent(powderMap.getName());
 			if (!(player.hasPermission("powder.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
+				if (powderMap.isHidden()) {
+					continue;
+				}
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.DARK_GRAY);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("You don't have permission to use '" + powderMap.getName() + "'.")

@@ -102,11 +102,12 @@ public class Powder extends JavaPlugin {
 		
 	    for (String s : config.getConfigurationSection("powders").getKeys(false)) {
 			
-			String name = config.getString(powders + s + ".name");
-			float spacing = (float) config.getDouble(powders + s + ".spacing");
-			boolean ptch = config.getBoolean(powders + s + ".pitch");
-			boolean repeating = config.getBoolean(powders + s + ".repeating");
-			long delay = config.getLong(powders + s + ".delay");
+			String name = config.getString(powders + s + ".name", null);
+			float spacing = (float) config.getDouble(powders + s + ".spacing", .5F);
+			boolean ptch = config.getBoolean(powders + s + ".pitch", false);
+			boolean repeating = config.getBoolean(powders + s + ".repeating", false);
+			boolean hidden = config.getBoolean(powders + s + ".hidden", false);
+			long delay = config.getLong(powders + s + ".delay", Long.MAX_VALUE);
 			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
 			List<Dust> dusts = new ArrayList<Dust>();
 			List<ChangedParticle> changedParticles = new ArrayList<ChangedParticle>();
@@ -160,12 +161,20 @@ public class Powder extends JavaPlugin {
 					continue;
 				}
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				double xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
-				t = t.substring(t.indexOf(";") + 1, t.length());
-				double yOff = Double.valueOf(t.substring(0, t.indexOf(";")));
-				t = t.substring(t.indexOf(";") + 1, t.length());
-				double zOff;
 				ChangedParticle changedParticle;
+				double xOff;
+				double yOff;
+				double zOff;
+				try {
+					xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
+				} catch (Exception e) {
+					changedParticle = new ChangedParticle(enumName, particle, 0, 0, 0);
+					changedParticles.add(changedParticle);
+					continue;
+				}
+				t = t.substring(t.indexOf(";") + 1, t.length());
+				yOff = Double.valueOf(t.substring(0, t.indexOf(";")));
+				t = t.substring(t.indexOf(";") + 1, t.length());
 				try {
 					zOff = Double.valueOf(t);
 					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff);
@@ -232,7 +241,7 @@ public class Powder extends JavaPlugin {
 			}
 			powderNames.add(name);
 			final PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
-									smaps, sounds, dusts, changedParticles, ptch, repeating, delay);
+									smaps, sounds, dusts, changedParticles, ptch, repeating, hidden, delay);
 			getPowderHandler().addPowderMap(pmap);
 	    	
 	    }

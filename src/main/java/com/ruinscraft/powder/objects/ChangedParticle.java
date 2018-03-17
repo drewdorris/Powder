@@ -34,6 +34,16 @@ public class ChangedParticle {
 		
 	}
 	
+	public ChangedParticle(String particleName, Particle particle) {
+		
+		this.particleName = particleName;
+		this.particle = particle;
+		this.xOff = 0;
+		this.yOff = 0;
+		this.zOff = 0;
+		
+	}
+	
 	public String getEnumName() {
 		return particleName;
 	}
