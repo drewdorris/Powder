@@ -123,10 +123,12 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 
-		if (!(player.hasPermission("powder.powder." + map.getName().toLowerCase(Locale.US)))) {
-			sendPrefixMessage(player, ChatColor.RED 
-					+ "You don't have permission to use the Powder '" + map.getName() + "'.", label);
-			return false;
+		if (!(player.hasPermission("powder.powder.*"))) {
+			if (!(player.hasPermission("powder.powder." + map.getName().toLowerCase(Locale.US)))) {
+				sendPrefixMessage(player, ChatColor.RED 
+						+ "You don't have permission to use the Powder '" + map.getName() + "'.", label);
+				return false;
+			}
 		}
 		
 		if (args.length > 1) {
@@ -623,9 +625,13 @@ public class PowderCommand implements CommandExecutor {
 						try {
 							particle = Particle.valueOf(dust.getParticle());
 						} catch (Exception e) {
-							return;
+							try {
+								particle = Particle.valueOf(ParticleName.valueOf(dust.getParticle()).getName());
+							} catch (Exception ee) {
+								return;
+							}
 						}
-						player.getWorld().spawnParticle(particle, particleLocation, 1, null);
+						player.getWorld().spawnParticle(particle, particleLocation, 0, 0, 0, 0, 1);
 					}
 				}
 				

@@ -11,3 +11,6 @@ permissions:
   powder.command:
     default: false
     description: Allow usage of /powder
+  powder.powder.*:
+    default: false
+    description: Allows usage of all available Powders
