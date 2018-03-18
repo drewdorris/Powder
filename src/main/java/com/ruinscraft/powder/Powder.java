@@ -130,7 +130,6 @@ public class Powder extends JavaPlugin {
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				float waitTime = Float.valueOf(t);
 				SoundEffect se = new SoundEffect(sound, volume, pitch, waitTime);
-				getLogger().info("done");
 				sounds.add(se);
 				
 			}
