@@ -20,30 +20,30 @@ import com.ruinscraft.powder.objects.SoundEffect;
 import net.md_5.bungee.api.ChatColor;
 
 public class Powder extends JavaPlugin {
-	
+
 	private static Powder instance;
 	private static PowderHandler powderHandler;
-	
+
 	public static String PREFIX;
-	
+
 	private FileConfiguration config = null;
-	
+
 	public static Powder getInstance() {
 		return instance;
 	}
-	
+
 	public void onEnable() {
-		
+
 		instance = this;
-		
+
 		handleConfig();
-		
+
 		getCommand("powder").setExecutor(new PowderCommand());
-		
+
 		getServer().getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
-		
+
 		PREFIX = color(config.getString("prefix"));
-		
+
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
@@ -62,20 +62,20 @@ public class Powder extends JavaPlugin {
 				powderHandler.getPowderTasks().removeAll(toBeRemoved);
 			}
 		}, 0L, 100L);
-		
+
 	}
-	
+
 	public void onDisable() {
-		
+
 		instance = null;
 		powderHandler.clearEverything();
-		
+
 	}
-	
+
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
-	
+
 	public void cleanHandlers() {
 		// put other handlers if those exist in the future
 		if (!(powderHandler == null)) {
@@ -83,26 +83,26 @@ public class Powder extends JavaPlugin {
 		}
 		powderHandler = new PowderHandler();
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public void handleConfig() {
-		
+
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
-		    getLogger().info("config.yml not found, creating!");
-		    saveDefaultConfig();
+			getLogger().info("config.yml not found, creating!");
+			saveDefaultConfig();
 		}
 		reloadConfig();
 		config = getConfig();
-		
+
 		cleanHandlers();
-		
+
 		List<String> powderNames = new ArrayList<>();
-		
+
 		String powders = "powders.";
-		
-	    for (String s : config.getConfigurationSection("powders").getKeys(false)) {
-			
+
+		for (String s : config.getConfigurationSection("powders").getKeys(false)) {
+
 			String name = config.getString(powders + s + ".name", null);
 			float spacing = (float) config.getDouble(powders + s + ".spacing", .5F);
 			boolean ptch = config.getBoolean(powders + s + ".pitch", false);
@@ -112,9 +112,9 @@ public class Powder extends JavaPlugin {
 			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
 			List<Dust> dusts = new ArrayList<Dust>();
 			List<ChangedParticle> changedParticles = new ArrayList<ChangedParticle>();
-			
+
 			for (String t : (List<String>) config.getList(powders + s + ".sounds", new ArrayList<String>())) {
-				
+
 				Sound sound;
 				String soundName;
 				soundName = t.substring(0, t.indexOf(";"));
@@ -132,11 +132,11 @@ public class Powder extends JavaPlugin {
 				float waitTime = Float.valueOf(t);
 				SoundEffect se = new SoundEffect(sound, volume, pitch, waitTime);
 				sounds.add(se);
-				
+
 			}
-			
+
 			for (String t : (List<String>) config.getList(powders + s + ".dusts", new ArrayList<String>())) {
-				
+
 				String dustName = t.substring(0, t.indexOf(";"));
 				t = t.replaceFirst(dustName + ";", "");
 				double radius = Double.valueOf(t.substring(0, t.indexOf(";")));
@@ -146,11 +146,11 @@ public class Powder extends JavaPlugin {
 				long frequency = Long.valueOf(t);
 				Dust dust = new Dust(dustName, radius, height, frequency);
 				dusts.add(dust);
-				
+
 			}
-			
+
 			for (String t : (List<String>) config.getList(powders + s + ".changes", new ArrayList<String>())) {
-				
+
 				String enumName = t.substring(0, t.indexOf(";"));
 				t = t.replaceFirst(enumName + ";", "");
 				String particleName = t.substring(0, t.indexOf(";"));
@@ -190,9 +190,9 @@ public class Powder extends JavaPlugin {
 					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff, data);
 				}
 				changedParticles.add(changedParticle);
-				
+
 			}
-			
+
 			List<Object> map = new ArrayList<Object>();
 			boolean main = false;
 			boolean alreadyDone = false;
@@ -200,9 +200,9 @@ public class Powder extends JavaPlugin {
 			int left = 0;
 			int up = 0;
 			List<ParticleMap> particleMaps = new ArrayList<ParticleMap>();
-			
+
 			for (String t : (List<String>) config.getList(powders + s + ".map", new ArrayList<String>())) {
-				
+
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
 					if (map.isEmpty()) {
@@ -241,14 +241,14 @@ public class Powder extends JavaPlugin {
 					map.add(String.valueOf(ch));
 				}
 				map.add(";");
-				
+
 			}
-			
+
 			if (!(map.isEmpty())) {
 				ParticleMap particleMap = new ParticleMap(map, tick, left + 1, up, 0);
 				particleMaps.add(particleMap);
 			}
-			
+
 			if (particleMaps.isEmpty() && sounds.isEmpty() && dusts.isEmpty()) {
 				getLogger().warning("Powder " + name + " appears empty and was not loaded.");
 				continue;
@@ -257,24 +257,24 @@ public class Powder extends JavaPlugin {
 			final PowderMap pmap = new PowderMap(name, spacing, particleMaps, sounds, 
 					dusts, changedParticles, ptch, repeating, hidden, delay);
 			getPowderHandler().addPowderMap(pmap);
-	    	
-	    }
-	    
-	    StringBuilder msg = new StringBuilder();
-	    msg.append("Loaded Powders: ");
-	    for (String effect : powderNames) {
-	    	if (powderNames.get(powderNames.size() - 1).equals(effect)) {
-	    		msg.append(effect + ". " + powderNames.size() + " total!");
-	    	} else {
-	    		msg.append(effect + ", ");
-	    	}
-	    }
-	    getLogger().info(msg.toString());
-		
+
+		}
+
+		StringBuilder msg = new StringBuilder();
+		msg.append("Loaded Powders: ");
+		for (String effect : powderNames) {
+			if (powderNames.get(powderNames.size() - 1).equals(effect)) {
+				msg.append(effect + ". " + powderNames.size() + " total!");
+			} else {
+				msg.append(effect + ", ");
+			}
+		}
+		getLogger().info(msg.toString());
+
 	}
-	
+
 	public PowderHandler getPowderHandler() {
 		return powderHandler;
 	}
-	
+
 }
