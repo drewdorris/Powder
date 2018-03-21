@@ -5,10 +5,8 @@ import java.util.List;
 public class PowderMap {
 	
 	private String name;
-	private int playerLeft;
-	private int playerUp;
 	private float spacing;
-	private List<String> smap;
+	private List<ParticleMap> map;
 	private List<SoundEffect> sounds;
 	private List<Dust> dusts;
 	private List<ChangedParticle> changedParticles;
@@ -17,15 +15,12 @@ public class PowderMap {
 	private boolean hidden;
 	private long delay;
 	
-	public PowderMap(String name, int playerLeft, int playerUp, 
-			float spacing, List<String> smap, List<SoundEffect> sounds, List<Dust> dusts,
+	public PowderMap(String name, float spacing, List<ParticleMap> map, List<SoundEffect> sounds, List<Dust> dusts,
 				List<ChangedParticle> changedParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
 		
 		this.name = name;
-		this.playerLeft = playerLeft;
-		this.playerUp = playerUp;
 		this.spacing = spacing;
-		this.smap = smap;
+		this.map = map;
 		this.sounds = sounds;
 		this.dusts = dusts;
 		this.changedParticles = changedParticles;
@@ -40,26 +35,12 @@ public class PowderMap {
 		return name;
 	}
 	
-	/*/
-	 * how many units over it should start when creating the map
-	 */
-	public int getPlayerLeft() {
-		return playerLeft;
-	}
-	
-	/*/
-	 * how many units up it should start when creating the map
-	 */
-	public int getPlayerUp() {
-		return playerUp;
-	}
-	
-	public float getSpacing() {
+	public float getDefaultSpacing() {
 		return spacing;
 	}
 	
-	public List<String> getStringMaps() {
-		return smap;
+	public List<ParticleMap> getMaps() {
+		return map;
 	}
 	
 	public List<SoundEffect> getSounds() {
@@ -74,7 +55,7 @@ public class PowderMap {
 		return changedParticles;
 	}
 	
-	public boolean getPitch() {
+	public boolean hasPitch() {
 		return pitch;
 	}
 	

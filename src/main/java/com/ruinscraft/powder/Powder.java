@@ -12,6 +12,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
+import com.ruinscraft.powder.objects.ParticleMap;
 import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
@@ -192,24 +193,34 @@ public class Powder extends JavaPlugin {
 				
 			}
 			
-			StringBuilder sb = new StringBuilder();
+			List<Object> map = new ArrayList<Object>();
 			boolean main = false;
 			boolean alreadyDone = false;
+			int tick = 0;
 			int left = 0;
 			int up = 0;
-			List<String> smaps = new ArrayList<String>();
+			List<ParticleMap> particleMaps = new ArrayList<ParticleMap>();
 			
 			for (String t : (List<String>) config.getList(powders + s + ".map", new ArrayList<String>())) {
 				
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
-					if (sb.length() == 0) {
+					if (map.isEmpty()) {
 						continue;
 					}
-					String smap = sb.toString();
-					smaps.add(smap);
-					sb.setLength(0);
-					sb.append(t).append(";");
+					try {
+						tick = Integer.valueOf(t);
+					} catch (Exception e) {
+						getLogger().warning("Invalid animation time at line " + 
+								(config.getList(powders + s + ".map").indexOf(t) + 1));
+					}
+					ParticleMap particleMap = new ParticleMap(map, tick, left + 1, up, 0);
+					particleMaps.add(particleMap);
+					map = new ArrayList<Object>();
+					for (char ch : t.toCharArray()) {
+						map.add(String.valueOf(ch));
+					}
+					map.add(";");
 					alreadyDone = true;
 					continue;
 				}
@@ -226,21 +237,25 @@ public class Powder extends JavaPlugin {
 					left = (t.indexOf("?"));
 					main = false;
 				}
-				sb.append(t).append(";");
+				for (char ch : t.toCharArray()) {
+					map.add(String.valueOf(ch));
+				}
+				map.add(";");
 				
 			}
 			
-			if (!(sb.length() == 0)) {
-				smaps.add(sb.toString());
+			if (!(map.isEmpty())) {
+				ParticleMap particleMap = new ParticleMap(map, tick, left + 1, up, 0);
+				particleMaps.add(particleMap);
 			}
 			
-			if (smaps.isEmpty() && sounds.isEmpty() && dusts.isEmpty()) {
+			if (particleMaps.isEmpty() && sounds.isEmpty() && dusts.isEmpty()) {
 				getLogger().warning("Powder " + name + " appears empty and was not loaded.");
 				continue;
 			}
 			powderNames.add(name);
-			final PowderMap pmap = new PowderMap(name, left + 1, up, spacing, 
-									smaps, sounds, dusts, changedParticles, ptch, repeating, hidden, delay);
+			final PowderMap pmap = new PowderMap(name, spacing, particleMaps, sounds, 
+					dusts, changedParticles, ptch, repeating, hidden, delay);
 			getPowderHandler().addPowderMap(pmap);
 	    	
 	    }

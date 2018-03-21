@@ -19,6 +19,7 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
+import com.ruinscraft.powder.objects.ParticleMap;
 import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.PowderMap;
 import com.ruinscraft.powder.objects.PowderTask;
@@ -228,7 +229,7 @@ public class PowderCommand implements CommandExecutor {
 		
 		tasks.addAll(createDusts(player, map, powderHandler));
 		
-		if (map.isRepeating() || map.getStringMaps().size() > 1 || !(map.getDusts().isEmpty())) {
+		if (map.isRepeating() || map.getMaps().size() > 1 || !(map.getDusts().isEmpty())) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + map.getName() + "' created! Click to cancel.");
 			particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -428,21 +429,18 @@ public class PowderCommand implements CommandExecutor {
 		
 	}
 
-	public static List<Integer> createParticles(final Player player, final PowderMap map, PowderHandler powderHandler) {
+	public static List<Integer> createParticles(final Player player, final PowderMap powderMap, PowderHandler powderHandler) {
 
-		final float spacing = map.getSpacing();
 
-		List<String> smaps = map.getStringMaps();
+		List<ParticleMap> particleMaps = powderMap.getMaps();
 		
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (String smap : smaps) {
+		for (ParticleMap particleMap : particleMaps) {
+			
+			final float spacing = particleMap.getSpacing();
 
-			long waitTime = 0;
-
-			try {
-				waitTime = Long.parseLong(smap.substring(0, smap.indexOf(";")));
-			} catch (Exception e) { }
+			long waitTime = particleMap.getTick();
 
 			int task = Powder.getInstance().getServer()
 					.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
@@ -461,7 +459,7 @@ public class PowderCommand implements CommandExecutor {
 							final double ydist;
 							final double xzdist;
 
-							if (map.getPitch()) {
+							if (powderMap.hasPitch()) {
 								pitch = (player.getLocation().getPitch() * (Math.PI / 180));
 								ydist = ((Math.sin((Math.PI / 2) - pitch)) * spacing);
 								xzdist = ((Math.cos((Math.PI / 2) + pitch)) * spacing);
@@ -483,10 +481,10 @@ public class PowderCommand implements CommandExecutor {
 							final double rgy = (Math.sin(0 - pitch) * spacing);
 
 							final double sx = location.getX() - 
-									(fx * map.getPlayerLeft()) + (gx * map.getPlayerUp());
-							final double sy = location.getY() + (ydist * map.getPlayerUp());
+									(fx * particleMap.getPlayerLeft()) + (gx * particleMap.getPlayerUp());
+							final double sy = location.getY() + (ydist * particleMap.getPlayerUp());
 							final double sz = location.getZ() - 
-									(fz * map.getPlayerLeft()) + (gz * map.getPlayerUp());
+									(fz * particleMap.getPlayerLeft()) + (gz * particleMap.getPlayerUp());
 
 							double ssx = sx;
 							double ssy = sy;
@@ -498,7 +496,7 @@ public class PowderCommand implements CommandExecutor {
 							boolean lastCharInt = false;
 							int downSoFar = 0;
 
-							for (char a : smap.toCharArray()) {
+							for (Object a : particleMap.getMap()) {
 
 								String aa = String.valueOf(a);
 
@@ -568,7 +566,7 @@ public class PowderCommand implements CommandExecutor {
 
 								String pname = null;
 								boolean success = false;
-								for (ChangedParticle changedParticle : map.getChangedParticles()) {
+								for (ChangedParticle changedParticle : powderMap.getChangedParticles()) {
 									if (changedParticle.getEnumName().equals(aa)) {
 										Particle particle = changedParticle.getParticle();
 										if (changedParticle.getData() == null) {
