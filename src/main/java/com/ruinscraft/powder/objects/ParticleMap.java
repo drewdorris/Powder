@@ -18,12 +18,12 @@ public class ParticleMap {
 		this.spacing = spacing;
 	}
 	
-	public Integer getTick() {
-		return tick;
-	}
-	
 	public List<Object> getMap() {
 		return map;
+	}
+	
+	public Integer getTick() {
+		return tick;
 	}
 	
 	public Integer getPlayerLeft() {

@@ -1,12 +1,13 @@
 package com.ruinscraft.powder.objects;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class PowderMap {
 	
 	private String name;
 	private float spacing;
-	private List<ParticleMap> map;
+	private List<ParticleMap> maps;
 	private List<SoundEffect> sounds;
 	private List<Dust> dusts;
 	private List<ChangedParticle> changedParticles;
@@ -15,12 +16,12 @@ public class PowderMap {
 	private boolean hidden;
 	private long delay;
 	
-	public PowderMap(String name, float spacing, List<ParticleMap> map, List<SoundEffect> sounds, List<Dust> dusts,
+	public PowderMap(String name, float spacing, List<ParticleMap> maps, List<SoundEffect> sounds, List<Dust> dusts,
 				List<ChangedParticle> changedParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
 		
 		this.name = name;
 		this.spacing = spacing;
-		this.map = map;
+		this.maps = maps;
 		this.sounds = sounds;
 		this.dusts = dusts;
 		this.changedParticles = changedParticles;
@@ -31,6 +32,22 @@ public class PowderMap {
 		
 	}
 	
+	public PowderMap(String name, float spacing, List<ParticleMap> maps, 
+			boolean pitch, boolean repeating, boolean hidden, long delay) {
+	
+	this.name = name;
+	this.spacing = spacing;
+	this.maps = maps;
+	this.sounds = new ArrayList<SoundEffect>();
+	this.dusts = new ArrayList<Dust>();
+	this.changedParticles = new ArrayList<ChangedParticle>();
+	this.pitch = pitch;
+	this.repeating = repeating;
+	this.hidden = hidden;
+	this.delay = delay;
+	
+}
+	
 	public String getName() {
 		return name;
 	}
@@ -40,7 +57,7 @@ public class PowderMap {
 	}
 	
 	public List<ParticleMap> getMaps() {
-		return map;
+		return maps;
 	}
 	
 	public List<SoundEffect> getSounds() {
