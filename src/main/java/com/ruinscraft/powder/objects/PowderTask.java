@@ -8,9 +8,9 @@ public class PowderTask {
 	
 	private Player player;
 	private List<Integer> tasks;
-	private PowderMap map;
+	private Powder map;
 	
-	public PowderTask(Player player, List<Integer> tasks, PowderMap map) {
+	public PowderTask(Player player, List<Integer> tasks, Powder map) {
 		this.player = player;
 		this.tasks = tasks;
 		this.map = map;
@@ -24,7 +24,7 @@ public class PowderTask {
 		return tasks;
 	}
 	
-	public PowderMap getMap() {
+	public Powder getMap() {
 		return map;
 	}
 	

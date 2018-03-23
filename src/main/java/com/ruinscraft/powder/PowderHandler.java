@@ -5,31 +5,31 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.PowderTask;
 
 public class PowderHandler {
 
-	private List<PowderMap> powderMaps;
+	private List<Powder> powders;
 	private List<PowderTask> powderTasks;
 
 	public PowderHandler() {
-		powderMaps = new ArrayList<>();
+		powders = new ArrayList<>();
 		powderTasks = new ArrayList<>();
 	}
 
-	public List<PowderMap> getPowderMaps() {
-		return powderMaps;
+	public List<Powder> getPowders() {
+		return powders;
 	}
 
-	public void addPowderMap(PowderMap ps) {
-		powderMaps.add(ps);
+	public void addPowder(Powder powder) {
+		powders.add(powder);
 	}
 
-	public PowderMap getPowderMap(String name) {
-		for (PowderMap pmap : powderMaps) {
-			if (pmap.getName().equalsIgnoreCase(name)) {
-				return pmap;
+	public Powder getPowder(String name) {
+		for (Powder powder : powders) {
+			if (powder.getName().equalsIgnoreCase(name)) {
+				return powder;
 			}
 		}
 		return null;
@@ -40,37 +40,37 @@ public class PowderHandler {
 	}
 
 	public void clearEverything() {
-		powderMaps = null;
+		powders = null;
 		clearAllTasks();
 	}
 
 	public void clearAllTasks() {
-		for (PowderTask ptask : powderTasks) {
-			for (Integer taskid : ptask.getTaskIds()) {
+		for (PowderTask powderTask : powderTasks) {
+			for (Integer taskID : powderTask.getTaskIds()) {
 				try {
-					Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
+					PowderPlugin.getInstance().getServer().getScheduler().cancelTask(taskID);
 				} catch (Exception e) { }
 			}
-			ptask = null;
+			powderTask = null;
 		}
 	}
 
-	public void addPowderTask(PowderTask task) {
-		powderTasks.add(task);
+	public void addPowderTask(PowderTask powderTask) {
+		powderTasks.add(powderTask);
 	}
 
-	public void removePowderTask(PowderTask ptask) {
-		for (Integer taskid : ptask.getTaskIds()) {
-			Powder.getInstance().getServer().getScheduler().cancelTask(taskid);
+	public void removePowderTask(PowderTask powderTask) {
+		for (Integer taskID : powderTask.getTaskIds()) {
+			PowderPlugin.getInstance().getServer().getScheduler().cancelTask(taskID);
 		}
-		powderTasks.remove(ptask);
+		powderTasks.remove(powderTask);
 	}
 
-	public PowderTask getPowderTask(int task) {
-		for (PowderTask ptask : powderTasks) {
-			for (Integer taskid : ptask.getTaskIds()) {
-				if (taskid == task) {
-					return ptask;
+	public PowderTask getPowderTask(int taskID) {
+		for (PowderTask powderTask : powderTasks) {
+			for (Integer otherTaskID : powderTask.getTaskIds()) {
+				if (otherTaskID == taskID) {
+					return powderTask;
 				}
 			}
 		}
@@ -78,30 +78,30 @@ public class PowderHandler {
 	}
 
 	public List<PowderTask> getPowderTasks(Player player) {
-		List<PowderTask> ptasks = new ArrayList<>();
-		for (PowderTask ptask : powderTasks) {
-			if (ptask.getPlayer().equals(player)) {
-				ptasks.add(ptask);
+		List<PowderTask> powderTasks = new ArrayList<>();
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getPlayer().equals(player)) {
+				powderTasks.add(powderTask);
 			}
 		}
-		return ptasks;
+		return powderTasks;
 	}
 
-	public List<PowderTask> getPowderTasks(Player player, PowderMap map) {
-		List<PowderTask> ptasks = new ArrayList<>();
-		for (PowderTask ptask : getPowderTasks(player)) {
-			if (ptask.getMap().equals(map)) {
-				ptasks.add(ptask);
+	public List<PowderTask> getPowderTasks(Player player, Powder powder) {
+		List<PowderTask> powderTasks = new ArrayList<>();
+		for (PowderTask powderTask : getPowderTasks(player)) {
+			if (powderTask.getMap().equals(powder)) {
+				powderTasks.add(powderTask);
 			}
 		}
-		return ptasks;
+		return powderTasks;
 	}
 
-	public List<Player> getPowderTaskUsers(PowderMap map) {
+	public List<Player> getPowderTaskUsers(Powder powder) {
 		List<Player> players = new ArrayList<>();
-		for (PowderTask ptask : powderTasks) {
-			if (ptask.getMap().equals(map)) {
-				players.add(ptask.getPlayer());
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getMap().equals(powder)) {
+				players.add(powderTask.getPlayer());
 			}
 		}
 		return players;

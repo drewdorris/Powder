@@ -1,4 +1,4 @@
-main: com.ruinscraft.powder.Powder
+main: com.ruinscraft.powder.PowderPlugin
 name: ${name}
 version: ${project.version}
 commands: 

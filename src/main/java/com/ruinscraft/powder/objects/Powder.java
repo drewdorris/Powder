@@ -3,11 +3,11 @@ package com.ruinscraft.powder.objects;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PowderMap {
+public class Powder {
 	
 	private String name;
 	private float spacing;
-	private List<ParticleMap> maps;
+	private List<ParticleMatrix> maps;
 	private List<SoundEffect> sounds;
 	private List<Dust> dusts;
 	private List<ChangedParticle> changedParticles;
@@ -16,7 +16,7 @@ public class PowderMap {
 	private boolean hidden;
 	private long delay;
 	
-	public PowderMap(String name, float spacing, List<ParticleMap> maps, List<SoundEffect> sounds, List<Dust> dusts,
+	public Powder(String name, float spacing, List<ParticleMatrix> maps, List<SoundEffect> sounds, List<Dust> dusts,
 				List<ChangedParticle> changedParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
 		
 		this.name = name;
@@ -32,7 +32,7 @@ public class PowderMap {
 		
 	}
 	
-	public PowderMap(String name, float spacing, List<ParticleMap> maps, 
+	public Powder(String name, float spacing, List<ParticleMatrix> maps, 
 			boolean pitch, boolean repeating, boolean hidden, long delay) {
 	
 	this.name = name;
@@ -56,7 +56,7 @@ public class PowderMap {
 		return spacing;
 	}
 	
-	public List<ParticleMap> getMaps() {
+	public List<ParticleMatrix> getMaps() {
 		return maps;
 	}
 	

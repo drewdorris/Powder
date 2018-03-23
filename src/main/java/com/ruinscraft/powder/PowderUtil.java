@@ -11,9 +11,9 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
-import com.ruinscraft.powder.objects.ParticleMap;
+import com.ruinscraft.powder.objects.ParticleMatrix;
 import com.ruinscraft.powder.objects.ParticleName;
-import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.SoundEffect;
 
 public class PowderUtil {
@@ -30,13 +30,13 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createParticles(final Player player, final PowderMap powderMap) {
-		
-		List<ParticleMap> particleMaps = powderMap.getMaps();
+	public static List<Integer> createParticles(final Player player, final Powder powderMap) {
+
+		List<ParticleMatrix> particleMaps = powderMap.getMaps();
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (ParticleMap particleMap : particleMaps) {
+		for (ParticleMatrix particleMap : particleMaps) {
 
 			final float spacing;
 			if (particleMap.getSpacing() == 0) {
@@ -47,8 +47,8 @@ public class PowderUtil {
 
 			long waitTime = particleMap.getTick();
 
-			int task = Powder.getInstance().getServer()
-					.getScheduler().scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
+			int task = PowderPlugin.getInstance().getServer()
+					.getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
 
 						@Override
 						public void run() {
@@ -106,67 +106,63 @@ public class PowderUtil {
 
 							for (Object object : particleMap.getMap()) {
 
-								if (object instanceof String) {
+								if (object.equals(".") || object.equals(",")) {
+									newX = newX + amountToAddX;
+									newZ = newZ + amountToAddZ;
+									buildingAnInt = false;
+									continue;
+								}
 
-									if (object.equals(".") || object.equals(",")) {
-										newX = newX + amountToAddX;
-										newZ = newZ + amountToAddZ;
-										buildingAnInt = false;
-										continue;
-									}
+								if (object.equals("{")) {
+									buildingAnInt = true;
+									continue;
+								}
 
-									if (object.equals("{")) {
-										buildingAnInt = true;
-										continue;
-									}
-
-									if (object.equals("}")) {
-										buildingAnInt = false;
-										try {
-											Integer.parseInt(sb.toString());
-										} catch (Exception e) {
-											Powder.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
-											sb.setLength(0);
-											continue;
-										}
-									}
-
-									if (buildingAnInt == true) {
-										lastObjectWasAnInt = true;
-										sb.append(object);
-										continue;
-									} else {
-										lastObjectWasAnInt = false;
-									}
-
-									if ((buildingAnInt == false) && !(sb.length() == 0)) {
-
-										rowsDownSoFar = 0;
-										resultingInt = Integer.parseInt(sb.toString());
-
-										newX = startX + (startARowX * resultingInt) + (moveBackWithPitchZ * resultingInt);
-										newY = startY + (moveBackWithPitchY * resultingInt);
-										newZ = startZ + (startARowZ * resultingInt) + (moveBackWithPitchX * resultingInt);
-
+								if (object.equals("}")) {
+									buildingAnInt = false;
+									try {
+										Integer.parseInt(sb.toString());
+									} catch (Exception e) {
+										PowderPlugin.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
 										sb.setLength(0);
-
 										continue;
-
 									}
+								}
 
-									if (object.equals(";")) {
+								if (buildingAnInt == true) {
+									lastObjectWasAnInt = true;
+									sb.append(object);
+									continue;
+								} else {
+									lastObjectWasAnInt = false;
+								}
 
-										if (lastObjectWasAnInt == true) {
-											newY = startY;
-										} else {
-											rowsDownSoFar++;
-											newX = startX + (startARowX * resultingInt) - (moveWithPitchX * rowsDownSoFar);
-											newY = newY - distanceBetweenRowsY;
-											newZ = startZ + (startARowZ * resultingInt) - (moveWithPitchZ * rowsDownSoFar);
-										}
-										continue;
+								if ((buildingAnInt == false) && !(sb.length() == 0)) {
 
+									rowsDownSoFar = 0;
+									resultingInt = Integer.parseInt(sb.toString());
+
+									newX = startX + (startARowX * resultingInt) + (moveBackWithPitchZ * resultingInt);
+									newY = startY + (moveBackWithPitchY * resultingInt);
+									newZ = startZ + (startARowZ * resultingInt) + (moveBackWithPitchX * resultingInt);
+
+									sb.setLength(0);
+
+									continue;
+
+								}
+
+								if (object.equals(";")) {
+
+									if (lastObjectWasAnInt == true) {
+										newY = startY;
+									} else {
+										rowsDownSoFar++;
+										newX = startX + (startARowX * resultingInt) - (moveWithPitchX * rowsDownSoFar);
+										newY = newY - distanceBetweenRowsY;
+										newZ = startZ + (startARowZ * resultingInt) - (moveWithPitchZ * rowsDownSoFar);
 									}
+									continue;
 
 								}
 
@@ -186,34 +182,36 @@ public class PowderUtil {
 												changedParticle.getZOff() / 255, (double) changedParticle.getData());
 									}
 									continue;
-								}
-
-								boolean success = false;
-								for (ChangedParticle changedParticle : powderMap.getChangedParticles()) {
-									if (changedParticle.getEnumName().equals(object)) {
-										Particle particle = changedParticle.getParticle();
-										if (changedParticle.getData() == null) {
-											player.getWorld().spawnParticle(particle, newX, newY, newZ, 0, (changedParticle.getXOff() / 255), 
-													changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
-										} else {
-											player.getWorld().spawnParticle(particle, newX, newY, newZ, 1, (changedParticle.getXOff() / 255), 
-													changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
-													(double) changedParticle.getData());
+								} else {
+									
+									boolean success = false;
+									for (ChangedParticle changedParticle : powderMap.getChangedParticles()) {
+										if (changedParticle.getEnumName().equals(object)) {
+											Particle particle = changedParticle.getParticle();
+											if (changedParticle.getData() == null) {
+												player.getWorld().spawnParticle(particle, newX, newY, newZ, 0, (changedParticle.getXOff() / 255), 
+														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
+											} else {
+												player.getWorld().spawnParticle(particle, newX, newY, newZ, 1, (changedParticle.getXOff() / 255), 
+														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
+														(double) changedParticle.getData());
+											}
+											success = true;
+											break;
 										}
-										success = true;
-										break;
 									}
-								}
-								if (success) continue;
+									if (success) continue;
 
-								String particleName;
-								try {
-									particleName = ParticleName.valueOf((String) object).getName();
-								} catch (Exception e) {
-									continue;
-								}
+									String particleName;
+									try {
+										particleName = ParticleName.valueOf((String) object).getName();
+									} catch (Exception e) {
+										continue;
+									}
 
-								player.getWorld().spawnParticle(Particle.valueOf(particleName), newX, newY, newZ, 1, 0, 0, 0, 0);
+									player.getWorld().spawnParticle(Particle.valueOf(particleName), newX, newY, newZ, 1, 0, 0, 0, 0);
+									
+								}
 
 							}
 
@@ -229,14 +227,14 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createSounds(final Player player, final PowderMap map) {
-		
+	public static List<Integer> createSounds(final Player player, final Powder map) {
+
 		List<Integer> tasks = new ArrayList<Integer>();
 
 		for (SoundEffect sound : map.getSounds()) {
 
-			int task = Powder.getInstance().getServer().getScheduler()
-					.scheduleSyncDelayedTask(Powder.getInstance(), new Runnable() {
+			int task = PowderPlugin.getInstance().getServer().getScheduler()
+					.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
 
 						@Override
 						public void run() {
@@ -256,7 +254,7 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createDusts(final Player player, final PowderMap map, PowderHandler powderHandler) {
+	public static List<Integer> createDusts(final Player player, final Powder map, PowderHandler powderHandler) {
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
@@ -266,8 +264,8 @@ public class PowderUtil {
 			// translate to ticks
 			long frequency = 1200 / dust.getFrequency();
 
-			int task = Powder.getInstance().getServer().getScheduler()
-					.scheduleSyncRepeatingTask(Powder.getInstance(), new Runnable() {
+			int task = PowderPlugin.getInstance().getServer().getScheduler()
+					.scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
 
 						public void run() {
 							double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());

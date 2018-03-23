@@ -1,6 +1,9 @@
 package com.ruinscraft.powder;
 
 import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -12,23 +15,23 @@ import org.bukkit.scheduler.BukkitScheduler;
 
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
-import com.ruinscraft.powder.objects.ParticleMap;
-import com.ruinscraft.powder.objects.PowderMap;
+import com.ruinscraft.powder.objects.ParticleMatrix;
+import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
 
 import net.md_5.bungee.api.ChatColor;
 
-public class Powder extends JavaPlugin {
+public class PowderPlugin extends JavaPlugin {
 
-	private static Powder instance;
+	private static PowderPlugin instance;
 	private static PowderHandler powderHandler;
 
 	public static String PREFIX;
 
 	private FileConfiguration config = null;
 
-	public static Powder getInstance() {
+	public static PowderPlugin getInstance() {
 		return instance;
 	}
 
@@ -105,11 +108,11 @@ public class Powder extends JavaPlugin {
 
 			String name = config.getString(powders + s + ".name", null);
 			float spacing = (float) config.getDouble(powders + s + ".spacing", .5F);
-			boolean ptch = config.getBoolean(powders + s + ".pitch", false);
+			boolean pitch = config.getBoolean(powders + s + ".pitch", false);
 			boolean repeating = config.getBoolean(powders + s + ".repeating", false);
 			boolean hidden = config.getBoolean(powders + s + ".hidden", false);
 			long delay = config.getLong(powders + s + ".delay", Long.MAX_VALUE);
-			List<SoundEffect> sounds = new ArrayList<SoundEffect>();
+			List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
 			List<Dust> dusts = new ArrayList<Dust>();
 			List<ChangedParticle> changedParticles = new ArrayList<ChangedParticle>();
 
@@ -127,11 +130,11 @@ public class Powder extends JavaPlugin {
 				t = t.replaceFirst(soundName + ";", "");
 				float volume = Float.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				float pitch = Float.valueOf(t.substring(0, t.indexOf(";")));
+				float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				float waitTime = Float.valueOf(t);
-				SoundEffect se = new SoundEffect(sound, volume, pitch, waitTime);
-				sounds.add(se);
+				SoundEffect soundEffect = new SoundEffect(sound, volume, soundPitch, waitTime);
+				soundEffects.add(soundEffect);
 
 			}
 
@@ -193,19 +196,19 @@ public class Powder extends JavaPlugin {
 
 			}
 
-			List<Object> map = new ArrayList<Object>();
-			boolean main = false;
-			boolean alreadyDone = false;
+			List<Object> matrix = new ArrayList<Object>();
+			boolean definingPlayerLocation = false;
+			boolean playerLocationDefined = false;
 			int tick = 0;
 			int left = 0;
 			int up = 0;
-			List<ParticleMap> particleMaps = new ArrayList<ParticleMap>();
+			List<ParticleMatrix> particleMatrices = new ArrayList<ParticleMatrix>();
 
 			for (String t : (List<String>) config.getList(powders + s + ".map", new ArrayList<String>())) {
 
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
-					if (map.isEmpty()) {
+					if (matrix.isEmpty()) {
 						continue;
 					}
 					try {
@@ -214,49 +217,94 @@ public class Powder extends JavaPlugin {
 						getLogger().warning("Invalid animation time at line " + 
 								(config.getList(powders + s + ".map").indexOf(t) + 1));
 					}
-					ParticleMap particleMap = new ParticleMap(map, tick, left + 1, up, 0);
-					particleMaps.add(particleMap);
-					map = new ArrayList<Object>();
+					ParticleMatrix particleMatrix = new ParticleMatrix(matrix, tick, left + 1, up, 0);
+					particleMatrices.add(particleMatrix);
+					matrix = new ArrayList<Object>();
 					for (char ch : t.toCharArray()) {
-						map.add(String.valueOf(ch));
+						matrix.add(String.valueOf(ch));
 					}
-					map.add(";");
-					alreadyDone = true;
+					matrix.add(";");
+					playerLocationDefined = true;
 					continue;
 				}
-				if (main == true) {
+				if (definingPlayerLocation == true) {
 					up++;
 				}
+				if (t.contains("img:")) {
+					String urlName;
+					int width;
+					int height;
+					t = t.replace("img:", "");
+					urlName = t.substring(0, t.indexOf(";"));
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					width = Integer.valueOf(t.substring(0, t.indexOf(";")));
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					height = Integer.valueOf(t);
+					URL url;
+					try {
+						url = new URL(urlName);
+						matrix = ImageUtil.getMatrixFromURL(matrix, url, width, height);
+					} catch (MalformedURLException e) {
+						getLogger().warning("Not good URL: '" + urlName);
+						continue;
+					} catch (IOException io) {
+						getLogger().warning("Failed to connect to URL '" + urlName);
+						continue;
+					}
+					up = up + height;
+					continue;
+				}
+				if (t.contains("path:")) {
+					String path;
+					int width;
+					int height;
+					t = t.replace("path:", "");
+					path = t.substring(0, t.indexOf(";"));
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					width = Integer.valueOf(t.substring(0, t.indexOf(";")));
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					height = Integer.valueOf(t);
+					try {
+						matrix = ImageUtil.getMatrixFromPath(matrix, path, width, height);
+					} catch (MalformedURLException e) {
+						continue;
+					} catch (IOException io) {
+						getLogger().warning("Failed to load path: '" + path);
+						continue;
+					}
+					up = up + height;
+					continue;
+				}
 				if (t.contains("{0}")) {
-					main = true;
-					if (alreadyDone == true) {
-						main = false;
+					definingPlayerLocation = true;
+					if (playerLocationDefined == true) {
+						definingPlayerLocation = false;
 					}
 				}
-				if (t.contains("?") && main == true) {
+				if (t.contains("?") && definingPlayerLocation == true) {
 					left = (t.indexOf("?"));
-					main = false;
+					definingPlayerLocation = false;
 				}
 				for (char ch : t.toCharArray()) {
-					map.add(String.valueOf(ch));
+					matrix.add(String.valueOf(ch));
 				}
-				map.add(";");
+				matrix.add(";");
 
 			}
 
-			if (!(map.isEmpty())) {
-				ParticleMap particleMap = new ParticleMap(map, tick, left + 1, up, 0);
-				particleMaps.add(particleMap);
+			if (!(matrix.isEmpty())) {
+				ParticleMatrix particleMatrix = new ParticleMatrix(matrix, tick, left + 1, up, 0);
+				particleMatrices.add(particleMatrix);
 			}
 
-			if (particleMaps.isEmpty() && sounds.isEmpty() && dusts.isEmpty()) {
+			if (particleMatrices.isEmpty() && soundEffects.isEmpty() && dusts.isEmpty()) {
 				getLogger().warning("Powder " + name + " appears empty and was not loaded.");
 				continue;
 			}
 			powderNames.add(name);
-			final PowderMap pmap = new PowderMap(name, spacing, particleMaps, sounds, 
-					dusts, changedParticles, ptch, repeating, hidden, delay);
-			getPowderHandler().addPowderMap(pmap);
+			final Powder powder = new Powder(name, spacing, particleMatrices, soundEffects, 
+					dusts, changedParticles, pitch, repeating, hidden, delay);
+			getPowderHandler().addPowder(powder);
 
 		}
 

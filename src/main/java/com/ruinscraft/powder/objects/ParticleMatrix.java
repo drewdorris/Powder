@@ -2,7 +2,7 @@ package com.ruinscraft.powder.objects;
 
 import java.util.List;
 
-public class ParticleMap {
+public class ParticleMatrix {
 
 	private List<Object> map;
 	private int tick;
@@ -10,7 +10,7 @@ public class ParticleMap {
 	private int playerUp;
 	private float spacing;
 	
-	public ParticleMap(List<Object> map, int tick, int playerLeft, int playerUp, float spacing) {
+	public ParticleMatrix(List<Object> map, int tick, int playerLeft, int playerUp, float spacing) {
 		this.map = map;
 		this.tick = tick;
 		this.playerLeft = playerLeft;
