@@ -78,23 +78,23 @@ public class PowderHandler {
 	}
 
 	public List<PowderTask> getPowderTasks(Player player) {
-		List<PowderTask> powderTasks = new ArrayList<>();
+		List<PowderTask> playerPowderTasks = new ArrayList<>();
 		for (PowderTask powderTask : powderTasks) {
 			if (powderTask.getPlayer().equals(player)) {
-				powderTasks.add(powderTask);
+				playerPowderTasks.add(powderTask);
 			}
 		}
-		return powderTasks;
+		return playerPowderTasks;
 	}
 
 	public List<PowderTask> getPowderTasks(Player player, Powder powder) {
-		List<PowderTask> powderTasks = new ArrayList<>();
+		List<PowderTask> playerPowderTasks = new ArrayList<>();
 		for (PowderTask powderTask : getPowderTasks(player)) {
 			if (powderTask.getMap().equals(powder)) {
-				powderTasks.add(powderTask);
+				playerPowderTasks.add(powderTask);
 			}
 		}
-		return powderTasks;
+		return playerPowderTasks;
 	}
 
 	public List<Player> getPowderTaskUsers(Powder powder) {
