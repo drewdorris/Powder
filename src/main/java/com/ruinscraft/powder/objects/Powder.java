@@ -17,7 +17,10 @@ public class Powder {
 	private long delay;
 	
 	public Powder() {
-		// empty
+		this.matrices = new ArrayList<ParticleMatrix>();
+		this.soundEffects = new ArrayList<SoundEffect>();
+		this.dusts = new ArrayList<Dust>();
+		this.powderParticles = new ArrayList<PowderParticle>();
 	}
 
 	public Powder(String name, float spacing, List<ParticleMatrix> matrices, List<SoundEffect> soundEffects, List<Dust> dusts,

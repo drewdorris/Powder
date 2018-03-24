@@ -195,28 +195,25 @@ public class PowderPlugin extends JavaPlugin {
 
 			}
 
-			List<Object> matrix = new ArrayList<Object>();
 			boolean definingPlayerLocation = false;
 			boolean playerLocationDefined = false;
 			int tick = 0;
 			int left = 0;
 			int up = 0;
-			List<ParticleMatrix> particleMatrices = new ArrayList<ParticleMatrix>();
 			List<Layer> layers = new ArrayList<Layer>();
 			Layer layer = new Layer();
 
 			for (String t : (List<String>) config.getList(powders + s + ".map", new ArrayList<String>())) {
-				
+
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
-					if (matrix.isEmpty()) {
+					if (layers.isEmpty()) {
 						continue;
 					}
 					layers.add(layer);
-					particleMatrices.add(new ParticleMatrix(layers, tick, left + 1, up, 0));
+					powder.addMatrix(new ParticleMatrix(layers, tick, left + 1, up, 0));
 					layers = new ArrayList<Layer>();
 					layer = new Layer();
-					matrix = new ArrayList<Object>();
 					playerLocationDefined = true;
 					try {
 						tick = Integer.valueOf(t);
@@ -252,57 +249,61 @@ public class PowderPlugin extends JavaPlugin {
 				if (definingPlayerLocation == true) {
 					up++;
 				}
-				if (t.contains("spacing:")) {
-					t = t.replace("spacing:", "");
-					float spacing = Float.valueOf(t);
-					layer.setSpacing(spacing);
-				}
-				if (t.contains("img:")) {
-					String urlName;
-					int width;
-					int height;
-					t = t.replace("img:", "");
-					urlName = t.substring(0, t.indexOf(";"));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					height = Integer.valueOf(t);
-					URL url;
-					try {
-						url = new URL(urlName);
-						layer.addRows(ImageUtil.getRowsFromURL(layer.getRows(), url, width, height));
-					} catch (MalformedURLException e) {
-						getLogger().warning("Path unclear: '" + urlName + "'");
-						continue;
-					} catch (IOException io) {
-						getLogger().warning("Failed to connect to URL '" + urlName + "'");
-						continue;
-					} catch (Exception e) {
-						continue;
+				if (t.contains(":")) {
+
+					if (t.contains("spacing:")) {
+						t = t.replace("spacing:", "");
+						float spacing = Float.valueOf(t);
+						layer.setSpacing(spacing);
+					} else if (t.contains("img:")) {
+						String urlName;
+						int width;
+						int height;
+						t = t.replace("img:", "");
+						urlName = t.substring(0, t.indexOf(";"));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						width = Integer.valueOf(t.substring(0, t.indexOf(";")));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						height = Integer.valueOf(t);
+						URL url;
+						try {
+							url = new URL(urlName);
+							layer.addRows(ImageUtil.getRowsFromURL(layer.getRows(), url, width, height));
+						} catch (MalformedURLException e) {
+							getLogger().warning("Path unclear: '" + urlName + "'");
+							continue;
+						} catch (IOException io) {
+							getLogger().warning("Failed to connect to URL '" + urlName + "'");
+							continue;
+						} catch (Exception e) {
+							continue;
+						}
+						up = up + height;
+					} else if (t.contains("path:")) {
+						String path;
+						int width;
+						int height;
+						t = t.replace("path:", "");
+						path = t.substring(0, t.indexOf(";"));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						width = Integer.valueOf(t.substring(0, t.indexOf(";")));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						height = Integer.valueOf(t);
+						try {
+							layer.addRows(ImageUtil.getRowsFromPath(layer.getRows(), path, width, height));
+						} catch (MalformedURLException e) {
+							continue;
+						} catch (IOException io) {
+							getLogger().warning("Failed to load path: '" + path + "'");
+							continue;
+						}
+						up = up + height;
 					}
-					up = up + height;
+
+					up--;
+
 					continue;
-				}
-				if (t.contains("path:")) {
-					String path;
-					int width;
-					int height;
-					t = t.replace("path:", "");
-					path = t.substring(0, t.indexOf(";"));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					height = Integer.valueOf(t);
-					try {
-						layer.addRows(ImageUtil.getRowsFromPath(layer.getRows(), path, width, height));
-					} catch (MalformedURLException e) {
-						continue;
-					} catch (IOException io) {
-						getLogger().warning("Failed to load path: '" + path + "'");
-						continue;
-					}
-					up = up + height;
-					continue;
+
 				}
 				if (t.contains("?") && definingPlayerLocation == true) {
 					left = (t.indexOf("?"));
@@ -312,14 +313,15 @@ public class PowderPlugin extends JavaPlugin {
 				for (char character : t.toCharArray()) {
 					String string = String.valueOf(character);
 					PowderParticle powderParticle;
-					try {
-						Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
-						powderParticle = new PowderParticle(string, particle);
-					} catch (Exception e) {
-						if (powder.getPowderParticle(string) == null) {
+					powderParticle = powder.getPowderParticle(string);
+					if (powderParticle == null) {
+						try {
+							Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
+							powderParticle = new PowderParticle(string, particle);
+							getLogger().info("1 " + string + " " + powder.getName());
+						} catch (Exception e) {
 							powderParticle = new PowderParticle(null, null);
-						} else {
-							powderParticle = powder.getPowderParticle(string);
+							getLogger().info("2 " + string + " " + powder.getName());
 						}
 					}
 					row.add(powderParticle);
@@ -328,12 +330,13 @@ public class PowderPlugin extends JavaPlugin {
 
 			}
 
-			if (!(matrix.isEmpty())) {
-				ParticleMatrix particleMatrix = new ParticleMatrix(layers, tick, left + 1, up, 0);
-				particleMatrices.add(particleMatrix);
+			if (!(layer.getRows().isEmpty())) {
+				layers.add(layer);
 			}
-			
-			powder.setMatrices(particleMatrices);
+
+			if (!(layers.isEmpty())) {
+				powder.addMatrix(new ParticleMatrix(layers, tick, left + 1, up, 0));
+			}
 
 			if (powder.getMatrices().isEmpty() && powder.getSoundEffects().isEmpty() && powder.getDusts().isEmpty()) {
 				getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");

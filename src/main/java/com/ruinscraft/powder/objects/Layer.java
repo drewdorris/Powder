@@ -10,7 +10,7 @@ public class Layer {
 	private int position;
 	
 	public Layer() {
-		// empty
+		this.rows = new ArrayList<List<PowderParticle>>();
 	}
 	
 	public Layer(List<List<PowderParticle>> rows, float spacing, int position) {
@@ -28,16 +28,10 @@ public class Layer {
 	}
 	
 	public void addRows(List<List<PowderParticle>> rows) {
-		if (rows == null) {
-			rows = new ArrayList<List<PowderParticle>>();
-		}
 		this.rows.addAll(rows);
 	}
 	
 	public void addRow(List<PowderParticle> row) {
-		if (rows == null) {
-			rows = new ArrayList<List<PowderParticle>>();
-		}
 		rows.add(row);
 	}
 	
