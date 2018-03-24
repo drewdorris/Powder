@@ -10,7 +10,7 @@ public class ParticleMatrix {
 	private int playerLeft;
 	private int playerUp;
 	private float spacing;
-	
+
 	public ParticleMatrix() {
 		this.layers = new ArrayList<Layer>();
 		tick = 0;
@@ -30,11 +30,11 @@ public class ParticleMatrix {
 	public List<Layer> getLayers() {
 		return layers;
 	}
-	
+
 	public void setLayers(List<Layer> layers) {
 		this.layers = layers;
 	}
-	
+
 	public void addLayer(Layer layer) {
 		layers.add(layer);
 	}
@@ -42,7 +42,7 @@ public class ParticleMatrix {
 	public Integer getTick() {
 		return tick;
 	}
-	
+
 	public void setTick(int tick) {
 		this.tick = tick;
 	}
@@ -50,7 +50,7 @@ public class ParticleMatrix {
 	public Integer getPlayerLeft() {
 		return playerLeft;
 	}
-	
+
 	public void setPlayerLeft(int playerLeft) {
 		this.playerLeft = playerLeft;
 	}
@@ -58,7 +58,7 @@ public class ParticleMatrix {
 	public Integer getPlayerUp() {
 		return playerUp;
 	}
-	
+
 	public void setPlayerUp(int playerUp) {
 		this.playerUp = playerUp;
 	}
@@ -66,7 +66,7 @@ public class ParticleMatrix {
 	public Float getSpacing() {
 		return spacing;
 	}
-	
+
 	public void setSpacing(float spacing) {
 		this.spacing = spacing;
 	}

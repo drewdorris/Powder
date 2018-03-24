@@ -121,8 +121,8 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				PowderParticle changedParticle = new PowderParticle(null, Particle.REDSTONE, arr, gee, bee);
-				row.add(changedParticle);
+				PowderParticle powderParticle = new PowderParticle(null, Particle.REDSTONE, arr, gee, bee);
+				row.add(powderParticle);
 
 			}
 

@@ -17,7 +17,7 @@ public class Powder {
 	private long delay;
 	private int defaultLeft;
 	private int defaultUp;
-	
+
 	public Powder() {
 		this.matrices = new ArrayList<ParticleMatrix>();
 		this.soundEffects = new ArrayList<SoundEffect>();
@@ -64,7 +64,7 @@ public class Powder {
 	public String getName() {
 		return name;
 	}
-	
+
 	public void setName(String name) {
 		this.name = name;
 	}
@@ -72,7 +72,7 @@ public class Powder {
 	public float getDefaultSpacing() {
 		return spacing;
 	}
-	
+
 	public void setDefaultSpacing(float spacing) {
 		this.spacing = spacing;
 	}
@@ -80,11 +80,11 @@ public class Powder {
 	public List<ParticleMatrix> getMatrices() {
 		return matrices;
 	}
-	
+
 	public void setMatrices(List<ParticleMatrix> particleMatrices) {
 		this.matrices = particleMatrices;
 	}
-	
+
 	public void addMatrix(ParticleMatrix particleMatrix) {
 		matrices.add(particleMatrix);
 	}
@@ -92,23 +92,23 @@ public class Powder {
 	public List<SoundEffect> getSoundEffects() {
 		return soundEffects;
 	}
-	
+
 	public void setSoundEffects(List<SoundEffect> soundEffects) {
 		this.soundEffects = soundEffects;
 	}
-	
+
 	public void addSoundEffect(SoundEffect soundEffect) {
 		soundEffects.add(soundEffect);
 	}
-	
+
 	public List<Dust> getDusts() {
 		return dusts;
 	}
-	
+
 	public void setDusts(List<Dust> dusts) {
 		this.dusts = dusts;
 	}
-	
+
 	public void addDust(Dust dust) {
 		dusts.add(dust);
 	}
@@ -116,7 +116,7 @@ public class Powder {
 	public List<PowderParticle> getPowderParticles() {
 		return powderParticles;
 	}
-	
+
 	public PowderParticle getPowderParticle(String enumName) {
 		for (PowderParticle powderParticle : powderParticles) {
 			if (powderParticle.getEnumName() == null) {
@@ -128,11 +128,11 @@ public class Powder {
 		}
 		return null;
 	}
-	
+
 	public void setPowderParticles(List<PowderParticle> powderParticles) {
 		this.powderParticles = powderParticles;
 	}
-	
+
 	public void addPowderParticle(PowderParticle powderParticle) {
 		powderParticles.add(powderParticle);
 	}
@@ -140,7 +140,7 @@ public class Powder {
 	public boolean hasPitch() {
 		return pitch;
 	}
-	
+
 	public void setPitch(boolean pitch) {
 		this.pitch = pitch;
 	}
@@ -148,15 +148,15 @@ public class Powder {
 	public boolean isRepeating() {
 		return repeating;
 	}
-	
+
 	public void setRepeating(boolean repeating) {
 		this.repeating = repeating;
 	}
-	
+
 	public long getDelay() {
 		return delay;
 	}
-	
+
 	public void setDelay(long delay) {
 		this.delay = delay;
 	}
@@ -164,23 +164,23 @@ public class Powder {
 	public boolean isHidden() {
 		return hidden;
 	}
-	
+
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
 	}
-	
+
 	public Integer getDefaultLeft() {
 		return defaultLeft;
 	}
-	
+
 	public void setDefaultLeft(int defaultLeft) {
 		this.defaultLeft = defaultLeft;
 	}
-	
+
 	public Integer getDefaultUp() {
 		return defaultUp;
 	}
-	
+
 	public void setDefaultUp(int defaultUp) {
 		this.defaultUp = defaultUp;
 	}

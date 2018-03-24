@@ -146,19 +146,6 @@ public class PowderPlugin extends JavaPlugin {
 
 					}
 
-					for (String t : (List<String>) config.getList(powders + s + ".dusts", new ArrayList<String>())) {
-
-						String dustName = t.substring(0, t.indexOf(";"));
-						t = t.replaceFirst(dustName + ";", "");
-						double radius = Double.valueOf(t.substring(0, t.indexOf(";")));
-						t = t.substring(t.indexOf(";") + 1, t.length());
-						double height = Float.valueOf(t.substring(0, t.indexOf(";")));
-						t = t.substring(t.indexOf(";") + 1, t.length());
-						long frequency = Long.valueOf(t);
-						powder.addDust(new Dust(dustName, radius, height, frequency));
-
-					}
-
 					for (String t : (List<String>) config.getList(powders + s + ".changes", new ArrayList<String>())) {
 
 						String enumName = t.substring(0, t.indexOf(";"));
@@ -197,6 +184,29 @@ public class PowderPlugin extends JavaPlugin {
 							}
 							powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff, data));
 						}
+
+					}
+
+					for (String t : (List<String>) config.getList(powders + s + ".dusts", new ArrayList<String>())) {
+
+						String dustName = t.substring(0, t.indexOf(";"));
+						PowderParticle powderParticle;
+						powderParticle = powder.getPowderParticle(dustName);
+						if (powderParticle == null) {
+							try {
+								Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
+								powderParticle = new PowderParticle(dustName, particle);
+							} catch (Exception e) {
+								powderParticle = new PowderParticle(null, null);
+							}
+						}
+						t = t.replaceFirst(dustName + ";", "");
+						double radius = Double.valueOf(t.substring(0, t.indexOf(";")));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						double height = Float.valueOf(t.substring(0, t.indexOf(";")));
+						t = t.substring(t.indexOf(";") + 1, t.length());
+						long frequency = Long.valueOf(t);
+						powder.addDust(new Dust(powderParticle, radius, height, frequency));
 
 					}
 

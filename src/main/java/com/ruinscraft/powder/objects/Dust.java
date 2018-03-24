@@ -2,21 +2,21 @@ package com.ruinscraft.powder.objects;
 
 public class Dust {
 
-	private String particle;
+	private PowderParticle powderParticle;
 	private double radius;
 	private double height;
 
 	private long frequency;
 
-	public Dust(String particle, double radius, double height, long frequency) {
-		this.particle = particle;
+	public Dust(PowderParticle powderParticle, double radius, double height, long frequency) {
+		this.powderParticle = powderParticle;
 		this.radius = radius;
 		this.height = height;
 		this.frequency = frequency;
 	}
 
-	public String getParticle() {
-		return particle;
+	public PowderParticle getPowderParticle() {
+		return powderParticle;
 	}
 
 	public Double getRadius() {
