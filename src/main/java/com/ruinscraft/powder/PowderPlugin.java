@@ -22,8 +22,6 @@ import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
 
-import net.md_5.bungee.api.ChatColor;
-
 public class PowderPlugin extends JavaPlugin {
 
 	private static PowderPlugin instance;
@@ -47,7 +45,7 @@ public class PowderPlugin extends JavaPlugin {
 
 		getServer().getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
 
-		PREFIX = color(config.getString("prefix"));
+		PREFIX = PowderUtil.color(config.getString("prefix"));
 
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
@@ -75,10 +73,6 @@ public class PowderPlugin extends JavaPlugin {
 		instance = null;
 		powderHandler.clearEverything();
 
-	}
-
-	public static String color(String msg) {
-		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
 
 	public void cleanHandlers() {
@@ -205,8 +199,19 @@ public class PowderPlugin extends JavaPlugin {
 						t = t.substring(t.indexOf(";") + 1, t.length());
 						double height = Float.valueOf(t.substring(0, t.indexOf(";")));
 						t = t.substring(t.indexOf(";") + 1, t.length());
-						long frequency = Long.valueOf(t);
-						powder.addDust(new Dust(powderParticle, radius, height, frequency));
+						long frequency;
+						try {
+							frequency = Long.valueOf(t);
+						} catch (Exception e) {
+							if (t.contains("s")) {
+								t = t.replace("s", "");
+								frequency = Long.valueOf(t);
+								powder.addDust(new Dust(powderParticle, radius, height, frequency, true));
+								continue;
+							}
+							frequency = 20;
+						}
+						powder.addDust(new Dust(powderParticle, radius, height, frequency, false));
 
 					}
 

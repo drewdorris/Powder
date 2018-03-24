@@ -129,13 +129,8 @@ public class PowderCommand implements CommandExecutor {
 
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
-				boolean success = false;
 				int taskAmount = powderHandler.getPowderTasks(player, powder).size();
-				for (PowderTask powderTask : powderHandler.getPowderTasks(player, powder)) {
-					powderHandler.removePowderTask(powderTask);
-					success = true;
-				}
-				if (success) {
+				if (PowderUtil.cancelPowder(player, powder)) {
 					sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled! (" + 
 							taskAmount + " total)", label);
 				} else {
@@ -203,26 +198,9 @@ public class PowderCommand implements CommandExecutor {
 		}, (waitTime * 20));
 		recentCommandSenders.add(player);
 
-		int task;
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		if (powder.isRepeating()) {
-
-			task = PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
-				public void run() {
-					tasks.addAll(PowderUtil.createParticles(player, powder));
-					tasks.addAll(PowderUtil.createSounds(player, powder));
-				}
-			}, 0L, powder.getDelay());
-			tasks.addAll(PowderUtil.createDusts(player, powder, powderHandler));
-
-			tasks.add(task);
-
-		} else {
-			tasks.addAll(PowderUtil.createParticles(player, powder));
-			tasks.addAll(PowderUtil.createSounds(player, powder));
-			tasks.addAll(PowderUtil.createDusts(player, powder, powderHandler));
-		}
+		tasks.addAll(PowderUtil.createPowder(player, powder));
 
 		if (powder.isRepeating() || powder.getMatrices().size() > 1 || !(powder.getDusts().isEmpty())) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 

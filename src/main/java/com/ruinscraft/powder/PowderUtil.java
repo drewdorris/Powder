@@ -8,13 +8,20 @@ import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.objects.PowderParticle;
+import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.Layer;
 import com.ruinscraft.powder.objects.ParticleMatrix;
 import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.SoundEffect;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class PowderUtil {
+
+	public static String color(String msg) {
+		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
 
 	public static double getDirLengthX(double rot, double spacing) {
 		return (spacing * Math.cos(rot));
@@ -22,6 +29,46 @@ public class PowderUtil {
 
 	public static double getDirLengthZ(double rot, double spacing) {
 		return (spacing * Math.sin(rot));
+	}
+
+	public static List<Integer> createPowder(final Player player, final Powder powder) {
+
+		int task;
+		List<Integer> tasks = new ArrayList<Integer>();
+
+		if (powder.isRepeating()) {
+
+			task = PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
+				public void run() {
+					tasks.addAll(PowderUtil.createParticles(player, powder));
+					tasks.addAll(PowderUtil.createSounds(player, powder));
+				}
+			}, 0L, powder.getDelay());
+
+			tasks.addAll(PowderUtil.createDusts(player, powder));
+
+			tasks.add(task);
+
+		} else {
+			tasks.addAll(PowderUtil.createParticles(player, powder));
+			tasks.addAll(PowderUtil.createSounds(player, powder));
+			tasks.addAll(PowderUtil.createDusts(player, powder));
+		}
+
+		return tasks;
+
+	}
+
+	public static Boolean cancelPowder(final Player player, final Powder powder) {
+
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		boolean success = false;
+		for (PowderTask powderTask : powderHandler.getPowderTasks(player, powder)) {
+			powderHandler.removePowderTask(powderTask);
+			success = true;
+		}
+		return success;
+
 	}
 
 	public static List<Integer> createParticles(final Player player, final Powder powder) {
@@ -159,11 +206,11 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createSounds(final Player player, final Powder map) {
+	public static List<Integer> createSounds(final Player player, final Powder powder) {
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (SoundEffect sound : map.getSoundEffects()) {
+		for (SoundEffect sound : powder.getSoundEffects()) {
 
 			int task = PowderPlugin.getInstance().getServer().getScheduler()
 					.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
@@ -186,44 +233,57 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createDusts(final Player player, final Powder map, PowderHandler powderHandler) {
+	public static List<Integer> createDusts(final Player player, final Powder powder) {
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (Dust dust : map.getDusts()) {
+		for (Dust dust : powder.getDusts()) {
 
 			// frequency is particles per min
 			// translate to ticks
-			long frequency = 1200 / dust.getFrequency();
+			final long frequency = 1200 / dust.getFrequency();
 
-			int task = PowderPlugin.getInstance().getServer().getScheduler()
-					.scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
-
-						public void run() {
-							double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());
-							double radiusZoneZ = (Math.random() - .5) * (2 * dust.getRadius());
-							double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
-							Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
-							if (particleLocation.getBlock().isEmpty()) {
-								PowderParticle powderParticle = dust.getPowderParticle();
-								if (powderParticle.getData() == null) {
-									player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 0, (powderParticle.getXOff() / 255), 
-											powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 1);
-								} else {
-									player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 1, (powderParticle.getXOff() / 255), 
-											powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 
-											(double) powderParticle.getData());
-								}
+			int task;
+			if (dust.isSingleOccurrence()) {
+				task = PowderPlugin.getInstance().getServer().getScheduler()
+						.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
+							public void run() {
+								spawnDust(player, dust);
 							}
-						}
-
-					}, frequency, frequency);
-
+						}, frequency);
+			} else {
+				task = PowderPlugin.getInstance().getServer().getScheduler()
+						.scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
+							public void run() {
+								spawnDust(player, dust);
+							}
+						}, frequency, frequency);
+			}
 			tasks.add(task);
 
 		}
 
 		return tasks;
+
+	}
+
+	public static void spawnDust(final Player player, final Dust dust) {
+
+		double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());
+		double radiusZoneZ = (Math.random() - .5) * (2 * dust.getRadius());
+		double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
+		Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
+		if (particleLocation.getBlock().isEmpty()) {
+			PowderParticle powderParticle = dust.getPowderParticle();
+			if (powderParticle.getData() == null) {
+				player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 0, (powderParticle.getXOff() / 255), 
+						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 1);
+			} else {
+				player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 1, (powderParticle.getXOff() / 255), 
+						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 
+						(double) powderParticle.getData());
+			}
+		}
 
 	}
 
