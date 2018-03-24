@@ -225,10 +225,6 @@ public class PowderPlugin extends JavaPlugin {
 				}
 				if (t.contains("{")) {
 					t = t.replace("{", "").replace("}", "");
-					if (layer.getRows() == null) {
-						continue;
-					}
-					layers.add(layer);
 					int position;
 					try {
 						position = Integer.valueOf(t);
@@ -242,6 +238,10 @@ public class PowderPlugin extends JavaPlugin {
 							definingPlayerLocation = true;
 						}
 					}
+					if (layer.getRows().isEmpty()) {
+						continue;
+					}
+					layers.add(layer);
 					layer = new Layer();
 					layer.setPosition(position);
 					continue;
@@ -268,7 +268,7 @@ public class PowderPlugin extends JavaPlugin {
 						URL url;
 						try {
 							url = new URL(urlName);
-							layer.addRows(ImageUtil.getRowsFromURL(layer.getRows(), url, width, height));
+							ImageUtil.getRowsFromURL(layer.getRows(), url, width, height);
 						} catch (MalformedURLException e) {
 							getLogger().warning("Path unclear: '" + urlName + "'");
 							continue;
@@ -290,7 +290,7 @@ public class PowderPlugin extends JavaPlugin {
 						t = t.substring(t.indexOf(";") + 1, t.length());
 						height = Integer.valueOf(t);
 						try {
-							layer.addRows(ImageUtil.getRowsFromPath(layer.getRows(), path, width, height));
+							ImageUtil.getRowsFromPath(layer.getRows(), path, width, height);
 						} catch (MalformedURLException e) {
 							continue;
 						} catch (IOException io) {
@@ -318,10 +318,8 @@ public class PowderPlugin extends JavaPlugin {
 						try {
 							Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
 							powderParticle = new PowderParticle(string, particle);
-							getLogger().info("1 " + string + " " + powder.getName());
 						} catch (Exception e) {
 							powderParticle = new PowderParticle(null, null);
-							getLogger().info("2 " + string + " " + powder.getName());
 						}
 					}
 					row.add(powderParticle);
@@ -330,7 +328,7 @@ public class PowderPlugin extends JavaPlugin {
 
 			}
 
-			if (!(layer.getRows().isEmpty())) {
+			if (!(layer.getRows().isEmpty()) || !(layers.contains(layer))) {
 				layers.add(layer);
 			}
 

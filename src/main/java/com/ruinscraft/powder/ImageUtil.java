@@ -44,7 +44,7 @@ public class ImageUtil {
 						throw new IOException("Error while attempting to read image: " + url.toString());
 					}
 					
-					rows.addAll(addToLayer(rows, bufferedImage, resizedWidth, resizedHeight));
+					addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
 
 				} catch (IOException io) {
 					io.printStackTrace();
@@ -75,7 +75,7 @@ public class ImageUtil {
 						throw new IOException("Error while attempting to read image: " + fileName);
 					}
 					
-					rows.addAll(addToLayer(rows, bufferedImage, resizedWidth, resizedHeight));
+					addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
 				} catch (IOException io) {
 					io.printStackTrace();
 				}
