@@ -9,17 +9,18 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
 
 import org.bukkit.Particle;
 
-import com.ruinscraft.powder.objects.ChangedParticle;
+import com.ruinscraft.powder.objects.PowderParticle;
 
 public class ImageUtil {
 
-	public static List<Object> getMatrixFromURL(List<Object> matrix, URL url, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
 		
 		PowderPlugin.getInstance().getServer().getScheduler().runTask(PowderPlugin.getInstance(), new Runnable() {
 
@@ -43,7 +44,7 @@ public class ImageUtil {
 						throw new IOException("Error while attempting to read image: " + url.toString());
 					}
 					
-					matrix.addAll(addToMatrix(matrix, bufferedImage, resizedWidth, resizedHeight));
+					rows.addAll(addToLayer(rows, bufferedImage, resizedWidth, resizedHeight));
 
 				} catch (IOException io) {
 					io.printStackTrace();
@@ -55,11 +56,11 @@ public class ImageUtil {
 
 		});
 		
-		return matrix;
+		return rows;
 
 	}
 	
-	public static List<Object> getMatrixFromPath(List<Object> matrix, String fileName, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, String fileName, int resizedWidth, int resizedHeight) throws IOException {
 		
 		PowderPlugin.getInstance().getServer().getScheduler().runTask(PowderPlugin.getInstance(), new Runnable() {
 
@@ -74,7 +75,7 @@ public class ImageUtil {
 						throw new IOException("Error while attempting to read image: " + fileName);
 					}
 					
-					matrix.addAll(addToMatrix(matrix, bufferedImage, resizedWidth, resizedHeight));
+					rows.addAll(addToLayer(rows, bufferedImage, resizedWidth, resizedHeight));
 				} catch (IOException io) {
 					io.printStackTrace();
 				}
@@ -83,7 +84,7 @@ public class ImageUtil {
 
 		});
 		
-		return matrix;
+		return rows;
 		
 	}
 	
@@ -107,12 +108,14 @@ public class ImageUtil {
 	    return resizedImg;
 	}
 	
-	public static List<Object> addToMatrix(List<Object> matrix, BufferedImage bufferedImage, 
+	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, BufferedImage bufferedImage, 
 			int resizedWidth, int resizedHeight) {
 		
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
 		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
+			
+			List<PowderParticle> row = new ArrayList<PowderParticle>();
 
 			for (int x = 0; x <= newImage.getWidth() - 1; x++) {
 
@@ -125,7 +128,7 @@ public class ImageUtil {
 					continue;
 				}
 				if ((pixel >> 24) == 0x00) {
-					matrix.add(".");
+					row.add(new PowderParticle(null, null));
 					continue;
 				}
 				Color color = new Color(pixel);
@@ -135,16 +138,16 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				ChangedParticle changedParticle = new ChangedParticle(null, Particle.REDSTONE, arr, gee, bee);
-				matrix.add(changedParticle);
+				PowderParticle changedParticle = new PowderParticle(null, Particle.REDSTONE, arr, gee, bee);
+				row.add(changedParticle);
 
 			}
 
-			matrix.add(";");
+			rows.add(row);
 
 		}
 		
-		return matrix;
+		return rows;
 		
 	}
 

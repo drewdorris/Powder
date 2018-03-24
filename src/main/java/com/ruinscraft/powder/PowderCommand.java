@@ -64,7 +64,14 @@ public class PowderCommand implements CommandExecutor {
 					sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 					return false;
 				}
-				PowderPlugin.getInstance().handleConfig();
+				
+				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						PowderPlugin.getInstance().handleConfig();
+					}
+				});
+				
 				sendPrefixMessage(player, ChatColor.GRAY + "Powder config.yml reloaded!", label);
 				List<Player> playersDoneAlready = new ArrayList<Player>();
 				for (PowderTask powderTask : powderHandler.getPowderTasks()) {
@@ -108,37 +115,7 @@ public class PowderCommand implements CommandExecutor {
 				powderList(player, powderHandler, page, pageLength, label);
 				return false;
 
-			}/*/ else if (args[0].equals("create")) {
-				
-				URL url = null;
-				String name = null;
-				Float spacing;
-				try {
-					url = new URL(args[1]);
-					name = args[2];
-					spacing = Float.valueOf(args[3]);
-				} catch (Exception e) {
-					sendPrefixMessage(player, ChatColor.GRAY + "Invalid URL / unspecified name / unspecified spacing!", label);
-					return false;
-				}
-				
-				if (powderHandler.getPowder(name) != null) {
-					sendPrefixMessage(player, ChatColor.GRAY + "Powder of the name " + name + " already exists!", label);
-					return false;
-				}
-				
-				Powder powderMap;
-				try {
-					powderMap = ImageUtil.getPowder(player, url, name, spacing);
-				} catch (Exception e) {
-					sendPrefixMessage(player, ChatColor.GRAY + "Something failed", label);
-					return false;
-				}
-				PowderPlugin.getInstance().getPowderHandler().addPowderMap(powderMap);
-				
-				PowderUtil.createParticles(player, powderMap);
-				
-			}*/ else {
+			} else {
 
 				powderList(player, powderHandler, 1, pageLength, label);
 				return false;

@@ -2,7 +2,7 @@ package com.ruinscraft.powder.objects;
 
 import org.bukkit.Particle;
 
-public class ChangedParticle {
+public class PowderParticle {
 
 	private String particleName;
 	private Particle particle;
@@ -11,7 +11,7 @@ public class ChangedParticle {
 	private double zOff;
 	private Object data;
 
-	public ChangedParticle(String particleName, Particle particle, 
+	public PowderParticle(String particleName, Particle particle, 
 			double xOff, double yOff, double zOff, Object data) {
 
 		this.particleName = particleName;
@@ -23,7 +23,7 @@ public class ChangedParticle {
 
 	}
 
-	public ChangedParticle(String particleName, Particle particle,
+	public PowderParticle(String particleName, Particle particle,
 			double xOff, double yOff, double zOff) {
 
 		this.particleName = particleName;
@@ -34,23 +34,17 @@ public class ChangedParticle {
 
 	}
 
-	public ChangedParticle(String particleName, Particle particle) {
+	public PowderParticle(String particleName, Particle particle) {
 
 		this.particleName = particleName;
 		this.particle = particle;
-		this.xOff = 0;
-		this.yOff = 0;
-		this.zOff = 0;
 
 	}
 
-	public ChangedParticle(Particle particle) {
+	public PowderParticle(Particle particle) {
 
 		this.particleName = null;
 		this.particle = particle;
-		this.xOff = 0;
-		this.yOff = 0;
-		this.zOff = 0;
 
 	}
 

@@ -10,25 +10,25 @@ public class Powder {
 	private List<ParticleMatrix> matrices;
 	private List<SoundEffect> soundEffects;
 	private List<Dust> dusts;
-	private List<ChangedParticle> changedParticles;
+	private List<PowderParticle> powderParticles;
 	private boolean pitch;
 	private boolean repeating;
 	private boolean hidden;
 	private long delay;
 	
 	public Powder() {
-		
+		// empty
 	}
 
 	public Powder(String name, float spacing, List<ParticleMatrix> matrices, List<SoundEffect> soundEffects, List<Dust> dusts,
-			List<ChangedParticle> changedParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
+			List<PowderParticle> powderParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
 
 		this.name = name;
 		this.spacing = spacing;
 		this.matrices = matrices;
 		this.soundEffects = soundEffects;
 		this.dusts = dusts;
-		this.changedParticles = changedParticles;
+		this.powderParticles = powderParticles;
 		this.pitch = pitch;
 		this.repeating = repeating;
 		this.hidden = hidden;
@@ -44,7 +44,7 @@ public class Powder {
 		this.matrices = matrices;
 		this.soundEffects = new ArrayList<SoundEffect>();
 		this.dusts = new ArrayList<Dust>();
-		this.changedParticles = new ArrayList<ChangedParticle>();
+		this.powderParticles = new ArrayList<PowderParticle>();
 		this.pitch = pitch;
 		this.repeating = repeating;
 		this.hidden = hidden;
@@ -104,28 +104,28 @@ public class Powder {
 		dusts.add(dust);
 	}
 
-	public List<ChangedParticle> getChangedParticles() {
-		return changedParticles;
+	public List<PowderParticle> getPowderParticles() {
+		return powderParticles;
 	}
 	
-	public ChangedParticle getChangedParticle(String enumName) {
-		for (ChangedParticle changedParticle : changedParticles) {
-			if (changedParticle.getEnumName() == null) {
+	public PowderParticle getPowderParticle(String enumName) {
+		for (PowderParticle powderParticle : powderParticles) {
+			if (powderParticle.getEnumName() == null) {
 				continue;
 			}
-			if (changedParticle.getEnumName().equals(enumName)) {
-				return changedParticle;
+			if (powderParticle.getEnumName().equals(enumName)) {
+				return powderParticle;
 			}
 		}
 		return null;
 	}
 	
-	public void setChangedParticles(List<ChangedParticle> changedParticles) {
-		this.changedParticles = changedParticles;
+	public void setPowderParticles(List<PowderParticle> powderParticles) {
+		this.powderParticles = powderParticles;
 	}
 	
-	public void addChangedParticle(ChangedParticle changedParticle) {
-		changedParticles.add(changedParticle);
+	public void addPowderParticle(PowderParticle powderParticle) {
+		powderParticles.add(powderParticle);
 	}
 
 	public boolean hasPitch() {

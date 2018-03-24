@@ -2,15 +2,15 @@ package com.ruinscraft.powder;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.objects.ChangedParticle;
+import com.ruinscraft.powder.objects.PowderParticle;
 import com.ruinscraft.powder.objects.Dust;
+import com.ruinscraft.powder.objects.Layer;
 import com.ruinscraft.powder.objects.ParticleMatrix;
 import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.Powder;
@@ -30,22 +30,22 @@ public class PowderUtil {
 
 	}
 
-	public static List<Integer> createParticles(final Player player, final Powder powderMap) {
+	public static List<Integer> createParticles(final Player player, final Powder powder) {
 
-		List<ParticleMatrix> particleMaps = powderMap.getMatrices();
+		List<ParticleMatrix> particleMatrices = powder.getMatrices();
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (ParticleMatrix particleMap : particleMaps) {
+		for (ParticleMatrix particleMatrix : particleMatrices) {
 
 			final float spacing;
-			if (particleMap.getSpacing() == 0) {
-				spacing = powderMap.getDefaultSpacing();
+			if (particleMatrix.getSpacing() == 0) {
+				spacing = powder.getDefaultSpacing();
 			} else {
-				spacing = particleMap.getSpacing();
+				spacing = particleMatrix.getSpacing();
 			}
 
-			long waitTime = particleMap.getTick();
+			long waitTime = particleMatrix.getTick();
 
 			int task = PowderPlugin.getInstance().getServer()
 					.getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
@@ -65,7 +65,7 @@ public class PowderUtil {
 							final double distanceBetweenRowsY;
 							final double distanceBetweenRowsXZ;
 
-							if (powderMap.hasPitch()) {
+							if (powder.hasPitch()) {
 								playerPitch = (player.getLocation().getPitch() * (Math.PI / 180));
 								distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
 								distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);
@@ -87,129 +87,166 @@ public class PowderUtil {
 							final double moveBackWithPitchZ = getDirLengthZ(playerRotation, distanceBetweenRowsXZ);
 
 							final double startX = location.getX() - 
-									(amountToAddX * particleMap.getPlayerLeft()) + (moveWithPitchX * particleMap.getPlayerUp());
-							final double startY = location.getY() + (distanceBetweenRowsY * particleMap.getPlayerUp());
+									(amountToAddX * particleMatrix.getPlayerLeft()) + (moveWithPitchX * particleMatrix.getPlayerUp());
+							final double startY = location.getY() + (distanceBetweenRowsY * particleMatrix.getPlayerUp());
 							final double startZ = location.getZ() - 
-									(amountToAddZ * particleMap.getPlayerLeft()) + (moveWithPitchZ * particleMap.getPlayerUp());
+									(amountToAddZ * particleMatrix.getPlayerLeft()) + (moveWithPitchZ * particleMatrix.getPlayerUp());
 
 							double newX = startX;
 							double newY = startY;
 							double newZ = startZ;
 
-							StringBuilder sb = new StringBuilder();
+							for (Layer layer : particleMatrix.getLayers()) {
+								
+								float position = layer.getPosition();
+								newX = startX + (startARowX * position) + (moveBackWithPitchZ * position);
+								newY = startY + (moveBackWithPitchY * position);
+								newZ = startZ + (startARowZ * position) + (moveBackWithPitchX * position);
 
-							boolean buildingAnInt = false;
-							boolean lastObjectWasAnInt = false;
-							double resultingInt = 0;
-
-							int rowsDownSoFar = 0;
-
-							for (Object object : particleMap.getMap()) {
-
-								if (object.equals(".") || object.equals(",")) {
-									newX = newX + amountToAddX;
-									newZ = newZ + amountToAddZ;
-									buildingAnInt = false;
-									continue;
-								}
-
-								if (object.equals("{")) {
-									buildingAnInt = true;
-									continue;
-								}
-
-								if (object.equals("}")) {
-									buildingAnInt = false;
-									try {
-										Integer.parseInt(sb.toString());
-									} catch (Exception e) {
-										PowderPlugin.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
-										sb.setLength(0);
+								int rowsDownSoFar = 0;
+								for (List<PowderParticle> row : layer.getRows()) {
+									
+									for (PowderParticle powderParticle : row) {
+										
+										newX = newX + amountToAddX;
+										newZ = newZ + amountToAddZ;
+										
+										if (powderParticle.getParticle() == null) {
+											continue;
+										}
+										
+										if (powderParticle.getData() == null) {
+											if (powderParticle.getXOff() == null) {
+												player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
+														powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
+														powderParticle.getZOff() / 255, 1);
+												continue;
+											}
+											player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 0, 
+													powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
+													powderParticle.getZOff() / 255, 1);
+										} else {
+											player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
+													powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+													powderParticle.getZOff() / 255, (double) powderParticle.getData());
+										}
+										
+									}
+									
+									rowsDownSoFar++;
+									newX = startX + (startARowX * position) - (moveWithPitchX * rowsDownSoFar);
+									newY = newY - distanceBetweenRowsY;
+									newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
+									
+									/*/
+									if (object.equals(".") || object.equals(",")) {
+										newX = newX + amountToAddX;
+										newZ = newZ + amountToAddZ;
+										buildingAnInt = false;
 										continue;
 									}
-								}
 
-								if (buildingAnInt == true) {
-									lastObjectWasAnInt = true;
-									sb.append(object);
-									continue;
-								} else {
-									lastObjectWasAnInt = false;
-								}
-
-								if ((buildingAnInt == false) && !(sb.length() == 0)) {
-
-									rowsDownSoFar = 0;
-									resultingInt = Integer.parseInt(sb.toString());
-
-									newX = startX + (startARowX * resultingInt) + (moveBackWithPitchZ * resultingInt);
-									newY = startY + (moveBackWithPitchY * resultingInt);
-									newZ = startZ + (startARowZ * resultingInt) + (moveBackWithPitchX * resultingInt);
-
-									sb.setLength(0);
-
-									continue;
-
-								}
-
-								if (object.equals(";")) {
-
-									if (lastObjectWasAnInt == true) {
-										newY = startY;
-									} else {
-										rowsDownSoFar++;
-										newX = startX + (startARowX * resultingInt) - (moveWithPitchX * rowsDownSoFar);
-										newY = newY - distanceBetweenRowsY;
-										newZ = startZ + (startARowZ * resultingInt) - (moveWithPitchZ * rowsDownSoFar);
+									if (object.equals("{")) {
+										buildingAnInt = true;
+										continue;
 									}
-									continue;
 
-								}
-
-								newX = newX + amountToAddX;
-								newZ = newZ + amountToAddZ;
-								lastObjectWasAnInt = false;
-
-								if (object instanceof ChangedParticle) {
-									ChangedParticle changedParticle = (ChangedParticle) object;
-									if (changedParticle.getData() == null) {
-										player.getWorld().spawnParticle(changedParticle.getParticle(), newX, newY, newZ, 0, 
-												changedParticle.getXOff() / 255, changedParticle.getYOff() / 255, 
-												changedParticle.getZOff() / 255, 1);
-									} else {
-										player.getWorld().spawnParticle(changedParticle.getParticle(), newX, newY, newZ, 1, 
-												changedParticle.getXOff() / 255, changedParticle.getYOff() / 255,
-												changedParticle.getZOff() / 255, (double) changedParticle.getData());
-									}
-									continue;
-								} else {
-									
-									boolean success = false;
-									for (ChangedParticle changedParticle : powderMap.getChangedParticles()) {
-										if (changedParticle.getEnumName().equals(object)) {
-											Particle particle = changedParticle.getParticle();
-											if (changedParticle.getData() == null) {
-												player.getWorld().spawnParticle(particle, newX, newY, newZ, 0, (changedParticle.getXOff() / 255), 
-														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
-											} else {
-												player.getWorld().spawnParticle(particle, newX, newY, newZ, 1, (changedParticle.getXOff() / 255), 
-														changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
-														(double) changedParticle.getData());
-											}
-											success = true;
-											break;
+									if (object.equals("}")) {
+										buildingAnInt = false;
+										try {
+											Integer.parseInt(sb.toString());
+										} catch (Exception e) {
+											PowderPlugin.getInstance().getLogger().log(Level.WARNING, "INVALID NUMBER AAA");
+											sb.setLength(0);
+											continue;
 										}
 									}
-									if (success) continue;
 
-									String particleName;
-									try {
-										particleName = ParticleName.valueOf((String) object).getName();
-									} catch (Exception e) {
+									if (buildingAnInt == true) {
+										lastObjectWasAnInt = true;
+										sb.append(object);
 										continue;
+									} else {
+										lastObjectWasAnInt = false;
 									}
 
-									player.getWorld().spawnParticle(Particle.valueOf(particleName), newX, newY, newZ, 1, 0, 0, 0, 0);
+									if ((buildingAnInt == false) && !(sb.length() == 0)) {
+
+										rowsDownSoFar = 0;
+										resultingInt = Integer.parseInt(sb.toString());
+
+										newX = startX + (startARowX * resultingInt) + (moveBackWithPitchZ * resultingInt);
+										newY = startY + (moveBackWithPitchY * resultingInt);
+										newZ = startZ + (startARowZ * resultingInt) + (moveBackWithPitchX * resultingInt);
+
+										sb.setLength(0);
+
+										continue;
+
+									}
+
+									if (object.equals(";")) {
+
+										if (lastObjectWasAnInt == true) {
+											newY = startY;
+										} else {
+											rowsDownSoFar++;
+											newX = startX + (startARowX * resultingInt) - (moveWithPitchX * rowsDownSoFar);
+											newY = newY - distanceBetweenRowsY;
+											newZ = startZ + (startARowZ * resultingInt) - (moveWithPitchZ * rowsDownSoFar);
+										}
+										continue;
+
+									}
+
+									newX = newX + amountToAddX;
+									newZ = newZ + amountToAddZ;
+									lastObjectWasAnInt = false;
+
+									if (object instanceof PowderParticle) {
+										PowderParticle changedParticle = (PowderParticle) object;
+										if (changedParticle.getData() == null) {
+											player.getWorld().spawnParticle(changedParticle.getParticle(), newX, newY, newZ, 0, 
+													changedParticle.getXOff() / 255, changedParticle.getYOff() / 255, 
+													changedParticle.getZOff() / 255, 1);
+										} else {
+											player.getWorld().spawnParticle(changedParticle.getParticle(), newX, newY, newZ, 1, 
+													changedParticle.getXOff() / 255, changedParticle.getYOff() / 255,
+													changedParticle.getZOff() / 255, (double) changedParticle.getData());
+										}
+										continue;
+									} else {
+										
+										boolean success = false;
+										for (PowderParticle changedParticle : powderMap.getChangedParticles()) {
+											if (changedParticle.getEnumName().equals(object)) {
+												Particle particle = changedParticle.getParticle();
+												if (changedParticle.getData() == null) {
+													player.getWorld().spawnParticle(particle, newX, newY, newZ, 0, (changedParticle.getXOff() / 255), 
+															changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 1);
+												} else {
+													player.getWorld().spawnParticle(particle, newX, newY, newZ, 1, (changedParticle.getXOff() / 255), 
+															changedParticle.getYOff() / 255, changedParticle.getZOff() / 255, 
+															(double) changedParticle.getData());
+												}
+												success = true;
+												break;
+											}
+										}
+										if (success) continue;
+
+										String particleName;
+										try {
+											particleName = ParticleName.valueOf((String) object).getName();
+										} catch (Exception e) {
+											continue;
+										}
+
+										player.getWorld().spawnParticle(Particle.valueOf(particleName), newX, newY, newZ, 1, 0, 0, 0, 0);
+										
+									}
+								
+									*/
 									
 								}
 
@@ -274,7 +311,7 @@ public class PowderUtil {
 							Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
 							if (particleLocation.getBlock().isEmpty()) {
 								boolean success = false;
-								for (ChangedParticle changedParticle : map.getChangedParticles()) {
+								for (PowderParticle changedParticle : map.getPowderParticles()) {
 									if (changedParticle.getEnumName().equals(dust.getParticle())) {
 										Particle particle = changedParticle.getParticle();
 										if (changedParticle.getData() == null) {

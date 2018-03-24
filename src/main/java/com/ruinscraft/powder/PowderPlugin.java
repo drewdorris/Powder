@@ -13,8 +13,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.ruinscraft.powder.objects.ChangedParticle;
+import com.ruinscraft.powder.objects.PowderParticle;
 import com.ruinscraft.powder.objects.Dust;
+import com.ruinscraft.powder.objects.Layer;
 import com.ruinscraft.powder.objects.ParticleMatrix;
 import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.Powder;
@@ -117,7 +118,7 @@ public class PowderPlugin extends JavaPlugin {
 			powder.setDelay(config.getLong(powders + s + ".delay", Long.MAX_VALUE));
 			powder.setSoundEffects(new ArrayList<SoundEffect>());
 			powder.setDusts(new ArrayList<Dust>());
-			powder.setChangedParticles(new ArrayList<ChangedParticle>());
+			powder.setPowderParticles(new ArrayList<PowderParticle>());
 
 			for (String t : (List<String>) config.getList(powders + s + ".sounds", new ArrayList<String>())) {
 
@@ -171,7 +172,7 @@ public class PowderPlugin extends JavaPlugin {
 				try {
 					xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 				} catch (Exception e) {
-					powder.addChangedParticle(new ChangedParticle(enumName, particle, 0, 0, 0));
+					powder.addPowderParticle(new PowderParticle(enumName, particle, 0, 0, 0));
 					continue;
 				}
 				t = t.substring(t.indexOf(";") + 1, t.length());
@@ -179,7 +180,7 @@ public class PowderPlugin extends JavaPlugin {
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				try {
 					zOff = Double.valueOf(t);
-					powder.addChangedParticle(new ChangedParticle(enumName, particle, xOff, yOff, zOff));
+					powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff));
 				} catch (Exception e) {
 					zOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
@@ -189,7 +190,7 @@ public class PowderPlugin extends JavaPlugin {
 					} catch (Exception ex) {
 						data = t;
 					}
-					powder.addChangedParticle(new ChangedParticle(enumName, particle, xOff, yOff, zOff, data));
+					powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff, data));
 				}
 
 			}
@@ -201,15 +202,20 @@ public class PowderPlugin extends JavaPlugin {
 			int left = 0;
 			int up = 0;
 			List<ParticleMatrix> particleMatrices = new ArrayList<ParticleMatrix>();
+			List<Layer> layers = new ArrayList<Layer>();
+			Layer layer = new Layer();
 
 			for (String t : (List<String>) config.getList(powders + s + ".map", new ArrayList<String>())) {
-
+				
 				if (t.contains("[")) {
 					t = t.replace("[", "").replace("]", "");
 					if (matrix.isEmpty()) {
 						continue;
 					}
-					particleMatrices.add(new ParticleMatrix(matrix, tick, left + 1, up, 0));
+					layers.add(layer);
+					particleMatrices.add(new ParticleMatrix(layers, tick, left + 1, up, 0));
+					layers = new ArrayList<Layer>();
+					layer = new Layer();
 					matrix = new ArrayList<Object>();
 					playerLocationDefined = true;
 					try {
@@ -220,8 +226,36 @@ public class PowderPlugin extends JavaPlugin {
 					}
 					continue;
 				}
+				if (t.contains("{")) {
+					t = t.replace("{", "").replace("}", "");
+					if (layer.getRows() == null) {
+						continue;
+					}
+					layers.add(layer);
+					int position;
+					try {
+						position = Integer.valueOf(t);
+					} catch (Exception e) {
+						getLogger().warning("Invalid position of layer in Powder '" + powder.getName() + "' at line " +
+								(config.getList(powders + s + ".map").indexOf(t) + 1));
+						continue;
+					}
+					if (position == 0) {
+						if (playerLocationDefined == false) {
+							definingPlayerLocation = true;
+						}
+					}
+					layer = new Layer();
+					layer.setPosition(position);
+					continue;
+				}
 				if (definingPlayerLocation == true) {
 					up++;
+				}
+				if (t.contains("spacing:")) {
+					t = t.replace("spacing:", "");
+					float spacing = Float.valueOf(t);
+					layer.setSpacing(spacing);
 				}
 				if (t.contains("img:")) {
 					String urlName;
@@ -236,7 +270,7 @@ public class PowderPlugin extends JavaPlugin {
 					URL url;
 					try {
 						url = new URL(urlName);
-						matrix = ImageUtil.getMatrixFromURL(matrix, url, width, height);
+						layer.addRows(ImageUtil.getRowsFromURL(layer.getRows(), url, width, height));
 					} catch (MalformedURLException e) {
 						getLogger().warning("Path unclear: '" + urlName + "'");
 						continue;
@@ -260,7 +294,7 @@ public class PowderPlugin extends JavaPlugin {
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					height = Integer.valueOf(t);
 					try {
-						matrix = ImageUtil.getMatrixFromPath(matrix, path, width, height);
+						layer.addRows(ImageUtil.getRowsFromPath(layer.getRows(), path, width, height));
 					} catch (MalformedURLException e) {
 						continue;
 					} catch (IOException io) {
@@ -270,33 +304,32 @@ public class PowderPlugin extends JavaPlugin {
 					up = up + height;
 					continue;
 				}
-				if (t.contains("{0}")) {
-					definingPlayerLocation = true;
-					if (playerLocationDefined == true) {
-						definingPlayerLocation = false;
-					}
-				}
 				if (t.contains("?") && definingPlayerLocation == true) {
 					left = (t.indexOf("?"));
 					definingPlayerLocation = false;
 				}
+				List<PowderParticle> row = new ArrayList<PowderParticle>();
 				for (char character : t.toCharArray()) {
 					String string = String.valueOf(character);
+					PowderParticle powderParticle;
 					try {
-						ParticleName.valueOf(string);
+						Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
+						powderParticle = new PowderParticle(string, particle);
 					} catch (Exception e) {
-						if (powder.getChangedParticle(string) == null) {
-							// stuff
+						if (powder.getPowderParticle(string) == null) {
+							powderParticle = new PowderParticle(null, null);
+						} else {
+							powderParticle = powder.getPowderParticle(string);
 						}
 					}
-					matrix.add(string);
+					row.add(powderParticle);
 				}
-				matrix.add(";");
+				layer.addRow(row);
 
 			}
 
 			if (!(matrix.isEmpty())) {
-				ParticleMatrix particleMatrix = new ParticleMatrix(matrix, tick, left + 1, up, 0);
+				ParticleMatrix particleMatrix = new ParticleMatrix(layers, tick, left + 1, up, 0);
 				particleMatrices.add(particleMatrix);
 			}
 			
