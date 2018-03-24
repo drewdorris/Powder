@@ -64,14 +64,9 @@ public class PowderCommand implements CommandExecutor {
 					sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 					return false;
 				}
-				
-				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						PowderPlugin.getInstance().handleConfig();
-					}
-				});
-				
+
+				PowderPlugin.getInstance().handleConfig();
+
 				sendPrefixMessage(player, ChatColor.GRAY + "Powder config.yml reloaded!", label);
 				List<Player> playersDoneAlready = new ArrayList<Player>();
 				for (PowderTask powderTask : powderHandler.getPowderTasks()) {

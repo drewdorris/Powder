@@ -39,6 +39,7 @@ public class PowderUtil {
 		for (ParticleMatrix particleMatrix : particleMatrices) {
 
 			final float spacing;
+			
 			if (particleMatrix.getSpacing() == 0) {
 				spacing = powder.getDefaultSpacing();
 			} else {
@@ -74,6 +75,16 @@ public class PowderUtil {
 								distanceBetweenRowsY = spacing;
 								distanceBetweenRowsXZ = 0;
 							}
+							
+							int left;
+							int up;
+							if (particleMatrix.getPlayerLeft() == 0 && particleMatrix.getPlayerUp() == 0) {
+								left = powder.getDefaultLeft();
+								up = powder.getDefaultUp();
+							} else {
+								left = particleMatrix.getPlayerLeft();
+								up = particleMatrix.getPlayerUp();
+							}
 
 							// more doubles
 							final double amountToAddX = getDirLengthX(playerRotation, spacing);
@@ -87,10 +98,10 @@ public class PowderUtil {
 							final double moveBackWithPitchZ = getDirLengthZ(playerRotation, distanceBetweenRowsXZ);
 
 							final double startX = location.getX() - 
-									(amountToAddX * particleMatrix.getPlayerLeft()) + (moveWithPitchX * particleMatrix.getPlayerUp());
-							final double startY = location.getY() + (distanceBetweenRowsY * particleMatrix.getPlayerUp());
+									(amountToAddX * left) + (moveWithPitchX * up);
+							final double startY = location.getY() + (distanceBetweenRowsY * up);
 							final double startZ = location.getZ() - 
-									(amountToAddZ * particleMatrix.getPlayerLeft()) + (moveWithPitchZ * particleMatrix.getPlayerUp());
+									(amountToAddZ * left) + (moveWithPitchZ * up);
 
 							double newX = startX;
 							double newY = startY;

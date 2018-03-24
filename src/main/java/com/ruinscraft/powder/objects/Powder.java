@@ -15,6 +15,8 @@ public class Powder {
 	private boolean repeating;
 	private boolean hidden;
 	private long delay;
+	private int defaultLeft;
+	private int defaultUp;
 	
 	public Powder() {
 		this.matrices = new ArrayList<ParticleMatrix>();
@@ -24,7 +26,7 @@ public class Powder {
 	}
 
 	public Powder(String name, float spacing, List<ParticleMatrix> matrices, List<SoundEffect> soundEffects, List<Dust> dusts,
-			List<PowderParticle> powderParticles, boolean pitch, boolean repeating, boolean hidden, long delay) {
+			List<PowderParticle> powderParticles, boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
 
 		this.name = name;
 		this.spacing = spacing;
@@ -36,11 +38,13 @@ public class Powder {
 		this.repeating = repeating;
 		this.hidden = hidden;
 		this.delay = delay;
+		this.defaultLeft = defaultLeft;
+		this.defaultUp = defaultUp;
 
 	}
 
 	public Powder(String name, float spacing, List<ParticleMatrix> matrices, 
-			boolean pitch, boolean repeating, boolean hidden, long delay) {
+			boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
 
 		this.name = name;
 		this.spacing = spacing;
@@ -52,6 +56,8 @@ public class Powder {
 		this.repeating = repeating;
 		this.hidden = hidden;
 		this.delay = delay;
+		this.defaultLeft = defaultLeft;
+		this.defaultUp = defaultUp;
 
 	}
 
@@ -161,6 +167,22 @@ public class Powder {
 	
 	public void setHidden(boolean hidden) {
 		this.hidden = hidden;
+	}
+	
+	public Integer getDefaultLeft() {
+		return defaultLeft;
+	}
+	
+	public void setDefaultLeft(int defaultLeft) {
+		this.defaultLeft = defaultLeft;
+	}
+	
+	public Integer getDefaultUp() {
+		return defaultUp;
+	}
+	
+	public void setDefaultUp(int defaultUp) {
+		this.defaultUp = defaultUp;
 	}
 
 }

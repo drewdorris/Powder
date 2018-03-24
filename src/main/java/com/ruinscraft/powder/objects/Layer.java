@@ -6,16 +6,15 @@ import java.util.List;
 public class Layer {
 
 	private List<List<PowderParticle>> rows;
-	private float spacing;
 	private int position;
 	
 	public Layer() {
 		this.rows = new ArrayList<List<PowderParticle>>();
+		position = 0;
 	}
 	
-	public Layer(List<List<PowderParticle>> rows, float spacing, int position) {
+	public Layer(List<List<PowderParticle>> rows, int position) {
 		this.rows = rows;
-		this.spacing = spacing;
 		this.position = position;
 	}
 	
@@ -33,14 +32,6 @@ public class Layer {
 	
 	public void addRow(List<PowderParticle> row) {
 		rows.add(row);
-	}
-	
-	public Float getSpacing() {
-		return spacing;
-	}
-	
-	public void setSpacing(float spacing) {
-		this.spacing = spacing;
 	}
 	
 	public Integer getPosition() {
