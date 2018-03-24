@@ -1,7 +1,7 @@
 package com.ruinscraft.powder.objects;
 
 public enum ParticleName {
-	
+
 	A("HEART"), // heart
 	B("NOTE"), // note
 	C("BARRIER"), // barrier block
@@ -53,15 +53,15 @@ public enum ParticleName {
 	x(""),
 	y(""),
 	z("");
-	
+
 	private String name;
-	
+
 	private ParticleName(String name) {
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
-	
+
 }

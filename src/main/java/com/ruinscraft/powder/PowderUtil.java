@@ -32,7 +32,7 @@ public class PowderUtil {
 
 	public static List<Integer> createParticles(final Player player, final Powder powderMap) {
 
-		List<ParticleMatrix> particleMaps = powderMap.getMaps();
+		List<ParticleMatrix> particleMaps = powderMap.getMatrices();
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
@@ -231,7 +231,7 @@ public class PowderUtil {
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		for (SoundEffect sound : map.getSounds()) {
+		for (SoundEffect sound : map.getSoundEffects()) {
 
 			int task = PowderPlugin.getInstance().getServer().getScheduler()
 					.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {

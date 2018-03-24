@@ -9,7 +9,7 @@ public class ParticleMatrix {
 	private int playerLeft;
 	private int playerUp;
 	private float spacing;
-	
+
 	public ParticleMatrix(List<Object> map, int tick, int playerLeft, int playerUp, float spacing) {
 		this.map = map;
 		this.tick = tick;
@@ -17,25 +17,25 @@ public class ParticleMatrix {
 		this.playerUp = playerUp;
 		this.spacing = spacing;
 	}
-	
+
 	public List<Object> getMap() {
 		return map;
 	}
-	
+
 	public Integer getTick() {
 		return tick;
 	}
-	
+
 	public Integer getPlayerLeft() {
 		return playerLeft;
 	}
-	
+
 	public Integer getPlayerUp() {
 		return playerUp;
 	}
-	
+
 	public Float getSpacing() {
 		return spacing;
 	}
-	
+
 }

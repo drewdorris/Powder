@@ -252,7 +252,7 @@ public class PowderCommand implements CommandExecutor {
 			tasks.addAll(PowderUtil.createDusts(player, powder, powderHandler));
 		}
 
-		if (powder.isRepeating() || powder.getMaps().size() > 1 || !(powder.getDusts().isEmpty())) {
+		if (powder.isRepeating() || powder.getMatrices().size() > 1 || !(powder.getDusts().isEmpty())) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
 			particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 

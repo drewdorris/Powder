@@ -16,6 +16,7 @@ import org.bukkit.scheduler.BukkitScheduler;
 import com.ruinscraft.powder.objects.ChangedParticle;
 import com.ruinscraft.powder.objects.Dust;
 import com.ruinscraft.powder.objects.ParticleMatrix;
+import com.ruinscraft.powder.objects.ParticleName;
 import com.ruinscraft.powder.objects.Powder;
 import com.ruinscraft.powder.objects.PowderTask;
 import com.ruinscraft.powder.objects.SoundEffect;
@@ -106,15 +107,17 @@ public class PowderPlugin extends JavaPlugin {
 
 		for (String s : config.getConfigurationSection("powders").getKeys(false)) {
 
-			String name = config.getString(powders + s + ".name", null);
-			float spacing = (float) config.getDouble(powders + s + ".spacing", .5F);
-			boolean pitch = config.getBoolean(powders + s + ".pitch", false);
-			boolean repeating = config.getBoolean(powders + s + ".repeating", false);
-			boolean hidden = config.getBoolean(powders + s + ".hidden", false);
-			long delay = config.getLong(powders + s + ".delay", Long.MAX_VALUE);
-			List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
-			List<Dust> dusts = new ArrayList<Dust>();
-			List<ChangedParticle> changedParticles = new ArrayList<ChangedParticle>();
+			Powder powder = new Powder();
+
+			powder.setName(config.getString(powders + s + ".name", null));
+			powder.setDefaultSpacing((float) config.getDouble(powders + s + ".spacing", .5F));
+			powder.setPitch(config.getBoolean(powders + s + ".pitch", false));
+			powder.setRepeating(config.getBoolean(powders + s + ".repeating", false));
+			powder.setHidden(config.getBoolean(powders + s + ".hidden", false));
+			powder.setDelay(config.getLong(powders + s + ".delay", Long.MAX_VALUE));
+			powder.setSoundEffects(new ArrayList<SoundEffect>());
+			powder.setDusts(new ArrayList<Dust>());
+			powder.setChangedParticles(new ArrayList<ChangedParticle>());
 
 			for (String t : (List<String>) config.getList(powders + s + ".sounds", new ArrayList<String>())) {
 
@@ -124,7 +127,7 @@ public class PowderPlugin extends JavaPlugin {
 				sound = Sound.valueOf(soundName);
 				if ((Sound.valueOf(soundName) == null)) {
 					getLogger().warning("Invalid sound name '" + soundName + 
-							"' for " + name + " in config.yml!");
+							"' for '" + powder.getName() + "' in config.yml!");
 					continue;
 				}
 				t = t.replaceFirst(soundName + ";", "");
@@ -133,8 +136,7 @@ public class PowderPlugin extends JavaPlugin {
 				float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				float waitTime = Float.valueOf(t);
-				SoundEffect soundEffect = new SoundEffect(sound, volume, soundPitch, waitTime);
-				soundEffects.add(soundEffect);
+				powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, waitTime));
 
 			}
 
@@ -147,8 +149,7 @@ public class PowderPlugin extends JavaPlugin {
 				double height = Float.valueOf(t.substring(0, t.indexOf(";")));
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				long frequency = Long.valueOf(t);
-				Dust dust = new Dust(dustName, radius, height, frequency);
-				dusts.add(dust);
+				powder.addDust(new Dust(dustName, radius, height, frequency));
 
 			}
 
@@ -160,19 +161,17 @@ public class PowderPlugin extends JavaPlugin {
 				Particle particle = Particle.valueOf(particleName);
 				if (particle == null) {
 					getLogger().warning("Invalid particle name '" + particleName + 
-							"' for " + name + " in config.yml!");
+							"' for " + powder.getName() + " in config.yml!");
 					continue;
 				}
 				t = t.substring(t.indexOf(";") + 1, t.length());
-				ChangedParticle changedParticle;
 				double xOff;
 				double yOff;
 				double zOff;
 				try {
 					xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 				} catch (Exception e) {
-					changedParticle = new ChangedParticle(enumName, particle, 0, 0, 0);
-					changedParticles.add(changedParticle);
+					powder.addChangedParticle(new ChangedParticle(enumName, particle, 0, 0, 0));
 					continue;
 				}
 				t = t.substring(t.indexOf(";") + 1, t.length());
@@ -180,7 +179,7 @@ public class PowderPlugin extends JavaPlugin {
 				t = t.substring(t.indexOf(";") + 1, t.length());
 				try {
 					zOff = Double.valueOf(t);
-					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff);
+					powder.addChangedParticle(new ChangedParticle(enumName, particle, xOff, yOff, zOff));
 				} catch (Exception e) {
 					zOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
@@ -190,9 +189,8 @@ public class PowderPlugin extends JavaPlugin {
 					} catch (Exception ex) {
 						data = t;
 					}
-					changedParticle = new ChangedParticle(enumName, particle, xOff, yOff, zOff, data);
+					powder.addChangedParticle(new ChangedParticle(enumName, particle, xOff, yOff, zOff, data));
 				}
-				changedParticles.add(changedParticle);
 
 			}
 
@@ -211,20 +209,15 @@ public class PowderPlugin extends JavaPlugin {
 					if (matrix.isEmpty()) {
 						continue;
 					}
+					particleMatrices.add(new ParticleMatrix(matrix, tick, left + 1, up, 0));
+					matrix = new ArrayList<Object>();
+					playerLocationDefined = true;
 					try {
 						tick = Integer.valueOf(t);
 					} catch (Exception e) {
 						getLogger().warning("Invalid animation time at line " + 
 								(config.getList(powders + s + ".map").indexOf(t) + 1));
 					}
-					ParticleMatrix particleMatrix = new ParticleMatrix(matrix, tick, left + 1, up, 0);
-					particleMatrices.add(particleMatrix);
-					matrix = new ArrayList<Object>();
-					for (char ch : t.toCharArray()) {
-						matrix.add(String.valueOf(ch));
-					}
-					matrix.add(";");
-					playerLocationDefined = true;
 					continue;
 				}
 				if (definingPlayerLocation == true) {
@@ -245,10 +238,12 @@ public class PowderPlugin extends JavaPlugin {
 						url = new URL(urlName);
 						matrix = ImageUtil.getMatrixFromURL(matrix, url, width, height);
 					} catch (MalformedURLException e) {
-						getLogger().warning("Not good URL: '" + urlName);
+						getLogger().warning("Path unclear: '" + urlName + "'");
 						continue;
 					} catch (IOException io) {
-						getLogger().warning("Failed to connect to URL '" + urlName);
+						getLogger().warning("Failed to connect to URL '" + urlName + "'");
+						continue;
+					} catch (Exception e) {
 						continue;
 					}
 					up = up + height;
@@ -269,7 +264,7 @@ public class PowderPlugin extends JavaPlugin {
 					} catch (MalformedURLException e) {
 						continue;
 					} catch (IOException io) {
-						getLogger().warning("Failed to load path: '" + path);
+						getLogger().warning("Failed to load path: '" + path + "'");
 						continue;
 					}
 					up = up + height;
@@ -285,8 +280,16 @@ public class PowderPlugin extends JavaPlugin {
 					left = (t.indexOf("?"));
 					definingPlayerLocation = false;
 				}
-				for (char ch : t.toCharArray()) {
-					matrix.add(String.valueOf(ch));
+				for (char character : t.toCharArray()) {
+					String string = String.valueOf(character);
+					try {
+						ParticleName.valueOf(string);
+					} catch (Exception e) {
+						if (powder.getChangedParticle(string) == null) {
+							// stuff
+						}
+					}
+					matrix.add(string);
 				}
 				matrix.add(";");
 
@@ -296,14 +299,14 @@ public class PowderPlugin extends JavaPlugin {
 				ParticleMatrix particleMatrix = new ParticleMatrix(matrix, tick, left + 1, up, 0);
 				particleMatrices.add(particleMatrix);
 			}
+			
+			powder.setMatrices(particleMatrices);
 
-			if (particleMatrices.isEmpty() && soundEffects.isEmpty() && dusts.isEmpty()) {
-				getLogger().warning("Powder " + name + " appears empty and was not loaded.");
+			if (powder.getMatrices().isEmpty() && powder.getSoundEffects().isEmpty() && powder.getDusts().isEmpty()) {
+				getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");
 				continue;
 			}
-			powderNames.add(name);
-			final Powder powder = new Powder(name, spacing, particleMatrices, soundEffects, 
-					dusts, changedParticles, pitch, repeating, hidden, delay);
+			powderNames.add(powder.getName());
 			getPowderHandler().addPowder(powder);
 
 		}
