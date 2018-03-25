@@ -311,13 +311,26 @@ public class PowderPlugin extends JavaPlugin {
 								width = Integer.valueOf(t.substring(0, t.indexOf(";")));
 								t = t.substring(t.indexOf(";") + 1, t.length());
 								height = Integer.valueOf(t);
-								URL url;
+								URL url = null;
 								try {
 									url = new URL(urlName);
 									ImageUtil.getRowsFromURL(layer.getRows(), url, width, height);
-								} catch (MalformedURLException e) {
-									getLogger().warning("Path unclear: '" + urlName + "'");
-									continue;
+								} catch (MalformedURLException mal) {
+									String urlString = urlName;
+									if (!(urlString.contains("http"))) {
+										try {
+											url = new URL("https://" + urlString);
+											ImageUtil.getRowsFromURL(layer.getRows(), url, width, height);
+										} catch (Exception mal2) {
+											getLogger().warning("Invalid URL: '" + urlName + "'");
+											mal2.printStackTrace();
+											continue;
+										}
+									} else {
+										getLogger().warning("Invalid URL: '" + urlName + "'");
+										mal.printStackTrace();
+										continue;
+									}
 								} catch (IOException io) {
 									getLogger().warning("Failed to connect to URL '" + urlName + "'");
 									continue;
@@ -338,6 +351,7 @@ public class PowderPlugin extends JavaPlugin {
 								try {
 									ImageUtil.getRowsFromPath(layer.getRows(), path, width, height);
 								} catch (MalformedURLException e) {
+									getLogger().warning("Unclear path: '" + path + "'");
 									continue;
 								} catch (IOException io) {
 									getLogger().warning("Failed to load path: '" + path + "'");
@@ -396,7 +410,7 @@ public class PowderPlugin extends JavaPlugin {
 					getPowderHandler().addPowder(powder);
 
 				}
-				
+
 				// do this again to load {total}
 				if (categoriesEnabled) {
 					for (String s : config.getConfigurationSection("categories").getKeys(false)) {

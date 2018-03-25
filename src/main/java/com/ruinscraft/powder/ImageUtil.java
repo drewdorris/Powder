@@ -26,17 +26,14 @@ public class ImageUtil {
 
 			final HttpURLConnection httpConnection;
 			httpConnection = (HttpURLConnection) url.openConnection();
+			httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 			httpConnection.connect();
-			int httpCode = httpConnection.getResponseCode();
-			if (httpCode != 200) {
-				throw new IOException("Error while attempting to connect to URL: " + url.toString());
-			}
 
 			InputStream stream = httpConnection.getInputStream();
 			BufferedImage bufferedImage = ImageIO.read(stream);
 
 			if (bufferedImage == null) {
-				throw new IOException("Error while attempting to read image: " + url.toString());
+				throw new IOException("Error" + httpConnection.getResponseCode() + " while attempting to read image: " + url.toString());
 			}
 
 			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);

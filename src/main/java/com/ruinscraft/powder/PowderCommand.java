@@ -32,7 +32,19 @@ public class PowderCommand implements CommandExecutor {
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
 
 		if (!(sender instanceof Player)) {
-			sender.sendMessage(PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
+			try {
+				if (args[0].equals("reload")) {
+					notifyOfReload();
+					PowderPlugin.getInstance().handleConfig();
+					PowderPlugin.getInstance().getLogger().info("Powder config.yml reloading...");
+				} else {
+					PowderPlugin.getInstance().getLogger().info(
+							PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
+				}
+			} catch (Exception e) {
+				PowderPlugin.getInstance().getLogger().info(
+						PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
+			}
 			return true;
 		}
 
@@ -70,19 +82,10 @@ public class PowderCommand implements CommandExecutor {
 					sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 					return false;
 				}
-
+				notifyOfReload();
 				PowderPlugin.getInstance().handleConfig();
+				sendPrefixMessage(player, ChatColor.GRAY + "Powder config.yml reloaded.", label);
 
-				sendPrefixMessage(player, ChatColor.GRAY + "Powder config.yml reloaded!", label);
-				List<Player> playersDoneAlready = new ArrayList<Player>();
-				for (PowderTask powderTask : powderHandler.getPowderTasks()) {
-					if (playersDoneAlready.contains(powderTask.getPlayer())) {
-						continue;
-					}
-					playersDoneAlready.add(powderTask.getPlayer());
-					sendPrefixMessage(powderTask.getPlayer(), ChatColor.GRAY 
-							+ "Your Powders were cancelled due to " + "a reload.", label);
-				}
 				return true;
 
 			} else if (args[0].equals("*")) {
@@ -273,12 +276,14 @@ public class PowderCommand implements CommandExecutor {
 					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.", label);
 			return false;
 		}
-		PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
-			public void run() {
-				recentCommandSenders.remove(player);
-			}
-		}, (waitTime * 20));
-		recentCommandSenders.add(player);
+		if (!(waitTime <= 0)) {
+			PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
+				public void run() {
+					recentCommandSenders.remove(player);
+				}
+			}, (waitTime * 20));
+			recentCommandSenders.add(player);
+		}
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
@@ -306,6 +311,21 @@ public class PowderCommand implements CommandExecutor {
 		powderHandler.addPowderTask(powderTask);
 
 		return true;
+
+	}
+
+	public static void notifyOfReload() {
+
+		List<Player> playersDoneAlready = new ArrayList<Player>();
+		for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
+			if (playersDoneAlready.contains(powderTask.getPlayer())) {
+				continue;
+			}
+			playersDoneAlready.add(powderTask.getPlayer());
+			sendPrefixMessage(powderTask.getPlayer(), ChatColor.GRAY 
+					+ "Your Powders were cancelled due to " + "a reload.", "powder");
+		}
+		playersDoneAlready = null;
 
 	}
 

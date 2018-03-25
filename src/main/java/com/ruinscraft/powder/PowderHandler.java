@@ -26,7 +26,7 @@ public class PowderHandler {
 	public List<Powder> getPowders() {
 		return powders;
 	}
-	
+
 	public List<Powder> getSimilarPowders(String string) {
 		List<Powder> similarPowders = new ArrayList<Powder>();
 		for (Powder powder : powders) {
@@ -45,7 +45,7 @@ public class PowderHandler {
 		}
 		return null;
 	}
-	
+
 	public void addPowder(Powder powder) {
 		if (powders == null) {
 			return;
@@ -124,11 +124,11 @@ public class PowderHandler {
 		}
 		return players;
 	}
-	
+
 	public Map<String, String> getCategories() {
 		return categories;
 	}
-	
+
 	public Map<String, String> getSimilarCategories(String string) {
 		Map<String, String> similarPowders = new HashMap<String, String>();
 		for (String category : categories.keySet()) {
@@ -138,7 +138,7 @@ public class PowderHandler {
 		}
 		return similarPowders;
 	}
-	
+
 	public List<Powder> getPowdersFromCategory(String category) {
 		for (String otherCategory : categories.keySet()) {
 			if (otherCategory.toLowerCase().equals(category.toLowerCase())) {
@@ -154,21 +154,21 @@ public class PowderHandler {
 		}
 		return addedPowders;
 	}
-	
+
 	public void addCategory(String category, String description) {
 		this.categories.put(category, PowderUtil.color(description
 				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))));
 	}
-	
+
 	public void setDescription(String category, String description) {
 		this.categories.put(category, PowderUtil.color(description
 				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))));
 	}
-	
+
 	public void setIfCategoriesEnabled(boolean categoriesEnabled) {
 		this.categoriesEnabled = categoriesEnabled;
 	}
-	
+
 	public boolean categoriesEnabled() {
 		return categoriesEnabled;
 	}
