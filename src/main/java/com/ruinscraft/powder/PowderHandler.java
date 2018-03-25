@@ -21,6 +21,16 @@ public class PowderHandler {
 	public List<Powder> getPowders() {
 		return powders;
 	}
+	
+	public List<Powder> getSimilarPowders(String string) {
+		List<Powder> similarPowders = new ArrayList<Powder>();
+		for (Powder powder : powders) {
+			if (powder.getName().toLowerCase().contains(string.toLowerCase())) {
+				similarPowders.add(powder);
+			}
+		}
+		return similarPowders;
+	}
 
 	public void addPowder(Powder powder) {
 		powders.add(powder);

@@ -3,9 +3,12 @@ package com.ruinscraft.powder;
 import java.text.Collator;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -45,7 +48,7 @@ public class PowderCommand implements CommandExecutor {
 		int pageLength = PowderPlugin.getInstance().getConfig().getInt("pageLength");
 
 		if (args.length < 1) {
-			powderList(player, powderHandler, 1, pageLength, label);
+			powderList(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
 			return false;
 		}
 
@@ -107,12 +110,31 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				powderList(player, powderHandler, page, pageLength, label);
+				powderList(player, powderHandler.getPowders(), " list ", page, pageLength, label);
+				return false;
+
+			} else if (args[0].equals("search")) {
+
+				String search;
+				int page;
+				try {
+					search = String.valueOf(args[1]);
+				} catch (Exception e) {
+					sendPrefixMessage(player, ChatColor.RED + "/powder search <term> [page]", label);
+					return false;
+				}
+				try {
+					page = Integer.valueOf(args[2]);
+				} catch (Exception e) {
+					page = 1;
+				}
+				powderList(player, powderHandler.getSimilarPowders(search), 
+						" search " + search + " ", page, pageLength, label);
 				return false;
 
 			} else {
 
-				powderList(player, powderHandler, 1, pageLength, label);
+				powderList(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
 				return false;
 
 			}
@@ -230,10 +252,11 @@ public class PowderCommand implements CommandExecutor {
 	public static void helpMessage(Player player, String label) {
 
 		sendPrefixMessage(player, ChatColor.GRAY + "Powder Help", label);
-		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder (powder) " + ChatColor.GRAY + "- Use a Powder"); 
-		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder (powder) cancel " + ChatColor.GRAY + "- Cancel a Powder"); 
+		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> " + ChatColor.GRAY + "- Use a Powder"); 
+		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> cancel " + ChatColor.GRAY + "- Cancel a Powder"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder * cancel " + ChatColor.GRAY + "- Cancel all Powders"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder list [page] " + ChatColor.GRAY + "- List Powders by page");
+		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder search <term> [page] " + ChatColor.GRAY + "- Search for a Powder");
 		if (player.hasPermission("powder.reload")) {
 			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder reload " + ChatColor.GRAY + "- Reload Powder"); 
 		}
@@ -288,7 +311,7 @@ public class PowderCommand implements CommandExecutor {
 
 	}
 
-	public static void paginate(Player player, List<TextComponent> list, int page, int pageLength, String label) {
+	public static void paginate(Player player, List<TextComponent> list, String input, int page, int pageLength, String label) {
 		List<TextComponent> pageList = new ArrayList<TextComponent>();
 		for (int i = 1; i <= pageLength; i++) {
 			TextComponent current;
@@ -307,7 +330,7 @@ public class PowderCommand implements CommandExecutor {
 		TextComponent leftArrow = new TextComponent("<<  ");
 		leftArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
 		leftArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + " list " + (page - 1) ) );
+				"/" + label + input + (page - 1) ) );
 		leftArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("Previous Page")
 				.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
@@ -318,13 +341,17 @@ public class PowderCommand implements CommandExecutor {
 		TextComponent rightArrow = new TextComponent("  >>");
 		rightArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
 		rightArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + " list " + (page + 1) ) );
+				"/" + label + input + (page + 1) ) );
 		rightArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("Next Page")
 				.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 
 		TextComponent fullArrows = new TextComponent();
-		if (pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1)) || 
+		if (pageList.isEmpty()) {
+			player.sendMessage(ChatColor.RED + "No Powders found.");
+			fullArrows.addExtra(leftArrow);
+			fullArrows.addExtra(middle);
+		} else if (pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1)) || 
 				(!(pageList.contains(list.get(0))) && !(pageList.contains(list.get(list.size() - 1))))) {
 			fullArrows.addExtra(leftArrow);
 			fullArrows.addExtra(middle);
@@ -332,14 +359,11 @@ public class PowderCommand implements CommandExecutor {
 		} else if (pageList.contains(list.get(0)) && !pageList.contains(list.get(list.size() - 1))) {
 			fullArrows.addExtra(middle);
 			fullArrows.addExtra(rightArrow);
-		} else if (!pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1))) {
-			fullArrows.addExtra(leftArrow);
-			fullArrows.addExtra(middle);
 		}
 		player.spigot().sendMessage(fullArrows);
 	}
 
-	public static void powderList(Player player, PowderHandler phandler, int page, int pageLength, String label) {
+	public static void powderList(Player player, List<Powder> powders, String input, int page, int pageLength, String label) {
 
 		TextComponent helpPrefix = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "Use " +
 				net.md_5.bungee.api.ChatColor.RED + "/" + label +  " help" + net.md_5.bungee.api.ChatColor.GRAY + " for help.");
@@ -354,7 +378,7 @@ public class PowderCommand implements CommandExecutor {
 		List<TextComponent> activePowders = new ArrayList<TextComponent>();
 		List<TextComponent> ableToPowders = new ArrayList<TextComponent>();
 		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
-		for (Powder powderMap : phandler.getPowders()) {
+		for (Powder powderMap : powders) {
 			TextComponent powderMapText = new TextComponent(powderMap.getName());
 			if (!(player.hasPermission("powder.powder." + powderMap.getName().toLowerCase(Locale.US)))) {
 				if (powderMap.isHidden()) {
@@ -365,7 +389,7 @@ public class PowderCommand implements CommandExecutor {
 						new ComponentBuilder("You don't have permission to use '" + powderMap.getName() + "'.")
 						.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 				noPermPowders.add(powderMapText);
-			} else if (!(phandler.getPowderTasks(player, powderMap).isEmpty())) {
+			} else if (!(PowderPlugin.getInstance().getPowderHandler().getPowderTasks(player, powderMap).isEmpty())) {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("'" + powderMap.getName() + "' is currently active. Click to cancel")
@@ -389,7 +413,7 @@ public class PowderCommand implements CommandExecutor {
 		listOfPowders.addAll(activePowders);
 		listOfPowders.addAll(ableToPowders);
 		listOfPowders.addAll(noPermPowders);
-		paginate(player, listOfPowders, page, pageLength, label);
+		paginate(player, listOfPowders, input, page, pageLength, label);
 
 	}
 

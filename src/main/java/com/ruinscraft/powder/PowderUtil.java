@@ -240,11 +240,12 @@ public class PowderUtil {
 		for (Dust dust : powder.getDusts()) {
 
 			// frequency is particles per min
-			// translate to ticks
-			final long frequency = 1200 / dust.getFrequency();
+			// translate to ticks if repeating
+			long frequency;
 
 			int task;
 			if (dust.isSingleOccurrence()) {
+				frequency = dust.getFrequency();
 				task = PowderPlugin.getInstance().getServer().getScheduler()
 						.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
 							public void run() {
@@ -252,6 +253,11 @@ public class PowderUtil {
 							}
 						}, frequency);
 			} else {
+				if (dust.getFrequency() == 0) {
+					frequency = 0;
+				} else {
+					frequency = 1200 / dust.getFrequency();
+				}
 				task = PowderPlugin.getInstance().getServer().getScheduler()
 						.scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
 							public void run() {
