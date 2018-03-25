@@ -6,6 +6,7 @@ import java.util.List;
 public class Powder {
 
 	private String name;
+	private List<String> categories;
 	private float spacing;
 	private List<ParticleMatrix> matrices;
 	private List<SoundEffect> soundEffects;
@@ -19,16 +20,19 @@ public class Powder {
 	private int defaultUp;
 
 	public Powder() {
+		this.categories = new ArrayList<String>();
 		this.matrices = new ArrayList<ParticleMatrix>();
 		this.soundEffects = new ArrayList<SoundEffect>();
 		this.dusts = new ArrayList<Dust>();
 		this.powderParticles = new ArrayList<PowderParticle>();
 	}
 
-	public Powder(String name, float spacing, List<ParticleMatrix> matrices, List<SoundEffect> soundEffects, List<Dust> dusts,
-			List<PowderParticle> powderParticles, boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
+	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
+			List<SoundEffect> soundEffects, List<Dust> dusts, List<PowderParticle> powderParticles, 
+			boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
 
 		this.name = name;
+		this.categories = categories;
 		this.spacing = spacing;
 		this.matrices = matrices;
 		this.soundEffects = soundEffects;
@@ -43,10 +47,11 @@ public class Powder {
 
 	}
 
-	public Powder(String name, float spacing, List<ParticleMatrix> matrices, 
+	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
 			boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
 
 		this.name = name;
+		this.categories = categories;
 		this.spacing = spacing;
 		this.matrices = matrices;
 		this.soundEffects = new ArrayList<SoundEffect>();
@@ -67,6 +72,14 @@ public class Powder {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+	
+	public List<String> getCategories() {
+		return categories;
+	}
+	
+	public void addCategory(String category) {
+		categories.add(category);
 	}
 
 	public float getDefaultSpacing() {

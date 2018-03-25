@@ -101,6 +101,17 @@ public class PowderPlugin extends JavaPlugin {
 			@Override
 			public void run() {
 
+				boolean categoriesEnabled = config.getBoolean("categoriesEnabled", false);
+				powderHandler.setIfCategoriesEnabled(categoriesEnabled);
+				if (categoriesEnabled) {
+					for (String s : config.getConfigurationSection("categories").getKeys(false)) {
+						powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
+					}
+					if (!powderHandler.getCategories().keySet().contains("Other")) {
+						powderHandler.addCategory("Other", "Unsorted Powders");
+					}
+				}
+
 				List<String> powderNames = new ArrayList<>();
 
 				String powders = "powders.";
@@ -118,6 +129,25 @@ public class PowderPlugin extends JavaPlugin {
 					powder.setSoundEffects(new ArrayList<SoundEffect>());
 					powder.setDusts(new ArrayList<Dust>());
 					powder.setPowderParticles(new ArrayList<PowderParticle>());
+
+					if (categoriesEnabled) {
+
+						for (String t : (List<String>) config.getList(powders + s + ".categories", new ArrayList<String>())) {
+
+							if (!(powderHandler.getCategories().keySet().contains(t))) {
+								getLogger().warning("Invalid category '" + t + 
+										"' for '" + powder.getName() + "' in config.yml!");
+								continue;
+							}
+							powder.addCategory(t);
+
+						}
+
+						if (powder.getCategories().isEmpty()) {
+							powder.addCategory("Other");
+						}
+
+					}
 
 					for (String t : (List<String>) config.getList(powders + s + ".sounds", new ArrayList<String>())) {
 
@@ -365,6 +395,16 @@ public class PowderPlugin extends JavaPlugin {
 					powderNames.add(powder.getName());
 					getPowderHandler().addPowder(powder);
 
+				}
+				
+				// do this again to load {total}
+				if (categoriesEnabled) {
+					for (String s : config.getConfigurationSection("categories").getKeys(false)) {
+						powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
+					}
+					if (!powderHandler.getCategories().keySet().contains("Other")) {
+						powderHandler.addCategory("Other", "Unsorted Powders");
+					}
 				}
 
 				StringBuilder msg = new StringBuilder();
