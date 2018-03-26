@@ -129,6 +129,15 @@ public class PowderHandler {
 		return categories;
 	}
 
+	public String getCategory(String category) {
+		for (String otherCategory : categories.keySet()) {
+			if (otherCategory.equalsIgnoreCase(category)) {
+				return otherCategory;
+			}
+		}
+		return null;
+	}
+
 	public Map<String, String> getSimilarCategories(String string) {
 		Map<String, String> similarPowders = new HashMap<String, String>();
 		for (String category : categories.keySet()) {

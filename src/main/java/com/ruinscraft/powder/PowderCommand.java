@@ -156,13 +156,14 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				if (!powderHandler.getCategories().keySet().contains(category)) {
+				if (powderHandler.getCategory(category) == null) {
 					sendPrefixMessage(player, ChatColor.RED + "Unknown category '" + args[0] + "'. Similar categories:", label);
 					Map<String, String> similarCategories = powderHandler.getSimilarCategories(args[0]);
 					listCategories(player, similarCategories, " category " + category + " ", page, pageLength, label);
-					return true;
+				} else {
+					String correctCategory = powderHandler.getCategory(category);
+					listPowders(player, powderHandler.getPowdersFromCategory(correctCategory), " category " + category + " ", page, pageLength, label);
 				}
-				listPowders(player, powderHandler.getPowdersFromCategory(category), " category " + category + " ", page, pageLength, label);
 				return true;
 
 			} else if (args[0].equals("search")) {
@@ -187,13 +188,13 @@ public class PowderCommand implements CommandExecutor {
 			} else {
 
 				if (powderHandler.categoriesEnabled()) {
-					if (powderHandler.getCategories().get(args[0]) != null) {
+					if (powderHandler.getCategory(args[0]) != null) {
 						listPowders(player, powderHandler.getPowdersFromCategory(args[0]), " category " + args[0] + " ", 1, pageLength, label);
 						return true;
+					} else {
+						sendPrefixMessage(player, ChatColor.RED + "Unknown category '" + args[0] + "'. Similar categories:", label);
+						listCategories(player, powderHandler.getSimilarCategories(args[0]), " category " + args[0] + " ", 1, pageLength, label);
 					}
-					sendPrefixMessage(player, ChatColor.RED + "Unknown category '" + args[0] + "'. Similar categories:", label);
-					Map<String, String> similarCategories = powderHandler.getSimilarCategories(args[0]);
-					listCategories(player, similarCategories, " category " + args[0] + " ", 1, pageLength, label);
 				} else {
 					sendPrefixMessage(player, ChatColor.RED + "Unknown Powder '" + args[0] + "'. Similar Powders:", label);
 					listPowders(player, powderHandler.getSimilarPowders(args[0]), " list ", 1, pageLength, label);
