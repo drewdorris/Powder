@@ -58,9 +58,9 @@ public class PowderUtil {
 	
 	public static InputStream getInputStreamFromURL(URL url) {
 		
+		HttpURLConnection httpConnection;
 		InputStream stream;
 		try {
-			HttpURLConnection httpConnection;
 			httpConnection = (HttpURLConnection) url.openConnection();
 			httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 			httpConnection.connect();
@@ -78,6 +78,9 @@ public class PowderUtil {
 				url = new URL(urlString);
 				return getInputStreamFromURL(url);
 				
+			} else if (!(httpConnection.getResponseCode() == 200)) {
+				PowderPlugin.getInstance().getLogger().warning("Error" + httpConnection.getResponseCode() + " while attempting to read URL: " + url.toString());
+				return null;
 			}
 			
 		} catch (IOException io) {

@@ -7,7 +7,6 @@ import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -23,15 +22,10 @@ public class ImageUtil {
 	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
 
 		try {
-
-			HttpURLConnection httpConnection;
-			httpConnection = (HttpURLConnection) url.openConnection();
-			httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-			httpConnection.connect();
-
+			
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
 			if (stream == null) {
-				throw new IOException("Error" + httpConnection.getResponseCode() + " while attempting to read image: " + url.toString());
+				throw new IOException("Error while attempting to read URL: " + url.toString());
 			}
 			BufferedImage bufferedImage = ImageIO.read(stream);
 
