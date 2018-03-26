@@ -206,7 +206,7 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		if (!(player.hasPermission("powder.powder.*"))) {
-			if (!(player.hasPermission("powder.powder." + powder.getName().toLowerCase(Locale.US)))) {
+			if (!hasPermission(player, powder)) {
 				sendPrefixMessage(player, ChatColor.RED 
 						+ "You don't have permission to use the Powder '" + powder.getName() + "'.", label);
 				return false;
@@ -311,6 +311,26 @@ public class PowderCommand implements CommandExecutor {
 		PowderTask powderTask = new PowderTask(player, tasks, powder);
 		powderHandler.addPowderTask(powderTask);
 
+		return true;
+
+	}
+
+	public static boolean hasPermission(Player player, Powder powder) {
+
+		boolean success = false;
+		for (String category : powder.getCategories()) {
+			if (player.hasPermission("powder.category." + category.toLowerCase(Locale.US))) {
+				success = true;
+				break;
+			}
+		}
+		if (success == false) {
+			if (!(player.hasPermission("powder.powder." + powder.getName().toLowerCase(Locale.US)))) {
+				return false;
+			} else {
+				return true;
+			}
+		}
 		return true;
 
 	}
@@ -465,7 +485,7 @@ public class PowderCommand implements CommandExecutor {
 		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
 		for (Powder powder : powders) {
 			TextComponent powderMapText = new TextComponent(powder.getName());
-			if (!(player.hasPermission("powder.powder." + powder.getName().toLowerCase(Locale.US)))) {
+			if (!hasPermission(player, powder)) {
 				if (powder.isHidden()) {
 					continue;
 				}
@@ -534,14 +554,16 @@ public class PowderCommand implements CommandExecutor {
 					}
 					break;
 				} else {
-					categoryText.setColor(net.md_5.bungee.api.ChatColor.GRAY);
-					categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-							new ComponentBuilder(desc)
-							.color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
-					categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-							"/" + label + " " + category + " 1" ) );
-					if (!ableToCategories.contains(categoryText)) {
-						ableToCategories.add(categoryText);
+					if (hasPermission(player, powder) || player.hasPermission("powder.category." + category)) {
+						categoryText.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+						categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+								new ComponentBuilder(desc)
+								.color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
+						categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+								"/" + label + " " + category + " 1" ) );
+						if (!ableToCategories.contains(categoryText)) {
+							ableToCategories.add(categoryText);
+						}
 					}
 				}
 			}
