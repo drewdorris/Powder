@@ -1,5 +1,10 @@
 package com.ruinscraft.powder;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +26,66 @@ public class PowderUtil {
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
+	
+	public static URL readURL(String urlName) {
+
+		URL url;
+		try {
+			url = new URL(urlName);
+		} catch (MalformedURLException mal) {
+			String urlString = urlName;
+			if (!(urlString.contains("http"))) {
+				try {
+					url = new URL("http://" + urlString);
+				} catch (Exception mal2) {
+					PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+					mal2.printStackTrace();
+					return null;
+				}
+			} else {
+				PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+				mal.printStackTrace();
+				return null;
+			}
+		} catch (Exception e) {
+			PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+			return null;
+		}
+		return url;
+
+	}
+	
+	public static InputStream getInputStreamFromURL(URL url) {
+		
+		InputStream stream;
+		try {
+			HttpURLConnection httpConnection;
+			httpConnection = (HttpURLConnection) url.openConnection();
+			httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
+			httpConnection.connect();
+
+			stream = httpConnection.getInputStream();
+			
+			if (httpConnection.getResponseCode() == 301) {
+				
+				String urlString = url.toString();
+				if (urlString.contains("https")) {
+					PowderPlugin.getInstance().getLogger().warning("Failed to load URL '" + urlString + "'.");
+					return null;
+				}
+				urlString = urlString.replaceAll("http", "https");
+				url = new URL(urlString);
+				return getInputStreamFromURL(url);
+				
+			}
+			
+		} catch (IOException io) {
+			return null;
+		}
+		
+		return stream;
+		
 	}
 
 	public static double getDirLengthX(double rot, double spacing) {

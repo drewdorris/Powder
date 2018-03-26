@@ -92,51 +92,41 @@ public class PowderPlugin extends JavaPlugin {
 	public List<FileConfiguration> getPowderConfigs() {
 		return powderConfigs;
 	}
-
+	
 	public void loadPowderConfigs() {
 
 		powderConfigs = new ArrayList<FileConfiguration>();
 
 		BufferedReader reader;
 
-		for (String urlString : config.getStringList("powderSources")) {
+		for (String urlName : config.getStringList("powderSources")) {
 
 			FileConfiguration powderConfig;
-			URL url = readURL(urlString);
+			URL url = PowderUtil.readURL(urlName);
 			File file;
-			if (!urlString.contains("/")) {
+			if (!urlName.contains("/")) {
 
-				file = new File(getDataFolder(), urlString);
+				file = new File(getDataFolder(), urlName);
 				if (!file.exists()) {
-					getLogger().warning("Failed to load config file '" + urlString + "'.");
+					getLogger().warning("Failed to load config file '" + urlName + "'.");
 					continue;
 				}
 				powderConfig = YamlConfiguration.loadConfiguration(file);
 
 			} else if (url != null) {
 
-				try {
-					final HttpURLConnection httpConnection;
-					httpConnection = (HttpURLConnection) url.openConnection();
-					httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
-					httpConnection.connect();
-
-					InputStream stream = httpConnection.getInputStream();
-
-					reader = new BufferedReader(new InputStreamReader(stream));
-
-				} catch (IOException io) {
-					getLogger().warning("Failed to load config file '" + urlString + "'.");
+				InputStream stream = PowderUtil.getInputStreamFromURL(url);
+				
+				if (stream == null) {
 					continue;
 				}
-
+				
+				reader = new BufferedReader(new InputStreamReader(stream));
 				powderConfig = YamlConfiguration.loadConfiguration(reader);
 
 			} else {
-
-				getLogger().warning("Failed to load config file '" + urlString + "'.");
+				getLogger().warning("Failed to load config file '" + urlName + "'.");
 				continue;
-
 			}
 
 			powderConfigs.add(powderConfig);
@@ -384,7 +374,7 @@ public class PowderPlugin extends JavaPlugin {
 									width = Integer.valueOf(t.substring(0, t.indexOf(";")));
 									t = t.substring(t.indexOf(";") + 1, t.length());
 									height = Integer.valueOf(t);
-									URL url = readURL(urlName);
+									URL url = PowderUtil.readURL(urlName);
 									if (url == null) {
 										continue;
 									} else {
@@ -495,34 +485,6 @@ public class PowderPlugin extends JavaPlugin {
 			}
 
 		});
-
-	}
-
-	public URL readURL(String urlName) {
-
-		URL url;
-		try {
-			url = new URL(urlName);
-		} catch (MalformedURLException mal) {
-			String urlString = urlName;
-			if (!(urlString.contains("http"))) {
-				try {
-					url = new URL("https://" + urlString);
-				} catch (Exception mal2) {
-					getLogger().warning("Invalid URL: '" + urlName + "'");
-					mal2.printStackTrace();
-					return null;
-				}
-			} else {
-				getLogger().warning("Invalid URL: '" + urlName + "'");
-				mal.printStackTrace();
-				return null;
-			}
-		} catch (Exception e) {
-			getLogger().warning("Invalid URL: '" + urlName + "'");
-			return null;
-		}
-		return url;
 
 	}
 

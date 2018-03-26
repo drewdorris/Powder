@@ -205,12 +205,10 @@ public class PowderCommand implements CommandExecutor {
 
 		}
 
-		if (!(player.hasPermission("powder.powder.*"))) {
-			if (!hasPermission(player, powder)) {
-				sendPrefixMessage(player, ChatColor.RED 
-						+ "You don't have permission to use the Powder '" + powder.getName() + "'.", label);
-				return false;
-			}
+		if (!hasPermission(player, powder)) {
+			sendPrefixMessage(player, ChatColor.RED 
+					+ "You don't have permission to use the Powder '" + powder.getName() + "'.", label);
+			return false;
 		}
 
 		if (args.length > 1) {
@@ -317,6 +315,9 @@ public class PowderCommand implements CommandExecutor {
 
 	public static boolean hasPermission(Player player, Powder powder) {
 
+		if (player.hasPermission("powder.powder.*")) {
+			return true;
+		}
 		boolean success = false;
 		for (String category : powder.getCategories()) {
 			if (player.hasPermission("powder.category." + category.toLowerCase(Locale.US))) {
@@ -554,7 +555,7 @@ public class PowderCommand implements CommandExecutor {
 					}
 					break;
 				} else {
-					if (hasPermission(player, powder) || player.hasPermission("powder.category." + category)) {
+					if (hasPermission(player, powder)) {
 						categoryText.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 						categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 								new ComponentBuilder(desc)

@@ -24,17 +24,16 @@ public class ImageUtil {
 
 		try {
 
-			final HttpURLConnection httpConnection;
+			HttpURLConnection httpConnection;
 			httpConnection = (HttpURLConnection) url.openConnection();
 			httpConnection.setRequestProperty("User-Agent", "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.11 (KHTML, like Gecko) Chrome/23.0.1271.95 Safari/537.11");
 			httpConnection.connect();
 
-			InputStream stream = httpConnection.getInputStream();
-			BufferedImage bufferedImage = ImageIO.read(stream);
-
-			if (bufferedImage == null) {
+			InputStream stream = PowderUtil.getInputStreamFromURL(url);
+			if (stream == null) {
 				throw new IOException("Error" + httpConnection.getResponseCode() + " while attempting to read image: " + url.toString());
 			}
+			BufferedImage bufferedImage = ImageIO.read(stream);
 
 			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
 
@@ -49,7 +48,6 @@ public class ImageUtil {
 	}
 
 	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, String fileName, int resizedWidth, int resizedHeight) throws IOException {
-
 
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
