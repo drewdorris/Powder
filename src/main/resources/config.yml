@@ -105,6 +105,16 @@ pageLength: 7
 ##       An extra data value which behaves differently for various particles -- more info in the link above ("speed" param)
 ##
 ## # #  #  
+storage:
+  mysql:
+    use: false
+    host: localhost
+    port: 3306
+    database: minecraft
+    table: powders
+    username: root
+    password: password
+
 powders:
   firewithin:
     name: 'FireWithin'

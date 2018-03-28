@@ -7,8 +7,9 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.objects.Powder;
-import com.ruinscraft.powder.objects.PowderTask;
+import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {
 

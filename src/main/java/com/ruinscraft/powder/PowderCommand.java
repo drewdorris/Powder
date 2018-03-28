@@ -15,8 +15,9 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.objects.Powder;
-import com.ruinscraft.powder.objects.PowderTask;
+import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;

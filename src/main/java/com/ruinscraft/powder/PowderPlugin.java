@@ -17,14 +17,18 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
-import com.ruinscraft.powder.objects.PowderParticle;
-import com.ruinscraft.powder.objects.Dust;
-import com.ruinscraft.powder.objects.Layer;
-import com.ruinscraft.powder.objects.ParticleMatrix;
-import com.ruinscraft.powder.objects.ParticleName;
-import com.ruinscraft.powder.objects.Powder;
-import com.ruinscraft.powder.objects.PowderTask;
-import com.ruinscraft.powder.objects.SoundEffect;
+import com.ruinscraft.powder.models.Dust;
+import com.ruinscraft.powder.models.Layer;
+import com.ruinscraft.powder.models.ParticleMatrix;
+import com.ruinscraft.powder.models.ParticleName;
+import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.models.PowderParticle;
+import com.ruinscraft.powder.models.SoundEffect;
+import com.ruinscraft.powder.storage.MySqlStorage;
+import com.ruinscraft.powder.storage.Storage;
+import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.util.ImageUtil;
+import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderPlugin extends JavaPlugin {
 
@@ -33,8 +37,10 @@ public class PowderPlugin extends JavaPlugin {
 
 	public static String PREFIX;
 
-	private FileConfiguration config = null;
-	private List<FileConfiguration> powderConfigs = null;
+	private FileConfiguration config;
+	private List<FileConfiguration> powderConfigs;
+	
+	private Storage storage;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -46,9 +52,22 @@ public class PowderPlugin extends JavaPlugin {
 
 		handleConfig();
 
+		if (config.getBoolean("storage.mysql.use")) {
+			String host = config.getString("storage.mysql.host");
+			int port = config.getInt("storage.mysql.port");
+			String database = config.getString("storage.mysql.database");
+			String username = config.getString("storage.mysql.username");
+			String password = config.getString("storage.mysql.password");
+			String powdersTable = config.getString("storage.mysql.table");
+			
+			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
+			
+			getLogger().info("Using MySQL storage");
+		}
+		
 		getCommand("powder").setExecutor(new PowderCommand());
 
-		getServer().getPluginManager().registerEvents(new PlayerLeaveEvent(), this);
+		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
 		PREFIX = PowderUtil.color(config.getString("prefix"));
 
@@ -90,6 +109,10 @@ public class PowderPlugin extends JavaPlugin {
 
 	public List<FileConfiguration> getPowderConfigs() {
 		return powderConfigs;
+	}
+	
+	public Storage getStorage() {
+		return storage;
 	}
 	
 	public void loadPowderConfigs() {
