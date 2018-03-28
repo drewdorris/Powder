@@ -67,8 +67,14 @@ public class MySqlStorage implements SqlStorage {
 	@Override
 	public void saveEnabledPowders(UUID uuid, List<String> powders) {
 		try (Connection c = getConnection()) {
-			
 			PreparedStatement ps = null;
+			
+			ps = c.prepareStatement("DELETE FROM " + powdersTable + " WHERE uuid = ?");
+			ps.setString(1, uuid.toString());
+			
+			ps.executeUpdate();
+
+			ps.close();
 			
 			for (String powder : powders) {
 				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
