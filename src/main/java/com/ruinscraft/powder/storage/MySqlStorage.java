@@ -75,7 +75,6 @@ public class MySqlStorage implements SqlStorage {
 			ps.executeUpdate();
 
 			ps.close();
-			
 			for (String powder : powders) {
 				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
 				ps.setString(1, uuid.toString());

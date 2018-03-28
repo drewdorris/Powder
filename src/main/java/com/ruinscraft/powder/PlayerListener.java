@@ -25,10 +25,8 @@ public class PlayerListener implements Listener {
 		List<String> powdersToSave = new ArrayList<>();
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
-			if (powderTask.getMap().isRepeating()) {
-				if (!powderTask.getMap().getDusts().isEmpty()) {
-					powdersToSave.add(powderTask.getMap().getName());
-				}
+			if (powderTask.getMap().isRepeating() || !powderTask.getMap().getDusts().isEmpty()) {
+				powdersToSave.add(powderTask.getMap().getName());
 			}
 
 			powderHandler.removePowderTask(powderTask);
