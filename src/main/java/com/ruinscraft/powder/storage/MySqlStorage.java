@@ -1,5 +1,6 @@
 package com.ruinscraft.powder.storage;
 
+import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -29,7 +30,7 @@ public class MySqlStorage implements SqlStorage {
 	@Override
 	public void createTable() {
 		try (Connection c = getConnection()) {
-			PreparedStatement ps = c.prepareStatement("CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32), UNIQUE (uuid, powder));");
+			PreparedStatement ps = c.prepareStatement("CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));");
 			
 			ps.executeUpdate();
 			
@@ -86,6 +87,11 @@ public class MySqlStorage implements SqlStorage {
 	@Override
 	public Connection getConnection() throws SQLException {
 		return hikari.getConnection();
+	}
+
+	@Override
+	public void close() throws IOException {
+		hikari.close();
 	}
 	
 }

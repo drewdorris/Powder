@@ -32,10 +32,29 @@
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.7.8</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 
 	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>3.1.0</version>
+				<configuration>
+					<minimizeJar>true</minimizeJar>
+				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 		<sourceDirectory>src/main/java</sourceDirectory>
 		<defaultGoal>package</defaultGoal>
 		<resources>
@@ -56,5 +75,5 @@
 			</resource>
 		</resources>
 	</build>
-
+	
 </project>

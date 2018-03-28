@@ -19,25 +19,29 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
-		
+
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		
-		if (PowderPlugin.getInstance().useStorage()) {
-			List<String> enabledPowders = new ArrayList<>();
-			
-			powderHandler.getPowderTasks().forEach(task -> enabledPowders.add(task.getMap().getName()));
-			
-			PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
-					PowderPlugin.getInstance(),
-					new SavePlayerToDatabaseTask(player.getUniqueId(), enabledPowders)
-					);
-		}
-		
+
+		List<String> powdersToSave = new ArrayList<>();
+
 		for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+			if (powderTask.getMap().isRepeating()) {
+				if (!powderTask.getMap().getDusts().isEmpty()) {
+					powdersToSave.add(powderTask.getMap().getName());
+				}
+			}
+
 			powderHandler.removePowderTask(powderTask);
 		}
+
+		if (PowderPlugin.getInstance().useStorage()) {
+			PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
+					PowderPlugin.getInstance(),
+					new SavePlayerToDatabaseTask(player.getUniqueId(), powdersToSave)
+					);
+		}
 	}
-	
+
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();

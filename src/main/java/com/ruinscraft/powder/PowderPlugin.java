@@ -47,7 +47,6 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onEnable() {
-
 		instance = this;
 
 		handleConfig();
@@ -93,10 +92,17 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onDisable() {
-
-		instance = null;
 		powderHandler.clearEverything();
-
+		
+		if (useStorage()) {
+			try {
+				storage.close();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		instance = null;
 	}
 
 	public void cleanHandlers() {
