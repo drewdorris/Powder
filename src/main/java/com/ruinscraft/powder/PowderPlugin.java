@@ -115,6 +115,10 @@ public class PowderPlugin extends JavaPlugin {
 		return storage;
 	}
 	
+	public boolean useStorage() {
+		return getStorage() != null;
+	}
+	
 	public void loadPowderConfigs() {
 
 		powderConfigs = new ArrayList<FileConfiguration>();
