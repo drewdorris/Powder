@@ -76,9 +76,9 @@ public class MySqlStorage implements SqlStorage {
 				ps.setString(2, powder);
 				
 				ps.executeUpdate();
+				
+				ps.close();
 			}
-			
-			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
