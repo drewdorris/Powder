@@ -20,16 +20,45 @@ import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.SoundEffect;
+import com.ruinscraft.powder.tasks.LoadPlayerFromDatabaseTask;
 import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.tasks.SavePlayerToDatabaseTask;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderUtil {
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
-	
+
+	public static void sendPrefixMessage(Player player, Object message, String label) {
+
+		if (!(message instanceof String) && !(message instanceof BaseComponent)) {
+			return;
+		}
+		if (message instanceof String) {
+			String messageText = (String) message;
+			message = new TextComponent(messageText);
+		}
+
+		BaseComponent fullMessage = new TextComponent();
+		TextComponent prefix = new TextComponent(PowderPlugin.PREFIX);
+		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder("/" + label).color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
+		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
+		fullMessage.addExtra(prefix);
+		fullMessage.addExtra((TextComponent) message);
+
+		player.spigot().sendMessage(fullMessage);
+
+	}
+
 	public static URL readURL(String urlName) {
 
 		URL url;
@@ -57,9 +86,9 @@ public class PowderUtil {
 		return url;
 
 	}
-	
+
 	public static InputStream getInputStreamFromURL(URL url) {
-		
+
 		HttpURLConnection httpConnection;
 		InputStream stream;
 		try {
@@ -68,9 +97,9 @@ public class PowderUtil {
 			httpConnection.connect();
 
 			stream = httpConnection.getInputStream();
-			
+
 			if (httpConnection.getResponseCode() == 301) {
-				
+
 				String urlString = url.toString();
 				if (urlString.contains("https")) {
 					PowderPlugin.getInstance().getLogger().warning("Failed to load URL '" + urlString + "'.");
@@ -79,18 +108,56 @@ public class PowderUtil {
 				urlString = urlString.replaceAll("http", "https");
 				url = new URL(urlString);
 				return getInputStreamFromURL(url);
-				
+
 			} else if (!(httpConnection.getResponseCode() == 200)) {
 				PowderPlugin.getInstance().getLogger().warning("Error" + httpConnection.getResponseCode() + " while attempting to read URL: " + url.toString());
 				return null;
 			}
-			
+
 		} catch (IOException io) {
 			return null;
 		}
-		
+
 		return stream;
-		
+
+	}
+
+	public static void savePlayerToDatabase(Player player) {
+
+		if (!PowderPlugin.getInstance().useStorage()) { 
+			return; 
+		}
+
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+
+		List<String> powdersToSave = new ArrayList<>();
+
+		for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+			if (powderTask.getMap().isRepeating() || !powderTask.getMap().getDusts().isEmpty()) {
+				powdersToSave.add(powderTask.getMap().getName());
+			}
+
+			powderHandler.removePowderTask(powderTask);
+		}
+
+		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
+				PowderPlugin.getInstance(),
+				new SavePlayerToDatabaseTask(player.getUniqueId(), powdersToSave)
+				);
+
+	}
+
+	public static void loadPlayerFromDatabase(Player player) {
+
+		if (!PowderPlugin.getInstance().useStorage()) { 
+			return; 
+		}
+
+		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
+				PowderPlugin.getInstance(), 
+				new LoadPlayerFromDatabaseTask(player.getUniqueId())
+				);
+
 	}
 
 	public static double getDirLengthX(double rot, double spacing) {

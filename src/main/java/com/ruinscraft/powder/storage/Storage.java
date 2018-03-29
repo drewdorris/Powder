@@ -7,7 +7,7 @@ import java.util.UUID;
 public interface Storage extends Closeable {
 
 	List<String> getEnabledPowders(UUID uuid);
-	
+
 	void saveEnabledPowders(UUID uuid, List<String> powders);
-	
+
 }

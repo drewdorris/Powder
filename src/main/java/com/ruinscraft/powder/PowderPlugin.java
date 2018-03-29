@@ -10,10 +10,12 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitScheduler;
 
@@ -30,6 +32,8 @@ import com.ruinscraft.powder.tasks.PowderTask;
 import com.ruinscraft.powder.util.ImageUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class PowderPlugin extends JavaPlugin {
 
 	private static PowderPlugin instance;
@@ -39,8 +43,9 @@ public class PowderPlugin extends JavaPlugin {
 
 	private FileConfiguration config;
 	private List<FileConfiguration> powderConfigs;
-	
+
 	private Storage storage;
+	private boolean storageReady;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -58,12 +63,12 @@ public class PowderPlugin extends JavaPlugin {
 			String username = config.getString("storage.mysql.username");
 			String password = config.getString("storage.mysql.password");
 			String powdersTable = config.getString("storage.mysql.table");
-			
+
 			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
-			
+
 			getLogger().info("Using MySQL storage");
 		}
-		
+
 		getCommand("powder").setExecutor(new PowderCommand());
 
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
@@ -93,7 +98,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void onDisable() {
 		powderHandler.clearEverything();
-		
+
 		if (useStorage()) {
 			try {
 				storage.close();
@@ -101,7 +106,7 @@ public class PowderPlugin extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
-		
+
 		instance = null;
 	}
 
@@ -116,15 +121,15 @@ public class PowderPlugin extends JavaPlugin {
 	public List<FileConfiguration> getPowderConfigs() {
 		return powderConfigs;
 	}
-	
+
 	public Storage getStorage() {
 		return storage;
 	}
-	
+
 	public boolean useStorage() {
 		return getStorage() != null;
 	}
-	
+
 	public void loadPowderConfigs() {
 
 		powderConfigs = new ArrayList<FileConfiguration>();
@@ -148,11 +153,11 @@ public class PowderPlugin extends JavaPlugin {
 			} else if (url != null) {
 
 				InputStream stream = PowderUtil.getInputStreamFromURL(url);
-				
+
 				if (stream == null) {
 					continue;
 				}
-				
+
 				reader = new BufferedReader(new InputStreamReader(stream));
 				powderConfig = YamlConfiguration.loadConfiguration(reader);
 
@@ -169,6 +174,8 @@ public class PowderPlugin extends JavaPlugin {
 
 	@SuppressWarnings("unchecked")
 	public void handleConfig() {
+
+		storageReady = false;
 
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
@@ -187,12 +194,30 @@ public class PowderPlugin extends JavaPlugin {
 			powderConfigs.add(powderConfig);
 		}
 
+		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
+				PowderPlugin.getInstance(),
+				new Runnable() { 
+
+					@Override
+					public void run() { 
+						Bukkit.getOnlinePlayers().forEach(player -> PowderUtil.savePlayerToDatabase(player));
+					} 
+
+				});
+		
 		cleanHandlers();
 
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 
 			@Override
 			public void run() {
+
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					if (player.hasPermission("powder.reload")) {
+						PowderUtil.sendPrefixMessage(player,
+								ChatColor.GRAY + "Loading Powders...", "powder");
+					}
+				}
 
 				boolean categoriesEnabled = config.getBoolean("categoriesEnabled", false);
 				powderHandler.setIfCategoriesEnabled(categoriesEnabled);
@@ -493,6 +518,8 @@ public class PowderPlugin extends JavaPlugin {
 
 				}
 
+				storageReady = true;
+
 				// do this again to load {total}
 				if (categoriesEnabled) {
 					for (String s : config.getConfigurationSection("categories").getKeys(false)) {
@@ -503,16 +530,26 @@ public class PowderPlugin extends JavaPlugin {
 					}
 				}
 
+				String powderAmount = String.valueOf(powderNames.size());
+
 				StringBuilder msg = new StringBuilder();
 				msg.append("Loaded Powders: ");
 				for (String effect : powderNames) {
 					if (powderNames.get(powderNames.size() - 1).equals(effect)) {
-						msg.append(effect + ". " + powderNames.size() + " total!");
+						msg.append(effect + ". " + powderAmount + " total!");
 					} else {
 						msg.append(effect + ", ");
 					}
 				}
 				getLogger().info(msg.toString());
+
+				for (Player player : Bukkit.getOnlinePlayers()) {
+					PowderUtil.loadPlayerFromDatabase(player);
+					if (player.hasPermission("powder.reload")) {
+						PowderUtil.sendPrefixMessage(player,
+								ChatColor.GRAY + "All Powders loaded! (" + powderAmount + " total)", "powder");
+					}
+				}
 
 			}
 
@@ -522,6 +559,10 @@ public class PowderPlugin extends JavaPlugin {
 
 	public PowderHandler getPowderHandler() {
 		return powderHandler;
+	}
+
+	public Boolean isStorageReady() {
+		return storageReady;
 	}
 
 }

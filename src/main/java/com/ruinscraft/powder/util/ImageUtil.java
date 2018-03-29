@@ -23,7 +23,7 @@ public class ImageUtil {
 	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
 
 		try {
-			
+
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
 			if (stream == null) {
 				throw new IOException("Error while attempting to read URL: " + url.toString());

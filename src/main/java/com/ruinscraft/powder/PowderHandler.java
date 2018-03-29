@@ -2,8 +2,10 @@ package com.ruinscraft.powder;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.bukkit.entity.Player;
 
@@ -14,14 +16,19 @@ import com.ruinscraft.powder.util.PowderUtil;
 public class PowderHandler {
 
 	private List<Powder> powders;
-	private List<PowderTask> powderTasks;
+	private Set<PowderTask> powderTasks;
 	private Map<String, String> categories;
 	private boolean categoriesEnabled;
 
 	public PowderHandler() {
 		powders = new ArrayList<Powder>();
-		powderTasks = new ArrayList<PowderTask>();
+		powderTasks = new HashSet<PowderTask>();
 		categories = new HashMap<String, String>();
+	}
+
+	public void clearEverything() {
+		powders = null;
+		clearAllTasks();
 	}
 
 	public List<Powder> getPowders() {
@@ -54,13 +61,57 @@ public class PowderHandler {
 		powders.add(powder);
 	}
 
-	public List<PowderTask> getPowderTasks() {
+	public Set<PowderTask> getPowderTasks() {
 		return powderTasks;
 	}
 
-	public void clearEverything() {
-		powders = null;
-		clearAllTasks();
+	public PowderTask getPowderTask(int taskID) {
+		for (PowderTask powderTask : powderTasks) {
+			for (Integer otherTaskID : powderTask.getTaskIds()) {
+				if (otherTaskID == taskID) {
+					return powderTask;
+				}
+			}
+		}
+		return null;
+	}
+
+	public Set<PowderTask> getPowderTasks(Player player) {
+		Set<PowderTask> playerPowderTasks = new HashSet<>();
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getPlayer().equals(player)) {
+				playerPowderTasks.add(powderTask);
+			}
+		}
+		return playerPowderTasks;
+	}
+
+	public Set<PowderTask> getPowderTasks(Player player, Powder powder) {
+		Set<PowderTask> playerPowderTasks = new HashSet<>();
+		for (PowderTask powderTask : getPowderTasks(player)) {
+			if (powderTask.getMap().equals(powder)) {
+				playerPowderTasks.add(powderTask);
+			}
+		}
+		return playerPowderTasks;
+	}
+
+	public Set<Player> getPowderTaskUsers(Powder powder) {
+		Set<Player> players = new HashSet<>();
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getMap().equals(powder)) {
+				players.add(powderTask.getPlayer());
+			}
+		}
+		return players;
+	}
+
+	public Set<Player> getAllPowderTaskUsers() {
+		Set<Player> players = new HashSet<>();
+		for (PowderTask powderTask : powderTasks) {
+			players.add(powderTask.getPlayer());
+		}
+		return players;
 	}
 
 	public void clearAllTasks() {
@@ -83,47 +134,6 @@ public class PowderHandler {
 			PowderPlugin.getInstance().getServer().getScheduler().cancelTask(taskID);
 		}
 		powderTasks.remove(powderTask);
-	}
-
-	public PowderTask getPowderTask(int taskID) {
-		for (PowderTask powderTask : powderTasks) {
-			for (Integer otherTaskID : powderTask.getTaskIds()) {
-				if (otherTaskID == taskID) {
-					return powderTask;
-				}
-			}
-		}
-		return null;
-	}
-
-	public List<PowderTask> getPowderTasks(Player player) {
-		List<PowderTask> playerPowderTasks = new ArrayList<>();
-		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getPlayer().equals(player)) {
-				playerPowderTasks.add(powderTask);
-			}
-		}
-		return playerPowderTasks;
-	}
-
-	public List<PowderTask> getPowderTasks(Player player, Powder powder) {
-		List<PowderTask> playerPowderTasks = new ArrayList<>();
-		for (PowderTask powderTask : getPowderTasks(player)) {
-			if (powderTask.getMap().equals(powder)) {
-				playerPowderTasks.add(powderTask);
-			}
-		}
-		return playerPowderTasks;
-	}
-
-	public List<Player> getPowderTaskUsers(Powder powder) {
-		List<Player> players = new ArrayList<>();
-		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getMap().equals(powder)) {
-				players.add(powderTask.getPlayer());
-			}
-		}
-		return players;
 	}
 
 	public Map<String, String> getCategories() {
@@ -175,12 +185,12 @@ public class PowderHandler {
 				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))));
 	}
 
-	public void setIfCategoriesEnabled(boolean categoriesEnabled) {
-		this.categoriesEnabled = categoriesEnabled;
-	}
-
 	public boolean categoriesEnabled() {
 		return categoriesEnabled;
+	}
+
+	public void setIfCategoriesEnabled(boolean categoriesEnabled) {
+		this.categoriesEnabled = categoriesEnabled;
 	}
 
 }

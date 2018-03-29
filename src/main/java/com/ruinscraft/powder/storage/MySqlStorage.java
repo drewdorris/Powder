@@ -15,52 +15,52 @@ public class MySqlStorage implements SqlStorage {
 
 	private final String powdersTable;
 	private final HikariDataSource hikari;
-	
+
 	public MySqlStorage(String host, int port, String database, String username, String password, String powdersTable) {
 		this.powdersTable = powdersTable;
-		
+
 		hikari = new HikariDataSource();
 		hikari.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
 		hikari.setUsername(username);
 		hikari.setPassword(password);
-		
+
 		createTable();
 	}
-	
+
 	@Override
 	public void createTable() {
 		try (Connection c = getConnection()) {
 			PreparedStatement ps = c.prepareStatement("CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));");
-			
+
 			ps.executeUpdate();
-			
+
 			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public List<String> getEnabledPowders(UUID uuid) {
 		List<String> powders = new ArrayList<>();
-		
+
 		try (Connection c = getConnection()) {
 			PreparedStatement ps = c.prepareStatement("SELECT * FROM " + powdersTable + " WHERE uuid = ?;");
-			
+
 			ps.setString(1, uuid.toString());
-			
+
 			ResultSet rs = ps.executeQuery();
-			
+
 			while (rs.next()) {
 				powders.add(rs.getString("powder"));
 			}
-			
+
 			ps.close();
 			rs.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-		
+
 		return powders;
 	}
 
@@ -68,10 +68,10 @@ public class MySqlStorage implements SqlStorage {
 	public void saveEnabledPowders(UUID uuid, List<String> powders) {
 		try (Connection c = getConnection()) {
 			PreparedStatement ps = null;
-			
+
 			ps = c.prepareStatement("DELETE FROM " + powdersTable + " WHERE uuid = ?");
 			ps.setString(1, uuid.toString());
-			
+
 			ps.executeUpdate();
 
 			ps.close();
@@ -79,9 +79,9 @@ public class MySqlStorage implements SqlStorage {
 				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
 				ps.setString(1, uuid.toString());
 				ps.setString(2, powder);
-				
+
 				ps.executeUpdate();
-				
+
 				ps.close();
 			}
 		} catch (SQLException e) {
@@ -98,5 +98,5 @@ public class MySqlStorage implements SqlStorage {
 	public void close() throws IOException {
 		hikari.close();
 	}
-	
+
 }

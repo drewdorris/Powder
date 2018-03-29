@@ -1,0 +1,479 @@
+## # #  #
+## Powders configuration
+## # #  #
+##
+## Permission node for each Powder:
+## powder.powder.{name-of-powder}
+## Example: powder.powder.fire
+## 
+## 
+## name:
+##   Display name of the Powder (no spaces) (required)
+## 
+## pitch:
+##   If true, the Powder will follow the height of a player's eye direction (default false)
+## 
+## hidden:
+##   If true, the Powder will be hidden from the list of Powders if you don't have permission to use it (default false)
+## 
+## repeating:
+##   If true, the Powder will repeat every given amount of ticks ("delay" value is required) (default false)
+## 
+## delay:
+##   Sets the amount of ticks between each iteration, if "repeating" is true
+## 
+## sounds:
+##   Example: 'BLOCK_NOTE_PLING;4.0;1.50;20'
+##   This will send the BLOCK_NOTE_PLING sound effect at volume 4.0 and pitch 1.50 after 20 ticks.
+##     BLOCK_NOTE_PLING:
+##       The sound effect to play
+##       List of sounds: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
+##     4.0:
+##       Volume of the sound effect played
+##       1.0 is the loudest a sound effect can be, but a value higher than 1 increases the area the sound effect is heard
+##     1.50:
+##       Pitch of the sound effect played
+##       Ranges from 0.5-2.0
+##     20:
+##       How many ticks to wait after the command is sent before sending the sound effect
+## 
+## dusts:
+##   Example: 'A;2;1;30'
+##   This will randomly spawn the particle assigned to 'A' in a random location within the radius of 2 blocks and height of 1 block, 30 particles a minute.
+##     A:
+##       The character with an assigned particle to send
+##     2:
+##       Sets the radius of where the particle can be spawned from the player
+##     1:
+##       Sets the height & depth of where the particle can be spawned
+##     30:
+##       How many particles to spawn per minute (max 1200)
+## 
+## spacing:
+##   How far apart each particle in the particle map should be
+##   A value of .5 will spawn particles in the map .5 blocks apart from each other
+## 
+## map:
+##   A layer is a list of particles like:
+##   '.....BBBBB.....'
+##   '......BAB......'
+##   '.......B.......'
+##   Each section separated by {value} is treated as a layer
+##   Each section separated by [value] is treated as a set of layers
+##   All layers in a set of layers should be the same size
+##   {value} -- How much spacing in front of/behind the user the following layer should be
+##   [value] -- How many ticks the following set of layers should be sent after the command is sent
+##   The map must contain a '{0}' layer to determine the location of the player in relation to the size of the map
+##   The map with '{0}' must contain a '?' to signify the player location
+##   The location of all layers is then determined by how far up & over the player is in the '{0}' layer
+##   '.' signifies air
+##   Characters ('A', 'b' etc) signify a specific particle, listed here: https://github.com/Ruinscraft/Powder/wiki/Particles-&-characters-configuration
+##   Characters may only be A-Z uppercase and lowercase
+## 
+## changes:
+##   Example: 'A;REDSTONE;244;151;26;1'
+##   This will alter the 'A' character for the entire Powder into a 'REDSTONE' particle, with x/y/z offsets, and an extra data value of 1.
+##     A:
+##       The character being altered (https://github.com/Ruinscraft/Powder/wiki/Particles-&-characters-configuration)
+##     REDSTONE:
+##       The particle that the character is now being assigned to
+##     244;151;26:
+##       The x, y, and z offsets for the particle
+##       These offsets will do different things for different particles; more info found here:
+##       https://minecraft.gamepedia.com/Commands/particle
+##       These offsets may alter the color of the particle, alter the position, etc
+##     1:
+##       An extra data value which behaves differently for various particles -- more info in the link above ("speed" param)
+##
+## # #  #  
+
+powders:
+  firewithin:
+    name: 'FireWithin'
+    changes:
+      - 'A;REDSTONE;244;0;0'
+      - 'B;REDSTONE;244;100;0'
+      - 'C;REDSTONE;244;244;0'
+    dusts:
+      - 'A;1;1.5;300'
+      - 'B;.7;1.4;300'
+      - 'C;.3;.9;300'
+  flames:
+    name: 'Flames'
+    changes:
+      - 'C;REDSTONE;244;244;0'
+    dusts:
+      - 'S;.7;1;120'
+      - 'C;.5;.8;60'
+  angry:
+    name: 'Angry'
+    sounds:
+      - 'ENTITY_VILLAGER_HURT;1;1;0'
+      - 'ENTITY_VILLAGER_NO;1;1;20'
+    changes:
+      - 'A;REDSTONE;244;0;0'
+    dusts:
+      - 'A;.9;1;150'
+      - 'q;.7;1;90'
+  heart:
+    name: 'Heart'
+    pitch: true
+    spacing: .21
+    map:
+      - '{0}'
+      - '....A.....A....'
+      - '...AAA...AAA...'
+      - '..AA.AA.AA.AA..'
+      - '.AA...AAA...AA.'
+      - '.AA.........AA.'
+      - '..A.........A..'
+      - '..AA.......AA..'
+      - '...AA.....AA...'
+      - '....A.....A....'
+      - '....AA...AA....'
+      - '.....AA.AA.....'
+      - '......AAA......'
+      - '.......A.......'
+      - '...............'
+      - '...............'
+      - '.......?.......'
+  laughing:
+    name: 'LaughingEmoji'
+    pitch: true
+    spacing: .12
+    sounds:
+      - 'BLOCK_NOTE_CHIME;1;.75;0'
+      - 'BLOCK_NOTE_CHIME;1;.85;1'
+      - 'BLOCK_NOTE_CHIME;1;.95;2'
+      - 'BLOCK_NOTE_CHIME;1;1.1;3'
+      - 'BLOCK_NOTE_CHIME;1;1.2;4'
+      - 'BLOCK_NOTE_CHIME;1;1.3;5'
+      - 'BLOCK_NOTE_CHIME;1;1.4;6'
+      - 'BLOCK_NOTE_CHIME;1;1.5;7'
+    map:
+      - '{0}'
+      - '..............AAAAAA..............'
+      - '...........AAAAAAAAAAAA...........'
+      - '.........AAAAABCCCCBAAAAA.........'
+      - '.......AAAABCCCCCCCCCCBAAAA.......'
+      - '......AAACCCCCCCCCCCCCCCCAAA......'
+      - '.....AAACCCCCCCCCCCCCCCCCCBAA.....'
+      - '....AAACCCCCCCCCCCCCCCCCCCCAAA....'
+      - '...AAADDCCCCCCCCCCCCCCCCCCDDBAA...'
+      - '..AAADDDDDDDDDDDDDDDDDDDDDDDDAAA..'
+      - '..AABDDDDDDDDDDDDDDDDDDDDDDDDBAA..'
+      - '.AABDDDDDDDDDDDDDDDDDDDDDDDDDDBAA.'
+      - '.AABBDDDDDDDDDDDDDDDDDDDDDDDDBBAA.'
+      - '.AABBBBEEEDDDDDDDDDDDDDDEEEBBBBBAA'
+      - 'AABBBBEEEFBBBBDDDDDDBBBBFFEEBBBBAA'
+      - 'AABBBEEFBBBBBBBBBBBBBBBBBBFEEBBBAA'
+      - 'AABBEEBBBBBBBBBBBBBBBBBBBBBFEEBBAA'
+      - 'AABBEBBEEEGGGGBBBBBBGGGGEEEBFEBBAA'
+      - 'AABBBBEHHGGGGGGBBBBGGGGGGHHEBBBBAA'
+      - 'AABBBHHHHBBBFFFBBBBFFFBBBHHHHBBBAA'
+      - 'AABBHHIIHBBBBBBBBBBBBBBBBHJIHHBBAA'
+      - 'AABHHIJIHGGGBBBBBBBBBBGGGHIIIHHBAA'
+      - 'AHHJJJJJHEEEEEEGGGGEEEEEEHHJJIJHHA'
+      - 'HHJJJJJHKKKKKKEEEEEEKKKKKKHJJJJJHH'
+      - 'HJJJJJJHKKKKKKKLLLLKKKKKKKHJJJJJJH'
+      - 'HJJJJJJHEEKKKKKLLLLKKKKKEEHJJJJJJH'
+      - 'HJJJJJJHGGEEEEEEEEEEEEEEGGHJJJJJJH'
+      - 'HHJJJJHHGMMMGGGGGGGGGGMMMGHHJJJJJH'
+      - '.HJJJJHBFGMMMMMMMMMMMMMMGFBHHJJJH.'
+      - '..HHHHABBFGGMMMMMMMMMMGGFBBAHHHH..'
+      - '.....AABBBFFGGMMMMMMGGFFBBBAAA....'
+      - '......AABBBBFFGGGGGGFFBBBBAAA.....'
+      - '.......AAABBBBBBBBBBBBBBAAA.......'
+      - '........AAAABBBBBBBBBBAAAA........'
+      - '..........AAAAAAAAAAAAAA..........'
+      - '.............AAAAAAAA.............'
+      - '..................................'
+      - '..................................'
+      - '..................................'
+      - '..................................'
+      - '..................................'
+      - '..................................'
+      - '................?.................'
+    changes:
+      - 'A;REDSTONE;244;151;26'
+      - 'B;REDSTONE;253;191;46'
+      - 'C;REDSTONE;255;234;188'
+      - 'D;REDSTONE;255;216;114'
+      - 'E;REDSTONE;107;68;7'
+      - 'F;REDSTONE;229;220;46'
+      - 'G;REDSTONE;151;98;16'
+      - 'H;REDSTONE;3;137;209'
+      - 'I;REDSTONE;230;243;254'
+      - 'J;REDSTONE;191;232;255'
+      - 'K;REDSTONE;233;233;232'
+      - 'L;REDSTONE;241;245;252'
+      - 'M;REDSTONE;198;126;20'
+  alert:
+    name: 'Alert'
+    sounds:
+      - 'BLOCK_NOTE_PLING;2;1.45;0'
+      - 'BLOCK_NOTE_PLING;2;1.52;0'
+      - 'BLOCK_NOTE_PLING;2;1.60;0'
+      - 'BLOCK_NOTE_PLING;2;1.99;0'
+    repeating: true
+    delay: 50
+    changes:
+      - 'A;REDSTONE;255;0;50'
+    spacing: .11
+    map:
+      - '[0]'
+      - '{-1}'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.........?.........'
+      - '{0}'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.........?.........'
+      - '{1}'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '.AAA....AAA....AAA.'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '...................'
+      - '.........?.........'
+  bomb:
+    name: 'Bomb'
+    sounds:
+      - 'BLOCK_NOTE_PLING;1;0.90;0'
+      - 'BLOCK_NOTE_PLING;1;0.95;7'
+      - 'BLOCK_NOTE_PLING;1;1.00;14'
+      - 'BLOCK_NOTE_PLING;1;1.05;21'
+      - 'BLOCK_NOTE_PLING;1;1.10;28'
+      - 'BLOCK_NOTE_PLING;1;1.15;34'
+      - 'BLOCK_NOTE_PLING;1;1.20;40'
+      - 'BLOCK_NOTE_PLING;1;1.25;45'
+      - 'BLOCK_NOTE_PLING;1;1.30;50'
+      - 'BLOCK_NOTE_PLING;1;1.35;54'
+      - 'BLOCK_NOTE_PLING;1;1.40;58'
+      - 'BLOCK_NOTE_PLING;1;1.45;61'
+      - 'BLOCK_NOTE_PLING;1;1.50;64'
+      - 'BLOCK_NOTE_PLING;1;1.55;66'
+      - 'BLOCK_NOTE_PLING;1;1.60;68'
+      - 'BLOCK_NOTE_PLING;1;1.65;69'
+      - 'BLOCK_NOTE_PLING;1;1.70;70'
+      - 'BLOCK_NOTE_PLING;1;1.75;71'
+      - 'BLOCK_NOTE_PLING;1;1.85;72'
+      - 'BLOCK_NOTE_PLING;1;1.95;73'
+      - 'ENTITY_GENERIC_EXPLODE;1;1;74'
+      - 'ENTITY_GENERIC_EXPLODE;1;1;74'
+      - 'ENTITY_GENERIC_EXPLODE;1;1;74'
+    changes:
+      - 'A;NOTE;63.75;0;0'
+      - 'D;NOTE;74.375;0;0'
+      - 'C;NOTE;85;0;0'
+      - 'B;NOTE;212.5;0;0'
+    spacing: .15
+    map:
+      - '[0]'
+      - '{0}'
+      - 'D........'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[7]'
+      - '{1}'
+      - '.D.......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[14]'
+      - '{2}'
+      - '.D.......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[21]'
+      - '{3}'
+      - '..D......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[28]'
+      - '{3}'
+      - '...C.....'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[34]'
+      - '{4}'
+      - '....C....'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[40]'
+      - '{3}'
+      - '.....C...'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[45]'
+      - '{3}'
+      - '......C..'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[50]'
+      - '{2}'
+      - '.......C.'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[54]'
+      - '{1}'
+      - '.......B.'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[58]'
+      - '{0}'
+      - '........B'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[61]'
+      - '{-1}'
+      - '.......B.'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[64]'
+      - '{-2}'
+      - '.......B.'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[66]'
+      - '{-3}'
+      - '......B..'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[68]'
+      - '{-3}'
+      - '.....A...'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[69]'
+      - '{-4}'
+      - '....A....'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[70]'
+      - '{-3}'
+      - '...A.....'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[71]'
+      - '{-3}'
+      - '..A......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[72]'
+      - '{-2}'
+      - '.A.......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[73]'
+      - '{-1}'
+      - '.A.......'
+      - '.........'
+      - '.........'
+      - '....?....'
+      - '[74]'
+      - '{0}'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPP?PPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'
+      - 'PPPPPPPPP'

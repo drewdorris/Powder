@@ -31,7 +31,7 @@ public class Dust {
 	public Long getFrequency() {
 		return frequency;
 	}
-	
+
 	public boolean isSingleOccurrence() {
 		return singleOccurrence;
 	}
