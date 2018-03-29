@@ -126,7 +126,7 @@ public class PowderUtil {
 		
 		PowderPlugin.getInstance().getStorage().saveEnabledPowders(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
 		
-		for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+		for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 			powderHandler.removePowderTask(powderTask);
 		}
 	}
@@ -140,7 +140,7 @@ public class PowderUtil {
 		List<String> enabledPowders = PowderPlugin.getInstance().getStorage().getEnabledPowders(player.getUniqueId());
 
 		for (String powderName : enabledPowders) {
-			PowderUtil.loadPowderFromName(player.getUniqueId(), powderName);
+			PowderUtil.loadPowderFromName(player, powderName);
 		}
 	}
 
@@ -181,7 +181,7 @@ public class PowderUtil {
 	public static boolean cancelPowder(final Player player, final Powder powder) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		boolean success = false;
-		for (PowderTask powderTask : powderHandler.getPowderTasks(player, powder)) {
+		for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId(), powder)) {
 			powderHandler.removePowderTask(powderTask);
 			success = true;
 		}
@@ -407,7 +407,7 @@ public class PowderUtil {
 
 		List<String> enabledPowders = new ArrayList<>();
 
-		for (PowderTask powderTask : powderHandler.getPowderTasks(Bukkit.getPlayer(uuid))) {
+		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			if (powderTask.getMap().isRepeating() || !powderTask.getMap().getDusts().isEmpty()) {
 				enabledPowders.add(powderTask.getMap().getName());
 			}
@@ -416,7 +416,7 @@ public class PowderUtil {
 		return enabledPowders;
 	}
 
-	public static void loadPowderFromName(UUID uuid, String powderName) {
+	public static void loadPowderFromName(Player player, String powderName) {
 		PowderHandler handler = PowderPlugin.getInstance().getPowderHandler();
 
 		Powder powder = handler.getPowder(powderName);
@@ -425,15 +425,15 @@ public class PowderUtil {
 			return;
 		}
 
-		if (!PowderCommand.hasPermission(Bukkit.getPlayer(uuid), powder)) {
+		if (!PowderCommand.hasPermission(player, powder)) {
 			return;
 		}
 
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		tasks.addAll(PowderUtil.createPowder(Bukkit.getPlayer(uuid), powder));
+		tasks.addAll(PowderUtil.createPowder(player, powder));
 
-		PowderTask powderTask = new PowderTask(Bukkit.getPlayer(uuid), tasks, powder);
+		PowderTask powderTask = new PowderTask(player.getUniqueId(), tasks, powder);
 		handler.addPowderTask(powderTask);
 	}
 

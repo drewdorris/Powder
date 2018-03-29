@@ -8,7 +8,9 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -92,12 +94,12 @@ public class PowderCommand implements CommandExecutor {
 							+ "Use '* cancel' to cancel all current active Powders.", label);
 					return false;
 				} else {
-					if (powderHandler.getPowderTasks(player).isEmpty()) {
+					if (powderHandler.getPowderTasks(player.getUniqueId()).isEmpty()) {
 						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "There are no Powders currently active.", label);
 						return false;
 					}
-					int amount = powderHandler.getPowderTasks(player).size();
-					for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+					int amount = powderHandler.getPowderTasks(player.getUniqueId()).size();
+					for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 						powderHandler.removePowderTask(powderTask);
 					}
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully cancelled all Powders! (" + 
@@ -210,7 +212,7 @@ public class PowderCommand implements CommandExecutor {
 
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
-				int taskAmount = powderHandler.getPowderTasks(player, powder).size();
+				int taskAmount = powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				if (PowderUtil.cancelPowder(player, powder)) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled! (" + 
 							taskAmount + " total)", label);
@@ -222,10 +224,10 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 
-		if (!(powderHandler.getPowderTasks(player, powder).isEmpty())) {
+		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 			if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
 				boolean success = false;
-				for (PowderTask powderTask : powderHandler.getPowderTasks(player, powder)) {
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId(), powder)) {
 					powderHandler.removePowderTask(powderTask);
 					success = true;
 				}
@@ -240,10 +242,10 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		int maxSize = PowderPlugin.getInstance().getConfig().getInt("maxPowdersAtOneTime");
-		if ((powderHandler.getPowderTasks(player).size() >= maxSize)) {
+		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
 			PowderUtil.sendPrefixMessage(player, 
 					ChatColor.RED + "You already have " + maxSize + " Powders active!", label);
-			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
 						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getMap().getName());
 				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -256,7 +258,7 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 		if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
-			for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
+			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				if (powderTask.getMap().equals(powder)) {
 					PowderUtil.sendPrefixMessage(player, 
 							ChatColor.RED + "'" + powder.getName() + "' is already active!", label);
@@ -303,7 +305,7 @@ public class PowderCommand implements CommandExecutor {
 					+ "Powder '" + powder.getName() + "' created!", label);
 		}
 
-		PowderTask powderTask = new PowderTask(player, tasks, powder);
+		PowderTask powderTask = new PowderTask(player.getUniqueId(), tasks, powder);
 		powderHandler.addPowderTask(powderTask);
 
 		return true;
@@ -331,16 +333,15 @@ public class PowderCommand implements CommandExecutor {
 	}
 
 	public static void notifyOfReload() {
-		List<Player> playersDoneAlready = new ArrayList<Player>();
+		List<UUID> playersDoneAlready = new ArrayList<>();
 		for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
-			if (playersDoneAlready.contains(powderTask.getPlayer())) {
+			if (playersDoneAlready.contains(powderTask.getPlayerUUID())) {
 				continue;
 			}
-			playersDoneAlready.add(powderTask.getPlayer());
-			PowderUtil.sendPrefixMessage(powderTask.getPlayer(), ChatColor.GRAY 
+			playersDoneAlready.add(powderTask.getPlayerUUID());
+			PowderUtil.sendPrefixMessage(Bukkit.getPlayer(powderTask.getPlayerUUID()), ChatColor.GRAY 
 					+ "Your Powders were cancelled due to " + "a reload.", "powder");
 		}
-		playersDoneAlready = null;
 	}
 
 	public static void helpMessage(Player player, String label) {
@@ -460,7 +461,7 @@ public class PowderCommand implements CommandExecutor {
 						new ComponentBuilder("You don't have permission to use '" + powder.getName() + "'.")
 						.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 				noPermPowders.add(powderMapText);
-			} else if (!(PowderPlugin.getInstance().getPowderHandler().getPowderTasks(player, powder).isEmpty())) {
+			} else if (!(PowderPlugin.getInstance().getPowderHandler().getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 				powderMapText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("'" + powder.getName() + "' is currently active. Click to cancel")
@@ -506,7 +507,7 @@ public class PowderCommand implements CommandExecutor {
 			TextComponent categoryText = new TextComponent(category);
 			String desc = categories.get(category);
 			for (Powder powder : powderHandler.getPowdersFromCategory(category)) {
-				if (!(PowderPlugin.getInstance().getPowderHandler().getPowderTasks(player, powder).isEmpty())) {
+				if (!(PowderPlugin.getInstance().getPowderHandler().getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 					categoryText.setColor(net.md_5.bungee.api.ChatColor.GREEN);
 					categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 							new ComponentBuilder(desc + " - " + "'" + category + "' contains currently active Powders.")

@@ -1,22 +1,21 @@
 package com.ruinscraft.powder.models;
 
 import java.util.List;
-
-import org.bukkit.entity.Player;
+import java.util.UUID;
 
 public class PowderTask {
 
-	private Player player;
+	private UUID player;
 	private List<Integer> tasks;
 	private Powder map;
 
-	public PowderTask(Player player, List<Integer> tasks, Powder map) {
+	public PowderTask(UUID player, List<Integer> tasks, Powder map) {
 		this.player = player;
 		this.tasks = tasks;
 		this.map = map;
 	}
 
-	public Player getPlayer() {
+	public UUID getPlayerUUID() {
 		return player;
 	}
 

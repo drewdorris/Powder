@@ -6,7 +6,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
@@ -76,19 +78,19 @@ public class PowderHandler {
 		return null;
 	}
 
-	public Set<PowderTask> getPowderTasks(Player player) {
+	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getPlayer().equals(player)) {
+			if (powderTask.getPlayerUUID().equals(uuid)) {
 				playerPowderTasks.add(powderTask);
 			}
 		}
 		return playerPowderTasks;
 	}
 
-	public Set<PowderTask> getPowderTasks(Player player, Powder powder) {
+	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
-		for (PowderTask powderTask : getPowderTasks(player)) {
+		for (PowderTask powderTask : getPowderTasks(uuid)) {
 			if (powderTask.getMap().equals(powder)) {
 				playerPowderTasks.add(powderTask);
 			}
@@ -100,7 +102,7 @@ public class PowderHandler {
 		Set<Player> players = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
 			if (powderTask.getMap().equals(powder)) {
-				players.add(powderTask.getPlayer());
+				players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
 			}
 		}
 		return players;
@@ -109,7 +111,7 @@ public class PowderHandler {
 	public Set<Player> getAllPowderTaskUsers() {
 		Set<Player> players = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			players.add(powderTask.getPlayer());
+			players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
 		}
 		return players;
 	}

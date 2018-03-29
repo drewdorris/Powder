@@ -74,6 +74,8 @@ public class PowderPlugin extends JavaPlugin {
 
 		PREFIX = PowderUtil.color(config.getString("prefix"));
 
+		powderHandler = new PowderHandler();
+		
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
@@ -188,15 +190,14 @@ public class PowderPlugin extends JavaPlugin {
 			FileConfiguration powderConfig = YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
 		}
-		
-		cleanHandlers();
 
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
-
 			@Override
 			public void run() {
 				// save all enabled powders to db
 				getStorage().saveAll();
+				
+				cleanHandlers();
 				
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (player.hasPermission("powder.reload")) {

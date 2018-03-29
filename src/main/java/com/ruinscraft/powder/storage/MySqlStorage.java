@@ -133,7 +133,7 @@ public class MySqlStorage implements SqlStorage {
 			List<String> enabledPowders = getEnabledPowders(onlinePlayer.getUniqueId());
 
 			for (String powderName : enabledPowders) {
-				PowderUtil.loadPowderFromName(onlinePlayer.getUniqueId(), powderName);
+				PowderUtil.loadPowderFromName(onlinePlayer, powderName);
 			}
 		}
 	}
