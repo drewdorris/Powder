@@ -10,7 +10,7 @@ import java.util.Set;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {

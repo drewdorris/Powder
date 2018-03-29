@@ -25,10 +25,10 @@ import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.ParticleName;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderParticle;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.SoundEffect;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
-import com.ruinscraft.powder.tasks.PowderTask;
 import com.ruinscraft.powder.util.ImageUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
@@ -45,7 +45,6 @@ public class PowderPlugin extends JavaPlugin {
 	private List<FileConfiguration> powderConfigs;
 
 	private Storage storage;
-	private boolean storageReady;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -172,11 +171,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	}
 
-	@SuppressWarnings("unchecked")
 	public void handleConfig() {
-
-		storageReady = false;
-
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
 			getLogger().info("config.yml not found, creating!");
@@ -193,17 +188,6 @@ public class PowderPlugin extends JavaPlugin {
 			FileConfiguration powderConfig = YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
 		}
-
-		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
-				PowderPlugin.getInstance(),
-				new Runnable() { 
-
-					@Override
-					public void run() { 
-						Bukkit.getOnlinePlayers().forEach(player -> PowderUtil.savePlayerToDatabase(player));
-					} 
-
-				});
 		
 		cleanHandlers();
 
@@ -211,7 +195,9 @@ public class PowderPlugin extends JavaPlugin {
 
 			@Override
 			public void run() {
-
+				// save all enabled powders to db
+				getStorage().saveAll();
+				
 				for (Player player : Bukkit.getOnlinePlayers()) {
 					if (player.hasPermission("powder.reload")) {
 						PowderUtil.sendPrefixMessage(player,
@@ -220,7 +206,9 @@ public class PowderPlugin extends JavaPlugin {
 				}
 
 				boolean categoriesEnabled = config.getBoolean("categoriesEnabled", false);
+				
 				powderHandler.setIfCategoriesEnabled(categoriesEnabled);
+				
 				if (categoriesEnabled) {
 					for (String s : config.getConfigurationSection("categories").getKeys(false)) {
 						powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
@@ -235,9 +223,7 @@ public class PowderPlugin extends JavaPlugin {
 				String powders = "powders.";
 
 				for (FileConfiguration powderConfig : powderConfigs) {
-
 					for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-
 						Powder powder = new Powder();
 
 						powder.setName(powderConfig.getString(powders + s + ".name", null));
@@ -270,7 +256,6 @@ public class PowderPlugin extends JavaPlugin {
 						}
 
 						for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
-
 							Sound sound;
 							String soundName;
 							soundName = t.substring(0, t.indexOf(";"));
@@ -287,11 +272,9 @@ public class PowderPlugin extends JavaPlugin {
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							float waitTime = Float.valueOf(t);
 							powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, waitTime));
-
 						}
 
 						for (String t : (List<String>) powderConfig.getList(powders + s + ".changes", new ArrayList<String>())) {
-
 							String enumName = t.substring(0, t.indexOf(";"));
 							t = t.replaceFirst(enumName + ";", "");
 							String particleName = t.substring(0, t.indexOf(";"));
@@ -328,11 +311,9 @@ public class PowderPlugin extends JavaPlugin {
 								}
 								powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff, data));
 							}
-
 						}
 
 						for (String t : (List<String>) powderConfig.getList(powders + s + ".dusts", new ArrayList<String>())) {
-
 							String dustName = t.substring(0, t.indexOf(";"));
 							PowderParticle powderParticle;
 							powderParticle = powder.getPowderParticle(dustName);
@@ -362,7 +343,6 @@ public class PowderPlugin extends JavaPlugin {
 								frequency = 20;
 							}
 							powder.addDust(new Dust(powderParticle, radius, height, frequency, false));
-
 						}
 
 						int tick = 0;
@@ -372,7 +352,6 @@ public class PowderPlugin extends JavaPlugin {
 						Layer layer = new Layer();
 
 						for (String t : (List<String>) powderConfig.getList(powders + s + ".map", new ArrayList<String>())) {
-
 							if (t.contains("[")) {
 								t = t.replace("[", "").replace("]", "");
 								try {
@@ -513,12 +492,8 @@ public class PowderPlugin extends JavaPlugin {
 						}
 						powderNames.add(powder.getName());
 						getPowderHandler().addPowder(powder);
-
 					}
-
 				}
-
-				storageReady = true;
 
 				// do this again to load {total}
 				if (categoriesEnabled) {
@@ -534,6 +509,7 @@ public class PowderPlugin extends JavaPlugin {
 
 				StringBuilder msg = new StringBuilder();
 				msg.append("Loaded Powders: ");
+				
 				for (String effect : powderNames) {
 					if (powderNames.get(powderNames.size() - 1).equals(effect)) {
 						msg.append(effect + ". " + powderAmount + " total!");
@@ -541,28 +517,24 @@ public class PowderPlugin extends JavaPlugin {
 						msg.append(effect + ", ");
 					}
 				}
+				
 				getLogger().info(msg.toString());
 
+				// load all saved powders from db
+				getStorage().loadAll();
+				
 				for (Player player : Bukkit.getOnlinePlayers()) {
-					PowderUtil.loadPlayerFromDatabase(player);
 					if (player.hasPermission("powder.reload")) {
 						PowderUtil.sendPrefixMessage(player,
 								ChatColor.GRAY + "All Powders loaded! (" + powderAmount + " total)", "powder");
 					}
 				}
-
 			}
-
 		});
-
 	}
 
 	public PowderHandler getPowderHandler() {
 		return powderHandler;
-	}
-
-	public Boolean isStorageReady() {
-		return storageReady;
 	}
 
 }

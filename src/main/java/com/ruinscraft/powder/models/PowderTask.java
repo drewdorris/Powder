@@ -1,10 +1,8 @@
-package com.ruinscraft.powder.tasks;
+package com.ruinscraft.powder.models;
 
 import java.util.List;
 
 import org.bukkit.entity.Player;
-
-import com.ruinscraft.powder.models.Powder;
 
 public class PowderTask {
 

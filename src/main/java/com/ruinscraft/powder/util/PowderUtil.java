@@ -7,11 +7,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.ruinscraft.powder.PowderCommand;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.models.Dust;
@@ -19,10 +21,8 @@ import com.ruinscraft.powder.models.Layer;
 import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderParticle;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.SoundEffect;
-import com.ruinscraft.powder.tasks.LoadPlayerFromDatabaseTask;
-import com.ruinscraft.powder.tasks.PowderTask;
-import com.ruinscraft.powder.tasks.SavePlayerToDatabaseTask;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -38,7 +38,6 @@ public class PowderUtil {
 	}
 
 	public static void sendPrefixMessage(Player player, Object message, String label) {
-
 		if (!(message instanceof String) && !(message instanceof BaseComponent)) {
 			return;
 		}
@@ -56,11 +55,9 @@ public class PowderUtil {
 		fullMessage.addExtra((TextComponent) message);
 
 		player.spigot().sendMessage(fullMessage);
-
 	}
 
 	public static URL readURL(String urlName) {
-
 		URL url;
 		try {
 			url = new URL(urlName);
@@ -84,11 +81,9 @@ public class PowderUtil {
 			return null;
 		}
 		return url;
-
 	}
 
 	public static InputStream getInputStreamFromURL(URL url) {
-
 		HttpURLConnection httpConnection;
 		InputStream stream;
 		try {
@@ -119,45 +114,34 @@ public class PowderUtil {
 		}
 
 		return stream;
-
 	}
 
-	public static void savePlayerToDatabase(Player player) {
-
+	// run async
+	public static void unloadPlayer(Player player) {
 		if (!PowderPlugin.getInstance().useStorage()) { 
 			return; 
 		}
-
+		
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-
-		List<String> powdersToSave = new ArrayList<>();
-
+		
+		PowderPlugin.getInstance().getStorage().saveEnabledPowders(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
+		
 		for (PowderTask powderTask : powderHandler.getPowderTasks(player)) {
-			if (powderTask.getMap().isRepeating() || !powderTask.getMap().getDusts().isEmpty()) {
-				powdersToSave.add(powderTask.getMap().getName());
-			}
-
 			powderHandler.removePowderTask(powderTask);
 		}
-
-		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
-				PowderPlugin.getInstance(),
-				new SavePlayerToDatabaseTask(player.getUniqueId(), powdersToSave)
-				);
-
 	}
 
-	public static void loadPlayerFromDatabase(Player player) {
-
+	// run async
+	public static void loadPlayer(Player player) {
 		if (!PowderPlugin.getInstance().useStorage()) { 
 			return; 
 		}
 
-		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(
-				PowderPlugin.getInstance(), 
-				new LoadPlayerFromDatabaseTask(player.getUniqueId())
-				);
+		List<String> enabledPowders = PowderPlugin.getInstance().getStorage().getEnabledPowders(player.getUniqueId());
 
+		for (String powderName : enabledPowders) {
+			PowderUtil.loadPowderFromName(player.getUniqueId(), powderName);
+		}
 	}
 
 	public static double getDirLengthX(double rot, double spacing) {
@@ -169,7 +153,6 @@ public class PowderUtil {
 	}
 
 	public static List<Integer> createPowder(final Player player, final Powder powder) {
-
 		int task;
 		List<Integer> tasks = new ArrayList<Integer>();
 
@@ -193,11 +176,9 @@ public class PowderUtil {
 		}
 
 		return tasks;
-
 	}
 
-	public static Boolean cancelPowder(final Player player, final Powder powder) {
-
+	public static boolean cancelPowder(final Player player, final Powder powder) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		boolean success = false;
 		for (PowderTask powderTask : powderHandler.getPowderTasks(player, powder)) {
@@ -205,11 +186,9 @@ public class PowderUtil {
 			success = true;
 		}
 		return success;
-
 	}
 
 	public static List<Integer> createParticles(final Player player, final Powder powder) {
-
 		List<ParticleMatrix> particleMatrices = powder.getMatrices();
 
 		List<Integer> tasks = new ArrayList<Integer>();
@@ -340,11 +319,9 @@ public class PowderUtil {
 		}
 
 		return tasks;
-
 	}
 
 	public static List<Integer> createSounds(final Player player, final Powder powder) {
-
 		List<Integer> tasks = new ArrayList<Integer>();
 
 		for (SoundEffect sound : powder.getSoundEffects()) {
@@ -367,11 +344,9 @@ public class PowderUtil {
 		}
 
 		return tasks;
-
 	}
 
 	public static List<Integer> createDusts(final Player player, final Powder powder) {
-
 		List<Integer> tasks = new ArrayList<Integer>();
 
 		for (Dust dust : powder.getDusts()) {
@@ -407,11 +382,9 @@ public class PowderUtil {
 		}
 
 		return tasks;
-
 	}
 
 	public static void spawnDust(final Player player, final Dust dust) {
-
 		double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());
 		double radiusZoneZ = (Math.random() - .5) * (2 * dust.getRadius());
 		double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
@@ -427,7 +400,41 @@ public class PowderUtil {
 						(double) powderParticle.getData());
 			}
 		}
+	}
 
+	public static List<String> getEnabledPowderNames(UUID uuid) {
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+
+		List<String> enabledPowders = new ArrayList<>();
+
+		for (PowderTask powderTask : powderHandler.getPowderTasks(Bukkit.getPlayer(uuid))) {
+			if (powderTask.getMap().isRepeating() || !powderTask.getMap().getDusts().isEmpty()) {
+				enabledPowders.add(powderTask.getMap().getName());
+			}
+		}
+
+		return enabledPowders;
+	}
+
+	public static void loadPowderFromName(UUID uuid, String powderName) {
+		PowderHandler handler = PowderPlugin.getInstance().getPowderHandler();
+
+		Powder powder = handler.getPowder(powderName);
+
+		if (powder == null) {
+			return;
+		}
+
+		if (!PowderCommand.hasPermission(Bukkit.getPlayer(uuid), powder)) {
+			return;
+		}
+
+		List<Integer> tasks = new ArrayList<Integer>();
+
+		tasks.addAll(PowderUtil.createPowder(Bukkit.getPlayer(uuid), powder));
+
+		PowderTask powderTask = new PowderTask(Bukkit.getPlayer(uuid), tasks, powder);
+		handler.addPowderTask(powderTask);
 	}
 
 }

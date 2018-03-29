@@ -9,6 +9,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
+
+import com.ruinscraft.powder.util.PowderUtil;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class MySqlStorage implements SqlStorage {
@@ -23,6 +27,8 @@ public class MySqlStorage implements SqlStorage {
 		hikari.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
 		hikari.setUsername(username);
 		hikari.setPassword(password);
+		hikari.setPoolName("powder-pool");
+		hikari.setMaximumPoolSize(10);
 
 		createTable();
 	}
@@ -55,8 +61,8 @@ public class MySqlStorage implements SqlStorage {
 				powders.add(rs.getString("powder"));
 			}
 
-			ps.close();
 			rs.close();
+			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -75,17 +81,60 @@ public class MySqlStorage implements SqlStorage {
 			ps.executeUpdate();
 
 			ps.close();
+			
+			ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
+			
 			for (String powder : powders) {
-				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
 				ps.setString(1, uuid.toString());
 				ps.setString(2, powder);
+				ps.addBatch();
+			}
+			ps.executeBatch();
+			
+			ps.close();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	@Override
+	public void saveAll() {
+		try (Connection c = getConnection()) {
+			PreparedStatement ps = null;
+
+			for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+				ps = c.prepareStatement("DELETE FROM " + powdersTable + " WHERE uuid = ?");
+				ps.setString(1, onlinePlayer.getUniqueId().toString());
 
 				ps.executeUpdate();
 
 				ps.close();
+
+				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
+				
+				for (String powder : PowderUtil.getEnabledPowderNames(onlinePlayer.getUniqueId())) {
+					ps.setString(1, onlinePlayer.getUniqueId().toString());
+					ps.setString(2, powder);
+					ps.addBatch();
+				}
+				
+				ps.executeBatch();
+				
+				ps.close();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void loadAll() {
+		for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+			List<String> enabledPowders = getEnabledPowders(onlinePlayer.getUniqueId());
+
+			for (String powderName : enabledPowders) {
+				PowderUtil.loadPowderFromName(onlinePlayer.getUniqueId(), powderName);
+			}
 		}
 	}
 

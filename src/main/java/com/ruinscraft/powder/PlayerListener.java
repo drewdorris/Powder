@@ -1,5 +1,6 @@
 package com.ruinscraft.powder;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -13,18 +14,20 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuit(PlayerQuitEvent event) {
-
 		Player player = event.getPlayer();
-		PowderUtil.savePlayerToDatabase(player);
 
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			PowderUtil.unloadPlayer(player);
+		});		
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-
 		Player player = event.getPlayer();
-		PowderUtil.loadPlayerFromDatabase(player);
-
+		
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			PowderUtil.loadPlayer(player);
+		});
 	}
 
 }

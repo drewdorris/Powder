@@ -16,7 +16,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.tasks.PowderTask;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -30,7 +30,6 @@ public class PowderCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-
 		if (!(sender instanceof Player)) {
 			try {
 				if (args[0].equals("reload")) {
@@ -308,11 +307,9 @@ public class PowderCommand implements CommandExecutor {
 		powderHandler.addPowderTask(powderTask);
 
 		return true;
-
 	}
 
 	public static boolean hasPermission(Player player, Powder powder) {
-
 		if (player.hasPermission("powder.powder.*")) {
 			return true;
 		}
@@ -331,11 +328,9 @@ public class PowderCommand implements CommandExecutor {
 			}
 		}
 		return true;
-
 	}
 
 	public static void notifyOfReload() {
-
 		List<Player> playersDoneAlready = new ArrayList<Player>();
 		for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
 			if (playersDoneAlready.contains(powderTask.getPlayer())) {
@@ -346,11 +341,9 @@ public class PowderCommand implements CommandExecutor {
 					+ "Your Powders were cancelled due to " + "a reload.", "powder");
 		}
 		playersDoneAlready = null;
-
 	}
 
 	public static void helpMessage(Player player, String label) {
-
 		PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder Help", label);
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> " + ChatColor.GRAY + "- Use a Powder"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> cancel " + ChatColor.GRAY + "- Cancel a Powder"); 
@@ -362,11 +355,9 @@ public class PowderCommand implements CommandExecutor {
 		}
 		player.sendMessage(ChatColor.GRAY + "It's also possible to " + ChatColor.RED + "click things in /" 
 				+ label + ChatColor.GRAY + " to enable or cancel Powders. Click the prefix in a message to return to the menu."); 
-
 	}
 
 	public static List<TextComponent> sortAlphabetically(List<TextComponent> powders) {
-
 		List<String> names = new ArrayList<String>(powders.size()); 
 
 		for (TextComponent powderName : powders) {
@@ -386,7 +377,6 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		return newList;
-
 	}
 
 	public static void paginate(Player player, List<TextComponent> list, String input, int page, int pageLength, String label) {
@@ -446,7 +436,6 @@ public class PowderCommand implements CommandExecutor {
 	}
 
 	public static void listPowders(Player player, List<Powder> powders, String input, int page, int pageLength, String label) {
-
 		TextComponent helpPrefix = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "Use " +
 				net.md_5.bungee.api.ChatColor.RED + "/" + label +  " help" + net.md_5.bungee.api.ChatColor.GRAY + " for help.");
 		helpPrefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -496,11 +485,9 @@ public class PowderCommand implements CommandExecutor {
 		listOfPowders.addAll(ableToPowders);
 		listOfPowders.addAll(noPermPowders);
 		paginate(player, listOfPowders, input, page, pageLength, label);
-
 	}
 
 	public static void listCategories(Player player, Map<String, String> categories, String input, int page, int pageLength, String label) {
-
 		TextComponent helpPrefix = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "Use " +
 				net.md_5.bungee.api.ChatColor.RED + "/" + label +  " help" + net.md_5.bungee.api.ChatColor.GRAY + " for help.");
 		helpPrefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -576,7 +563,6 @@ public class PowderCommand implements CommandExecutor {
 		listOfCategories.addAll(noPermCategories);
 
 		paginate(player, listOfCategories, input, page, pageLength, label);
-
 	}
 
 }

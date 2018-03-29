@@ -21,7 +21,6 @@ import com.ruinscraft.powder.models.PowderParticle;
 public class ImageUtil {
 
 	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
-
 		try {
 
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
@@ -39,11 +38,9 @@ public class ImageUtil {
 		}
 
 		return rows;
-
 	}
 
 	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, String fileName, int resizedWidth, int resizedHeight) throws IOException {
-
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
 			BufferedImage bufferedImage;
@@ -58,7 +55,6 @@ public class ImageUtil {
 		}
 
 		return rows;
-
 	}
 
 	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height){
@@ -83,7 +79,6 @@ public class ImageUtil {
 
 	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, BufferedImage bufferedImage, 
 			int resizedWidth, int resizedHeight) {
-
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
 		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
@@ -121,7 +116,6 @@ public class ImageUtil {
 		}
 
 		return rows;
-
 	}
 
 }

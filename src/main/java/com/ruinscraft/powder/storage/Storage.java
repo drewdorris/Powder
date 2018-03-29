@@ -10,4 +10,8 @@ public interface Storage extends Closeable {
 
 	void saveEnabledPowders(UUID uuid, List<String> powders);
 
+	void saveAll();
+	
+	void loadAll();
+	
 }
