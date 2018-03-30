@@ -36,7 +36,14 @@ public class PowderCommand implements CommandExecutor {
 			try {
 				if (args[0].equals("reload")) {
 					notifyOfReload();
-					PowderPlugin.getInstance().handleConfig();
+					PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
+						@Override
+						public void run() {
+							
+							reload();
+							
+						}
+					});
 				} else {
 					PowderPlugin.getInstance().getLogger().info(
 							PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
@@ -83,7 +90,14 @@ public class PowderCommand implements CommandExecutor {
 					return false;
 				}
 				notifyOfReload();
-				PowderPlugin.getInstance().handleConfig();
+				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
+					@Override
+					public void run() {
+						
+						reload();
+
+					}
+				});
 
 				return true;
 
@@ -309,6 +323,16 @@ public class PowderCommand implements CommandExecutor {
 		powderHandler.addPowderTask(powderTask);
 
 		return true;
+	}
+	
+	public void reload() {
+		// save all enabled powders to db
+		PowderPlugin.getInstance().getStorage().saveAll();
+		
+		PowderPlugin.getInstance().loadPowdersFromSources();
+		
+		// load all saved powders from db
+		PowderPlugin.getInstance().getStorage().loadAll();
 	}
 
 	public static boolean hasPermission(Player player, Powder powder) {
