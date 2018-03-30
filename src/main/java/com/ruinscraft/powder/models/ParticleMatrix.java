@@ -5,10 +5,15 @@ import java.util.List;
 
 public class ParticleMatrix {
 
+	// list of individual Layers associated with this ParticleMatrix
 	private List<Layer> layers;
+	// wait time for when this ParticleMatrix is created
 	private int tick;
+	// how far left the ParticleMatrix should be started
 	private int playerLeft;
+	// same, but how far up
 	private int playerUp;
+	// spacing for this ParticleMatrix
 	private float spacing;
 
 	public ParticleMatrix() {

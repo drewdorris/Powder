@@ -4,11 +4,17 @@ import org.bukkit.Particle;
 
 public class PowderParticle {
 
+	// enum name for the PowderParticle; one single character (name does not have to exist)
 	private String particleName;
+	// the Particle assigned with the PowderParticle
 	private Particle particle;
+	// x-offset data
 	private double xOff;
+	// y-offset data
 	private double yOff;
+	// z-offset data
 	private double zOff;
+	// extra data 
 	private Object data;
 
 	public PowderParticle(String particleName, Particle particle, 
@@ -41,6 +47,7 @@ public class PowderParticle {
 
 	}
 
+	// null
 	public PowderParticle(Particle particle) {
 
 		this.particleName = null;

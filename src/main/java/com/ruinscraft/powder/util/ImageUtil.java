@@ -20,6 +20,7 @@ import com.ruinscraft.powder.models.PowderParticle;
 
 public class ImageUtil {
 
+	// gets rows of a Layer from an image from a URL
 	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
 		try {
 
@@ -40,6 +41,7 @@ public class ImageUtil {
 		return rows;
 	}
 
+	// gets rows of a Layer from an image from a path in the data folder
 	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, String fileName, int resizedWidth, int resizedHeight) throws IOException {
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
@@ -57,6 +59,7 @@ public class ImageUtil {
 		return rows;
 	}
 
+	// scales an image to the given width/height (height is generally ignored)
 	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height){
 		int finalWidth = width;
 		int finalHeight = height;
@@ -77,6 +80,7 @@ public class ImageUtil {
 		return resizedImg;
 	}
 
+	// creates PowderParticles from pixels and adds them to the rows, which are then added to the Layer
 	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, BufferedImage bufferedImage, 
 			int resizedWidth, int resizedHeight) {
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
@@ -91,10 +95,10 @@ public class ImageUtil {
 				try {
 					pixel = newImage.getRGB(x, y);
 				} catch (Exception e) {
-					PowderPlugin.getInstance().getLogger().info("|| " + newImage.getWidth() + " " + newImage.getHeight());
-					PowderPlugin.getInstance().getLogger().info(x + " " + y);
+					PowderPlugin.getInstance().getLogger().warning("Error while processing pixel " + x + ";" + y + " in image!");
 					continue;
 				}
+				// if pixel is transparent, make it null
 				if ((pixel >> 24) == 0x00) {
 					row.add(new PowderParticle(null, null));
 					continue;

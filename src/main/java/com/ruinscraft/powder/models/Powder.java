@@ -5,20 +5,34 @@ import java.util.List;
 
 public class Powder {
 
+	// name of the Powder
 	private String name;
+	// list of categories the Powder is in
 	private List<String> categories;
+	// the default spacing for the Powder
 	private float spacing;
+	// the list of particle matrices for the Powder
 	private List<ParticleMatrix> matrices;
+	// list of SoundEffects for the Powder
 	private List<SoundEffect> soundEffects;
+	// list of Dusts for the Powder
 	private List<Dust> dusts;
+	// list of changed ParticleNames for Dusts/ParticleMatrices
 	private List<PowderParticle> powderParticles;
+	// is pitch (up/down eye position) accounted for when creating this Powder?
 	private boolean pitch;
+	// is the Powder repeating?
 	private boolean repeating;
+	// is the Powder hidden from lists if you don't have permission for it?
 	private boolean hidden;
+	// if the Powder is repeating, at what tick interval should it repeat?
 	private long delay;
+	// if unspecified in each ParticleMatrix, how far left should the player/location be from the start of creating the Powder?
 	private int defaultLeft;
+	// same, except how far up
 	private int defaultUp;
 
+	// initialize lists
 	public Powder() {
 		this.categories = new ArrayList<String>();
 		this.matrices = new ArrayList<ParticleMatrix>();
@@ -130,6 +144,7 @@ public class Powder {
 		return powderParticles;
 	}
 
+	// get the PowderParticle assigned with the given enumName
 	public PowderParticle getPowderParticle(String enumName) {
 		for (PowderParticle powderParticle : powderParticles) {
 			if (powderParticle.getEnumName() == null) {

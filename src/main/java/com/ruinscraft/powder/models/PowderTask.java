@@ -5,14 +5,17 @@ import java.util.UUID;
 
 public class PowderTask {
 
+	// player associated with this PowderTask
 	private UUID player;
+	// taskIDs associated with this PowderTask
 	private List<Integer> tasks;
-	private Powder map;
+	// Powder associated with this PowderTask
+	private Powder powder;
 
-	public PowderTask(UUID player, List<Integer> tasks, Powder map) {
+	public PowderTask(UUID player, List<Integer> tasks, Powder powder) {
 		this.player = player;
 		this.tasks = tasks;
-		this.map = map;
+		this.powder = powder;
 	}
 
 	public UUID getPlayerUUID() {
@@ -23,8 +26,8 @@ public class PowderTask {
 		return tasks;
 	}
 
-	public Powder getMap() {
-		return map;
+	public Powder getPowder() {
+		return powder;
 	}
 
 	public void addTask(Integer task) {

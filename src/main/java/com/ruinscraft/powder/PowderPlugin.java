@@ -51,11 +51,12 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onEnable() {
-		
+
 		instance = this;
 
 		loadConfig();
 
+		// enable storage if enabled in configuration
 		if (config.getBoolean("storage.mysql.use")) {
 			String host = config.getString("storage.mysql.host");
 			int port = config.getInt("storage.mysql.port");
@@ -68,29 +69,34 @@ public class PowderPlugin extends JavaPlugin {
 
 			getLogger().info("Using MySQL storage");
 		}
-		
+
+		// load all powders async & load users' powders if storage is enabled
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 			@Override
 			public void run() {
-				
+
 				loadPowdersFromSources();
-				// load all saved powders from db
-				PowderPlugin.getInstance().getStorage().loadAll();
+				// load all saved powders from db if enabled
+				if (useStorage()) {
+					PowderPlugin.getInstance().getStorage().loadAll();
+				}
 
 			}
 		});
 
 		getCommand("powder").setExecutor(new PowderCommand());
-
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
+		// prefix for all messages with prefixes
 		PREFIX = PowderUtil.color(config.getString("prefix"));
 
-		powderHandler = new PowderHandler();
-		
+		// every 100 ticks, remove a PowderTask if it's shown to be finished
 		BukkitScheduler scheduler = getServer().getScheduler();
 		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
 			public void run() {
+				if (powderHandler == null) {
+					return;
+				}
 				List<PowderTask> toBeRemoved = new ArrayList<PowderTask>();
 				for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 					boolean active = false;
@@ -110,9 +116,11 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		
+
+		// save all current users' powders before disabling
 		getStorage().saveAll();
-		
+
+		// delete all tasks & powders
 		powderHandler.clearEverything();
 
 		if (useStorage()) {
@@ -124,11 +132,11 @@ public class PowderPlugin extends JavaPlugin {
 		}
 
 		instance = null;
-		
+
 	}
 
+	// end all current tasks & reinitialize powderHandler
 	public void cleanHandlers() {
-		// put other handlers if those exist in the future
 		if (!(powderHandler == null)) {
 			powderHandler.clearEverything();
 		}
@@ -153,6 +161,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void loadPowderConfigs() {
 
+		// list of configuration files that contain Powders
 		powderConfigs = new ArrayList<FileConfiguration>();
 
 		BufferedReader reader;
@@ -162,6 +171,7 @@ public class PowderPlugin extends JavaPlugin {
 			FileConfiguration powderConfig;
 			URL url = PowderUtil.readURL(urlName);
 			File file;
+			// if a file is from a path, load from within data folder
 			if (!urlName.contains("/")) {
 
 				file = new File(getDataFolder(), urlName);
@@ -171,6 +181,7 @@ public class PowderPlugin extends JavaPlugin {
 				}
 				powderConfig = YamlConfiguration.loadConfiguration(file);
 
+				// else, load from URL
 			} else if (url != null) {
 
 				InputStream stream = PowderUtil.getInputStreamFromURL(url);
@@ -190,7 +201,8 @@ public class PowderPlugin extends JavaPlugin {
 			powderConfigs.add(powderConfig);
 
 		}
-		
+
+		// if powders.yml is listed as a source but doesn't exist, create it
 		File defaultPowderConfig = new File(getDataFolder(), "powders.yml");
 		if (!defaultPowderConfig.exists() && config.getStringList("powderSources").contains("powders.yml")) {
 			getLogger().info("powders.yml not found but listed as a source, creating!");
@@ -202,7 +214,7 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void loadConfig() {
-		
+
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
 			getLogger().info("config.yml not found, creating!");
@@ -210,18 +222,22 @@ public class PowderPlugin extends JavaPlugin {
 		}
 		reloadConfig();
 		config = getConfig();
-		
+
 	}
-	
+
+	// load all Powders from their source yaml files
 	@SuppressWarnings("unchecked")
 	public void loadPowdersFromSources() {
-		
+
+		// load source yaml files
 		loadPowderConfigs();
-		
+
+		// remove all existing tasks/Powders
 		cleanHandlers();
-		
+
+		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
-		
+
 		if (powderHandler.categoriesEnabled()) {
 			for (String s : config.getConfigurationSection("categories").getKeys(false)) {
 				powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
@@ -230,11 +246,12 @@ public class PowderPlugin extends JavaPlugin {
 				powderHandler.addCategory("Other", "Unsorted Powders");
 			}
 		}
-		
+
 		List<String> powderNames = new ArrayList<>();
 
 		String powders = "powders.";
-		
+
+		// alert online players of the reload
 		getLogger().info("Loading Powders...");
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
@@ -242,40 +259,37 @@ public class PowderPlugin extends JavaPlugin {
 						ChatColor.GRAY + "Loading Powders...", "powder");
 			}
 		}
-		
+
 		for (FileConfiguration powderConfig : powderConfigs) {
+
 			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
+
 				Powder powder = new Powder();
 
+				// set some given values if they exist, default value if they don't
 				powder.setName(powderConfig.getString(powders + s + ".name", null));
 				powder.setDefaultSpacing((float) powderConfig.getDouble(powders + s + ".spacing", .5F));
 				powder.setPitch(powderConfig.getBoolean(powders + s + ".pitch", false));
 				powder.setRepeating(powderConfig.getBoolean(powders + s + ".repeating", false));
 				powder.setHidden(powderConfig.getBoolean(powders + s + ".hidden", false));
 				powder.setDelay(powderConfig.getLong(powders + s + ".delay", Long.MAX_VALUE));
-				powder.setSoundEffects(new ArrayList<SoundEffect>());
-				powder.setDusts(new ArrayList<Dust>());
-				powder.setPowderParticles(new ArrayList<PowderParticle>());
 
+				// add categories if enabled
 				if (powderHandler.categoriesEnabled()) {
-
 					for (String t : (List<String>) powderConfig.getList(powders + s + ".categories", new ArrayList<String>())) {
-
 						if (!(powderHandler.getCategories().keySet().contains(t))) {
 							getLogger().warning("Invalid category '" + t + 
 									"' for '" + powder.getName() + "' in " + powderConfig.getName());
 							continue;
 						}
 						powder.addCategory(t);
-
 					}
-
 					if (powder.getCategories().isEmpty()) {
 						powder.addCategory("Other");
 					}
-
 				}
 
+				// add sounds; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
 					Sound sound;
 					String soundName;
@@ -290,11 +304,13 @@ public class PowderPlugin extends JavaPlugin {
 					float volume = Float.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
+					soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					float waitTime = Float.valueOf(t);
+					long waitTime = Long.valueOf(t);
 					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, waitTime));
 				}
 
+				// add changed particles; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".changes", new ArrayList<String>())) {
 					String enumName = t.substring(0, t.indexOf(";"));
 					t = t.replaceFirst(enumName + ";", "");
@@ -318,6 +334,7 @@ public class PowderPlugin extends JavaPlugin {
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					yOff = Double.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
+					// might / might not have data
 					try {
 						zOff = Double.valueOf(t);
 						powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff));
@@ -334,10 +351,12 @@ public class PowderPlugin extends JavaPlugin {
 					}
 				}
 
+				// add dusts; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".dusts", new ArrayList<String>())) {
 					String dustName = t.substring(0, t.indexOf(";"));
 					PowderParticle powderParticle;
 					powderParticle = powder.getPowderParticle(dustName);
+					// can be null if it is nothing
 					if (powderParticle == null) {
 						try {
 							Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
@@ -351,6 +370,7 @@ public class PowderPlugin extends JavaPlugin {
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					double height = Float.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
+					// can be a single dust with an "s" or not
 					long frequency;
 					try {
 						frequency = Long.valueOf(t);
@@ -372,7 +392,9 @@ public class PowderPlugin extends JavaPlugin {
 				ParticleMatrix particleMatrix = new ParticleMatrix();
 				Layer layer = new Layer();
 
+				// read matrices/maps
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".map", new ArrayList<String>())) {
+					// read animation time; animation time separates each ParticleMatrix
 					if (t.contains("[")) {
 						t = t.replace("[", "").replace("]", "");
 						try {
@@ -390,11 +412,13 @@ public class PowderPlugin extends JavaPlugin {
 							continue;
 						}
 						powder.addMatrix(particleMatrix);
+						// start reading a new ParticleMatrix & Layer
 						particleMatrix = new ParticleMatrix();
 						particleMatrix.setTick(tick);
 						layer = new Layer();
 						continue;
 					}
+					// read each Layer of the matrix; the position of the Layer separates each Layer
 					if (t.contains("{")) {
 						t = t.replace("{", "").replace("}", "");
 						int position;
@@ -410,6 +434,7 @@ public class PowderPlugin extends JavaPlugin {
 							layer.setPosition(position);
 							continue;
 						}
+						// start reading a new Layer if the previous Layer isn't empty
 						particleMatrix.addLayer(layer);
 						layer = new Layer();
 						layer.setPosition(position);
@@ -417,10 +442,12 @@ public class PowderPlugin extends JavaPlugin {
 					}
 					if (t.contains(":")) {
 
+						// spacing for each matrix; if it doesn't exist, is set to given default for the Powder
 						if (t.contains("spacing:")) {
 							t = t.replace("spacing:", "");
 							float spacing = Float.valueOf(t);
 							particleMatrix.setSpacing(spacing);
+							// read an image from URL
 						} else if (t.contains("img:")) {
 							String urlName;
 							int width;
@@ -442,7 +469,9 @@ public class PowderPlugin extends JavaPlugin {
 									continue;
 								}
 							}
+							// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
 							up = up + height;
+							// read an image from data folder path
 						} else if (t.contains("path:")) {
 							String path;
 							int width;
@@ -462,16 +491,21 @@ public class PowderPlugin extends JavaPlugin {
 								getLogger().warning("Failed to load path: '" + path + "'");
 								continue;
 							}
+							// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
 							up = up + height;
 						}
 
 						continue;
 
 					}
+					// if the Layer is in the same position as where the location/player is
 					if (layer.getPosition() == 0) {
 						up++;
+						// if the string contains location/player
 						if (t.contains("?")) {
+							// set the left & up of the Layer so createPowders() knows where to start
 							left = (t.indexOf("?")) + 1;
+							// set default if it's the matrix spawned immediately 
 							if (particleMatrix.getTick() == 0) {
 								powder.setDefaultLeft(left);
 								powder.setDefaultUp(up);
@@ -480,6 +514,8 @@ public class PowderPlugin extends JavaPlugin {
 							particleMatrix.setPlayerUp(up);
 						}
 					}
+					// add a row to the Layer if it has gone through everything
+					// rows contain PowderParticles
 					List<PowderParticle> row = new ArrayList<PowderParticle>();
 					for (char character : t.toCharArray()) {
 						String string = String.valueOf(character);
@@ -499,10 +535,12 @@ public class PowderPlugin extends JavaPlugin {
 
 				}
 
+				// if it finished going through the rows and there's some left that aren't added to the matrix
 				if (!(layer.getRows().isEmpty()) || !(particleMatrix.getLayers().contains(layer))) {
 					particleMatrix.addLayer(layer);
 				}
 
+				// if the matrix is finished and hasn't been added to the Powder
 				if (!(particleMatrix.getLayers().isEmpty())) {
 					powder.addMatrix(particleMatrix);
 				}
@@ -515,8 +553,8 @@ public class PowderPlugin extends JavaPlugin {
 				getPowderHandler().addPowder(powder);
 			}
 		}
-		
-		// do this again to load {total}
+
+		// do this again to load {total} parameter
 		if (powderHandler.categoriesEnabled()) {
 			for (String s : config.getConfigurationSection("categories").getKeys(false)) {
 				powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
@@ -525,9 +563,10 @@ public class PowderPlugin extends JavaPlugin {
 				powderHandler.addCategory("Other", "Unsorted Powders");
 			}
 		}
-		
+
 		String powderAmount = String.valueOf(powderNames.size());
 
+		// alert console of the Powders loaded
 		StringBuilder msg = new StringBuilder();
 		msg.append("Loaded Powders: ");
 		for (String effect : powderNames) {
@@ -538,14 +577,15 @@ public class PowderPlugin extends JavaPlugin {
 			}
 		}
 		getLogger().info(msg.toString());
-		
+
+		// alert online players with permission of the Powders loaded
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(player,
 						ChatColor.GRAY + "All Powders loaded! (" + powderAmount + " total)", "powder");
 			}
 		}
-		
+
 	}
 
 }

@@ -32,16 +32,18 @@ public class PowderCommand implements CommandExecutor {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		// if console
 		if (!(sender instanceof Player)) {
 			try {
 				if (args[0].equals("reload")) {
+					// reload
 					notifyOfReload();
 					PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 						@Override
 						public void run() {
-							
+
 							reload();
-							
+
 						}
 					});
 				} else {
@@ -56,6 +58,8 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		Player player = (Player) sender;
+
+		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {
 			PowderUtil.sendPrefixMessage(player, ChatColor.RED + "You don't have permission to use /" + label + ".", label);
 			return false;
@@ -63,8 +67,10 @@ public class PowderCommand implements CommandExecutor {
 
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 
+		// elements contained within a page of a list
 		int pageLength = PowderPlugin.getInstance().getConfig().getInt("pageLength");
 
+		// if no args, lists categories if categories enabled, else list all Powders
 		if (args.length < 1) {
 			if (powderHandler.categoriesEnabled()) {
 				listCategories(player, powderHandler.getCategories(), " categories ", 1, pageLength, label);
@@ -76,6 +82,7 @@ public class PowderCommand implements CommandExecutor {
 
 		Powder powder = powderHandler.getPowder(args[0]);
 
+		// if the first argument given is not a Powder
 		if (powder == null) {
 
 			if (args[0].equals("help")) {
@@ -89,11 +96,12 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 					return false;
 				}
+				// reload if permission
 				notifyOfReload();
 				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 					@Override
 					public void run() {
-						
+
 						reload();
 
 					}
@@ -108,6 +116,7 @@ public class PowderCommand implements CommandExecutor {
 							+ "Use '* cancel' to cancel all current active Powders.", label);
 					return false;
 				} else {
+					// cancel all Powders
 					if (powderHandler.getPowderTasks(player.getUniqueId()).isEmpty()) {
 						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "There are no Powders currently active.", label);
 						return false;
@@ -121,6 +130,7 @@ public class PowderCommand implements CommandExecutor {
 					return true;
 				}
 
+				// list Powders, not by category
 			} else if (args[0].equals("list")) {
 
 				int page;
@@ -132,6 +142,7 @@ public class PowderCommand implements CommandExecutor {
 				listPowders(player, powderHandler.getPowders(), " list ", page, pageLength, label);
 				return false;
 
+				// list all categories
 			} else if (args[0].equals("categories")) {
 
 				if (!powderHandler.categoriesEnabled()) {
@@ -149,6 +160,7 @@ public class PowderCommand implements CommandExecutor {
 				listCategories(player, powderHandler.getCategories(), " categories ", page, pageLength, label);
 				return false;
 
+				// list Powders by category
 			} else if (args[0].equals("category")) {
 
 				if (!powderHandler.categoriesEnabled()) {
@@ -169,16 +181,19 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
+				// list categories with similar names if given category does not exist
 				if (powderHandler.getCategory(category) == null) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Unknown category '" + args[0] + "'. Similar categories:", label);
 					Map<String, String> similarCategories = powderHandler.getSimilarCategories(args[0]);
 					listCategories(player, similarCategories, " category " + category + " ", page, pageLength, label);
+					// else, list Powders by category
 				} else {
 					String correctCategory = powderHandler.getCategory(category);
 					listPowders(player, powderHandler.getPowdersFromCategory(correctCategory), " category " + category + " ", page, pageLength, label);
 				}
 				return true;
 
+				// search by Powder name
 			} else if (args[0].equals("search")) {
 
 				String search;
@@ -198,6 +213,7 @@ public class PowderCommand implements CommandExecutor {
 						" search " + search + " ", page, pageLength, label);
 				return false;
 
+				// list by category/Powder if other criteria not met
 			} else {
 
 				if (powderHandler.categoriesEnabled()) {
@@ -218,15 +234,20 @@ public class PowderCommand implements CommandExecutor {
 
 		}
 
+		// after this, first argument is clearly a Powder
+
+		// if no permission for the specific Powder
 		if (!hasPermission(player, powder)) {
 			PowderUtil.sendPrefixMessage(player, ChatColor.RED 
 					+ "You don't have permission to use the Powder '" + powder.getName() + "'.", label);
 			return false;
 		}
 
+		// if another argument after the Powder name
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
 				int taskAmount = powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
+				// cancel if exists
 				if (PowderUtil.cancelPowder(player, powder)) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled! (" + 
 							taskAmount + " total)", label);
@@ -238,7 +259,9 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 
+		// if this Powder is already running for the player
 		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
+			// if multiple uses of one Powder are not allowed, cancel it
 			if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
 				boolean success = false;
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId(), powder)) {
@@ -255,25 +278,27 @@ public class PowderCommand implements CommandExecutor {
 			}
 		}
 
+		// if player has maxPowdersAtOneTime, don't do it
 		int maxSize = PowderPlugin.getInstance().getConfig().getInt("maxPowdersAtOneTime");
 		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
 			PowderUtil.sendPrefixMessage(player, 
 					ChatColor.RED + "You already have " + maxSize + " Powders active!", label);
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
-						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getMap().getName());
+						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getPowder().getName());
 				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powderTask.getMap().getName() + "' is currently active. Click to cancel")
+						new ComponentBuilder("'" + powderTask.getPowder().getName() + "' is currently active. Click to cancel")
 						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
 				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powderTask.getMap().getName() + " cancel" ) );
+						"/" + label + " " + powderTask.getPowder().getName() + " cancel" ) );
 				player.spigot().sendMessage(runningTaskText);
 			}
 			return false;
 		}
+		// check again for good measure (why is this here)
 		if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-				if (powderTask.getMap().equals(powder)) {
+				if (powderTask.getPowder().equals(powder)) {
 					PowderUtil.sendPrefixMessage(player, 
 							ChatColor.RED + "'" + powder.getName() + "' is already active!", label);
 					return false;
@@ -281,14 +306,18 @@ public class PowderCommand implements CommandExecutor {
 			}
 		}
 
-		// wait time between each command
+		// wait time between creating each Powder
 		int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
+
+		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
 			PowderUtil.sendPrefixMessage(player, 
 					ChatColor.RED + "Please wait " + waitTime + " seconds between using each Powder.", label);
 			return false;
 		}
+		// if there's a wait time between using each Powder
 		if (!(waitTime <= 0)) {
+			// add user to this list of recent command senders for the given amount of time
 			PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
 				public void run() {
 					recentCommandSenders.remove(player);
@@ -297,10 +326,13 @@ public class PowderCommand implements CommandExecutor {
 			recentCommandSenders.add(player);
 		}
 
+		// list of bukkit taskIDs
 		List<Integer> tasks = new ArrayList<Integer>();
 
-		tasks.addAll(PowderUtil.createPowder(player, powder));
+		// add all tasks created by spawning a Powder
+		tasks.addAll(PowderUtil.spawnPowder(player, powder));
 
+		// if Powder is repeating, has animation, or has dusts
 		if (powder.isRepeating() || powder.getMatrices().size() > 1 || !(powder.getDusts().isEmpty())) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
@@ -319,22 +351,32 @@ public class PowderCommand implements CommandExecutor {
 					+ "Powder '" + powder.getName() + "' created!", label);
 		}
 
+		// create a PowderTask from the given taskIDs
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), tasks, powder);
 		powderHandler.addPowderTask(powderTask);
 
 		return true;
 	}
-	
+
+	// reload config and all Powders, while saving database
 	public void reload() {
-		// save all enabled powders to db
-		PowderPlugin.getInstance().getStorage().saveAll();
-		
+
+		PowderPlugin.getInstance().loadConfig();
+
+		if (PowderPlugin.getInstance().useStorage()) {
+			// save all enabled powders to db
+			PowderPlugin.getInstance().getStorage().saveAll();
+		}
+
 		PowderPlugin.getInstance().loadPowdersFromSources();
-		
-		// load all saved powders from db
-		PowderPlugin.getInstance().getStorage().loadAll();
+
+		if (PowderPlugin.getInstance().useStorage()) {
+			// load all saved powders from db
+			PowderPlugin.getInstance().getStorage().loadAll();
+		}
 	}
 
+	// check permission for the Powder or for a category that contains the Powder
 	public static boolean hasPermission(Player player, Powder powder) {
 		if (player.hasPermission("powder.powder.*")) {
 			return true;
@@ -356,18 +398,22 @@ public class PowderCommand implements CommandExecutor {
 		return true;
 	}
 
+	// notify players who have a running PowderTask of the reload
 	public static void notifyOfReload() {
-		List<UUID> playersDoneAlready = new ArrayList<>();
-		for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
-			if (playersDoneAlready.contains(powderTask.getPlayerUUID())) {
-				continue;
+		if (!(PowderPlugin.getInstance().useStorage())) {
+			List<UUID> playersDoneAlready = new ArrayList<>();
+			for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
+				if (playersDoneAlready.contains(powderTask.getPlayerUUID())) {
+					continue;
+				}
+				playersDoneAlready.add(powderTask.getPlayerUUID());
+				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(powderTask.getPlayerUUID()), ChatColor.GRAY 
+						+ "Your Powders were cancelled due to " + "a reload.", "powder");
 			}
-			playersDoneAlready.add(powderTask.getPlayerUUID());
-			PowderUtil.sendPrefixMessage(Bukkit.getPlayer(powderTask.getPlayerUUID()), ChatColor.GRAY 
-					+ "Your Powders were cancelled due to " + "a reload.", "powder");
 		}
 	}
 
+	// help message
 	public static void helpMessage(Player player, String label) {
 		PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder Help", label);
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> " + ChatColor.GRAY + "- Use a Powder"); 
@@ -382,6 +428,7 @@ public class PowderCommand implements CommandExecutor {
 				+ label + ChatColor.GRAY + " to enable or cancel Powders. Click the prefix in a message to return to the menu."); 
 	}
 
+	// sorts a list of TextComponents (Powders or categories) alphabetically
 	public static List<TextComponent> sortAlphabetically(List<TextComponent> powders) {
 		List<String> names = new ArrayList<String>(powders.size()); 
 
@@ -404,8 +451,10 @@ public class PowderCommand implements CommandExecutor {
 		return newList;
 	}
 
+	// paginates & sends list of Powders/categories to player
 	public static void paginate(Player player, List<TextComponent> list, String input, int page, int pageLength, String label) {
 		List<TextComponent> pageList = new ArrayList<TextComponent>();
+		// create list of Powders based on current page & given amnt per page
 		for (int i = 1; i <= pageLength; i++) {
 			TextComponent current;
 			try {
@@ -420,6 +469,7 @@ public class PowderCommand implements CommandExecutor {
 					player.spigot().sendMessage(combinedMessage);
 		}
 
+		// create arrows
 		TextComponent leftArrow = new TextComponent("<<  ");
 		leftArrow.setColor(net.md_5.bungee.api.ChatColor.RED);
 		leftArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
@@ -439,6 +489,7 @@ public class PowderCommand implements CommandExecutor {
 				new ComponentBuilder("Next Page")
 				.color(net.md_5.bungee.api.ChatColor.RED).create() ) );
 
+		// adds the arrows to the message depending on where you are in the list
 		TextComponent fullArrows = new TextComponent();
 		if (pageList.isEmpty()) {
 			player.sendMessage(ChatColor.RED + "None found.");
@@ -460,6 +511,7 @@ public class PowderCommand implements CommandExecutor {
 		player.spigot().sendMessage(fullArrows);
 	}
 
+	// organizes given the given List<Powder> by active/allowed/not allowed Powders, alphabetizes, then paginates
 	public static void listPowders(Player player, List<Powder> powders, String input, int page, int pageLength, String label) {
 		TextComponent helpPrefix = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "Use " +
 				net.md_5.bungee.api.ChatColor.RED + "/" + label +  " help" + net.md_5.bungee.api.ChatColor.GRAY + " for help.");
@@ -470,9 +522,13 @@ public class PowderCommand implements CommandExecutor {
 				"/" + label + " help" ) );
 		PowderUtil.sendPrefixMessage(player, helpPrefix, label);
 
+		// all Powders
 		List<TextComponent> listOfPowders = new ArrayList<TextComponent>();
+		// Powders currently in use by the player
 		List<TextComponent> activePowders = new ArrayList<TextComponent>();
+		// Powders the player has permission for
 		List<TextComponent> ableToPowders = new ArrayList<TextComponent>();
+		// Powders the player does not have permission for
 		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
 		for (Powder powder : powders) {
 			TextComponent powderMapText = new TextComponent(powder.getName());
@@ -512,6 +568,7 @@ public class PowderCommand implements CommandExecutor {
 		paginate(player, listOfPowders, input, page, pageLength, label);
 	}
 
+	// similar to listPowders but lists categories instead
 	public static void listCategories(Player player, Map<String, String> categories, String input, int page, int pageLength, String label) {
 		TextComponent helpPrefix = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "Use " +
 				net.md_5.bungee.api.ChatColor.RED + "/" + label +  " help" + net.md_5.bungee.api.ChatColor.GRAY + " for help.");
@@ -522,9 +579,13 @@ public class PowderCommand implements CommandExecutor {
 				"/" + label + " help" ) );
 		PowderUtil.sendPrefixMessage(player, helpPrefix, label);
 
+		// all categories
 		List<TextComponent> listOfCategories = new LinkedList<TextComponent>();
+		// categories containing Powders that are currently active
 		List<TextComponent> activeCategories = new LinkedList<TextComponent>();
+		// categories containing Powders the player has permission for
 		List<TextComponent> ableToCategories = new LinkedList<TextComponent>();
+		// categories containing Powders the player has no permission for, or contains no Powders
 		List<TextComponent> noPermCategories = new LinkedList<TextComponent>();
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		for (String category : categories.keySet()) {

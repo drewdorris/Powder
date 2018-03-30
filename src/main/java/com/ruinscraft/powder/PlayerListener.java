@@ -24,7 +24,7 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		
+
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			PowderUtil.loadPlayer(player);
 		});

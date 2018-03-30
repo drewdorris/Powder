@@ -2,6 +2,8 @@ package com.ruinscraft.powder.models;
 
 public enum ParticleName {
 
+	// default enums associated with each character used in Dust and ParticleMatrix
+	
 	A("HEART"), // heart
 	B("NOTE"), // note
 	C("BARRIER"), // barrier block

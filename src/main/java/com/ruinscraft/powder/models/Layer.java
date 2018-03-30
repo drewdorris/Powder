@@ -5,7 +5,9 @@ import java.util.List;
 
 public class Layer {
 
+	// list of rows containing PowderParticles; the matrix itself
 	private List<List<PowderParticle>> rows;
+	// the front-back position of the Layer
 	private int position;
 
 	public Layer() {

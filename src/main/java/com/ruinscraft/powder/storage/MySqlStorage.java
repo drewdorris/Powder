@@ -81,22 +81,22 @@ public class MySqlStorage implements SqlStorage {
 			ps.executeUpdate();
 
 			ps.close();
-			
+
 			ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
-			
+
 			for (String powder : powders) {
 				ps.setString(1, uuid.toString());
 				ps.setString(2, powder);
 				ps.addBatch();
 			}
 			ps.executeBatch();
-			
+
 			ps.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	@Override
 	public void saveAll() {
 		try (Connection c = getConnection()) {
@@ -111,15 +111,15 @@ public class MySqlStorage implements SqlStorage {
 				ps.close();
 
 				ps = c.prepareStatement("INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);");
-				
+
 				for (String powder : PowderUtil.getEnabledPowderNames(onlinePlayer.getUniqueId())) {
 					ps.setString(1, onlinePlayer.getUniqueId().toString());
 					ps.setString(2, powder);
 					ps.addBatch();
 				}
-				
+
 				ps.executeBatch();
-				
+
 				ps.close();
 			}
 		} catch (SQLException e) {

@@ -4,12 +4,16 @@ import org.bukkit.Sound;
 
 public class SoundEffect {
 
+	// Sound enum associated with this SoundEffect
 	private Sound sound;
+	// volume for this SoundEffect
 	private float volume;
+	// pitch for this SoundEffect (noteblock values)
 	private float pitch;
-	private float wait;
+	// waittime in ticks before playing this SoundEffect
+	private long wait;
 
-	public SoundEffect(Sound sound, float volume, float pitch, float wait) {
+	public SoundEffect(Sound sound, float volume, float pitch, long wait) {
 		this.sound = sound;
 		this.volume = volume;
 		this.pitch = pitch;
@@ -28,7 +32,7 @@ public class SoundEffect {
 		return pitch;
 	}
 
-	public float getWaitTime() {
+	public long getWaitTime() {
 		return wait;
 	}
 
