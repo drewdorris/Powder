@@ -210,13 +210,13 @@ public class PowderPlugin extends JavaPlugin {
 		}
 		reloadConfig();
 		config = getConfig();
-
-		loadPowderConfigs();
 		
 	}
 	
 	@SuppressWarnings("unchecked")
 	public void loadPowdersFromSources() {
+		
+		loadPowderConfigs();
 		
 		cleanHandlers();
 		
