@@ -326,11 +326,8 @@ public class PowderCommand implements CommandExecutor {
 			recentCommandSenders.add(player);
 		}
 
-		// list of bukkit taskIDs
-		List<Integer> tasks = new ArrayList<Integer>();
-
-		// add all tasks created by spawning a Powder
-		tasks.addAll(PowderUtil.spawnPowder(player, powder));
+		// spawn a Powder with a PowderTask
+		PowderUtil.spawnPowder(player, powder);
 
 		// if Powder is repeating, has animation, or has dusts
 		if (powder.isRepeating() || powder.getMatrices().size() > 1 || !(powder.getDusts().isEmpty())) {
@@ -350,10 +347,6 @@ public class PowderCommand implements CommandExecutor {
 			PowderUtil.sendPrefixMessage(player, net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created!", label);
 		}
-
-		// create a PowderTask from the given taskIDs
-		PowderTask powderTask = new PowderTask(player.getUniqueId(), tasks, powder);
-		powderHandler.addPowderTask(powderTask);
 
 		return true;
 	}

@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.models;
 
-import java.util.List;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class PowderTask {
@@ -8,11 +9,17 @@ public class PowderTask {
 	// player associated with this PowderTask
 	private UUID player;
 	// taskIDs associated with this PowderTask
-	private List<Integer> tasks;
+	private Set<Integer> tasks;
 	// Powder associated with this PowderTask
 	private Powder powder;
+	
+	public PowderTask(UUID player, Powder powder) {
+		this.player = player;
+		this.tasks = new HashSet<Integer>();
+		this.powder = powder;
+	}
 
-	public PowderTask(UUID player, List<Integer> tasks, Powder powder) {
+	public PowderTask(UUID player, Set<Integer> tasks, Powder powder) {
 		this.player = player;
 		this.tasks = tasks;
 		this.powder = powder;
@@ -22,7 +29,7 @@ public class PowderTask {
 		return player;
 	}
 
-	public List<Integer> getTaskIds() {
+	public Set<Integer> getTaskIds() {
 		return tasks;
 	}
 
@@ -32,6 +39,10 @@ public class PowderTask {
 
 	public void addTask(Integer task) {
 		tasks.add(task);
+	}
+	
+	public void addTasks(Set<Integer> tasks) {
+		this.tasks.addAll(tasks);
 	}
 
 	public void removeTask(Integer task) {

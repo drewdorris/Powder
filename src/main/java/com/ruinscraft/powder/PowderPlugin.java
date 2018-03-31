@@ -296,13 +296,17 @@ public class PowderPlugin extends JavaPlugin {
 						String fileName;
 						try {
 							fileName = t.substring(0, t.indexOf(";"));
-							t = t.replace(fileName, "");
-							t = t.replace(";", "");
-							double multiplier = Double.valueOf(t);
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, multiplier));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							double volume = Double.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							double multiplier = Double.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							int addTime = Integer.valueOf(t);
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, multiplier, addTime));
 						} catch (Exception e) {
+							getLogger().warning("Invalid fileName/multiplier/start time in song '" + t + "'.");
 							fileName = t;
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1));
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1, 1, 0));
 						}
 						continue;
 					}

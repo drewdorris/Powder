@@ -6,7 +6,9 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -172,31 +174,32 @@ public class PowderUtil {
 	}
 
 	// spawns a given Powder for the given user
-	public static List<Integer> spawnPowder(final Player player, final Powder powder) {
+	public static void spawnPowder(final Player player, final Powder powder) {
 
-		int task;
-		List<Integer> tasks = new ArrayList<Integer>();
+		// create a PowderTask, add taskIDs to it
+		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
 
 		if (powder.isRepeating()) {
 
-			task = PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
+			int task = PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
 				public void run() {
-					tasks.addAll(PowderUtil.spawnParticles(player, powder));
-					tasks.addAll(PowderUtil.spawnSounds(player, powder));
+					powderTask.addTasks(PowderUtil.spawnParticles(player, powder));
+					powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
 				}
 			}, 0L, powder.getDelay());
 
-			tasks.addAll(PowderUtil.spawnDusts(player, powder));
+			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
 
-			tasks.add(task);
+			powderTask.addTask(task);
 
 		} else {
-			tasks.addAll(PowderUtil.spawnParticles(player, powder));
-			tasks.addAll(PowderUtil.spawnSounds(player, powder));
-			tasks.addAll(PowderUtil.spawnDusts(player, powder));
+			powderTask.addTasks(PowderUtil.spawnParticles(player, powder));
+			powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
+			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
 		}
+		
+		PowderPlugin.getInstance().getPowderHandler().addPowderTask(powderTask);
 
-		return tasks;
 	}
 
 	// cancels a given Powder for the given player
@@ -211,11 +214,11 @@ public class PowderUtil {
 	}
 
 	// spawn particle matrices, returns list of taskIDs
-	public static List<Integer> spawnParticles(final Player player, final Powder powder) {
+	public static Set<Integer> spawnParticles(final Player player, final Powder powder) {
 
 		List<ParticleMatrix> particleMatrices = powder.getMatrices();
 
-		List<Integer> tasks = new ArrayList<Integer>();
+		Set<Integer> tasks = new HashSet<Integer>();
 
 		// separate spacing, wait time for each ParticleMatrix
 		for (ParticleMatrix particleMatrix : particleMatrices) {
@@ -366,8 +369,8 @@ public class PowderUtil {
 	}
 
 	// spawns SoundEffects, returns list of taskIDs
-	public static List<Integer> spawnSounds(final Player player, final Powder powder) {
-		List<Integer> tasks = new ArrayList<Integer>();
+	public static Set<Integer> spawnSounds(final Player player, final Powder powder) {
+		Set<Integer> tasks = new HashSet<Integer>();
 
 		for (SoundEffect sound : powder.getSoundEffects()) {
 
@@ -392,8 +395,8 @@ public class PowderUtil {
 	}
 
 	// spawns Dusts, returns list of taskIDs
-	public static List<Integer> spawnDusts(final Player player, final Powder powder) {
-		List<Integer> tasks = new ArrayList<Integer>();
+	public static Set<Integer> spawnDusts(final Player player, final Powder powder) {
+		Set<Integer> tasks = new HashSet<Integer>();
 
 		for (Dust dust : powder.getDusts()) {
 
@@ -479,12 +482,8 @@ public class PowderUtil {
 			return;
 		}
 
-		List<Integer> tasks = new ArrayList<Integer>();
-
-		tasks.addAll(PowderUtil.spawnPowder(player, powder));
-
-		PowderTask powderTask = new PowderTask(player.getUniqueId(), tasks, powder);
-		handler.addPowderTask(powderTask);
+		PowderUtil.spawnPowder(player, powder);
+		
 	}
 
 }
