@@ -292,8 +292,18 @@ public class PowderPlugin extends JavaPlugin {
 				// add sounds; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
 					if (t.contains("song:")) {
-						String fileName = t.replaceFirst("song:", "");
-						powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName));
+						t = t.replaceFirst("song:", "");
+						String fileName;
+						try {
+							fileName = t.substring(0, t.indexOf(";"));
+							t = t.replace(fileName, "");
+							t = t.replace(";", "");
+							double multiplier = Double.valueOf(t);
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, multiplier));
+						} catch (Exception e) {
+							fileName = t;
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1));
+						}
 						continue;
 					}
 					Sound sound;

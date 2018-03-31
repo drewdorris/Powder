@@ -18,42 +18,30 @@ import com.xxmicloxx.NoteBlockAPI.Song;
 
 public class SoundUtil {
 	
-	public static List<SoundEffect> getSoundEffectsFromNBS(String fileName) {
+	public static List<SoundEffect> getSoundEffectsFromNBS(String fileName, double multiplier) {
 		
 		if (fileName.contains("/")) {
-			return getSongFromURL(fileName);
+			URL url = PowderUtil.readURL(fileName);
+			Song song;
+			try {
+				InputStream inputStream = PowderUtil.getInputStreamFromURL(url);
+				song = NBSDecoder.parse(inputStream);
+			} catch (Exception e) {
+				e.printStackTrace();
+				return null;
+			}
+			
+			return getSoundEffectsFromSong(song, multiplier);
 		} else {
-			return getSongFromPath(fileName);
+			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/songs", fileName);
+			Song song = NBSDecoder.parse(file);
+			
+			return getSoundEffectsFromSong(song, multiplier);
 		}
 		
 	}
 	
-	public static List<SoundEffect> getSongFromPath(String fileName) {
-		
-		File file = new File(PowderPlugin.getInstance().getDataFolder() + "/songs", fileName);
-		Song song = NBSDecoder.parse(file);
-		
-		return getSoundEffectsFromSong(song);
-		
-	}
-	
-	public static  List<SoundEffect> getSongFromURL(String urlName) {
-		
-		URL url = PowderUtil.readURL(urlName);
-		Song song;
-		try {
-			InputStream inputStream = PowderUtil.getInputStreamFromURL(url);
-			song = NBSDecoder.parse(inputStream);
-		} catch (Exception e) {
-			e.printStackTrace();
-			return null;
-		}
-		
-		return getSoundEffectsFromSong(song);
-		
-	}
-	
-	public static List<SoundEffect> getSoundEffectsFromSong(Song song) {
+	public static List<SoundEffect> getSoundEffectsFromSong(Song song, double multiplier) {
 		
 		List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
 		
@@ -66,7 +54,7 @@ public class SoundUtil {
 				PowderPlugin.getInstance().getLogger().info(String.valueOf(note.getKey()));
 				float pitch = note.getKey() - 33;
 				pitch = (float) Math.pow(2.0, (pitch - 12.0) / 12.0);
-				SoundEffect soundEffect = new SoundEffect(sound, volume, pitch, tick);
+				SoundEffect soundEffect = new SoundEffect(sound, volume, pitch, (int) (tick * multiplier));
 				soundEffects.add(soundEffect);
 			}
 		}
