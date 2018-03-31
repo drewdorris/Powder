@@ -330,7 +330,8 @@ public class PowderCommand implements CommandExecutor {
 		PowderUtil.spawnPowder(player, powder);
 
 		// if Powder is repeating, has animation, or has dusts
-		if (powder.isRepeating() || powder.getMatrices().size() > 1 || !(powder.getDusts().isEmpty())) {
+		if (powder.isRepeating() || powder.getMatrices().size() > 1 || 
+				!(powder.getDusts().isEmpty()) || !(powder.getSoundEffects().isEmpty())) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
 			particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
@@ -413,6 +414,11 @@ public class PowderCommand implements CommandExecutor {
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> cancel " + ChatColor.GRAY + "- Cancel a Powder"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder * cancel " + ChatColor.GRAY + "- Cancel all Powders"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder list [page] " + ChatColor.GRAY + "- List Powders by page");
+		if (PowderPlugin.getInstance().getPowderHandler().categoriesEnabled()) {
+			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder categories [page] " + ChatColor.GRAY + "- List all categories");
+			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder category <category> [page] " + 
+					ChatColor.GRAY + "- List all Powders in a category");
+		}
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder search <term> [page] " + ChatColor.GRAY + "- Search for a Powder");
 		if (player.hasPermission("powder.reload")) {
 			player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder reload " + ChatColor.GRAY + "- Reload Powder"); 

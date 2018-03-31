@@ -196,11 +196,31 @@ public class PowderHandler {
 		}
 		return addedPowders;
 	}
+	
+	// gets unhidden Powders under a given category
+	public List<Powder> getUnhiddenPowdersFromCategory(String category) {
+		for (String otherCategory : categories.keySet()) {
+			if (otherCategory.toLowerCase().equals(category.toLowerCase())) {
+				category = otherCategory;
+				break;
+			}
+		}
+		List<Powder> addedPowders = new ArrayList<Powder>();
+		for (Powder powder : powders) {
+			if (powder.getCategories().contains(category)) {
+				if (!(powder.isHidden())) {
+					addedPowders.add(powder);
+				}
+			}
+		}
+		return addedPowders;
+	}
 
 	// adds a category
 	public void addCategory(String category, String description) {
 		this.categories.put(category, PowderUtil.color(description
-				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))));
+				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))
+				.replace("{total-hidden}", String.valueOf(getUnhiddenPowdersFromCategory(category).size()))));
 	}
 
 	// sets description for a given category
