@@ -11,9 +11,9 @@ public class SoundEffect {
 	// pitch for this SoundEffect (noteblock values)
 	private float pitch;
 	// waittime in ticks before playing this SoundEffect
-	private long wait;
+	private int wait;
 
-	public SoundEffect(Sound sound, float volume, float pitch, long wait) {
+	public SoundEffect(Sound sound, float volume, float pitch, int wait) {
 		this.sound = sound;
 		this.volume = volume;
 		this.pitch = pitch;
@@ -24,15 +24,15 @@ public class SoundEffect {
 		return sound;
 	}
 
-	public float getVolume() {
+	public Float getVolume() {
 		return volume;
 	}
 
-	public float getPitch() {
+	public Float getPitch() {
 		return pitch;
 	}
 
-	public long getWaitTime() {
+	public Integer getWaitTime() {
 		return wait;
 	}
 

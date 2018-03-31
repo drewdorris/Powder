@@ -5,7 +5,6 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +30,7 @@ import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ImageUtil;
 import com.ruinscraft.powder.util.PowderUtil;
+import com.ruinscraft.powder.util.SoundUtil;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -291,6 +291,11 @@ public class PowderPlugin extends JavaPlugin {
 
 				// add sounds; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
+					if (t.contains("song:")) {
+						String fileName = t.replaceFirst("song:", "");
+						powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName));
+						continue;
+					}
 					Sound sound;
 					String soundName;
 					soundName = t.substring(0, t.indexOf(";"));
@@ -306,7 +311,7 @@ public class PowderPlugin extends JavaPlugin {
 					float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
 					soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					long waitTime = Long.valueOf(t);
+					int waitTime = Integer.valueOf(t);
 					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, waitTime));
 				}
 
@@ -447,7 +452,7 @@ public class PowderPlugin extends JavaPlugin {
 							t = t.replace("spacing:", "");
 							float spacing = Float.valueOf(t);
 							particleMatrix.setSpacing(spacing);
-							// read an image from URL
+							// read an image from URL/path
 						} else if (t.contains("img:")) {
 							String urlName;
 							int width;
@@ -458,37 +463,10 @@ public class PowderPlugin extends JavaPlugin {
 							width = Integer.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							height = Integer.valueOf(t);
-							URL url = PowderUtil.readURL(urlName);
-							if (url == null) {
-								continue;
-							} else {
-								try {
-									ImageUtil.getRowsFromURL(layer.getRows(), url, width, height);
-								} catch (IOException io) {
-									getLogger().warning("Failed to load URL: '" + urlName + "'");
-									continue;
-								}
-							}
-							// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
-							up = up + height;
-							// read an image from data folder path
-						} else if (t.contains("path:")) {
-							String path;
-							int width;
-							int height;
-							t = t.replace("path:", "");
-							path = t.substring(0, t.indexOf(";"));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							height = Integer.valueOf(t);
 							try {
-								ImageUtil.getRowsFromPath(layer.getRows(), path, width, height);
-							} catch (MalformedURLException e) {
-								getLogger().warning("Unclear path: '" + path + "'");
-								continue;
+								ImageUtil.getRows(layer.getRows(), urlName, width, height);
 							} catch (IOException io) {
-								getLogger().warning("Failed to load path: '" + path + "'");
+								getLogger().warning("Failed to load image: '" + urlName + "'");
 								continue;
 							}
 							// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)

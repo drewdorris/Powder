@@ -19,9 +19,22 @@ import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.models.PowderParticle;
 
 public class ImageUtil {
+	
+	public static List<List<PowderParticle>> getRows(List<List<PowderParticle>> rows, String name, int resizedWidth, int resizedHeight) throws IOException {
+		
+		if (name.contains("/")) {
+			return getRowsFromURL(rows, name, resizedWidth, resizedHeight);
+		} else {
+			return getRowsFromPath(rows, name, resizedWidth, resizedHeight);
+		}
+		
+	}
 
 	// gets rows of a Layer from an image from a URL
-	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, URL url, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, String urlName, int resizedWidth, int resizedHeight) throws IOException {
+		
+		URL url = PowderUtil.readURL(urlName);
+		
 		try {
 
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
