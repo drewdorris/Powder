@@ -118,7 +118,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void onDisable() {
 		if (useStorage()) {
 			// save all current users' powders before disabling
-			getStorage().saveAll();
+			storage.saveAll();
 			
 			try {
 				storage.close();
