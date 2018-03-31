@@ -116,14 +116,10 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onDisable() {
-
-		// save all current users' powders before disabling
-		getStorage().saveAll();
-
-		// delete all tasks & powders
-		powderHandler.clearEverything();
-
 		if (useStorage()) {
+			// save all current users' powders before disabling
+			getStorage().saveAll();
+			
 			try {
 				storage.close();
 			} catch (Exception e) {
@@ -131,8 +127,10 @@ public class PowderPlugin extends JavaPlugin {
 			}
 		}
 
-		instance = null;
+		// delete all tasks & powders
+		powderHandler.clearEverything();
 
+		instance = null;
 	}
 
 	// end all current tasks & reinitialize powderHandler
