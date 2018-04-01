@@ -55,20 +55,8 @@ public class PowderPlugin extends JavaPlugin {
 		instance = this;
 
 		loadConfig();
-
-		// enable storage if enabled in configuration
-		if (config.getBoolean("storage.mysql.use")) {
-			String host = config.getString("storage.mysql.host");
-			int port = config.getInt("storage.mysql.port");
-			String database = config.getString("storage.mysql.database");
-			String username = config.getString("storage.mysql.username");
-			String password = config.getString("storage.mysql.password");
-			String powdersTable = config.getString("storage.mysql.table");
-
-			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
-
-			getLogger().info("Using MySQL storage");
-		}
+		
+		enableStorage();
 
 		// load all powders async & load users' powders if storage is enabled
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
@@ -156,9 +144,27 @@ public class PowderPlugin extends JavaPlugin {
 	public boolean useStorage() {
 		return getStorage() != null;
 	}
+	
+	public void enableStorage() {
+		
+		// enable storage if enabled in configuration
+		if (config.getBoolean("storage.mysql.use")) {
+			String host = config.getString("storage.mysql.host");
+			int port = config.getInt("storage.mysql.port");
+			String database = config.getString("storage.mysql.database");
+			String username = config.getString("storage.mysql.username");
+			String password = config.getString("storage.mysql.password");
+			String powdersTable = config.getString("storage.mysql.table");
+
+			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
+
+			getLogger().info("Using MySQL storage");
+		}
+		
+	}
 
 	public void loadPowderConfigs() {
-
+		
 		// list of configuration files that contain Powders
 		powderConfigs = new ArrayList<FileConfiguration>();
 

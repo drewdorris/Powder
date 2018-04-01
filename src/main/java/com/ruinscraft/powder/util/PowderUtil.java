@@ -130,36 +130,40 @@ public class PowderUtil {
 	}
 
 	// unloads player from database
-	// run async
+	// runs async
 	public static void unloadPlayer(Player player) {
 
-		if (!PowderPlugin.getInstance().useStorage()) { 
-			return; 
-		}
-
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-
-		PowderPlugin.getInstance().getStorage().saveEnabledPowders(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
-
-		for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-			powderHandler.removePowderTask(powderTask);
+		
+		if (PowderPlugin.getInstance().useStorage()) {
+			Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+				PowderPlugin.getInstance().getStorage().saveEnabledPowders(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
+					powderHandler.removePowderTask(powderTask);
+				}
+			});
+		} else {
+			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
+				powderHandler.removePowderTask(powderTask);
+			}
 		}
 
 	}
 
 	// loads player from database
-	// run async
+	// runs async
 	public static void loadPlayer(Player player) {
 
 		if (!PowderPlugin.getInstance().useStorage()) { 
 			return; 
 		}
 
-		List<String> enabledPowders = PowderPlugin.getInstance().getStorage().getEnabledPowders(player.getUniqueId());
-
-		for (String powderName : enabledPowders) {
-			PowderUtil.loadPowderFromName(player, powderName);
-		}
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			List<String> enabledPowders = PowderPlugin.getInstance().getStorage().getEnabledPowders(player.getUniqueId());
+			for (String powderName : enabledPowders) {
+				PowderUtil.loadPowderFromName(player, powderName);
+			}
+		});
 
 	}
 

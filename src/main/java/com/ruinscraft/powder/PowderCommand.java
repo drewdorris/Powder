@@ -361,7 +361,8 @@ public class PowderCommand implements CommandExecutor {
 			// save all enabled powders to db
 			PowderPlugin.getInstance().getStorage().saveAll();
 		}
-
+		
+		PowderPlugin.getInstance().enableStorage();
 		PowderPlugin.getInstance().loadPowdersFromSources();
 
 		if (PowderPlugin.getInstance().useStorage()) {
