@@ -20,16 +20,18 @@ import com.zaxxer.hikari.HikariDataSource;
 public class MySqlStorage implements SqlStorage {
 
 	private DataSource dataSource;
-	private String powdersTable;
 
-	private String create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
-	private String query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
-	private String insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
-	private String delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
+	private String create_table;
+	private String query_powders;
+	private String insert_powder;
+	private String delete_powders;
 
 	public MySqlStorage(String host, int port, String database, String username, String password, String powdersTable) {
-		this.powdersTable = powdersTable;
-
+		create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
+		query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
+		insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
+		delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
+		
 		HikariConfig hikariConfig = new HikariConfig();
 
 		hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
@@ -126,7 +128,7 @@ public class MySqlStorage implements SqlStorage {
 				List<String> powders = new ArrayList<>();
 
 				ps.setString(1, uuid.toString());
-
+				
 				ResultSet rs = ps.executeQuery();
 
 				while (rs.next()) {

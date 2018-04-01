@@ -51,7 +51,6 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onEnable() {
-
 		instance = this;
 
 		loadConfig();
@@ -61,6 +60,7 @@ public class PowderPlugin extends JavaPlugin {
 		// load all powders async & load users' powders if storage is enabled
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			loadPowdersFromSources();
+			
 			// load all saved powders from db if enabled
 			if (useStorage()) {
 				PowderUtil.loadPowdersForOnlineFromStorage();
@@ -95,7 +95,6 @@ public class PowderPlugin extends JavaPlugin {
 				powderHandler.getPowderTasks().removeAll(toBeRemoved);
 			}
 		}, 0L, 100L);
-
 	}
 
 	public void onDisable() {
@@ -135,7 +134,6 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void enableStorage() {
-
 		// enable storage if enabled in configuration
 		if (config.getBoolean("storage.mysql.use")) {
 			String host = config.getString("storage.mysql.host");
@@ -149,11 +147,9 @@ public class PowderPlugin extends JavaPlugin {
 
 			getLogger().info("Using MySQL storage");
 		}
-
 	}
 
 	public void loadPowderConfigs() {
-
 		// list of configuration files that contain Powders
 		powderConfigs = new ArrayList<FileConfiguration>();
 
@@ -203,11 +199,9 @@ public class PowderPlugin extends JavaPlugin {
 			FileConfiguration powderConfig = YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
 		}
-
 	}
 
 	public void loadConfig() {
-
 		File configFile = new File(getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
 			getLogger().info("config.yml not found, creating!");
@@ -215,13 +209,11 @@ public class PowderPlugin extends JavaPlugin {
 		}
 		reloadConfig();
 		config = getConfig();
-
 	}
 
 	// load all Powders from their source yaml files
 	@SuppressWarnings("unchecked")
 	public void loadPowdersFromSources() {
-
 		// load source yaml files
 		loadPowderConfigs();
 
@@ -570,7 +562,6 @@ public class PowderPlugin extends JavaPlugin {
 						ChatColor.GRAY + "All Powders loaded! (" + powderAmount + " total)", "powder");
 			}
 		}
-
 	}
 
 }
