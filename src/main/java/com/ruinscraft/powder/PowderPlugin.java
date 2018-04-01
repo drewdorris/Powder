@@ -102,12 +102,6 @@ public class PowderPlugin extends JavaPlugin {
 		if (useStorage()) {
 			// save all current users' powders before disabling
 			PowderUtil.savePowdersForOnline();
-
-			try {
-				storage.close();
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
 		}
 
 		// delete all tasks & powders

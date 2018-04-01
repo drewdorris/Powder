@@ -1,6 +1,5 @@
 package com.ruinscraft.powder.storage;
 
-import java.io.IOException;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -12,13 +11,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import javax.sql.DataSource;
+
 import com.ruinscraft.powder.util.PowderUtil;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class MySqlStorage implements SqlStorage {
 
-	private HikariDataSource hikari;
+	private DataSource dataSource;
 	private String powdersTable;
 
 	private final String create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
@@ -35,10 +36,11 @@ public class MySqlStorage implements SqlStorage {
 		hikariConfig.setUsername(username);
 		hikariConfig.setPassword(password);
 		hikariConfig.setPoolName("powder-pool");
-		hikariConfig.setMaximumPoolSize(10);
+		hikariConfig.setMaximumPoolSize(3);
 		hikariConfig.setConnectionTimeout(3000);
+		hikariConfig.setLeakDetectionThreshold(3000);
 
-		hikari = new HikariDataSource(hikariConfig);
+		dataSource = new HikariDataSource(hikariConfig);
 
 		createTable();
 	}
@@ -142,12 +144,7 @@ public class MySqlStorage implements SqlStorage {
 
 	@Override
 	public Connection getConnection() throws SQLException {
-		return hikari.getConnection();
-	}
-
-	@Override
-	public void close() throws IOException {
-		hikari.close();
+		return dataSource.getConnection();
 	}
 
 }

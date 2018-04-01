@@ -5,7 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-public interface Storage extends AutoCloseable {
+public interface Storage {
 
 	List<String> get(UUID uuid);
 
