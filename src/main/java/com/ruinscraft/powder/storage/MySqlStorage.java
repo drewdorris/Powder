@@ -41,6 +41,7 @@ public class MySqlStorage implements SqlStorage {
 			ps.executeUpdate();
 
 			ps.close();
+			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -63,6 +64,7 @@ public class MySqlStorage implements SqlStorage {
 
 			rs.close();
 			ps.close();
+			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -92,6 +94,7 @@ public class MySqlStorage implements SqlStorage {
 			ps.executeBatch();
 
 			ps.close();
+			c.close();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
@@ -121,6 +124,7 @@ public class MySqlStorage implements SqlStorage {
 				ps.executeBatch();
 
 				ps.close();
+				c.close();
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
