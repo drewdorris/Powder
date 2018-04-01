@@ -6,61 +6,65 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import com.ruinscraft.powder.util.PowderUtil;
+import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class MySqlStorage implements SqlStorage {
 
-	private final String powdersTable;
-	private final HikariDataSource hikari;
+	private HikariDataSource hikari;
+	private String powdersTable;
+
+	private final String create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
+	private final String query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
+	private final String insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
+	private final String delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
 
 	public MySqlStorage(String host, int port, String database, String username, String password, String powdersTable) {
 		this.powdersTable = powdersTable;
 
-		hikari = new HikariDataSource();
-		hikari.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
-		hikari.setUsername(username);
-		hikari.setPassword(password);
-		hikari.setPoolName("powder-pool");
-		hikari.setMaximumPoolSize(10);
+		HikariConfig hikariConfig = new HikariConfig();
+
+		hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
+		hikariConfig.setUsername(username);
+		hikariConfig.setPassword(password);
+		hikariConfig.setPoolName("powder-pool");
+		hikariConfig.setMaximumPoolSize(10);
+		hikariConfig.setConnectionTimeout(3000);
+
+		hikari = new HikariDataSource(hikariConfig);
 
 		createTable();
 	}
 
 	@Override
 	public void createTable() {
-		try (Connection c = getConnection()) {
-			String update = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
-			
-			try (PreparedStatement ps = c.prepareStatement(update)) {
-				ps.executeUpdate();
-			}
+		try (Connection c = getConnection();
+				PreparedStatement ps = c.prepareStatement(create_table)) {
+			ps.execute();
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
 	}
 
 	@Override
-	public List<String> getEnabledPowders(UUID uuid) {
+	public List<String> get(UUID uuid) {
 		List<String> powders = new ArrayList<>();
 
-		try (Connection c = getConnection()) {
-			String query = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
-			
-			try (PreparedStatement ps = c.prepareStatement(query)) {
-				ps.setString(1, uuid.toString());
-				
-				try (ResultSet rs = ps.executeQuery()) {
-					while (rs.next()) {
-						powders.add(rs.getString("powder"));
-					}
-				}
+		try (Connection c = getConnection();
+				PreparedStatement ps = c.prepareStatement(query_powders)) {
+			ps.setString(1, uuid.toString());
+
+			ResultSet rs = ps.executeQuery();
+
+			while (rs.next()) {
+				powders.add(rs.getString("powder"));
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -70,23 +74,39 @@ public class MySqlStorage implements SqlStorage {
 	}
 
 	@Override
-	public void saveEnabledPowders(UUID uuid, List<String> powders) {
-		try (Connection c = getConnection()) {
-			String deleteQuery = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
-			String insertQuery = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
+	public void save(UUID uuid, List<String> powders) {
+		try (Connection c = getConnection();
+				PreparedStatement delete = c.prepareStatement(delete_powders);
+				PreparedStatement insert = c.prepareStatement(insert_powder)) {
+			delete.setString(1, uuid.toString());
+			delete.execute();
 
-			try (PreparedStatement delete = c.prepareStatement(deleteQuery)) {
-				delete.setString(1, uuid.toString());
-				delete.executeUpdate();
+			for (String powder : PowderUtil.getEnabledPowderNames(uuid)) {
+				insert.setString(1, uuid.toString());
+				insert.setString(2, powder);
+				insert.addBatch();
 			}
-			
-			try (PreparedStatement insert = c.prepareStatement(insertQuery)) {
+			insert.executeBatch();
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+
+	@Override
+	public void saveBatch(Collection<UUID> uuids) {
+		try (Connection c = getConnection();
+				PreparedStatement delete = c.prepareStatement(delete_powders);
+				PreparedStatement insert = c.prepareStatement(insert_powder)) {
+
+			for (UUID uuid : uuids) {
+				delete.setString(1, uuid.toString());
+				delete.execute();
+
 				for (String powder : PowderUtil.getEnabledPowderNames(uuid)) {
 					insert.setString(1, uuid.toString());
 					insert.setString(2, powder);
 					insert.addBatch();
 				}
-				
 				insert.executeBatch();
 			}
 		} catch (SQLException e) {
@@ -95,62 +115,29 @@ public class MySqlStorage implements SqlStorage {
 	}
 
 	@Override
-	public void saveAll() {
-		try (Connection c = getConnection()) {
-			String deleteQuery = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
-			String insertQuery = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
+	public Map<UUID, List<String>> getBatch (Collection<UUID> uuids) {
+		Map<UUID, List<String>> batch = new HashMap<>();
 
-			try (PreparedStatement delete = c.prepareStatement(deleteQuery)) {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					delete.setString(1, player.getUniqueId().toString());
-					
-					delete.addBatch();
+		try (Connection c = getConnection();
+				PreparedStatement ps = c.prepareStatement(query_powders)) {
+			for (UUID uuid : uuids) {
+				List<String> powders = new ArrayList<>();
+
+				ps.setString(1, uuid.toString());
+
+				ResultSet rs = ps.executeQuery();
+
+				while (rs.next()) {
+					powders.add(rs.getString("powder"));
 				}
-				
-				delete.executeBatch();
-			}
-			
-			try (PreparedStatement insert = c.prepareStatement(insertQuery)) {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					for (String powder : PowderUtil.getEnabledPowderNames(player.getUniqueId())) {
-						insert.setString(1, player.getUniqueId().toString());
-						insert.setString(2, powder);
-						insert.addBatch();
-					}
-					
-					insert.executeBatch();
-				}
+
+				batch.put(uuid, powders);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
 		}
-	}
 
-	@Override
-	public void loadAll() {
-		try (Connection c = getConnection()) {
-			String query = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
-
-			try (PreparedStatement ps = c.prepareStatement(query)) {
-				for (Player player : Bukkit.getOnlinePlayers()) {
-					ps.setString(1, player.getUniqueId().toString());
-
-					try (ResultSet rs = ps.executeQuery()) {
-						List<String> powders = new ArrayList<>();
-
-						while (rs.next()) {
-							powders.add(rs.getString("powder"));
-						}
-
-						for (String powder : powders) {
-							PowderUtil.loadPowderFromName(player, powder);
-						}
-					}
-				}
-			}
-		} catch (SQLException e) {
-			e.printStackTrace();
-		}
+		return batch;
 	}
 
 	@Override

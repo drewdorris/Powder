@@ -8,8 +8,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -37,6 +39,10 @@ public class PowderUtil {
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
+	}
+	
+	public static Set<UUID> getOnlineUUIDs() {
+		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
 	}
 
 	// sends a message with the given prefix in config.yml
@@ -137,7 +143,7 @@ public class PowderUtil {
 		
 		if (PowderPlugin.getInstance().useStorage()) {
 			Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-				PowderPlugin.getInstance().getStorage().saveEnabledPowders(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
+				PowderPlugin.getInstance().getStorage().save(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 					powderHandler.removePowderTask(powderTask);
 				}
@@ -159,7 +165,7 @@ public class PowderUtil {
 		}
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			List<String> enabledPowders = PowderPlugin.getInstance().getStorage().getEnabledPowders(player.getUniqueId());
+			List<String> enabledPowders = PowderPlugin.getInstance().getStorage().get(player.getUniqueId());
 			for (String powderName : enabledPowders) {
 				PowderUtil.loadPowderFromName(player, powderName);
 			}
@@ -488,6 +494,28 @@ public class PowderUtil {
 
 		PowderUtil.spawnPowder(player, powder);
 		
+	}
+	
+	public static void savePowdersForOnline() {
+		if (!PowderPlugin.getInstance().useStorage()) {
+			return;
+		}
+		
+		PowderPlugin.getInstance().getStorage().saveBatch(PowderUtil.getOnlineUUIDs());
+	}
+	
+	public static void loadPowdersForOnlineFromStorage() {
+		if (!PowderPlugin.getInstance().useStorage()) {
+			return;
+		}
+		
+		Map<UUID, List<String>> enabledPowders = PowderPlugin.getInstance().getStorage().getBatch(PowderUtil.getOnlineUUIDs());
+
+		for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
+			for (String powder : entry.getValue()) {
+				PowderUtil.loadPowderFromName(Bukkit.getPlayer(entry.getKey()), powder);
+			}
+		}
 	}
 
 }

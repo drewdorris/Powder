@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -354,20 +355,17 @@ public class PowderCommand implements CommandExecutor {
 
 	// reload config and all Powders, while saving database
 	public void reload() {
-
 		PowderPlugin.getInstance().loadConfig();
 
 		if (PowderPlugin.getInstance().useStorage()) {
-			// save all enabled powders to db
-			PowderPlugin.getInstance().getStorage().saveAll();
+			PowderUtil.savePowdersForOnline();
 		}
-		
+
 		PowderPlugin.getInstance().enableStorage();
 		PowderPlugin.getInstance().loadPowdersFromSources();
 
 		if (PowderPlugin.getInstance().useStorage()) {
-			// load all saved powders from db
-			PowderPlugin.getInstance().getStorage().loadAll();
+			PowderUtil.loadPowdersForOnlineFromStorage();
 		}
 	}
 

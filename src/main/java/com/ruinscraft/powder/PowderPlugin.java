@@ -55,20 +55,15 @@ public class PowderPlugin extends JavaPlugin {
 		instance = this;
 
 		loadConfig();
-		
+
 		enableStorage();
 
 		// load all powders async & load users' powders if storage is enabled
-		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
-			@Override
-			public void run() {
-
-				loadPowdersFromSources();
-				// load all saved powders from db if enabled
-				if (useStorage()) {
-					PowderPlugin.getInstance().getStorage().loadAll();
-				}
-
+		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			loadPowdersFromSources();
+			// load all saved powders from db if enabled
+			if (useStorage()) {
+				PowderUtil.loadPowdersForOnlineFromStorage();
 			}
 		});
 
@@ -106,8 +101,8 @@ public class PowderPlugin extends JavaPlugin {
 	public void onDisable() {
 		if (useStorage()) {
 			// save all current users' powders before disabling
-			storage.saveAll();
-			
+			PowderUtil.savePowdersForOnline();
+
 			try {
 				storage.close();
 			} catch (Exception e) {
@@ -144,9 +139,9 @@ public class PowderPlugin extends JavaPlugin {
 	public boolean useStorage() {
 		return getStorage() != null;
 	}
-	
+
 	public void enableStorage() {
-		
+
 		// enable storage if enabled in configuration
 		if (config.getBoolean("storage.mysql.use")) {
 			String host = config.getString("storage.mysql.host");
@@ -160,11 +155,11 @@ public class PowderPlugin extends JavaPlugin {
 
 			getLogger().info("Using MySQL storage");
 		}
-		
+
 	}
 
 	public void loadPowderConfigs() {
-		
+
 		// list of configuration files that contain Powders
 		powderConfigs = new ArrayList<FileConfiguration>();
 

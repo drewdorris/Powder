@@ -1,17 +1,18 @@
 package com.ruinscraft.powder.storage;
 
-import java.io.Closeable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
-public interface Storage extends Closeable {
+public interface Storage extends AutoCloseable {
 
-	List<String> getEnabledPowders(UUID uuid);
+	List<String> get(UUID uuid);
 
-	void saveEnabledPowders(UUID uuid, List<String> powders);
+	void save(UUID uuid, List<String> powders);
 
-	void saveAll();
-
-	void loadAll();
+	Map<UUID, List<String>> getBatch (Collection<UUID> uuids);
+	
+	void saveBatch(Collection<UUID> uuids);
 
 }
