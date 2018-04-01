@@ -22,10 +22,10 @@ public class MySqlStorage implements SqlStorage {
 	private DataSource dataSource;
 	private String powdersTable;
 
-	private final String create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
-	private final String query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
-	private final String insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
-	private final String delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
+	private String create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
+	private String query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
+	private String insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
+	private String delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
 
 	public MySqlStorage(String host, int port, String database, String username, String password, String powdersTable) {
 		this.powdersTable = powdersTable;
