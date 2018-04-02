@@ -121,10 +121,7 @@ public class PowderCommand implements CommandExecutor {
 						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "There are no Powders currently active.", label);
 						return false;
 					}
-					int amount = powderHandler.getPowderTasks(player.getUniqueId()).size();
-					for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-						powderHandler.removePowderTask(powderTask);
-					}
+					int amount = PowderUtil.cancelAllPowders(player.getUniqueId());
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully cancelled all Powders! (" + 
 							amount + " total)", label);
 					return true;
@@ -248,7 +245,7 @@ public class PowderCommand implements CommandExecutor {
 			if (args[1].equalsIgnoreCase("cancel")) {
 				int taskAmount = powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				// cancel if exists
-				if (PowderUtil.cancelPowder(player, powder)) {
+				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled! (" + 
 							taskAmount + " total)", label);
 				} else {
@@ -263,11 +260,7 @@ public class PowderCommand implements CommandExecutor {
 		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 			// if multiple uses of one Powder are not allowed, cancel it
 			if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
-				boolean success = false;
-				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId(), powder)) {
-					powderHandler.removePowderTask(powderTask);
-					success = true;
-				}
+				boolean success = PowderUtil.cancelPowder(player.getUniqueId(), powder);
 				if (success) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled!", label);
 				} else {
@@ -364,7 +357,7 @@ public class PowderCommand implements CommandExecutor {
 		PowderPlugin.getInstance().loadPowdersFromSources();
 
 		if (PowderPlugin.getInstance().useStorage()) {
-			PowderUtil.loadPowdersForOnlineFromStorage();
+			PowderUtil.loadPowdersForOnline();
 		}
 	}
 

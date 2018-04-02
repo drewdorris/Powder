@@ -37,10 +37,12 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderUtil {
 
+	private static PowderPlugin plugin = PowderPlugin.getInstance();
+	
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
-	
+
 	public static Set<UUID> getOnlineUUIDs() {
 		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
 	}
@@ -48,7 +50,6 @@ public class PowderUtil {
 	// sends a message with the given prefix in config.yml
 	// label is the base command, i.e. "powder" or "pdr" or "pow"
 	public static void sendPrefixMessage(Player player, Object message, String label) {
-
 		if (!(message instanceof String) && !(message instanceof BaseComponent)) {
 			return;
 		}
@@ -66,12 +67,10 @@ public class PowderUtil {
 		fullMessage.addExtra((TextComponent) message);
 
 		player.spigot().sendMessage(fullMessage);
-
 	}
 
 	// returns a URL from a string, adds http:// if appended
 	public static URL readURL(String urlName) {
-
 		URL url;
 		try {
 			url = new URL(urlName);
@@ -81,26 +80,24 @@ public class PowderUtil {
 				try {
 					url = new URL("http://" + urlString);
 				} catch (Exception mal2) {
-					PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+					plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
 					mal2.printStackTrace();
 					return null;
 				}
 			} else {
-				PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+				plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
 				mal.printStackTrace();
 				return null;
 			}
 		} catch (Exception e) {
-			PowderPlugin.getInstance().getLogger().warning("Invalid URL: '" + urlName + "'");
+			plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
 			return null;
 		}
 		return url;
-
 	}
 
 	// returns an InputStream from the given URL
 	public static InputStream getInputStreamFromURL(URL url) {
-
 		HttpURLConnection httpConnection;
 		InputStream stream;
 		try {
@@ -114,7 +111,7 @@ public class PowderUtil {
 
 				String urlString = url.toString();
 				if (urlString.contains("https")) {
-					PowderPlugin.getInstance().getLogger().warning("Failed to load URL '" + urlString + "'.");
+					plugin.getLogger().warning("Failed to load URL '" + urlString + "'.");
 					return null;
 				}
 				// try again to see if the site requires https
@@ -123,7 +120,7 @@ public class PowderUtil {
 				return getInputStreamFromURL(url);
 
 			} else if (!(httpConnection.getResponseCode() == 200)) {
-				PowderPlugin.getInstance().getLogger().warning("Error" + httpConnection.getResponseCode() + " while attempting to read URL: " + url.toString());
+				plugin.getLogger().warning("Error" + httpConnection.getResponseCode() + " while attempting to read URL: " + url.toString());
 				return null;
 			}
 
@@ -132,45 +129,16 @@ public class PowderUtil {
 		}
 
 		return stream;
-
 	}
 
-	// unloads player from database
-	// runs async
+	// cancels powders for logout
 	public static void unloadPlayer(Player player) {
-
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		
-		if (PowderPlugin.getInstance().useStorage()) {
-			Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-				PowderPlugin.getInstance().getStorage().save(player.getUniqueId(), PowderUtil.getEnabledPowderNames(player.getUniqueId()));
-				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-					powderHandler.removePowderTask(powderTask);
-				}
-			});
-		} else {
-			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-				powderHandler.removePowderTask(powderTask);
-			}
-		}
-
+		cancelAllPowders(player.getUniqueId());
 	}
 
 	// loads player from database
-	// runs async
 	public static void loadPlayer(Player player) {
-
-		if (!PowderPlugin.getInstance().useStorage()) { 
-			return; 
-		}
-
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			List<String> enabledPowders = PowderPlugin.getInstance().getStorage().get(player.getUniqueId());
-			for (String powderName : enabledPowders) {
-				PowderUtil.loadPowderFromName(player, powderName);
-			}
-		});
-
+		loadPowdersForPlayer(player.getUniqueId());
 	}
 
 	// cosine of the given rotation, and multiplies it by the given spacing
@@ -185,13 +153,12 @@ public class PowderUtil {
 
 	// spawns a given Powder for the given user
 	public static void spawnPowder(final Player player, final Powder powder) {
-
 		// create a PowderTask, add taskIDs to it
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
 
 		if (powder.isRepeating()) {
 
-			int task = PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
+			int task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
 				public void run() {
 					powderTask.addTasks(PowderUtil.spawnParticles(player, powder));
 					powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
@@ -207,32 +174,55 @@ public class PowderUtil {
 			powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
 			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
 		}
-		
-		PowderPlugin.getInstance().getPowderHandler().addPowderTask(powderTask);
 
+		plugin.getPowderHandler().addPowderTask(powderTask);
+
+		savePowdersForPlayer(player.getUniqueId());
 	}
 
 	// cancels a given Powder for the given player
-	public static boolean cancelPowder(final Player player, final Powder powder) {
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+	public static boolean cancelPowder(UUID uuid, Powder powder) {
+		PowderHandler powderHandler = plugin.getPowderHandler();
+
 		boolean success = false;
-		for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId(), powder)) {
+
+		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid, powder)) {
 			powderHandler.removePowderTask(powderTask);
 			success = true;
 		}
+
+		if (success && plugin.useStorage()) {
+			savePowdersForPlayer(uuid);
+		}
+
 		return success;
+	}
+
+	public static int cancelAllPowders(UUID uuid) {
+		int amt = 0;
+
+		PowderHandler powderHandler = plugin.getPowderHandler();
+
+		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
+			powderHandler.removePowderTask(powderTask);
+			amt++;
+		}
+		
+		if (plugin.useStorage()) {
+			savePowdersForPlayer(uuid);
+		}
+		
+		return amt;
 	}
 
 	// spawn particle matrices, returns list of taskIDs
 	public static Set<Integer> spawnParticles(final Player player, final Powder powder) {
-
 		List<ParticleMatrix> particleMatrices = powder.getMatrices();
 
 		Set<Integer> tasks = new HashSet<Integer>();
 
 		// separate spacing, wait time for each ParticleMatrix
 		for (ParticleMatrix particleMatrix : particleMatrices) {
-
 			final float spacing;
 
 			// set particleMatrix spacing to the default if it doesn't exist or is 0
@@ -244,8 +234,8 @@ public class PowderUtil {
 
 			long waitTime = particleMatrix.getTick();
 
-			int task = PowderPlugin.getInstance().getServer()
-					.getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
+			int task = plugin.getServer()
+					.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
 
 						@Override
 						public void run() {
@@ -361,18 +351,13 @@ public class PowderUtil {
 									newX = startX + (startARowX * position) - (moveWithPitchX * rowsDownSoFar);
 									newY = newY - distanceBetweenRowsY;
 									newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
-
 								}
-
 							}
-
 						}
-
 						// begin the task at the tick given
 					},waitTime);
 
 			tasks.add(task);
-
 		}
 
 		return tasks;
@@ -384,8 +369,8 @@ public class PowderUtil {
 
 		for (SoundEffect sound : powder.getSoundEffects()) {
 
-			int task = PowderPlugin.getInstance().getServer().getScheduler()
-					.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
+			int task = plugin.getServer().getScheduler()
+					.scheduleSyncDelayedTask(plugin, new Runnable() {
 
 						@Override
 						public void run() {
@@ -417,8 +402,8 @@ public class PowderUtil {
 			int task;
 			if (dust.isSingleOccurrence()) {
 				frequency = dust.getFrequency();
-				task = PowderPlugin.getInstance().getServer().getScheduler()
-						.scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
+				task = plugin.getServer().getScheduler()
+						.scheduleSyncDelayedTask(plugin, new Runnable() {
 							public void run() {
 								spawnDust(player, dust);
 							}
@@ -429,8 +414,8 @@ public class PowderUtil {
 				} else {
 					frequency = 1200 / dust.getFrequency();
 				}
-				task = PowderPlugin.getInstance().getServer().getScheduler()
-						.scheduleSyncRepeatingTask(PowderPlugin.getInstance(), new Runnable() {
+				task = plugin.getServer().getScheduler()
+						.scheduleSyncRepeatingTask(plugin, new Runnable() {
 							public void run() {
 								spawnDust(player, dust);
 							}
@@ -465,7 +450,7 @@ public class PowderUtil {
 
 	// get names of enabled Powders for a user
 	public static List<String> getEnabledPowderNames(UUID uuid) {
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = plugin.getPowderHandler();
 
 		List<String> enabledPowders = new ArrayList<>();
 
@@ -479,8 +464,8 @@ public class PowderUtil {
 	}
 
 	// loads and creates a Powder (used for storage loading)
-	public static void loadPowderFromName(Player player, String powderName) {
-		PowderHandler handler = PowderPlugin.getInstance().getPowderHandler();
+	public static void createPowderFromName(Player player, String powderName) {
+		PowderHandler handler = plugin.getPowderHandler();
 
 		Powder powder = handler.getPowder(powderName);
 
@@ -493,28 +478,47 @@ public class PowderUtil {
 		}
 
 		PowderUtil.spawnPowder(player, powder);
-		
 	}
-	
-	public static void savePowdersForOnline() {
-		if (!PowderPlugin.getInstance().useStorage()) {
-			return;
-		}
-		
-		PowderPlugin.getInstance().getStorage().saveBatch(PowderUtil.getOnlineUUIDs());
-	}
-	
-	public static void loadPowdersForOnlineFromStorage() {
-		if (!PowderPlugin.getInstance().useStorage()) {
-			return;
-		}
-		
-		Map<UUID, List<String>> enabledPowders = PowderPlugin.getInstance().getStorage().getBatch(PowderUtil.getOnlineUUIDs());
 
-		for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
-			for (String powder : entry.getValue()) {
-				PowderUtil.loadPowderFromName(Bukkit.getPlayer(entry.getKey()), powder);
-			}
+	public static void savePowdersForPlayer(UUID uuid) {
+		if (plugin.useStorage()) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
+			});
+		}
+	}
+	
+	public static void loadPowdersForPlayer(UUID uuid) {
+		if (plugin.useStorage()) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				List<String> powders = plugin.getStorage().get(uuid);
+				
+				for (String powder : powders) {
+					createPowderFromName(Bukkit.getPlayer(uuid), powder);
+				}
+			});
+		}
+	}
+
+	public static void savePowdersForOnline() {
+		if (plugin.useStorage()) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				plugin.getStorage().saveBatch(PowderUtil.getOnlineUUIDs());
+			});
+		}
+	}
+
+	public static void loadPowdersForOnline() {
+		if (plugin.useStorage()) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				Map<UUID, List<String>> enabledPowders = plugin.getStorage().getBatch(PowderUtil.getOnlineUUIDs());
+
+				for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
+					for (String powder : entry.getValue()) {
+						createPowderFromName(Bukkit.getPlayer(entry.getKey()), powder);
+					}
+				}
+			});
 		}
 	}
 

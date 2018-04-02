@@ -63,7 +63,7 @@ public class PowderPlugin extends JavaPlugin {
 			
 			// load all saved powders from db if enabled
 			if (useStorage()) {
-				PowderUtil.loadPowdersForOnlineFromStorage();
+				PowderUtil.loadPowdersForOnline();
 			}
 		});
 
