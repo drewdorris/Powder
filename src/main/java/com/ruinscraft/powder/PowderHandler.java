@@ -196,7 +196,7 @@ public class PowderHandler {
 		}
 		return addedPowders;
 	}
-	
+
 	// gets unhidden Powders under a given category
 	public List<Powder> getUnhiddenPowdersFromCategory(String category) {
 		for (String otherCategory : categories.keySet()) {

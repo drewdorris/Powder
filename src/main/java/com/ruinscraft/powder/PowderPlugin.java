@@ -56,13 +56,11 @@ public class PowderPlugin extends JavaPlugin {
 		loadConfig();
 
 		enableStorage();
-		
-		
 
 		// load all powders async & load users' powders if storage is enabled
 		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			loadPowdersFromSources();
-			
+
 			// load all saved powders from db if enabled
 			if (useStorage()) {
 				PowderUtil.loadPowdersForOnline();
@@ -221,9 +219,9 @@ public class PowderPlugin extends JavaPlugin {
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
-		
+
 		// run every tick to update each PowderTask
-		// new PowderCreationTask().runTaskTimer(this, 0L, 1L);
+		// new PowdersCreationTask().runTaskTimer(this, 0L, 1L);
 
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));

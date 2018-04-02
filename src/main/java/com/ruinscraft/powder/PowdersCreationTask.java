@@ -4,11 +4,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ruinscraft.powder.models.PowderTask;
 
-public class PowderCreationTask extends BukkitRunnable {
-	
+public class PowdersCreationTask extends BukkitRunnable {
+
 	private PowderHandler powderHandler;
-	
-	public PowderCreationTask() {
+
+	public PowdersCreationTask() {
 		powderHandler = PowderPlugin.getInstance().getPowderHandler();
 	}
 
@@ -17,7 +17,7 @@ public class PowderCreationTask extends BukkitRunnable {
 		if (powderHandler == null) {
 			cancel();
 		}
-		
+
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			// do stuff
 		}
