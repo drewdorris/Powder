@@ -6,8 +6,8 @@ public interface PowderElement {
 
 	void create(Location location); // create this element at this location
 
-	int getRepeatTime(); // iterate after how many ticks
+	Integer getRepeatTime(); // iterate after how many ticks
 
-	int getIterations(); // how many times to iterate; 0 if unlimited
+	Integer getIterations(); // how many times to iterate; 0 if unlimited
 
 }

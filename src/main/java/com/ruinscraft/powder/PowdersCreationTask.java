@@ -1,7 +1,9 @@
 package com.ruinscraft.powder;
 
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
 
 public class PowdersCreationTask extends BukkitRunnable {
@@ -19,7 +21,13 @@ public class PowdersCreationTask extends BukkitRunnable {
 		}
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
-			// do stuff
+			for (PowderElement element : powderTask.getActiveElements().keySet()) {
+				Long lastOccurrence = powderTask.getActiveElements().get(element);
+				if (System.currentTimeMillis() - (lastOccurrence + (element.getRepeatTime() * 50)) >= -10) {
+					element.create(Bukkit.getPlayer(powderTask.getPlayerUUID()).getLocation());
+					powderTask.getActiveElements().put(element, System.currentTimeMillis());
+				}
+			}
 		}
 	}
 

@@ -1,8 +1,9 @@
 package com.ruinscraft.powder.models;
 
+import org.bukkit.Location;
 import org.bukkit.Sound;
 
-public class SoundEffect {
+public class SoundEffect implements PowderElement {
 
 	// Sound enum associated with this SoundEffect
 	private Sound sound;
@@ -12,6 +13,10 @@ public class SoundEffect {
 	private float pitch;
 	// waittime in ticks before playing this SoundEffect
 	private int wait;
+	// iterations (0 if infinite)
+	private int iterations;
+	// after how many ticks should it repeat?
+	private int repeatTime;
 
 	public SoundEffect(Sound sound, float volume, float pitch, int wait) {
 		this.sound = sound;
@@ -34,6 +39,18 @@ public class SoundEffect {
 
 	public Integer getWaitTime() {
 		return wait;
+	}
+	
+	public Integer getIterations() {
+		return iterations;
+	}
+	
+	public Integer getRepeatTime() {
+		return repeatTime;
+	}
+
+	public void create(Location location) {
+		location.getWorld().playSound(location, getSound(), getVolume(), getPitch());
 	}
 
 }

@@ -1,6 +1,8 @@
 package com.ruinscraft.powder.models;
 
-public class Dust {
+import org.bukkit.Location;
+
+public class Dust implements PowderElement {
 
 	// the PowderParticle associated with this Dust
 	private PowderParticle powderParticle;
@@ -8,16 +10,17 @@ public class Dust {
 	private double radius;
 	// the limit height (up & down) that this Dust can be spawned in
 	private double height;
-	// how many ticks per minute this Dust is spawned
-	private long frequency;
+	// iterations (0 if infinite)
+	private int iterations;
+	// after how many ticks should it repeat?
+	private int repeatTime;
 	// is this Dust only spawned once?
 	private boolean singleOccurrence;
 
-	public Dust(PowderParticle powderParticle, double radius, double height, long frequency, boolean singleOccurrence) {
+	public Dust(PowderParticle powderParticle, double radius, double height, boolean singleOccurrence) {
 		this.powderParticle = powderParticle;
 		this.radius = radius;
 		this.height = height;
-		this.frequency = frequency;
 		this.singleOccurrence = singleOccurrence;
 	}
 
@@ -33,12 +36,36 @@ public class Dust {
 		return height;
 	}
 
-	public Long getFrequency() {
-		return frequency;
+	public Integer getIterations() {
+		return iterations;
+	}
+
+	public Integer getRepeatTime() {
+		return repeatTime;
 	}
 
 	public boolean isSingleOccurrence() {
 		return singleOccurrence;
+	}
+
+	public void create(Location location) {
+		double radiusZoneX = (Math.random() - .5) * (2 * getRadius());
+		double radiusZoneZ = (Math.random() - .5) * (2 * getRadius());
+		double heightZone = (Math.random() - .5) * (2 * getHeight());
+		Location particleLocation = location.add(radiusZoneX, heightZone + 1, radiusZoneZ);
+		// if no block in the way
+		if (particleLocation.getBlock().isEmpty()) {
+			PowderParticle powderParticle = getPowderParticle();
+			if (powderParticle.getData() == null) {
+				location.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 0, (powderParticle.getXOff() / 255), 
+						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 1);
+			} else {
+				location.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 1, (powderParticle.getXOff() / 255), 
+						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 
+						(double) powderParticle.getData());
+			}
+		}
+		iterations++;
 	}
 
 }

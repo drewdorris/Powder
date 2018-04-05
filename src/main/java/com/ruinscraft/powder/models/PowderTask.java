@@ -1,27 +1,23 @@
 package com.ruinscraft.powder.models;
 
-import java.util.HashSet;
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class PowderTask {
 
 	// player associated with this PowderTask
 	private UUID player;
-	// taskIDs associated with this PowderTask
-	private Set<Integer> tasks;
 	// Powder associated with this PowderTask
 	private Powder powder;
+	private long startTime;
+	
+	private Map<PowderElement, Long> activeElements;
 	
 	public PowderTask(UUID player, Powder powder) {
 		this.player = player;
-		this.tasks = new HashSet<Integer>();
-		this.powder = powder;
-	}
-
-	public PowderTask(UUID player, Set<Integer> tasks, Powder powder) {
-		this.player = player;
-		this.tasks = tasks;
+		startTime = System.currentTimeMillis();
+		activeElements = new HashMap<PowderElement, Long>();
 		this.powder = powder;
 	}
 
@@ -29,24 +25,20 @@ public class PowderTask {
 		return player;
 	}
 
-	public Set<Integer> getTaskIds() {
-		return tasks;
-	}
-
 	public Powder getPowder() {
 		return powder;
 	}
-
-	public void addTask(Integer task) {
-		tasks.add(task);
+	
+	public Map<PowderElement, Long> getActiveElements() {
+		return activeElements;
 	}
 	
-	public void addTasks(Set<Integer> tasks) {
-		this.tasks.addAll(tasks);
+	public void addElement(PowderElement element) {
+		activeElements.put(element, startTime);
 	}
-
-	public void removeTask(Integer task) {
-		tasks.remove(task);
+	
+	public void removeElement(PowderElement element) {
+		activeElements.remove(element);
 	}
 
 }
