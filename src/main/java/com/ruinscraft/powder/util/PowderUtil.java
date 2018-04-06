@@ -6,7 +6,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -14,20 +13,14 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderCommand;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.Dust;
-import com.ruinscraft.powder.models.Layer;
-import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.PowderTask;
-import com.ruinscraft.powder.models.SoundEffect;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
@@ -160,28 +153,9 @@ public class PowderUtil {
 		elements.addAll(powder.getDusts());
 		elements.addAll(powder.getSoundEffects());
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
-
-		/*/
-		if (powder.isRepeating()) {
-
-			int task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
-				public void run() {
-					powderTask.addTasks(PowderUtil.spawnParticles(player, powder));
-					powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
-				}
-			}, 0L, powder.getDelay());
-
-			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
-
-			powderTask.addTask(task);
-
-		} else {
-			powderTask.addTasks(PowderUtil.spawnParticles(player, powder));
-			powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
-			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
+		for (PowderElement element : elements) {
+			powderTask.addElement(element);
 		}
-		*/
-
 		plugin.getPowderHandler().addPowderTask(powderTask);
 
 		savePowdersForPlayer(player.getUniqueId());
@@ -220,239 +194,6 @@ public class PowderUtil {
 		}
 		
 		return amt;
-	}
-
-	// spawn particle matrices, returns list of taskIDs
-	public static Set<Integer> spawnParticles(final Player player, final Powder powder) {
-		List<ParticleMatrix> particleMatrices = powder.getMatrices();
-
-		Set<Integer> tasks = new HashSet<Integer>();
-
-		// separate spacing, wait time for each ParticleMatrix
-		for (ParticleMatrix particleMatrix : particleMatrices) {
-			final float spacing;
-
-			// set particleMatrix spacing to the default if it doesn't exist or is 0
-			if (particleMatrix.getSpacing() == null || particleMatrix.getSpacing() == 0) {
-				spacing = powder.getDefaultSpacing();
-			} else {
-				spacing = particleMatrix.getSpacing();
-			}
-
-			long waitTime = particleMatrix.getTick();
-
-			int task = plugin.getServer()
-					.getScheduler().scheduleSyncDelayedTask(plugin, new Runnable() {
-
-						@Override
-						public void run() {
-
-							if (!player.isOnline()) {
-								return;
-							}
-
-							// base player location is the eye location
-							Location location = Bukkit.getPlayer(player.getName()).getEyeLocation();
-
-							// get rotation (left/right) and pitch (up/down) of the player
-							final double playerRotation = ((player.getLocation().getYaw()) % 360) * (Math.PI / 180);
-							final double playerPitch;
-
-							// distance between each row up/down
-							final double distanceBetweenRowsY;
-							// this would not do anything if the Powder has pitch movement disabled, since it's directly up/down
-							final double distanceBetweenRowsXZ;
-
-							// if the Powder moves up/down with the head, set some values that will allow that to happen
-							// else, make them do nothing significant
-							if (powder.hasPitch()) {
-								playerPitch = (player.getLocation().getPitch() * (Math.PI / 180));
-								distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
-								distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);
-							} else {
-								playerPitch = 0;
-								distanceBetweenRowsY = spacing;
-								distanceBetweenRowsXZ = 0;
-							}
-
-							// where to start in relation to the player/location
-							int left;
-							int up;
-							if (particleMatrix.getPlayerLeft() == 0 && particleMatrix.getPlayerUp() == 0) {
-								left = powder.getDefaultLeft();
-								up = powder.getDefaultUp();
-							} else {
-								left = particleMatrix.getPlayerLeft();
-								up = particleMatrix.getPlayerUp();
-							}
-
-							// amount to add between each individual particle
-							final double amountToAddX = getDirLengthX(playerRotation, spacing);
-							final double amountToAddZ = getDirLengthZ(playerRotation, spacing);
-							// how far front/back the layer is
-							final double startARowX = getDirLengthX(playerRotation + (Math.PI / 2), spacing);
-							final double startARowZ = getDirLengthZ(playerRotation + (Math.PI / 2), spacing);
-							// if pitch is enabled, this will adjust the x & z for each row, since the Powder isn't top-down
-							final double moveWithPitchX = getDirLengthX(playerRotation - (Math.PI / 2), distanceBetweenRowsXZ);
-							final double moveWithPitchZ = getDirLengthZ(playerRotation - (Math.PI / 2), distanceBetweenRowsXZ);
-							// don't remember what this does
-							final double moveBackWithPitchX = getDirLengthX(playerRotation, distanceBetweenRowsXZ);
-							final double moveBackWithPitchY = (Math.sin(0 - playerPitch) * spacing);
-							final double moveBackWithPitchZ = getDirLengthZ(playerRotation, distanceBetweenRowsXZ);
-
-							// starts the Powder in relation to the given left & up
-							final double startX = location.getX() - 
-									(amountToAddX * left) + (moveWithPitchX * up);
-							final double startY = location.getY() + (distanceBetweenRowsY * up);
-							final double startZ = location.getZ() - 
-									(amountToAddZ * left) + (moveWithPitchZ * up);
-
-							// start off
-							double newX = startX;
-							double newY = startY;
-							double newZ = startZ;
-
-							for (Layer layer : particleMatrix.getLayers()) {
-
-								// sets the position in relation to the layer's front/back position
-								float position = layer.getPosition();
-								newX = startX + (startARowX * position) + (moveBackWithPitchZ * position);
-								newY = startY + (moveBackWithPitchY * position);
-								newZ = startZ + (startARowZ * position) + (moveBackWithPitchX * position);
-
-								// rowsDownSoFar is how many rows that have been processed
-								int rowsDownSoFar = 0;
-								for (List<PowderParticle> row : layer.getRows()) {
-
-									for (PowderParticle powderParticle : row) {
-
-										// add the amount per particle given
-										newX = newX + amountToAddX;
-										newZ = newZ + amountToAddZ;
-
-										if (powderParticle.getParticle() == null) {
-											continue;
-										}
-
-										// spawn the particle
-										if (powderParticle.getData() == null) {
-											if (powderParticle.getXOff() == null) {
-												player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
-														powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
-														powderParticle.getZOff() / 255, 1);
-												continue;
-											}
-											player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 0, 
-													powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
-													powderParticle.getZOff() / 255, 1);
-										} else {
-											player.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
-													powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-													powderParticle.getZOff() / 255, (double) powderParticle.getData());
-										}
-
-									}
-
-									// move the row down for the next row
-									rowsDownSoFar++;
-									newX = startX + (startARowX * position) - (moveWithPitchX * rowsDownSoFar);
-									newY = newY - distanceBetweenRowsY;
-									newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
-								}
-							}
-						}
-						// begin the task at the tick given
-					},waitTime);
-
-			tasks.add(task);
-		}
-
-		return tasks;
-	}
-
-	// spawns SoundEffects, returns list of taskIDs
-	public static Set<Integer> spawnSounds(final Player player, final Powder powder) {
-		Set<Integer> tasks = new HashSet<Integer>();
-
-		for (SoundEffect sound : powder.getSoundEffects()) {
-
-			int task = plugin.getServer().getScheduler()
-					.scheduleSyncDelayedTask(plugin, new Runnable() {
-
-						@Override
-						public void run() {
-
-							player.getWorld().playSound(player.getLocation(), sound.getSound(),
-									sound.getVolume(), sound.getPitch());
-
-						}
-
-					},((long) sound.getWaitTime()));
-
-			tasks.add(task);
-
-		}
-
-		return tasks;
-	}
-
-	// spawns Dusts, returns list of taskIDs
-	public static Set<Integer> spawnDusts(final Player player, final Powder powder) {
-		Set<Integer> tasks = new HashSet<Integer>();
-
-		for (Dust dust : powder.getDusts()) {
-
-			// frequency is particles per min
-			// translate to ticks if repeating
-			long frequency;
-
-			int task;
-			if (dust.isSingleOccurrence()) {
-				frequency = dust.getFrequency();
-				task = plugin.getServer().getScheduler()
-						.scheduleSyncDelayedTask(plugin, new Runnable() {
-							public void run() {
-								spawnDust(player, dust);
-							}
-						}, frequency);
-			} else {
-				if (dust.getFrequency() == 0) {
-					frequency = 0;
-				} else {
-					frequency = 1200 / dust.getFrequency();
-				}
-				task = plugin.getServer().getScheduler()
-						.scheduleSyncRepeatingTask(plugin, new Runnable() {
-							public void run() {
-								spawnDust(player, dust);
-							}
-						}, frequency, frequency);
-			}
-			tasks.add(task);
-
-		}
-
-		return tasks;
-	}
-
-	// spawns a given Dust
-	public static void spawnDust(final Player player, final Dust dust) {
-		double radiusZoneX = (Math.random() - .5) * (2 * dust.getRadius());
-		double radiusZoneZ = (Math.random() - .5) * (2 * dust.getRadius());
-		double heightZone = (Math.random() - .5) * (2 * dust.getHeight());
-		Location particleLocation = player.getLocation().add(radiusZoneX, heightZone + 1, radiusZoneZ);
-		// if no block in the way
-		if (particleLocation.getBlock().isEmpty()) {
-			PowderParticle powderParticle = dust.getPowderParticle();
-			if (powderParticle.getData() == null) {
-				player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 0, (powderParticle.getXOff() / 255), 
-						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 1);
-			} else {
-				player.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 1, (powderParticle.getXOff() / 255), 
-						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 
-						(double) powderParticle.getData());
-			}
-		}
 	}
 
 	// get names of enabled Powders for a user

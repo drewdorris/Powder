@@ -12,6 +12,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
@@ -76,18 +77,6 @@ public class PowderHandler {
 		return powderTasks;
 	}
 
-	// gets PowderTask from bukkit taskID
-	public PowderTask getPowderTask(int taskID) {
-		for (PowderTask powderTask : powderTasks) {
-			for (Integer otherTaskID : powderTask.getTaskIds()) {
-				if (otherTaskID == taskID) {
-					return powderTask;
-				}
-			}
-		}
-		return null;
-	}
-
 	// gets all current PowderTasks under a player
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
@@ -132,26 +121,21 @@ public class PowderHandler {
 
 	// ends all tasks associated with all PowderTasks
 	public void clearAllTasks() {
-		for (PowderTask powderTask : powderTasks) {
-			for (Integer taskID : powderTask.getTaskIds()) {
-				try {
-					PowderPlugin.getInstance().getServer().getScheduler().cancelTask(taskID);
-				} catch (Exception e) { }
-			}
-			powderTask = null;
-		}
+		powderTasks.clear();
 	}
 
 	// adds a PowderTask
 	public void addPowderTask(PowderTask powderTask) {
+		for (PowderElement element : powderTask.getActiveElements().keySet()) {
+			if (element.getIterations().equals(0)) {
+				element.setIterations(Integer.MAX_VALUE);
+			}
+		}
 		powderTasks.add(powderTask);
 	}
 
 	// removes/ends a PowderTask
 	public void removePowderTask(PowderTask powderTask) {
-		for (Integer taskID : powderTask.getTaskIds()) {
-			PowderPlugin.getInstance().getServer().getScheduler().cancelTask(taskID);
-		}
 		powderTasks.remove(powderTask);
 	}
 

@@ -10,6 +10,8 @@ public class Dust implements PowderElement {
 	private double radius;
 	// the limit height (up & down) that this Dust can be spawned in
 	private double height;
+	// when to start displaying this Dust
+	private int startTime;
 	// iterations (0 if infinite)
 	private int iterations;
 	// after how many ticks should it repeat?
@@ -35,9 +37,17 @@ public class Dust implements PowderElement {
 	public Double getHeight() {
 		return height;
 	}
+	
+	public Integer getStartTime() {
+		return startTime;
+	}
 
 	public Integer getIterations() {
 		return iterations;
+	}
+	
+	public void setIterations(int iterations) {
+		this.iterations = iterations;
 	}
 
 	public Integer getRepeatTime() {

@@ -19,7 +19,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 		if (powderHandler == null) {
 			cancel();
 		}
-
+		
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			for (PowderElement element : powderTask.getActiveElements().keySet()) {
 				Long lastOccurrence = powderTask.getActiveElements().get(element);

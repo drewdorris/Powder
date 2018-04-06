@@ -8,6 +8,8 @@ import org.bukkit.Location;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
+	
+	// [tick;spacing;pitch;
 
 	// list of individual Layers associated with this ParticleMatrix
 	private List<Layer> layers;
@@ -20,6 +22,8 @@ public class ParticleMatrix implements PowderElement {
 	// spacing for this ParticleMatrix
 	private float spacing;
 	private boolean hasPitch;
+	// when to start displaying this ParticleMatrix
+	private int startTime;
 	// iterations (0 if infinite)
 	private int iterations;
 	// after how many ticks should it repeat?
@@ -85,8 +89,16 @@ public class ParticleMatrix implements PowderElement {
 		this.spacing = spacing;
 	}
 	
+	public Integer getStartTime() {
+		return startTime;
+	}
+	
 	public Integer getIterations() {
 		return iterations;
+	}
+	
+	public void setIterations(int iterations) {
+		this.iterations = iterations;
 	}
 	
 	public Integer getRepeatTime() {
@@ -94,7 +106,6 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public void create(Location location) {
-
 		// get rotation (left/right) and pitch (up/down) of the player
 		final double playerRotation = ((location.getYaw()) % 360) * (Math.PI / 180);
 		final double playerPitch;
@@ -194,6 +205,7 @@ public class ParticleMatrix implements PowderElement {
 				newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
 			}
 		}
+		iterations++;
 	}
 
 }
