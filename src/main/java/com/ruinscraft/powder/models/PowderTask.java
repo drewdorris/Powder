@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.models;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
@@ -20,6 +21,13 @@ public class PowderTask {
 		activeElements = new HashMap<PowderElement, Long>();
 		this.powder = powder;
 	}
+	
+	public PowderTask(UUID player, Powder powder, Map<PowderElement, Long> elements) {
+		this.player = player;
+		startTime = System.currentTimeMillis();
+		activeElements = elements;
+		this.powder = powder;
+	}
 
 	public UUID getPlayerUUID() {
 		return player;
@@ -35,6 +43,12 @@ public class PowderTask {
 	
 	public void addElement(PowderElement element) {
 		activeElements.put(element, startTime);
+	}
+	
+	public void addElements(List<PowderElement> elements) {
+		for (PowderElement element : elements) {
+			activeElements.put(element, startTime);
+		}
 	}
 	
 	public void removeElement(PowderElement element) {

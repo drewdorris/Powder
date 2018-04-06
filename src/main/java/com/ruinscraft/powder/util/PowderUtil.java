@@ -24,6 +24,7 @@ import com.ruinscraft.powder.models.Dust;
 import com.ruinscraft.powder.models.Layer;
 import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.SoundEffect;
@@ -154,8 +155,13 @@ public class PowderUtil {
 	// spawns a given Powder for the given user
 	public static void spawnPowder(final Player player, final Powder powder) {
 		// create a PowderTask, add taskIDs to it
+		List<PowderElement> elements = new ArrayList<PowderElement>();
+		elements.addAll(powder.getMatrices());
+		elements.addAll(powder.getDusts());
+		elements.addAll(powder.getSoundEffects());
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
 
+		/*/
 		if (powder.isRepeating()) {
 
 			int task = plugin.getServer().getScheduler().scheduleSyncRepeatingTask(plugin, new Runnable() {
@@ -174,6 +180,7 @@ public class PowderUtil {
 			powderTask.addTasks(PowderUtil.spawnSounds(player, powder));
 			powderTask.addTasks(PowderUtil.spawnDusts(player, powder));
 		}
+		*/
 
 		plugin.getPowderHandler().addPowderTask(powderTask);
 
