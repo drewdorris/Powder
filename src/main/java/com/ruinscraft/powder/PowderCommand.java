@@ -320,7 +320,7 @@ public class PowderCommand implements CommandExecutor {
 		}
 
 		// spawn a Powder with a PowderTask
-		PowderUtil.spawnPowder(player, powder);
+		powder.spawn(player);
 
 		// if Powder is repeating, has animation, or has dusts
 		if (powder.isRepeating() || powder.getMatrices().size() > 1 || 

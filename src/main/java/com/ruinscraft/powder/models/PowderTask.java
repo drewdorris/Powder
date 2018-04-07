@@ -5,10 +5,14 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Location;
+
 public class PowderTask {
 
 	// player associated with this PowderTask
 	private UUID player;
+	// Location associated with this PowderTask, if the player is null
+	private Location location;
 	// Powder associated with this PowderTask
 	private Powder powder;
 	// when the PowderTask started
@@ -19,6 +23,15 @@ public class PowderTask {
 
 	public PowderTask(UUID player, Powder powder) {
 		this.player = player;
+		this.location = null;
+		startTime = System.currentTimeMillis();
+		activeElements = new HashMap<PowderElement, Long>();
+		this.powder = powder;
+	}
+	
+	public PowderTask(Location location, Powder powder) {
+		this.player = null;
+		this.location = location;
 		startTime = System.currentTimeMillis();
 		activeElements = new HashMap<PowderElement, Long>();
 		this.powder = powder;
@@ -26,6 +39,7 @@ public class PowderTask {
 
 	public PowderTask(UUID player, Powder powder, Map<PowderElement, Long> elements) {
 		this.player = player;
+		this.location = null;
 		startTime = System.currentTimeMillis();
 		activeElements = elements;
 		this.powder = powder;
@@ -33,6 +47,10 @@ public class PowderTask {
 
 	public UUID getPlayerUUID() {
 		return player;
+	}
+	
+	public Location getLocation() {
+		return location;
 	}
 
 	public Powder getPowder() {

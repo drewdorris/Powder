@@ -18,9 +18,7 @@ import org.bukkit.entity.Player;
 import com.ruinscraft.powder.PowderCommand;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
 
 import net.md_5.bungee.api.ChatColor;
@@ -145,28 +143,7 @@ public class PowderUtil {
 	public static double getDirLengthZ(double rot, double spacing) {
 		return (spacing * Math.sin(rot));
 	}
-
-	// spawns a given Powder for the given user
-	public static void spawnPowder(final Player player, final Powder powder) {
-		// create a PowderTask, add taskIDs to it
-		List<PowderElement> elements = new ArrayList<PowderElement>();
-		elements.addAll(powder.getMatrices());
-		elements.addAll(powder.getDusts());
-		elements.addAll(powder.getSoundEffects());
-		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
-		for (PowderElement element : elements) {
-			powderTask.addElement(element);
-		}
-		if (plugin.getPowderHandler().getPowderTasks().isEmpty()) {
-			plugin.getPowderHandler().addPowderTask(powderTask);
-			new PowdersCreationTask().runTaskTimer(plugin, 0L, 1L);
-		} else {
-			plugin.getPowderHandler().addPowderTask(powderTask);
-		}
-
-		savePowdersForPlayer(player.getUniqueId());
-	}
-
+	
 	// cancels a given Powder for the given player
 	public static boolean cancelPowder(UUID uuid, Powder powder) {
 		PowderHandler powderHandler = plugin.getPowderHandler();
@@ -231,7 +208,7 @@ public class PowderUtil {
 			return;
 		}
 
-		PowderUtil.spawnPowder(player, powder);
+		powder.spawn(player);
 	}
 
 	public static void savePowdersForPlayer(UUID uuid) {

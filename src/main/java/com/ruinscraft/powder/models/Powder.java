@@ -2,6 +2,15 @@ package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
+
+import org.bukkit.Location;
+import org.bukkit.entity.Player;
+
+import com.ruinscraft.powder.PowderHandler;
+import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.util.PowderUtil;
 
 public class Powder {
 
@@ -211,6 +220,54 @@ public class Powder {
 
 	public void setDefaultUp(int defaultUp) {
 		this.defaultUp = defaultUp;
+	}
+	
+	public void spawn(final Location location) {
+		PowderTask powderTask = new PowderTask(location, this);
+		spawn(powderTask);
+	}
+	
+	// spawns a given Powder for the given user
+	public void spawn(final Player player) {
+		PowderTask powderTask = new PowderTask(player.getUniqueId(), this);
+		spawn(powderTask);
+		PowderUtil.savePowdersForPlayer(player.getUniqueId());
+	}
+	
+	public void spawn(PowderTask powderTask) {
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		// create a PowderTask, add taskIDs to it
+		List<PowderElement> elements = new ArrayList<PowderElement>();
+		elements.addAll(getMatrices());
+		elements.addAll(getDusts());
+		elements.addAll(getSoundEffects());
+		for (PowderElement element : elements) {
+			powderTask.addElement(element);
+		}
+		if (powderHandler.getPowderTasks().isEmpty()) {
+			powderHandler.addPowderTask(powderTask);
+			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
+		} else {
+			powderHandler.addPowderTask(powderTask);
+		}
+	}
+
+	// cancels a given Powder for the given player
+	public boolean cancelPowder(UUID uuid) {
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+
+		boolean success = false;
+
+		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid, this)) {
+			powderHandler.removePowderTask(powderTask);
+			success = true;
+		}
+
+		if (success && PowderPlugin.getInstance().useStorage()) {
+			PowderUtil.savePowdersForPlayer(uuid);
+		}
+
+		return success;
 	}
 
 }

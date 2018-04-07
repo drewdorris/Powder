@@ -195,9 +195,6 @@ public class PowderPlugin extends JavaPlugin {
 		// remove all existing tasks/Powders
 		cleanHandlers();
 
-		// run every tick to update each PowderTask
-		new PowdersCreationTask().runTaskTimer(this, 0L, 1L);
-
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
 
