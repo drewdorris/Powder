@@ -186,7 +186,7 @@ public class PowderUtil {
 		List<String> enabledPowders = new ArrayList<>();
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
-			if (powderTask.getPowder().isRepeating() || !powderTask.getPowder().getDusts().isEmpty()) {
+			if (powderTask.getPowder().hasMovement()) {
 				enabledPowders.add(powderTask.getPowder().getName());
 			}
 		}

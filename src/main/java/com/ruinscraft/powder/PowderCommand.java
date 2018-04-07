@@ -322,9 +322,8 @@ public class PowderCommand implements CommandExecutor {
 		// spawn a Powder with a PowderTask
 		powder.spawn(player);
 
-		// if Powder is repeating, has animation, or has dusts
-		if (powder.isRepeating() || powder.getMatrices().size() > 1 || 
-				!(powder.getDusts().isEmpty()) || !(powder.getSoundEffects().isEmpty())) {
+		// if Powder has animation/dusts/sounds
+		if (powder.hasMovement()) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
 			particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 

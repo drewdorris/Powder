@@ -28,14 +28,8 @@ public class Powder {
 	private List<Dust> dusts;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
 	private List<PowderParticle> powderParticles;
-	// is pitch (up/down eye position) accounted for when creating this Powder?
-	private boolean pitch;
-	// is the Powder repeating?
-	private boolean repeating;
 	// is the Powder hidden from lists if you don't have permission for it?
 	private boolean hidden;
-	// if the Powder is repeating, at what tick interval should it repeat?
-	private long delay;
 	// if unspecified in each ParticleMatrix, how far left should the player/location be from the start of creating the Powder?
 	private int defaultLeft;
 	// same, except how far up
@@ -52,7 +46,7 @@ public class Powder {
 
 	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
 			List<SoundEffect> soundEffects, List<Dust> dusts, List<PowderParticle> powderParticles, 
-			boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
+			boolean hidden, int defaultLeft, int defaultUp) {
 
 		this.name = name;
 		this.categories = categories;
@@ -61,17 +55,14 @@ public class Powder {
 		this.soundEffects = soundEffects;
 		this.dusts = dusts;
 		this.powderParticles = powderParticles;
-		this.pitch = pitch;
-		this.repeating = repeating;
 		this.hidden = hidden;
-		this.delay = delay;
 		this.defaultLeft = defaultLeft;
 		this.defaultUp = defaultUp;
 
 	}
 
 	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
-			boolean pitch, boolean repeating, boolean hidden, long delay, int defaultLeft, int defaultUp) {
+			boolean hidden, int defaultLeft, int defaultUp) {
 
 		this.name = name;
 		this.categories = categories;
@@ -80,10 +71,7 @@ public class Powder {
 		this.soundEffects = new ArrayList<SoundEffect>();
 		this.dusts = new ArrayList<Dust>();
 		this.powderParticles = new ArrayList<PowderParticle>();
-		this.pitch = pitch;
-		this.repeating = repeating;
 		this.hidden = hidden;
-		this.delay = delay;
 		this.defaultLeft = defaultLeft;
 		this.defaultUp = defaultUp;
 
@@ -151,6 +139,14 @@ public class Powder {
 	
 	public List<PowderElement> getOriginalPowderElements() {
 		List<PowderElement> powderElements = new ArrayList<PowderElement>();
+		powderElements.addAll(getDusts());
+		powderElements.addAll(getSoundEffects());
+		powderElements.addAll(getMatrices());
+		return powderElements;
+	}
+	
+	public List<PowderElement> getNewPowderElements() {
+		List<PowderElement> powderElements = new ArrayList<PowderElement>();
 		for (Dust dust : getDusts()) {
 			Dust newDust = new Dust(dust);
 			powderElements.add(newDust);
@@ -191,30 +187,6 @@ public class Powder {
 		powderParticles.add(powderParticle);
 	}
 
-	public boolean hasPitch() {
-		return pitch;
-	}
-
-	public void setPitch(boolean pitch) {
-		this.pitch = pitch;
-	}
-
-	public boolean isRepeating() {
-		return repeating;
-	}
-
-	public void setRepeating(boolean repeating) {
-		this.repeating = repeating;
-	}
-
-	public long getDelay() {
-		return delay;
-	}
-
-	public void setDelay(long delay) {
-		this.delay = delay;
-	}
-
 	public boolean isHidden() {
 		return hidden;
 	}
@@ -238,6 +210,15 @@ public class Powder {
 	public void setDefaultUp(int defaultUp) {
 		this.defaultUp = defaultUp;
 	}
+	
+	public boolean hasMovement() {
+		for (PowderElement element : getOriginalPowderElements()) {
+			if (!element.getStartTime().equals(0) || element.getLockedIterations() > 1) {
+				return true;
+			}
+		}
+		return false;
+	}
 
 	public void spawn(final Location location) {
 		PowderTask powderTask = new PowderTask(location, this);
@@ -254,7 +235,7 @@ public class Powder {
 	public void spawn(PowderTask powderTask) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		// create a PowderTask, add taskIDs to it
-		powderTask.addElements(getOriginalPowderElements());
+		powderTask.addElements(getNewPowderElements());
 		if (powderHandler.getPowderTasks().isEmpty()) {
 			powderHandler.addPowderTask(powderTask);
 			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);

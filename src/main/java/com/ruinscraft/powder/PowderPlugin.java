@@ -227,10 +227,7 @@ public class PowderPlugin extends JavaPlugin {
 				// set some given values if they exist, default value if they don't
 				powder.setName(powderConfig.getString(powders + s + ".name", null));
 				powder.setDefaultSpacing((float) powderConfig.getDouble(powders + s + ".spacing", .5F));
-				powder.setPitch(powderConfig.getBoolean(powders + s + ".pitch", false));
-				powder.setRepeating(powderConfig.getBoolean(powders + s + ".repeating", false));
 				powder.setHidden(powderConfig.getBoolean(powders + s + ".hidden", false));
-				powder.setDelay(powderConfig.getLong(powders + s + ".delay", Long.MAX_VALUE));
 
 				// add categories if enabled
 				if (powderHandler.categoriesEnabled()) {
@@ -406,7 +403,7 @@ public class PowderPlugin extends JavaPlugin {
 							iterations = Integer.valueOf(t);
 						} catch (Exception e) {
 							getLogger().warning("Invalid animation time at line " + 
-									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1));
+									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1) + " for Powder " + s);
 							continue;
 						}
 						if (!(layer.getRows().isEmpty())) {
