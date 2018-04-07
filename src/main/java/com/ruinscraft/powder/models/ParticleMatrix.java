@@ -8,7 +8,7 @@ import org.bukkit.Location;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
-	
+
 	// [.1;true;2;12;10]
 	// [spacing;pitch;startTime;repeatTime;iterations]
 
@@ -23,27 +23,33 @@ public class ParticleMatrix implements PowderElement {
 	private boolean hasPitch;
 	// when to start displaying this ParticleMatrix
 	private int startTime;
-	// set maximum iterations
-	private int lockedIterations;
-	// iterations (0 if infinite)
-	private int iterations;
 	// after how many ticks should it repeat?
 	private int repeatTime;
+	// set maximum iterations (0 if infinite)
+	private int lockedIterations;
+
+	// iterations so far
+	private int iterations;
 
 	public ParticleMatrix() {
 		this.layers = new ArrayList<Layer>();
-		startTime = 0;
 		playerLeft = 0;
 		playerUp = 0;
 		spacing = 0;
+		startTime = 0;
+		repeatTime = 0;
+		lockedIterations = 1;
 	}
 
-	public ParticleMatrix(List<Layer> layers, int startTime, int playerLeft, int playerUp, float spacing) {
+	public ParticleMatrix(List<Layer> layers, int playerLeft, int playerUp, 
+			float spacing, int startTime, int repeatTime, int lockedIterations) {
 		this.layers = layers;
-		this.startTime = startTime;
 		this.playerLeft = playerLeft;
 		this.playerUp = playerUp;
 		this.spacing = spacing;
+		this.startTime = startTime;
+		this.repeatTime = repeatTime;
+		this.lockedIterations = lockedIterations;
 	}
 
 	public List<Layer> getLayers() {
@@ -81,31 +87,32 @@ public class ParticleMatrix implements PowderElement {
 	public void setSpacing(float spacing) {
 		this.spacing = spacing;
 	}
-	
+
 	public Integer getStartTime() {
 		return startTime;
 	}
-	
+
 	public void setStartTime(int startTime) {
 		this.startTime = startTime;
 	}
-	
-	public Integer getLockedIterations() {
-		return lockedIterations;
-	}
-	
-	public void setLockedIterations(int lockedIterations) {
-		this.lockedIterations = lockedIterations;
-	}
-	
-	public Integer getIterations() {
-		return iterations;
-	}
-	
+
 	public Integer getRepeatTime() {
 		return repeatTime;
 	}
 
+	public Integer getLockedIterations() {
+		return lockedIterations;
+	}
+
+	public void setLockedIterations(int lockedIterations) {
+		this.lockedIterations = lockedIterations;
+	}
+
+	public Integer getIterations() {
+		return iterations;
+	}
+
+	// creates this ParticleMatrix at the designated location
 	public void create(Location location) {
 		// get rotation (left/right) and pitch (up/down) of the player
 		final double playerRotation = ((location.getYaw()) % 360) * (Math.PI / 180);
@@ -159,7 +166,6 @@ public class ParticleMatrix implements PowderElement {
 		double newZ = startZ;
 
 		for (Layer layer : getLayers()) {
-
 			// sets the position in relation to the layer's front/back position
 			float position = layer.getPosition();
 			newX = startX + (startARowX * position) + (moveBackWithPitchZ * position);
@@ -169,9 +175,7 @@ public class ParticleMatrix implements PowderElement {
 			// rowsDownSoFar is how many rows that have been processed
 			int rowsDownSoFar = 0;
 			for (List<PowderParticle> row : layer.getRows()) {
-
 				for (PowderParticle powderParticle : row) {
-
 					// add the amount per particle given
 					newX = newX + amountToAddX;
 					newZ = newZ + amountToAddZ;
@@ -196,9 +200,7 @@ public class ParticleMatrix implements PowderElement {
 								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
 								powderParticle.getZOff() / 255, (double) powderParticle.getData());
 					}
-
 				}
-
 				// move the row down for the next row
 				rowsDownSoFar++;
 				newX = startX + (startARowX * position) - (moveWithPitchX * rowsDownSoFar);

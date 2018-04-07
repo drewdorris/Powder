@@ -226,9 +226,7 @@ public class PowderPlugin extends JavaPlugin {
 		}
 
 		for (FileConfiguration powderConfig : powderConfigs) {
-
 			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-
 				Powder powder = new Powder();
 
 				// set some given values if they exist, default value if they don't
@@ -489,7 +487,6 @@ public class PowderPlugin extends JavaPlugin {
 						row.add(powderParticle);
 					}
 					layer.addRow(row);
-
 				}
 
 				// if it finished going through the rows and there's some left that aren't added to the matrix

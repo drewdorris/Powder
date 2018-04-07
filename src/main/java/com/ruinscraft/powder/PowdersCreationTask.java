@@ -22,7 +22,6 @@ public class PowdersCreationTask extends BukkitRunnable {
 		if (powderHandler == null) {
 			cancel();
 		}
-		
 		List<PowderTask> powderTasksToRemove = new ArrayList<PowderTask>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			if (powderTask.getActiveElements().isEmpty()) {

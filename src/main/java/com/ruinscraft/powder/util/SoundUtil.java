@@ -19,7 +19,6 @@ import com.xxmicloxx.NoteBlockAPI.Song;
 public class SoundUtil {
 
 	public static List<SoundEffect> getSoundEffectsFromNBS(String fileName, double volume, double multiplier, int addTime) {
-
 		if (fileName.contains("/")) {
 			URL url = PowderUtil.readURL(fileName);
 			Song song;
@@ -38,13 +37,10 @@ public class SoundUtil {
 
 			return getSoundEffectsFromSong(song, volume, multiplier, addTime);
 		}
-
 	}
 
 	public static List<SoundEffect> getSoundEffectsFromSong(Song song, double volume, double multiplier, int addTime) {
-
 		List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
-
 		for (Integer integer : song.getLayerHashMap().keySet()) {
 			Layer layer = song.getLayerHashMap().get(integer);
 			for (Integer tick : layer.getHashMap().keySet()) {
@@ -57,9 +53,7 @@ public class SoundUtil {
 				soundEffects.add(soundEffect);
 			}
 		}
-
 		return soundEffects;
-
 	}
 
 }

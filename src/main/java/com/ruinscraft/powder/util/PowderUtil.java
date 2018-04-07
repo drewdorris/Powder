@@ -32,7 +32,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class PowderUtil {
 
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
-	
+
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
@@ -152,10 +152,6 @@ public class PowderUtil {
 		elements.addAll(powder.getMatrices());
 		elements.addAll(powder.getDusts());
 		elements.addAll(powder.getSoundEffects());
-		for (PowderElement element : elements) {
-			int t = element.getLockedIterations();
-			t = element.getLockedIterations().equals(0) ? Integer.MAX_VALUE : t;
-		}
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
 		for (PowderElement element : elements) {
 			powderTask.addElement(element);
@@ -192,11 +188,11 @@ public class PowderUtil {
 			powderHandler.removePowderTask(powderTask);
 			amt++;
 		}
-		
+
 		if (plugin.useStorage()) {
 			savePowdersForPlayer(uuid);
 		}
-		
+
 		return amt;
 	}
 
@@ -239,12 +235,12 @@ public class PowderUtil {
 			});
 		}
 	}
-	
+
 	public static void loadPowdersForPlayer(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				List<String> powders = plugin.getStorage().get(uuid);
-				
+
 				for (String powder : powders) {
 					createPowderFromName(Bukkit.getPlayer(uuid), powder);
 				}

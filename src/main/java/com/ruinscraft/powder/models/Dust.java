@@ -3,7 +3,7 @@ package com.ruinscraft.powder.models;
 import org.bukkit.Location;
 
 public class Dust implements PowderElement {
-	
+
 	// 'A;2;1;3;3;0'
 	// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
 
@@ -15,20 +15,21 @@ public class Dust implements PowderElement {
 	private double height;
 	// when to start displaying this Dust
 	private int startTime;
-	// set maximum iterations
-	private int lockedIterations;
-	// iterations (0 if infinite)
-	private int iterations;
 	// after how many ticks should it repeat?
 	private int repeatTime;
-	// is this Dust only spawned once?
-	private boolean singleOccurrence;
+	// set maximum iterations (0 if infinite)
+	private int lockedIterations;
 
-	public Dust(PowderParticle powderParticle, double radius, double height, boolean singleOccurrence) {
+	// iterations so far
+	private int iterations;
+
+	public Dust(PowderParticle powderParticle, double radius, double height, int startTime, int repeatTime, int lockedIterations) {
 		this.powderParticle = powderParticle;
 		this.radius = radius;
 		this.height = height;
-		this.singleOccurrence = singleOccurrence;
+		this.startTime = startTime;
+		this.repeatTime = repeatTime;
+		this.lockedIterations = lockedIterations;
 	}
 
 	public PowderParticle getPowderParticle() {
@@ -42,31 +43,28 @@ public class Dust implements PowderElement {
 	public Double getHeight() {
 		return height;
 	}
-	
+
 	public Integer getStartTime() {
 		return startTime;
-	}
-
-	public Integer getLockedIterations() {
-		return lockedIterations;
-	}
-	
-	public void setLockedIterations(int lockedIterations) {
-		this.lockedIterations = lockedIterations;
-	}
-	
-	public Integer getIterations() {
-		return iterations;
 	}
 
 	public Integer getRepeatTime() {
 		return repeatTime;
 	}
 
-	public boolean isSingleOccurrence() {
-		return singleOccurrence;
+	public Integer getLockedIterations() {
+		return lockedIterations;
 	}
 
+	public void setLockedIterations(int lockedIterations) {
+		this.lockedIterations = lockedIterations;
+	}
+
+	public Integer getIterations() {
+		return iterations;
+	}
+
+	// creates this Dust at the designated location
 	public void create(Location location) {
 		double radiusZoneX = (Math.random() - .5) * (2 * getRadius());
 		double radiusZoneZ = (Math.random() - .5) * (2 * getRadius());
