@@ -18,6 +18,7 @@ import org.bukkit.entity.Player;
 import com.ruinscraft.powder.PowderCommand;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
@@ -156,7 +157,12 @@ public class PowderUtil {
 		for (PowderElement element : elements) {
 			powderTask.addElement(element);
 		}
-		plugin.getPowderHandler().addPowderTask(powderTask);
+		if (plugin.getPowderHandler().getPowderTasks().isEmpty()) {
+			plugin.getPowderHandler().addPowderTask(powderTask);
+			new PowdersCreationTask().runTaskTimer(plugin, 0L, 1L);
+		} else {
+			plugin.getPowderHandler().addPowderTask(powderTask);
+		}
 
 		savePowdersForPlayer(player.getUniqueId());
 	}

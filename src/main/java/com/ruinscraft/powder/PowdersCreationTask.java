@@ -19,7 +19,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (powderHandler == null) {
+		if (powderHandler.getPowderTasks().isEmpty()) {
 			cancel();
 		}
 		List<PowderTask> powderTasksToRemove = new ArrayList<PowderTask>();

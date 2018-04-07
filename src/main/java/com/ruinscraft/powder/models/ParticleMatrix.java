@@ -87,6 +87,14 @@ public class ParticleMatrix implements PowderElement {
 	public void setSpacing(float spacing) {
 		this.spacing = spacing;
 	}
+	
+	public Boolean hasPitch() {
+		return hasPitch;
+	}
+	
+	public void setIfPitch(boolean hasPitch) {
+		this.hasPitch = hasPitch;
+	}
 
 	public Integer getStartTime() {
 		return startTime;
@@ -98,6 +106,10 @@ public class ParticleMatrix implements PowderElement {
 
 	public Integer getRepeatTime() {
 		return repeatTime;
+	}
+	
+	public void setRepeatTime(int repeatTime) {
+		this.repeatTime = repeatTime;
 	}
 
 	public Integer getLockedIterations() {

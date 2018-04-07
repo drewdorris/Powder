@@ -16,7 +16,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitScheduler;
 
 import com.ruinscraft.powder.models.Dust;
 import com.ruinscraft.powder.models.Layer;
@@ -24,7 +23,6 @@ import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.ParticleName;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderParticle;
-import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.SoundEffect;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
@@ -252,6 +250,14 @@ public class PowderPlugin extends JavaPlugin {
 					}
 				}
 
+				// SoundEffect
+				// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
+				// 'sound;volume;pitch;startTime;repeatTime;iterations'
+
+				// song
+				// 'Shrek.nbs;50;2;0;2400;2'
+				// 'fileName;volume;multiplier;startTime;repeatTime;iterations'
+
 				// add sounds; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
 					if (t.contains("song:")) {
@@ -264,12 +270,17 @@ public class PowderPlugin extends JavaPlugin {
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							double multiplier = Double.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
-							int addTime = Integer.valueOf(t);
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, multiplier, addTime));
+							int startTime = Integer.valueOf(t);
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							int repeatTime = Integer.valueOf(t);
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							int iterations = Integer.valueOf(t);
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
+									multiplier, startTime, repeatTime, iterations));
 						} catch (Exception e) {
 							getLogger().warning("Invalid fileName/multiplier/start time in song '" + t + "'.");
 							fileName = t;
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1, 1, 0));
+							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1, 1, 0, Integer.MAX_VALUE, 1));
 						}
 						continue;
 					}
@@ -288,8 +299,12 @@ public class PowderPlugin extends JavaPlugin {
 					float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
 					soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					int waitTime = Integer.valueOf(t);
-					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, waitTime));
+					int startTime = Integer.valueOf(t);
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					int repeatTime = Integer.valueOf(t);
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					int iterations = Integer.valueOf(t);
+					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
 				}
 
 				// add changed particles; read from string list
@@ -333,6 +348,10 @@ public class PowderPlugin extends JavaPlugin {
 					}
 				}
 
+				// Dust
+				// 'A;2;1;3;3;0'
+				// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
+
 				// add dusts; read from string list
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".dusts", new ArrayList<String>())) {
 					String dustName = t.substring(0, t.indexOf(";"));
@@ -352,35 +371,42 @@ public class PowderPlugin extends JavaPlugin {
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					double height = Float.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					// can be a single dust with an "s" or not
-					long frequency;
-					try {
-						frequency = Long.valueOf(t);
-					} catch (Exception e) {
-						if (t.contains("s")) {
-							t = t.replace("s", "");
-							frequency = Long.valueOf(t);
-							powder.addDust(new Dust(powderParticle, radius, height, frequency, true));
-							continue;
-						}
-						frequency = 20;
-					}
-					powder.addDust(new Dust(powderParticle, radius, height, frequency, false));
+					int startTime = Integer.valueOf(t);
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					int repeatTime = Integer.valueOf(t);
+					t = t.substring(t.indexOf(";") + 1, t.length());
+					int iterations = Integer.valueOf(t);
+					powder.addDust(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
 				}
 
-				int tick = 0;
 				int left = 0;
 				int up = 0;
 				ParticleMatrix particleMatrix = new ParticleMatrix();
 				Layer layer = new Layer();
+
+				// [.1;true;2;12;10]
+				// [spacing;pitch;startTime;repeatTime;iterations]
 
 				// read matrices/maps
 				for (String t : (List<String>) powderConfig.getList(powders + s + ".map", new ArrayList<String>())) {
 					// read animation time; animation time separates each ParticleMatrix
 					if (t.contains("[")) {
 						t = t.replace("[", "").replace("]", "");
+						float spacing;
+						boolean hasPitch;
+						int startTime;
+						int repeatTime;
+						int iterations;
 						try {
-							tick = Integer.valueOf(t);
+							spacing = Float.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							hasPitch = Boolean.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
+							t = t.substring(t.indexOf(";") + 1, t.length());
+							iterations = Integer.valueOf(t.substring(0, t.indexOf(";")));
 						} catch (Exception e) {
 							getLogger().warning("Invalid animation time at line " + 
 									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1));
@@ -389,14 +415,23 @@ public class PowderPlugin extends JavaPlugin {
 						if (!(layer.getRows().isEmpty())) {
 							particleMatrix.addLayer(layer);
 						}
+						// fix this duplicate code!!!!!
 						if (particleMatrix.getLayers().isEmpty()) {
-							particleMatrix.setTick(tick);
+							particleMatrix.setSpacing(spacing);
+							particleMatrix.setIfPitch(hasPitch);
+							particleMatrix.setStartTime(startTime);
+							particleMatrix.setRepeatTime(repeatTime);
+							particleMatrix.setLockedIterations(iterations);
 							continue;
 						}
 						powder.addMatrix(particleMatrix);
 						// start reading a new ParticleMatrix & Layer
 						particleMatrix = new ParticleMatrix();
-						particleMatrix.setTick(tick);
+						particleMatrix.setSpacing(spacing);
+						particleMatrix.setIfPitch(hasPitch);
+						particleMatrix.setStartTime(startTime);
+						particleMatrix.setRepeatTime(repeatTime);
+						particleMatrix.setLockedIterations(iterations);
 						layer = new Layer();
 						continue;
 					}
@@ -423,7 +458,6 @@ public class PowderPlugin extends JavaPlugin {
 						continue;
 					}
 					if (t.contains(":")) {
-
 						// spacing for each matrix; if it doesn't exist, is set to given default for the Powder
 						if (t.contains("spacing:")) {
 							t = t.replace("spacing:", "");
@@ -451,7 +485,6 @@ public class PowderPlugin extends JavaPlugin {
 						}
 
 						continue;
-
 					}
 					// if the Layer is in the same position as where the location/player is
 					if (layer.getPosition() == 0) {
@@ -461,7 +494,7 @@ public class PowderPlugin extends JavaPlugin {
 							// set the left & up of the Layer so createPowders() knows where to start
 							left = (t.indexOf("?")) + 1;
 							// set default if it's the matrix spawned immediately 
-							if (particleMatrix.getTick() == 0) {
+							if (particleMatrix.getStartTime() == 0) {
 								powder.setDefaultLeft(left);
 								powder.setDefaultUp(up);
 							}

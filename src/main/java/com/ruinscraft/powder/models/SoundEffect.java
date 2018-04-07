@@ -7,6 +7,9 @@ public class SoundEffect implements PowderElement {
 
 	// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
 	// 'sound;volume;pitch;startTime;repeatTime;iterations'
+	
+	// 'Shrek.nbs;50;2;0;2400;2'
+	// 'fileName;volume;multiplier;startTime;repeatTime;iterations'
 
 	// Sound enum associated with this SoundEffect
 	private Sound sound;
