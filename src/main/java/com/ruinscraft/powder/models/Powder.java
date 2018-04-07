@@ -148,6 +148,23 @@ public class Powder {
 	public void addDust(Dust dust) {
 		dusts.add(dust);
 	}
+	
+	public List<PowderElement> getOriginalPowderElements() {
+		List<PowderElement> powderElements = new ArrayList<PowderElement>();
+		for (Dust dust : getDusts()) {
+			Dust newDust = new Dust(dust);
+			powderElements.add(newDust);
+		}
+		for (SoundEffect soundEffect : getSoundEffects()) {
+			SoundEffect newSoundEffect = new SoundEffect(soundEffect);
+			powderElements.add(newSoundEffect);
+		}
+		for (ParticleMatrix particleMatrix : getMatrices()) {
+			ParticleMatrix newParticleMatrix = new ParticleMatrix(particleMatrix);
+			powderElements.add(newParticleMatrix);
+		}
+		return powderElements;
+	}
 
 	public List<PowderParticle> getPowderParticles() {
 		return powderParticles;
@@ -221,29 +238,23 @@ public class Powder {
 	public void setDefaultUp(int defaultUp) {
 		this.defaultUp = defaultUp;
 	}
-	
+
 	public void spawn(final Location location) {
 		PowderTask powderTask = new PowderTask(location, this);
 		spawn(powderTask);
 	}
-	
+
 	// spawns a given Powder for the given user
 	public void spawn(final Player player) {
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), this);
 		spawn(powderTask);
 		PowderUtil.savePowdersForPlayer(player.getUniqueId());
 	}
-	
+
 	public void spawn(PowderTask powderTask) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		// create a PowderTask, add taskIDs to it
-		List<PowderElement> elements = new ArrayList<PowderElement>();
-		elements.addAll(getMatrices());
-		elements.addAll(getDusts());
-		elements.addAll(getSoundEffects());
-		for (PowderElement element : elements) {
-			powderTask.addElement(element);
-		}
+		powderTask.addElements(getOriginalPowderElements());
 		if (powderHandler.getPowderTasks().isEmpty()) {
 			powderHandler.addPowderTask(powderTask);
 			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);

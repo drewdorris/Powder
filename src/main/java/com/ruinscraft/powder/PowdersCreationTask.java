@@ -12,16 +12,20 @@ import com.ruinscraft.powder.models.PowderTask;
 public class PowdersCreationTask extends BukkitRunnable {
 
 	private PowderHandler powderHandler;
+	private static int tick;
 
 	public PowdersCreationTask() {
 		powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		tick = 0;
 	}
 
 	@Override
 	public void run() {
 		if (powderHandler.getPowderTasks().isEmpty()) {
+			tick = 0;
 			cancel();
 		}
+		tick++;
 		List<PowderTask> powderTasksToRemove = new ArrayList<PowderTask>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			if (powderTask.getActiveElements().isEmpty()) {
@@ -30,21 +34,34 @@ public class PowdersCreationTask extends BukkitRunnable {
 			}
 			List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
 			for (PowderElement element : powderTask.getActiveElements().keySet()) {
-				Long lastOccurrence = powderTask.getActiveElements().get(element);
-				if (System.currentTimeMillis() - (lastOccurrence + (element.getRepeatTime() * 50)) >= -10) {
-					element.create(Bukkit.getPlayer(powderTask.getPlayerUUID()).getLocation());
+				Integer lastOccurrence = powderTask.getActiveElements().get(element);
+				PowderPlugin.getInstance().getLogger().info(String.valueOf(lastOccurrence));
+				PowderPlugin.getInstance().getLogger().info("|     " + String.valueOf(tick));
+				if (lastOccurrence + element.getRepeatTime() <= tick) {
 					if (element.getIterations() >= element.getLockedIterations()) {
 						elementsToRemove.add(element);
 						continue;
 					}
-					powderTask.getActiveElements().put(element, System.currentTimeMillis());
+					createElement(element, powderTask);
 				}
 			}
 			for (PowderElement element : elementsToRemove) {
 				powderTask.removeElement(element);
 			}
 		}
-		powderHandler.getPowderTasks().removeAll(powderTasksToRemove);
+		for (PowderTask powderTask : powderTasksToRemove) {
+			powderHandler.removePowderTask(powderTask);
+		}
+	}
+	
+	public void createElement(PowderElement element, PowderTask powderTask) {
+		element.create(Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation());
+		element.iterate();
+		powderTask.getActiveElements().put(element, tick);
+	}
+	
+	public static Integer getTick() {
+		return tick;
 	}
 
 }

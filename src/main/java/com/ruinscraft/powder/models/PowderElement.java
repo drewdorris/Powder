@@ -15,5 +15,7 @@ public interface PowderElement {
 	void setLockedIterations(int iteration); // set how many times iterated so far
 
 	Integer getIterations(); // how many iterations so far
+	
+	void iterate(); // add to getIterations()
 
 }

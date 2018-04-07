@@ -33,12 +33,24 @@ public class ParticleMatrix implements PowderElement {
 
 	public ParticleMatrix() {
 		this.layers = new ArrayList<Layer>();
-		playerLeft = 0;
-		playerUp = 0;
-		spacing = 0;
-		startTime = 0;
-		repeatTime = 0;
-		lockedIterations = 1;
+		this.playerLeft = 0;
+		this.playerUp = 0;
+		this.spacing = 0;
+		this.startTime = 0;
+		this.repeatTime = 0;
+		this.lockedIterations = 1;
+		this.iterations = 0;
+	}
+	
+	public ParticleMatrix(ParticleMatrix particleMatrix) {
+		this.layers = particleMatrix.getLayers();
+		this.playerLeft = particleMatrix.getPlayerLeft();
+		this.playerUp = particleMatrix.getPlayerUp();
+		this.spacing = particleMatrix.getSpacing();
+		this.startTime = particleMatrix.getStartTime();
+		this.repeatTime = particleMatrix.getRepeatTime();
+		this.lockedIterations = particleMatrix.getLockedIterations();
+		this.iterations = 0;
 	}
 
 	public ParticleMatrix(List<Layer> layers, int playerLeft, int playerUp, 
@@ -50,6 +62,7 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = startTime;
 		this.repeatTime = repeatTime;
 		this.lockedIterations = lockedIterations;
+		this.iterations = 0;
 	}
 
 	public List<Layer> getLayers() {
@@ -87,11 +100,11 @@ public class ParticleMatrix implements PowderElement {
 	public void setSpacing(float spacing) {
 		this.spacing = spacing;
 	}
-	
+
 	public Boolean hasPitch() {
 		return hasPitch;
 	}
-	
+
 	public void setIfPitch(boolean hasPitch) {
 		this.hasPitch = hasPitch;
 	}
@@ -107,7 +120,7 @@ public class ParticleMatrix implements PowderElement {
 	public Integer getRepeatTime() {
 		return repeatTime;
 	}
-	
+
 	public void setRepeatTime(int repeatTime) {
 		this.repeatTime = repeatTime;
 	}
@@ -122,6 +135,10 @@ public class ParticleMatrix implements PowderElement {
 
 	public Integer getIterations() {
 		return iterations;
+	}
+	
+	public void iterate() {
+		iterations++;
 	}
 
 	// creates this ParticleMatrix at the designated location
@@ -220,7 +237,6 @@ public class ParticleMatrix implements PowderElement {
 				newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
 			}
 		}
-		iterations++;
 	}
 
 }

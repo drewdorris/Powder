@@ -143,7 +143,7 @@ public class PowderUtil {
 	public static double getDirLengthZ(double rot, double spacing) {
 		return (spacing * Math.sin(rot));
 	}
-	
+
 	// cancels a given Powder for the given player
 	public static boolean cancelPowder(UUID uuid, Powder powder) {
 		PowderHandler powderHandler = plugin.getPowderHandler();

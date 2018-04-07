@@ -127,7 +127,7 @@ public class PowderHandler {
 	// adds a PowderTask
 	public void addPowderTask(PowderTask powderTask) {
 		for (PowderElement element : powderTask.getActiveElements().keySet()) {
-			if (element.getIterations().equals(0)) {
+			if (element.getLockedIterations().equals(0)) {
 				element.setLockedIterations(Integer.MAX_VALUE);
 			}
 		}

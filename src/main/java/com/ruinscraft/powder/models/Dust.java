@@ -22,6 +22,16 @@ public class Dust implements PowderElement {
 
 	// iterations so far
 	private int iterations;
+	
+	public Dust(Dust dust) {
+		this.powderParticle = dust.getPowderParticle();
+		this.radius = dust.getRadius();
+		this.height = dust.getHeight();
+		this.startTime = dust.getStartTime();
+		this.repeatTime = dust.getRepeatTime();
+		this.lockedIterations = dust.getLockedIterations();
+		this.iterations = 0;
+	}
 
 	public Dust(PowderParticle powderParticle, double radius, double height, int startTime, int repeatTime, int lockedIterations) {
 		this.powderParticle = powderParticle;
@@ -30,6 +40,7 @@ public class Dust implements PowderElement {
 		this.startTime = startTime;
 		this.repeatTime = repeatTime;
 		this.lockedIterations = lockedIterations;
+		this.iterations = 0;
 	}
 
 	public PowderParticle getPowderParticle() {
@@ -63,6 +74,10 @@ public class Dust implements PowderElement {
 	public Integer getIterations() {
 		return iterations;
 	}
+	
+	public void iterate() {
+		iterations++;
+	}
 
 	// creates this Dust at the designated location
 	public void create(Location location) {
@@ -82,7 +97,6 @@ public class Dust implements PowderElement {
 						(double) powderParticle.getData());
 			}
 		}
-		iterations++;
 	}
 
 }

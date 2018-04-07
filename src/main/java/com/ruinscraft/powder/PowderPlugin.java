@@ -267,9 +267,9 @@ public class PowderPlugin extends JavaPlugin {
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							double multiplier = Double.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
-							int startTime = Integer.valueOf(t);
+							int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
-							int repeatTime = Integer.valueOf(t);
+							int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							int iterations = Integer.valueOf(t);
 							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
@@ -296,9 +296,9 @@ public class PowderPlugin extends JavaPlugin {
 					float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
 					soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					int startTime = Integer.valueOf(t);
+					int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					int repeatTime = Integer.valueOf(t);
+					int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					int iterations = Integer.valueOf(t);
 					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
@@ -368,9 +368,9 @@ public class PowderPlugin extends JavaPlugin {
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					double height = Float.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					int startTime = Integer.valueOf(t);
+					int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
-					int repeatTime = Integer.valueOf(t);
+					int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 					t = t.substring(t.indexOf(";") + 1, t.length());
 					int iterations = Integer.valueOf(t);
 					powder.addDust(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
@@ -403,7 +403,7 @@ public class PowderPlugin extends JavaPlugin {
 							t = t.substring(t.indexOf(";") + 1, t.length());
 							repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
 							t = t.substring(t.indexOf(";") + 1, t.length());
-							iterations = Integer.valueOf(t.substring(0, t.indexOf(";")));
+							iterations = Integer.valueOf(t);
 						} catch (Exception e) {
 							getLogger().warning("Invalid animation time at line " + 
 									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1));
