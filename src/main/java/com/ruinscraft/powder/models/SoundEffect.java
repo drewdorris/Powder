@@ -4,6 +4,9 @@ import org.bukkit.Location;
 import org.bukkit.Sound;
 
 public class SoundEffect implements PowderElement {
+	
+	// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
+	// 'sound;volume;pitch;startTime;repeatTime;iterations'
 
 	// Sound enum associated with this SoundEffect
 	private Sound sound;
@@ -15,6 +18,8 @@ public class SoundEffect implements PowderElement {
 	private int wait;
 	// when to start displaying this SoundEffect
 	private int startTime;
+	// set maximum iterations
+	private int lockedIterations;
 	// iterations (0 if infinite)
 	private int iterations;
 	// after how many ticks should it repeat?
@@ -47,12 +52,16 @@ public class SoundEffect implements PowderElement {
 		return startTime;
 	}
 	
-	public Integer getIterations() {
-		return iterations;
+	public Integer getLockedIterations() {
+		return lockedIterations;
 	}
 	
-	public void setIterations(int iterations) {
-		this.iterations = iterations;
+	public void setLockedIterations(int lockedIterations) {
+		this.lockedIterations = lockedIterations;
+	}
+	
+	public Integer getIterations() {
+		return iterations;
 	}
 	
 	public Integer getRepeatTime() {

@@ -152,6 +152,10 @@ public class PowderUtil {
 		elements.addAll(powder.getMatrices());
 		elements.addAll(powder.getDusts());
 		elements.addAll(powder.getSoundEffects());
+		for (PowderElement element : elements) {
+			int t = element.getLockedIterations();
+			t = element.getLockedIterations().equals(0) ? Integer.MAX_VALUE : t;
+		}
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), powder);
 		for (PowderElement element : elements) {
 			powderTask.addElement(element);

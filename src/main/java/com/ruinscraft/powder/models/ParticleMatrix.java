@@ -9,12 +9,11 @@ import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
 	
-	// [tick;spacing;pitch;
+	// [.1;true;2;12;10]
+	// [spacing;pitch;startTime;repeatTime;iterations]
 
 	// list of individual Layers associated with this ParticleMatrix
 	private List<Layer> layers;
-	// wait time for when this ParticleMatrix is created
-	private int tick;
 	// how far left the ParticleMatrix should be started
 	private int playerLeft;
 	// same, but how far up
@@ -24,6 +23,8 @@ public class ParticleMatrix implements PowderElement {
 	private boolean hasPitch;
 	// when to start displaying this ParticleMatrix
 	private int startTime;
+	// set maximum iterations
+	private int lockedIterations;
 	// iterations (0 if infinite)
 	private int iterations;
 	// after how many ticks should it repeat?
@@ -31,15 +32,15 @@ public class ParticleMatrix implements PowderElement {
 
 	public ParticleMatrix() {
 		this.layers = new ArrayList<Layer>();
-		tick = 0;
+		startTime = 0;
 		playerLeft = 0;
 		playerUp = 0;
 		spacing = 0;
 	}
 
-	public ParticleMatrix(List<Layer> layers, int tick, int playerLeft, int playerUp, float spacing) {
+	public ParticleMatrix(List<Layer> layers, int startTime, int playerLeft, int playerUp, float spacing) {
 		this.layers = layers;
-		this.tick = tick;
+		this.startTime = startTime;
 		this.playerLeft = playerLeft;
 		this.playerUp = playerUp;
 		this.spacing = spacing;
@@ -55,14 +56,6 @@ public class ParticleMatrix implements PowderElement {
 
 	public void addLayer(Layer layer) {
 		layers.add(layer);
-	}
-
-	public Integer getTick() {
-		return tick;
-	}
-
-	public void setTick(int tick) {
-		this.tick = tick;
 	}
 
 	public Integer getPlayerLeft() {
@@ -93,12 +86,20 @@ public class ParticleMatrix implements PowderElement {
 		return startTime;
 	}
 	
-	public Integer getIterations() {
-		return iterations;
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
 	}
 	
-	public void setIterations(int iterations) {
-		this.iterations = iterations;
+	public Integer getLockedIterations() {
+		return lockedIterations;
+	}
+	
+	public void setLockedIterations(int lockedIterations) {
+		this.lockedIterations = lockedIterations;
+	}
+	
+	public Integer getIterations() {
+		return iterations;
 	}
 	
 	public Integer getRepeatTime() {

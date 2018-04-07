@@ -72,29 +72,6 @@ public class PowderPlugin extends JavaPlugin {
 
 		// prefix for all messages with prefixes
 		PREFIX = PowderUtil.color(config.getString("prefix"));
-
-		// every 100 ticks, remove a PowderTask if it's shown to be finished
-		BukkitScheduler scheduler = getServer().getScheduler();
-		scheduler.scheduleSyncRepeatingTask(this, new Runnable() {
-			public void run() {
-				if (powderHandler == null) {
-					return;
-				}
-				List<PowderTask> toBeRemoved = new ArrayList<PowderTask>();
-				for (PowderTask powderTask : powderHandler.getPowderTasks()) {
-					boolean active = false;
-					for (Integer task : powderTask.getTaskIds()) {
-						if (scheduler.isQueued(task) || scheduler.isCurrentlyRunning(task)) {
-							active = true;
-						}
-					}
-					if (!(active)) {
-						toBeRemoved.add(powderTask);
-					}
-				}
-				powderHandler.getPowderTasks().removeAll(toBeRemoved);
-			}
-		}, 0L, 100L);
 	}
 
 	public void onDisable() {

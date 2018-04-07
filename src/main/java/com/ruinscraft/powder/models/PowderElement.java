@@ -10,8 +10,10 @@ public interface PowderElement {
 
 	Integer getRepeatTime(); // iterate after how many ticks
 
-	Integer getIterations(); // how many times to iterate; 0 if unlimited
+	Integer getLockedIterations(); // how many times to iterate; 0 if unlimited
 	
-	void setIterations(int iteration); // set how many times to iterate
+	void setLockedIterations(int iteration); // set how many times iterated so far
+	
+	Integer getIterations(); // how many iterations so far
 
 }

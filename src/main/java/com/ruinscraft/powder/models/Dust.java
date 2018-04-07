@@ -3,6 +3,9 @@ package com.ruinscraft.powder.models;
 import org.bukkit.Location;
 
 public class Dust implements PowderElement {
+	
+	// 'A;2;1;3;3;0'
+	// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
 
 	// the PowderParticle associated with this Dust
 	private PowderParticle powderParticle;
@@ -12,6 +15,8 @@ public class Dust implements PowderElement {
 	private double height;
 	// when to start displaying this Dust
 	private int startTime;
+	// set maximum iterations
+	private int lockedIterations;
 	// iterations (0 if infinite)
 	private int iterations;
 	// after how many ticks should it repeat?
@@ -42,12 +47,16 @@ public class Dust implements PowderElement {
 		return startTime;
 	}
 
-	public Integer getIterations() {
-		return iterations;
+	public Integer getLockedIterations() {
+		return lockedIterations;
 	}
 	
-	public void setIterations(int iterations) {
-		this.iterations = iterations;
+	public void setLockedIterations(int lockedIterations) {
+		this.lockedIterations = lockedIterations;
+	}
+	
+	public Integer getIterations() {
+		return iterations;
 	}
 
 	public Integer getRepeatTime() {
