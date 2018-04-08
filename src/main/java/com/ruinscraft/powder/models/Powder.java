@@ -216,8 +216,8 @@ public class Powder {
 		return false;
 	}
 
-	public void spawn(final Location location) {
-		PowderTask powderTask = new PowderTask(location, this);
+	public void spawn(final Location location, final String name) {
+		PowderTask powderTask = new PowderTask(location, this, name);
 		spawn(powderTask);
 	}
 

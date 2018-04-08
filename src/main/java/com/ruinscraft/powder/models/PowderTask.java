@@ -12,6 +12,8 @@ import com.ruinscraft.powder.PowdersCreationTask;
 
 public class PowderTask {
 
+	// name associated with this PowderTask (null if no player)
+	private String name;
 	// player associated with this PowderTask
 	private UUID player;
 	// Location associated with this PowderTask, if the player is null
@@ -23,6 +25,7 @@ public class PowderTask {
 	private Map<PowderElement, Integer> activeElements;
 
 	public PowderTask(UUID player, Powder powder) {
+		this.name = null;
 		this.player = player;
 		this.location = null;
 		activeElements = new HashMap<PowderElement, Integer>();
@@ -30,6 +33,15 @@ public class PowderTask {
 	}
 
 	public PowderTask(Location location, Powder powder) {
+		this.name = null;
+		this.player = null;
+		this.location = location;
+		activeElements = new HashMap<PowderElement, Integer>();
+		this.powder = powder;
+	}
+
+	public PowderTask(Location location, Powder powder, String name) {
+		this.name = name;
 		this.player = null;
 		this.location = location;
 		activeElements = new HashMap<PowderElement, Integer>();
@@ -42,6 +54,10 @@ public class PowderTask {
 		activeElements = elements;
 		this.powder = powder;
 	}
+	
+	public String getName() {
+		return name;
+	}
 
 	public UUID getPlayerUUID() {
 		return player;
@@ -50,7 +66,7 @@ public class PowderTask {
 	public Location getLocation() {
 		return location;
 	}
-	
+
 	public Location getCurrentLocation() {
 		if (player == null) {
 			return location;
@@ -58,7 +74,7 @@ public class PowderTask {
 			return Bukkit.getPlayer(player).getLocation();
 		}
 	}
-	
+
 	public boolean followsPlayer() {
 		return player != null;
 	}

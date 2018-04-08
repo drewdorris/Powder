@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
@@ -81,8 +82,10 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getPlayerUUID().equals(uuid)) {
-				playerPowderTasks.add(powderTask);
+			if (powderTask.followsPlayer()) {
+				if (powderTask.getPlayerUUID().equals(uuid)) {
+					playerPowderTasks.add(powderTask);
+				}
 			}
 		}
 		return playerPowderTasks;
@@ -92,8 +95,10 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : getPowderTasks(uuid)) {
-			if (powderTask.getPowder().equals(powder)) {
-				playerPowderTasks.add(powderTask);
+			if (powderTask.followsPlayer()) {
+				if (powderTask.getPowder().equals(powder)) {
+					playerPowderTasks.add(powderTask);
+				}
 			}
 		}
 		return playerPowderTasks;
@@ -123,6 +128,28 @@ public class PowderHandler {
 		return players;
 	}
 
+	public PowderTask getPowderTask(String name) {
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getName() == null) {
+				continue;
+			}
+			if (powderTask.getName().equals(name) || powderTask.getName() == null && name == null) {
+				return powderTask;
+			}
+		}
+		return null;
+	}
+	
+	public Map<PowderTask, Integer> getNearbyPowderTasks(Location location, int range) {
+		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<PowderTask, Integer>();
+		for (PowderTask powderTask : powderTasks) {
+			Location taskLocation = powderTask.getCurrentLocation();
+			int distance = (int) location.distance(taskLocation);
+			nearbyPowderTasks.put(powderTask, distance);
+		}
+		return nearbyPowderTasks;
+	}
+
 	// ends all tasks associated with all PowderTasks
 	public void clearAllTasks() {
 		powderTasks.clear();
@@ -139,8 +166,8 @@ public class PowderHandler {
 	}
 
 	// removes/ends a PowderTask
-	public void removePowderTask(PowderTask powderTask) {
-		powderTasks.remove(powderTask);
+	public boolean removePowderTask(PowderTask powderTask) {
+		return powderTasks.remove(powderTask);
 	}
 
 	public Map<String, String> getCategories() {

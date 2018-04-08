@@ -9,6 +9,7 @@ import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -174,7 +175,7 @@ public class PowderCommand implements CommandExecutor {
 				String search;
 				int page;
 				try {
-					search = String.valueOf(args[1]);
+					search = args[1];
 				} catch (Exception e) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder search <term> [page]", label);
 					return false;
@@ -188,6 +189,70 @@ public class PowderCommand implements CommandExecutor {
 						" search " + search + " ", page, pageLength, label);
 				return false;
 				// list by category/Powder if other criteria not met
+			} else if (args[0].equals("create")) {
+				if (!(player.hasPermission("powder.create"))) {
+					return false;
+				}
+				String name;
+				String powderName;
+				Powder newPowder;
+				try {
+					name = args[1];
+					powderName = args[2];
+					newPowder = powderHandler.getPowder(powderName);
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder create <name> <Powder>", label);
+					return false;
+				}
+				newPowder.spawn(player.getLocation(), name);
+			} else if (args[0].equals("remove")) {
+				if (!(player.hasPermission("powder.remove"))) {
+					return false;
+				}
+				String name;
+				try {
+					name = args[1];
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder remove <name>", label);
+					return false;
+				}
+				if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully removed '" + name + "'.", label);
+				} else {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Could not find or remove '" + name + "'.", label);
+				}
+			} else if (args[0].equals("nearby")) {
+				if (!(player.hasPermission("powder.nearby"))) {
+					return false;
+				}
+				int page;
+				try {
+					page = Integer.valueOf(args[1]);
+				} catch (Exception e) {
+					page = 1;
+				}
+				PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Nearby active Powders:", label);
+				Map<PowderTask, Integer> nearby = powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
+				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
+				for (PowderTask powderTask : nearby.keySet()) {
+					String name = powderTask.getName();
+					if (name == null) {
+						name = Bukkit.getPlayer(powderTask.getPlayerUUID()).getName() + "'s Powder";
+					}
+					TextComponent text = new TextComponent();
+					text.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+					text.addExtra(ChatColor.RED + name + ChatColor.GRAY + " - " + nearby.get(powderTask) + "m");
+					if (player.hasPermission("powder.remove")) {
+						text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+								new ComponentBuilder("Click to cancel this active Powder")
+								.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+						text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+								"/" + label + " remove " + powderTask.getName() ) );
+					}
+					nearbyText.add(text);
+				}
+				paginate(player, nearbyText, " nearby " + String.valueOf(page), page, 7, label);
+				return true;
 			} else {
 				if (powderHandler.categoriesEnabled()) {
 					if (powderHandler.getCategory(args[0]) != null) {

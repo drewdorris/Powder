@@ -133,6 +133,14 @@ public class PowderUtil {
 	public static void loadPlayer(Player player) {
 		loadPowdersForPlayer(player.getUniqueId());
 	}
+	
+	public static void unloadServerPowders() {
+		
+	}
+	
+	public static void loadServerPowders() {
+		
+	}
 
 	// cosine of the given rotation, and multiplies it by the given spacing
 	public static double getDirLengthX(double rot, double spacing) {
