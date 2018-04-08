@@ -6,15 +6,15 @@ public interface PowderElement {
 
 	void create(Location location); // create this element at this location
 
-	Integer getStartTime(); // what tick to start at
+	int getStartTime(); // what tick to start at
 
-	Integer getRepeatTime(); // iterate after how many ticks
+	int getRepeatTime(); // iterate after how many ticks
 
-	Integer getLockedIterations(); // how many times to iterate; 0 if unlimited
+	int getLockedIterations(); // how many times to iterate; 0 if unlimited
 
 	void setLockedIterations(int iteration); // set how many times iterated so far
 
-	Integer getIterations(); // how many iterations so far
+	int getIterations(); // how many iterations so far
 	
 	void iterate(); // add to getIterations()
 

@@ -36,7 +36,7 @@ public class Layer {
 		rows.add(row);
 	}
 
-	public Double getPosition() {
+	public double getPosition() {
 		return position;
 	}
 

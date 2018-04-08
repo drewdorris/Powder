@@ -78,7 +78,7 @@ public class ParticleMatrix implements PowderElement {
 		layers.add(layer);
 	}
 
-	public Integer getPlayerLeft() {
+	public int getPlayerLeft() {
 		return playerLeft;
 	}
 
@@ -86,7 +86,7 @@ public class ParticleMatrix implements PowderElement {
 		this.playerLeft = playerLeft;
 	}
 
-	public Integer getPlayerUp() {
+	public int getPlayerUp() {
 		return playerUp;
 	}
 
@@ -94,7 +94,7 @@ public class ParticleMatrix implements PowderElement {
 		this.playerUp = playerUp;
 	}
 
-	public Double getSpacing() {
+	public double getSpacing() {
 		return spacing;
 	}
 
@@ -102,7 +102,7 @@ public class ParticleMatrix implements PowderElement {
 		this.spacing = spacing;
 	}
 
-	public Boolean hasPitch() {
+	public boolean hasPitch() {
 		return hasPitch;
 	}
 
@@ -110,7 +110,7 @@ public class ParticleMatrix implements PowderElement {
 		this.hasPitch = hasPitch;
 	}
 
-	public Integer getStartTime() {
+	public int getStartTime() {
 		return startTime;
 	}
 
@@ -118,7 +118,7 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = startTime;
 	}
 
-	public Integer getRepeatTime() {
+	public int getRepeatTime() {
 		return repeatTime;
 	}
 
@@ -126,7 +126,7 @@ public class ParticleMatrix implements PowderElement {
 		this.repeatTime = repeatTime;
 	}
 
-	public Integer getLockedIterations() {
+	public int getLockedIterations() {
 		return lockedIterations;
 	}
 
@@ -134,7 +134,7 @@ public class ParticleMatrix implements PowderElement {
 		this.lockedIterations = lockedIterations;
 	}
 
-	public Integer getIterations() {
+	public int getIterations() {
 		return iterations;
 	}
 	
@@ -216,7 +216,7 @@ public class ParticleMatrix implements PowderElement {
 
 					// spawn the particle
 					if (powderParticle.getData() == null) {
-						if (powderParticle.getXOff() == null) {
+						if (powderParticle.getXOff() == 0) {
 							location.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
 									powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
 									powderParticle.getZOff() / 255, 1);

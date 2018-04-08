@@ -47,23 +47,23 @@ public class Dust implements PowderElement {
 		return powderParticle;
 	}
 
-	public Double getRadius() {
+	public double getRadius() {
 		return radius;
 	}
 
-	public Double getHeight() {
+	public double getHeight() {
 		return height;
 	}
 
-	public Integer getStartTime() {
+	public int getStartTime() {
 		return startTime;
 	}
 
-	public Integer getRepeatTime() {
+	public int getRepeatTime() {
 		return repeatTime;
 	}
 
-	public Integer getLockedIterations() {
+	public int getLockedIterations() {
 		return lockedIterations;
 	}
 
@@ -71,7 +71,7 @@ public class Dust implements PowderElement {
 		this.lockedIterations = lockedIterations;
 	}
 
-	public Integer getIterations() {
+	public int getIterations() {
 		return iterations;
 	}
 	

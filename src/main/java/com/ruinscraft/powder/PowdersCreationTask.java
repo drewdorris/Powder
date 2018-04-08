@@ -60,7 +60,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 		}
 	}
 
-	public static Integer getTick() {
+	public static int getTick() {
 		return tick;
 	}
 

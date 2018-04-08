@@ -63,15 +63,15 @@ public class PowderParticle {
 		return particle;
 	}
 
-	public Double getXOff() {
+	public double getXOff() {
 		return xOff;
 	}
 
-	public Double getYOff() {
+	public double getYOff() {
 		return yOff;
 	}
 
-	public Double getZOff() {
+	public double getZOff() {
 		return zOff;
 	}
 

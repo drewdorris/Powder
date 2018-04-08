@@ -47,7 +47,6 @@ public class Powder {
 	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
 			List<SoundEffect> soundEffects, List<Dust> dusts, List<PowderParticle> powderParticles, 
 			boolean hidden, int defaultLeft, int defaultUp) {
-
 		this.name = name;
 		this.categories = categories;
 		this.spacing = spacing;
@@ -58,12 +57,10 @@ public class Powder {
 		this.hidden = hidden;
 		this.defaultLeft = defaultLeft;
 		this.defaultUp = defaultUp;
-
 	}
 
 	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
 			boolean hidden, int defaultLeft, int defaultUp) {
-
 		this.name = name;
 		this.categories = categories;
 		this.spacing = spacing;
@@ -74,7 +71,6 @@ public class Powder {
 		this.hidden = hidden;
 		this.defaultLeft = defaultLeft;
 		this.defaultUp = defaultUp;
-
 	}
 
 	public String getName() {
@@ -93,7 +89,7 @@ public class Powder {
 		categories.add(category);
 	}
 
-	public Double getDefaultSpacing() {
+	public double getDefaultSpacing() {
 		return spacing;
 	}
 
@@ -195,7 +191,7 @@ public class Powder {
 		this.hidden = hidden;
 	}
 
-	public Integer getDefaultLeft() {
+	public int getDefaultLeft() {
 		return defaultLeft;
 	}
 
@@ -203,7 +199,7 @@ public class Powder {
 		this.defaultLeft = defaultLeft;
 	}
 
-	public Integer getDefaultUp() {
+	public int getDefaultUp() {
 		return defaultUp;
 	}
 
@@ -213,7 +209,7 @@ public class Powder {
 	
 	public boolean hasMovement() {
 		for (PowderElement element : getOriginalPowderElements()) {
-			if (!element.getStartTime().equals(0) || element.getLockedIterations() > 1) {
+			if (!(element.getStartTime() == 0) || element.getLockedIterations() > 1) {
 				return true;
 			}
 		}

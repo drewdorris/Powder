@@ -51,23 +51,23 @@ public class SoundEffect implements PowderElement {
 		return sound;
 	}
 
-	public Double getVolume() {
+	public double getVolume() {
 		return volume;
 	}
 
-	public Double getPitch() {
+	public double getPitch() {
 		return pitch;
 	}
 
-	public Integer getStartTime() {
+	public int getStartTime() {
 		return startTime;
 	}
 
-	public Integer getRepeatTime() {
+	public int getRepeatTime() {
 		return repeatTime;
 	}
 
-	public Integer getLockedIterations() {
+	public int getLockedIterations() {
 		return lockedIterations;
 	}
 
@@ -75,7 +75,7 @@ public class SoundEffect implements PowderElement {
 		this.lockedIterations = lockedIterations;
 	}
 
-	public Integer getIterations() {
+	public int getIterations() {
 		return iterations;
 	}
 	

@@ -59,7 +59,7 @@ public class PowderTask {
 		}
 	}
 	
-	public Boolean followsPlayer() {
+	public boolean followsPlayer() {
 		return player != null;
 	}
 
