@@ -5,7 +5,6 @@ import java.util.List;
 
 import org.bukkit.Location;
 
-import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
@@ -48,6 +47,7 @@ public class ParticleMatrix implements PowderElement {
 		this.playerLeft = particleMatrix.getPlayerLeft();
 		this.playerUp = particleMatrix.getPlayerUp();
 		this.spacing = particleMatrix.getSpacing();
+		this.hasPitch = particleMatrix.hasPitch();
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
