@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ruinscraft.powder.models.PowderElement;
@@ -33,16 +34,21 @@ public class PowdersCreationTask extends BukkitRunnable {
 				continue;
 			}
 			List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
+			Location location;
+			if (powderTask.getPlayerUUID() == null) {
+				location = powderTask.getLocation();
+			} else {
+				location = Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation();
+			}
 			for (PowderElement element : powderTask.getActiveElements().keySet()) {
-				Integer lastOccurrence = powderTask.getActiveElements().get(element);
-				PowderPlugin.getInstance().getLogger().info(String.valueOf(lastOccurrence));
-				PowderPlugin.getInstance().getLogger().info("|     " + String.valueOf(tick));
-				if (lastOccurrence + element.getRepeatTime() <= tick) {
+				if (powderTask.getActiveElements().get(element) + element.getRepeatTime() <= tick) {
 					if (element.getIterations() >= element.getLockedIterations()) {
 						elementsToRemove.add(element);
 						continue;
 					}
-					createElement(element, powderTask);
+					element.create(location);
+					element.iterate();
+					powderTask.getActiveElements().put(element, tick);
 				}
 			}
 			for (PowderElement element : elementsToRemove) {
@@ -53,13 +59,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 			powderHandler.removePowderTask(powderTask);
 		}
 	}
-	
-	public void createElement(PowderElement element, PowderTask powderTask) {
-		element.create(Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation());
-		element.iterate();
-		powderTask.getActiveElements().put(element, tick);
-	}
-	
+
 	public static Integer getTick() {
 		return tick;
 	}

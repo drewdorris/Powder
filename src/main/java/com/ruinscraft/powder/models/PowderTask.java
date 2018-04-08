@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.ruinscraft.powder.PowdersCreationTask;
@@ -48,6 +49,18 @@ public class PowderTask {
 
 	public Location getLocation() {
 		return location;
+	}
+	
+	public Location getCurrentLocation() {
+		if (player == null) {
+			return location;
+		} else {
+			return Bukkit.getPlayer(player).getLocation();
+		}
+	}
+	
+	public Boolean followsPlayer() {
+		return player != null;
 	}
 
 	public Powder getPowder() {

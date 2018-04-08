@@ -5,6 +5,7 @@ import java.util.List;
 
 import org.bukkit.Location;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
@@ -154,7 +155,7 @@ public class ParticleMatrix implements PowderElement {
 
 		// if the Powder moves up/down with the head, set some values that will allow that to happen
 		// else, make them do nothing significant
-		if (hasPitch) {
+		if (hasPitch()) {
 			playerPitch = (location.getPitch() * (Math.PI / 180));
 			distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
 			distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);

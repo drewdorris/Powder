@@ -332,6 +332,7 @@ public class PowderPlugin extends JavaPlugin {
 					for (String ss : powderConfig.getConfigurationSection(matrixSection).getKeys(false)) {
 						String eachSection = section + ".matrices." + ss;
 						ParticleMatrix particleMatrix = new ParticleMatrix();
+						boolean test = powderConfig.getBoolean(eachSection + ".hasPitch");
 						particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
 						particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
 						particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
