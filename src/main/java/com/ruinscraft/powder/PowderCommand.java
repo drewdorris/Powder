@@ -201,7 +201,7 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder create <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/" + label + " create <name> <Powder>", label);
 					return false;
 				}
 				newPowder.spawn(player.getLocation(), name);
@@ -209,17 +209,46 @@ public class PowderCommand implements CommandExecutor {
 				if (!(player.hasPermission("powder.remove"))) {
 					return false;
 				}
-				String name;
-				try {
-					name = args[1];
-				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder remove <name>", label);
+				if (args.length < 2) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/" + label + 
+							" remove <name> " + ChatColor.GRAY + "or" + ChatColor.RED + " /" + label + " remove user <username>", label);
 					return false;
 				}
-				if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
-					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully removed '" + name + "'.", label);
+				if (args[1].equals("user")) {
+					Player powderUser;
+					try {
+						powderUser = Bukkit.getPlayer(args[2]);
+					} catch (Exception e) {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Invalid player.", label);
+						return false;
+					}
+					if (powderUser == null) {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Invalid player.", label);
+						return false;
+					}
+					if (powderHandler.getPowderTasks().removeAll(powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
+						if (!(powderUser.equals(player))) {
+							PowderUtil.sendPrefixMessage(powderUser, ChatColor.RED + "Your Powders were canceled by another user.", label);
+						}
+						PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + 
+								"Successfully removed " + powderUser.getName() + "'s Powders.", label);
+					} else {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + 
+								"Could not remove " + powderUser.getName() + "'s Powders.", label);
+					}
 				} else {
-					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Could not find or remove '" + name + "'.", label);
+					String name;
+					try {
+						name = args[1];
+					} catch (Exception e) {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/powder remove <name>", label);
+						return false;
+					}
+					if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
+						PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully removed '" + name + "'.", label);
+					} else {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Could not find or remove '" + name + "'.", label);
+					}
 				}
 			} else if (args[0].equals("nearby")) {
 				if (!(player.hasPermission("powder.nearby"))) {
@@ -235,19 +264,31 @@ public class PowderCommand implements CommandExecutor {
 				Map<PowderTask, Integer> nearby = powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
 				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
 				for (PowderTask powderTask : nearby.keySet()) {
-					String name = powderTask.getName();
-					if (name == null) {
-						name = Bukkit.getPlayer(powderTask.getPlayerUUID()).getName() + "'s Powder";
-					}
 					TextComponent text = new TextComponent();
 					text.setColor(net.md_5.bungee.api.ChatColor.GRAY);
-					text.addExtra(ChatColor.RED + name + ChatColor.GRAY + " - " + nearby.get(powderTask) + "m");
+					String powderTaskName = powderTask.getName();
+					boolean usingName = false;
+					String playerName = null;
+					if (powderTaskName == null) {
+						playerName = Bukkit.getPlayer(powderTask.getPlayerUUID()).getName();
+						powderTaskName = ChatColor.ITALIC + playerName + "'s Powder";
+						usingName = true;
+					}
+					text.addExtra(ChatColor.RED + powderTaskName + ChatColor.GRAY + " - " + nearby.get(powderTask) + "m");
 					if (player.hasPermission("powder.remove")) {
-						text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder("Click to cancel this active Powder")
-								.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
-						text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-								"/" + label + " remove " + powderTask.getName() ) );
+						if (usingName) {
+							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+									new ComponentBuilder("Click to cancel all of " + playerName + "'s active Powders")
+									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+									"/" + label + " remove user " + playerName ) );
+						} else {
+							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+									new ComponentBuilder("Click to cancel this active Powder")
+									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+									"/" + label + " remove " + powderTaskName ) );
+						}
 					}
 					nearbyText.add(text);
 				}

@@ -52,6 +52,7 @@ public class PowderUtil {
 		}
 
 		BaseComponent fullMessage = new TextComponent();
+		fullMessage.setColor(ChatColor.GRAY);
 		TextComponent prefix = new TextComponent(PowderPlugin.PREFIX);
 		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("/" + label).color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
