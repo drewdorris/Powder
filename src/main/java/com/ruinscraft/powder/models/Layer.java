@@ -8,7 +8,7 @@ public class Layer {
 	// list of rows containing PowderParticles; the matrix itself
 	private List<List<PowderParticle>> rows;
 	// the front-back position of the Layer
-	private int position;
+	private double position;
 
 	public Layer() {
 		this.rows = new ArrayList<List<PowderParticle>>();
@@ -36,11 +36,11 @@ public class Layer {
 		rows.add(row);
 	}
 
-	public Integer getPosition() {
+	public Double getPosition() {
 		return position;
 	}
 
-	public void setPosition(int position) {
+	public void setPosition(double position) {
 		this.position = position;
 	}
 

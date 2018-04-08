@@ -19,7 +19,7 @@ public class Powder {
 	// list of categories the Powder is in
 	private List<String> categories;
 	// the default spacing for the Powder
-	private float spacing;
+	private double spacing;
 	// the list of particle matrices for the Powder
 	private List<ParticleMatrix> matrices;
 	// list of SoundEffects for the Powder
@@ -93,7 +93,7 @@ public class Powder {
 		categories.add(category);
 	}
 
-	public float getDefaultSpacing() {
+	public Double getDefaultSpacing() {
 		return spacing;
 	}
 

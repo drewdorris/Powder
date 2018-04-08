@@ -244,6 +244,8 @@ public class PowderPlugin extends JavaPlugin {
 					}
 				}
 
+				String section = powders + s;
+				
 				// SoundEffect
 				// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
 				// 'sound;volume;pitch;startTime;repeatTime;iterations'
@@ -252,93 +254,44 @@ public class PowderPlugin extends JavaPlugin {
 				// 'Shrek.nbs;50;2;0;2400;2'
 				// 'fileName;volume;multiplier;startTime;repeatTime;iterations'
 
-				// add sounds; read from string list
-				for (String t : (List<String>) powderConfig.getList(powders + s + ".sounds", new ArrayList<String>())) {
-					if (t.contains("song:")) {
-						t = t.replaceFirst("song:", "");
-						String fileName;
-						try {
-							fileName = t.substring(0, t.indexOf(";"));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							double volume = Double.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							double multiplier = Double.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							int iterations = Integer.valueOf(t);
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-									multiplier, startTime, repeatTime, iterations));
-						} catch (Exception e) {
-							getLogger().warning("Invalid fileName/multiplier/start time in song '" + t + "'.");
-							fileName = t;
-							powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, 1, 1, 0, Integer.MAX_VALUE, 1));
-						}
-						continue;
+				if (!(powderConfig.getConfigurationSection(powders + s + ".songs") == null)) {
+					for (String ss : powderConfig.getConfigurationSection(powders + s + ".songs").getKeys(false)) {
+						String eachSection = section + ".songs." + ss;
+						String fileName = powderConfig.getString(eachSection + ".fileName", "unknownfile.nbs");
+						double volume = powderConfig.getDouble(eachSection + ".volume", 1);
+						double multiplier = powderConfig.getDouble(eachSection + ".multiplier", 1);
+						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
+						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
+						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
+						powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
+								multiplier, startTime, repeatTime, iterations));
 					}
-					Sound sound;
-					String soundName;
-					soundName = t.substring(0, t.indexOf(";"));
-					sound = Sound.valueOf(soundName);
-					if ((Sound.valueOf(soundName) == null)) {
-						getLogger().warning("Invalid sound name '" + soundName + 
-								"' for '" + powder.getName() + "' in " + powderConfig.getName());
-						continue;
-					}
-					t = t.replaceFirst(soundName + ";", "");
-					float volume = Float.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					float soundPitch = Float.valueOf(t.substring(0, t.indexOf(";")));
-					soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int iterations = Integer.valueOf(t);
-					powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
 				}
-
-				// add changed particles; read from string list
-				for (String t : (List<String>) powderConfig.getList(powders + s + ".changes", new ArrayList<String>())) {
-					String enumName = t.substring(0, t.indexOf(";"));
-					t = t.replaceFirst(enumName + ";", "");
-					String particleName = t.substring(0, t.indexOf(";"));
-					Particle particle = Particle.valueOf(particleName);
-					if (particle == null) {
-						getLogger().warning("Invalid particle name '" + particleName + 
-								"' for " + powder.getName() + " in " + powderConfig.getName());
-						continue;
+				if (!(powderConfig.getConfigurationSection(powders + s + ".sounds") == null)) {
+					for (String ss : powderConfig.getConfigurationSection(powders + s + ".sounds").getKeys(false)) {
+						String eachSection = section + ".sounds." + ss;
+						String soundEnum = powderConfig.getString(eachSection + ".soundEnum", "BLOCK_NOTE_CHIME");
+						Sound sound = Sound.valueOf(soundEnum);
+						double volume = powderConfig.getDouble(eachSection + ".volume", 1);
+						float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
+						soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
+						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
+						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
+						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
+						powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
 					}
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					double xOff;
-					double yOff;
-					double zOff;
-					try {
-						xOff = Double.valueOf(t.substring(0, t.indexOf(";")));
-					} catch (Exception e) {
-						powder.addPowderParticle(new PowderParticle(enumName, particle, 0, 0, 0));
-						continue;
-					}
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					yOff = Double.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					// might / might not have data
-					try {
-						zOff = Double.valueOf(t);
-						powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff));
-					} catch (Exception e) {
-						zOff = Double.valueOf(t.substring(0, t.indexOf(";")));
-						t = t.substring(t.indexOf(";") + 1, t.length());
-						Object data;
-						try {
-							data = Double.valueOf(t);
-						} catch (Exception ex) {
-							data = t;
-						}
-						powder.addPowderParticle(new PowderParticle(enumName, particle, xOff, yOff, zOff, data));
+				}
+				if (!(powderConfig.getConfigurationSection(powders + s + ".changes") == null)) {
+					for (String ss : powderConfig.getConfigurationSection(powders + s + ".changes").getKeys(false)) {
+						String eachSection = section + ".changes." + ss;
+						String particleChar = powderConfig.getString(eachSection + ".particleChar", "A");
+						String particleEnum = powderConfig.getString(eachSection + ".particleEnum", "HEART");
+						Particle particle = Particle.valueOf(particleEnum);
+						double xOffset = powderConfig.getDouble(eachSection + ".xOffset", 0);
+						double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
+						double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
+						double data = powderConfig.getDouble(eachSection + ".data", 0);
+						powder.addPowderParticle(new PowderParticle(particleChar, particle, xOffset, yOffset, zOffset, data));
 					}
 				}
 
@@ -346,186 +299,111 @@ public class PowderPlugin extends JavaPlugin {
 				// 'A;2;1;3;3;0'
 				// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
 
-				// add dusts; read from string list
-				for (String t : (List<String>) powderConfig.getList(powders + s + ".dusts", new ArrayList<String>())) {
-					String dustName = t.substring(0, t.indexOf(";"));
-					PowderParticle powderParticle;
-					powderParticle = powder.getPowderParticle(dustName);
-					// can be null if it is nothing
-					if (powderParticle == null) {
-						try {
-							Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
-							powderParticle = new PowderParticle(dustName, particle);
-						} catch (Exception e) {
-							powderParticle = new PowderParticle(null, null);
-						}
-					}
-					t = t.replaceFirst(dustName + ";", "");
-					double radius = Double.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					double height = Float.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-					t = t.substring(t.indexOf(";") + 1, t.length());
-					int iterations = Integer.valueOf(t);
-					powder.addDust(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
-				}
-
-				int left = 0;
-				int up = 0;
-				ParticleMatrix particleMatrix = new ParticleMatrix();
-				Layer layer = new Layer();
-
-				// [.1;true;2;12;10]
-				// [spacing;pitch;startTime;repeatTime;iterations]
-
-				// read matrices/maps
-				for (String t : (List<String>) powderConfig.getList(powders + s + ".map", new ArrayList<String>())) {
-					// read animation time; animation time separates each ParticleMatrix
-					if (t.contains("[")) {
-						t = t.replace("[", "").replace("]", "");
-						float spacing;
-						boolean hasPitch;
-						int startTime;
-						int repeatTime;
-						int iterations;
-						try {
-							spacing = Float.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							hasPitch = Boolean.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							startTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							repeatTime = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							iterations = Integer.valueOf(t);
-						} catch (Exception e) {
-							getLogger().warning("Invalid animation time at line " + 
-									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1) + " for Powder " + s);
-							continue;
-						}
-						if (!(layer.getRows().isEmpty())) {
-							particleMatrix.addLayer(layer);
-						}
-						// fix this duplicate code!!!!!
-						if (particleMatrix.getLayers().isEmpty()) {
-							particleMatrix.setSpacing(spacing);
-							particleMatrix.setIfPitch(hasPitch);
-							particleMatrix.setStartTime(startTime);
-							particleMatrix.setRepeatTime(repeatTime);
-							particleMatrix.setLockedIterations(iterations);
-							continue;
-						}
-						powder.addMatrix(particleMatrix);
-						// start reading a new ParticleMatrix & Layer
-						particleMatrix = new ParticleMatrix();
-						particleMatrix.setSpacing(spacing);
-						particleMatrix.setIfPitch(hasPitch);
-						particleMatrix.setStartTime(startTime);
-						particleMatrix.setRepeatTime(repeatTime);
-						particleMatrix.setLockedIterations(iterations);
-						layer = new Layer();
-						continue;
-					}
-					// read each Layer of the matrix; the position of the Layer separates each Layer
-					if (t.contains("{")) {
-						t = t.replace("{", "").replace("}", "");
-						int position;
-						try {
-							position = Integer.valueOf(t);
-						} catch (Exception e) {
-							getLogger().warning("Invalid position of layer in Powder '" + powder.getName() + "' at line " +
-									(powderConfig.getList(powders + s + ".map").indexOf(t) + 1) + "in " + powderConfig.getName());
-							continue;
-						}
-						up = 0;
-						if (layer.getRows().isEmpty()) {
-							layer.setPosition(position);
-							continue;
-						}
-						// start reading a new Layer if the previous Layer isn't empty
-						particleMatrix.addLayer(layer);
-						layer = new Layer();
-						layer.setPosition(position);
-						continue;
-					}
-					if (t.contains(":")) {
-						// spacing for each matrix; if it doesn't exist, is set to given default for the Powder
-						if (t.contains("spacing:")) {
-							t = t.replace("spacing:", "");
-							float spacing = Float.valueOf(t);
-							particleMatrix.setSpacing(spacing);
-							// read an image from URL/path
-						} else if (t.contains("img:")) {
-							String urlName;
-							int width;
-							int height;
-							t = t.replace("img:", "");
-							urlName = t.substring(0, t.indexOf(";"));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-							t = t.substring(t.indexOf(";") + 1, t.length());
-							height = Integer.valueOf(t);
-							try {
-								ImageUtil.getRows(layer.getRows(), urlName, width, height);
-							} catch (IOException io) {
-								getLogger().warning("Failed to load image: '" + urlName + "'");
-								continue;
-							}
-							// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
-							up = up + height;
-						}
-
-						continue;
-					}
-					// if the Layer is in the same position as where the location/player is
-					if (layer.getPosition() == 0) {
-						up++;
-						// if the string contains location/player
-						if (t.contains("?")) {
-							// set the left & up of the Layer so createPowders() knows where to start
-							left = (t.indexOf("?")) + 1;
-							// set default if it's the matrix spawned immediately 
-							if (particleMatrix.getStartTime() == 0) {
-								powder.setDefaultLeft(left);
-								powder.setDefaultUp(up);
-							}
-							particleMatrix.setPlayerLeft(left);
-							particleMatrix.setPlayerUp(up);
-						}
-					}
-					// add a row to the Layer if it has gone through everything
-					// rows contain PowderParticles
-					List<PowderParticle> row = new ArrayList<PowderParticle>();
-					for (char character : t.toCharArray()) {
-						String string = String.valueOf(character);
-						PowderParticle powderParticle;
-						powderParticle = powder.getPowderParticle(string);
+				if (!(powderConfig.getConfigurationSection(powders + s + ".dusts") == null)) {
+					for (String ss : powderConfig.getConfigurationSection(powders + s + ".dusts").getKeys(false)) {
+						String eachSection = section + ".dusts." + ss;
+						String dustName = powderConfig.getString(eachSection + ".name", "null");
+						PowderParticle powderParticle = powder.getPowderParticle(dustName);
 						if (powderParticle == null) {
 							try {
-								Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
-								powderParticle = new PowderParticle(string, particle);
+								Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
+								powderParticle = new PowderParticle(dustName, particle);
 							} catch (Exception e) {
 								powderParticle = new PowderParticle(null, null);
 							}
 						}
-						row.add(powderParticle);
+						double radius = powderConfig.getDouble(eachSection + ".radius", 1);
+						double height = powderConfig.getDouble(eachSection + ".height", 1);
+						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
+						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
+						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
+						powder.addDust(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
 					}
-					layer.addRow(row);
 				}
 
-				// if it finished going through the rows and there's some left that aren't added to the matrix
-				if (!(layer.getRows().isEmpty()) || !(particleMatrix.getLayers().contains(layer))) {
-					particleMatrix.addLayer(layer);
+				// [.1;true;2;12;10]
+				// [spacing;pitch;startTime;repeatTime;iterations]
+				
+				int left = 0;
+				int up = 0;
+				String matrixSection = powders + s + ".matrices";
+				
+				if (!(powderConfig.getConfigurationSection(matrixSection) == null)) {
+					for (String ss : powderConfig.getConfigurationSection(matrixSection).getKeys(false)) {
+						String eachSection = section + ".matrices." + ss;
+						ParticleMatrix particleMatrix = new ParticleMatrix();
+						particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
+						particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
+						particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
+						particleMatrix.setRepeatTime(powderConfig.getInt(eachSection + ".repeatTime", 20));
+						particleMatrix.setLockedIterations(powderConfig.getInt(eachSection + ".iterations", 1));
+						for (String sss : powderConfig.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
+							String eachEachSection = eachSection + ".layers." + sss;
+							Layer layer = new Layer();
+							layer.setPosition(powderConfig.getDouble(eachEachSection + ".position", 0));
+							for (String t : (List<String>) powderConfig.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
+								if (t.contains(":")) {
+									if (t.contains("img:")) {
+										String urlName;
+										int width;
+										int height;
+										t = t.replace("img:", "");
+										urlName = t.substring(0, t.indexOf(";"));
+										t = t.substring(t.indexOf(";") + 1, t.length());
+										width = Integer.valueOf(t.substring(0, t.indexOf(";")));
+										t = t.substring(t.indexOf(";") + 1, t.length());
+										height = Integer.valueOf(t);
+										try {
+											ImageUtil.getRows(layer.getRows(), urlName, width, height);
+										} catch (IOException io) {
+											getLogger().warning("Failed to load image: '" + urlName + "'");
+											continue;
+										}
+										// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
+										up = up + height;
+									}
+									continue;
+								}
+								// if the Layer is in the same position as where the location/player is
+								if (layer.getPosition() == 0) {
+									up++;
+									// if the string contains location/player
+									if (t.contains("?")) {
+										// set the left & up of the Layer so createPowders() knows where to start
+										left = (t.indexOf("?")) + 1;
+										// set default if it's the matrix spawned immediately 
+										if (particleMatrix.getStartTime() == 0) {
+											powder.setDefaultLeft(left);
+											powder.setDefaultUp(up);
+										}
+										particleMatrix.setPlayerLeft(left);
+										particleMatrix.setPlayerUp(up);
+									}
+								}
+								// add a row to the Layer if it has gone through everything
+								// rows contain PowderParticles
+								List<PowderParticle> row = new ArrayList<PowderParticle>();
+								for (char character : t.toCharArray()) {
+									String string = String.valueOf(character);
+									PowderParticle powderParticle;
+									powderParticle = powder.getPowderParticle(string);
+									if (powderParticle == null) {
+										try {
+											Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
+											powderParticle = new PowderParticle(string, particle);
+										} catch (Exception e) {
+											powderParticle = new PowderParticle(null, null);
+										}
+									}
+									row.add(powderParticle);
+								}
+								layer.addRow(row);
+							}
+							particleMatrix.addLayer(layer);
+						}
+						powder.addMatrix(particleMatrix);
+					}
 				}
-
-				// if the matrix is finished and hasn't been added to the Powder
-				if (!(particleMatrix.getLayers().isEmpty())) {
-					powder.addMatrix(particleMatrix);
-				}
-
 				if (powder.getMatrices().isEmpty() && powder.getSoundEffects().isEmpty() && powder.getDusts().isEmpty()) {
 					getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");
 					continue;

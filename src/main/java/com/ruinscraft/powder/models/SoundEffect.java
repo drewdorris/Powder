@@ -14,9 +14,9 @@ public class SoundEffect implements PowderElement {
 	// Sound enum associated with this SoundEffect
 	private Sound sound;
 	// volume for this SoundEffect
-	private float volume;
+	private double volume;
 	// pitch for this SoundEffect (noteblock values)
-	private float pitch;
+	private double pitch;
 	// when to start displaying this SoundEffect
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -37,7 +37,7 @@ public class SoundEffect implements PowderElement {
 		this.iterations = 0;
 	}
 
-	public SoundEffect(Sound sound, float volume, float pitch, int startTime, int repeatTime, int lockedIterations) {
+	public SoundEffect(Sound sound, double volume, double pitch, int startTime, int repeatTime, int lockedIterations) {
 		this.sound = sound;
 		this.volume = volume;
 		this.pitch = pitch;
@@ -51,11 +51,11 @@ public class SoundEffect implements PowderElement {
 		return sound;
 	}
 
-	public Float getVolume() {
+	public Double getVolume() {
 		return volume;
 	}
 
-	public Float getPitch() {
+	public Double getPitch() {
 		return pitch;
 	}
 
@@ -85,7 +85,7 @@ public class SoundEffect implements PowderElement {
 
 	// creates this SoundEffect at the designated location
 	public void create(Location location) {
-		location.getWorld().playSound(location, getSound(), getVolume(), getPitch());
+		location.getWorld().playSound(location, sound, (float) volume, (float) pitch);
 	}
 
 }

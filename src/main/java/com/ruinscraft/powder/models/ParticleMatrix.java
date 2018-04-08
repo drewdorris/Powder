@@ -19,7 +19,7 @@ public class ParticleMatrix implements PowderElement {
 	// same, but how far up
 	private int playerUp;
 	// spacing for this ParticleMatrix
-	private float spacing;
+	private double spacing;
 	private boolean hasPitch;
 	// when to start displaying this ParticleMatrix
 	private int startTime;
@@ -54,7 +54,7 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public ParticleMatrix(List<Layer> layers, int playerLeft, int playerUp, 
-			float spacing, int startTime, int repeatTime, int lockedIterations) {
+			double spacing, int startTime, int repeatTime, int lockedIterations) {
 		this.layers = layers;
 		this.playerLeft = playerLeft;
 		this.playerUp = playerUp;
@@ -93,11 +93,11 @@ public class ParticleMatrix implements PowderElement {
 		this.playerUp = playerUp;
 	}
 
-	public Float getSpacing() {
+	public Double getSpacing() {
 		return spacing;
 	}
 
-	public void setSpacing(float spacing) {
+	public void setSpacing(double spacing) {
 		this.spacing = spacing;
 	}
 
@@ -196,7 +196,7 @@ public class ParticleMatrix implements PowderElement {
 
 		for (Layer layer : getLayers()) {
 			// sets the position in relation to the layer's front/back position
-			float position = layer.getPosition();
+			double position = layer.getPosition();
 			newX = startX + (startARowX * position) + (moveBackWithPitchZ * position);
 			newY = startY + (moveBackWithPitchY * position);
 			newZ = startZ + (startARowZ * position) + (moveBackWithPitchX * position);
