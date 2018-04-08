@@ -8,9 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -41,9 +39,7 @@ public class PowderCommand implements CommandExecutor {
 					PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 						@Override
 						public void run() {
-
 							reload();
-
 						}
 					});
 				} else {
@@ -84,14 +80,10 @@ public class PowderCommand implements CommandExecutor {
 
 		// if the first argument given is not a Powder
 		if (powder == null) {
-
 			if (args[0].equals("help")) {
-
 				helpMessage(player, label);
 				return false;
-
 			} else if (args[0].equals("reload")) {
-
 				if (!(player.hasPermission("powder.reload"))) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "You don't have permission to do this.", label);
 					return false;
@@ -101,16 +93,11 @@ public class PowderCommand implements CommandExecutor {
 				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 					@Override
 					public void run() {
-
 						reload();
-
 					}
 				});
-
 				return true;
-
 			} else if (args[0].equals("*")) {
-
 				if (args.length < 2) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY 
 							+ "Use '* cancel' to cancel all current active Powders.", label);
@@ -126,10 +113,8 @@ public class PowderCommand implements CommandExecutor {
 							amount + " total)", label);
 					return true;
 				}
-
 				// list Powders, not by category
 			} else if (args[0].equals("list")) {
-
 				int page;
 				try {
 					page = Integer.valueOf(args[1]);
@@ -138,16 +123,13 @@ public class PowderCommand implements CommandExecutor {
 				}
 				listPowders(player, powderHandler.getPowders(), " list ", page, pageLength, label);
 				return false;
-
 				// list all categories
 			} else if (args[0].equals("categories")) {
-
 				if (!powderHandler.categoriesEnabled()) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Categories are not enabled", label);
 					listPowders(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
 					return false;
 				}
-
 				int page;
 				try {
 					page = Integer.valueOf(args[1]);
@@ -156,10 +138,8 @@ public class PowderCommand implements CommandExecutor {
 				}
 				listCategories(player, powderHandler.getCategories(), " categories ", page, pageLength, label);
 				return false;
-
 				// list Powders by category
 			} else if (args[0].equals("category")) {
-
 				if (!powderHandler.categoriesEnabled()) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Categories are not enabled", label);
 					listPowders(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
@@ -189,10 +169,8 @@ public class PowderCommand implements CommandExecutor {
 					listPowders(player, powderHandler.getPowdersFromCategory(correctCategory), " category " + category + " ", page, pageLength, label);
 				}
 				return true;
-
 				// search by Powder name
 			} else if (args[0].equals("search")) {
-
 				String search;
 				int page;
 				try {
@@ -209,10 +187,8 @@ public class PowderCommand implements CommandExecutor {
 				listPowders(player, powderHandler.getSimilarPowders(search), 
 						" search " + search + " ", page, pageLength, label);
 				return false;
-
 				// list by category/Powder if other criteria not met
 			} else {
-
 				if (powderHandler.categoriesEnabled()) {
 					if (powderHandler.getCategory(args[0]) != null) {
 						listPowders(player, powderHandler.getPowdersFromCategory(args[0]), " category " + args[0] + " ", 1, pageLength, label);
@@ -226,9 +202,7 @@ public class PowderCommand implements CommandExecutor {
 					listPowders(player, powderHandler.getSimilarPowders(args[0]), " list ", 1, pageLength, label);
 				}
 				return false;
-
 			}
-
 		}
 
 		// after this, first argument is clearly a Powder
@@ -260,8 +234,7 @@ public class PowderCommand implements CommandExecutor {
 		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 			// if multiple uses of one Powder are not allowed, cancel it
 			if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
-				boolean success = PowderUtil.cancelPowder(player.getUniqueId(), powder);
-				if (success) {
+				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder '" + powder.getName() + "' cancelled!", label);
 				} else {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED 
@@ -288,20 +261,9 @@ public class PowderCommand implements CommandExecutor {
 			}
 			return false;
 		}
-		// check again for good measure (why is this here)
-		if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
-			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-				if (powderTask.getPowder().equals(powder)) {
-					PowderUtil.sendPrefixMessage(player, 
-							ChatColor.RED + "'" + powder.getName() + "' is already active!", label);
-					return false;
-				}
-			}
-		}
 
 		// wait time between creating each Powder
 		int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
-
 		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
 			PowderUtil.sendPrefixMessage(player, 
@@ -321,8 +283,8 @@ public class PowderCommand implements CommandExecutor {
 
 		// spawn a Powder with a PowderTask
 		powder.spawn(player);
-
 		// if Powder has animation/dusts/sounds
+
 		if (powder.hasMovement()) {
 			TextComponent particleSentText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY 
 					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
@@ -385,14 +347,9 @@ public class PowderCommand implements CommandExecutor {
 	// notify players who have a running PowderTask of the reload
 	public static void notifyOfReload() {
 		if (!(PowderPlugin.getInstance().useStorage())) {
-			List<UUID> playersDoneAlready = new ArrayList<>();
-			for (PowderTask powderTask : PowderPlugin.getInstance().getPowderHandler().getPowderTasks()) {
-				if (playersDoneAlready.contains(powderTask.getPlayerUUID())) {
-					continue;
-				}
-				playersDoneAlready.add(powderTask.getPlayerUUID());
-				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(powderTask.getPlayerUUID()), ChatColor.GRAY 
-						+ "Your Powders were cancelled due to " + "a reload.", "powder");
+			for (Player player : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+				PowderUtil.sendPrefixMessage(player, ChatColor.GRAY 
+						+ "Your Powders were cancelled due to a reload.", "powder");
 			}
 		}
 	}

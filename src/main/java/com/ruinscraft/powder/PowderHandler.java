@@ -103,8 +103,10 @@ public class PowderHandler {
 	public Set<Player> getPowderTaskUsers(Powder powder) {
 		Set<Player> players = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getPowder().equals(powder)) {
-				players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+			if (powderTask.followsPlayer()) {
+				if (powderTask.getPowder().equals(powder)) {
+					players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+				}
 			}
 		}
 		return players;
@@ -114,7 +116,9 @@ public class PowderHandler {
 	public Set<Player> getAllPowderTaskUsers() {
 		Set<Player> players = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+			if (powderTask.followsPlayer()) {
+				players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+			}
 		}
 		return players;
 	}

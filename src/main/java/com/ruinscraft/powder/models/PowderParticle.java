@@ -19,40 +19,32 @@ public class PowderParticle {
 
 	public PowderParticle(String particleName, Particle particle, 
 			double xOff, double yOff, double zOff, Object data) {
-
 		this.particleName = particleName;
 		this.particle = particle;
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.zOff = zOff;
 		this.data = data;
-
 	}
 
 	public PowderParticle(String particleName, Particle particle,
 			double xOff, double yOff, double zOff) {
-
 		this.particleName = particleName;
 		this.particle = particle;
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.zOff = zOff;
-
 	}
 
 	public PowderParticle(String particleName, Particle particle) {
-
 		this.particleName = particleName;
 		this.particle = particle;
-
 	}
 
 	// null
 	public PowderParticle(Particle particle) {
-
 		this.particleName = null;
 		this.particle = particle;
-
 	}
 
 	public String getEnumName() {

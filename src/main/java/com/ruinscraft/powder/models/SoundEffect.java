@@ -26,7 +26,7 @@ public class SoundEffect implements PowderElement {
 
 	// iterations so far
 	private int iterations;
-	
+
 	public SoundEffect(SoundEffect soundEffect) {
 		this.sound = soundEffect.getSound();
 		this.volume = soundEffect.getVolume();
@@ -78,7 +78,7 @@ public class SoundEffect implements PowderElement {
 	public int getIterations() {
 		return iterations;
 	}
-	
+
 	public void iterate() {
 		iterations++;
 	}

@@ -245,7 +245,7 @@ public class PowderPlugin extends JavaPlugin {
 				}
 
 				String section = powders + s;
-				
+
 				// SoundEffect
 				// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
 				// 'sound;volume;pitch;startTime;repeatTime;iterations'
@@ -323,11 +323,11 @@ public class PowderPlugin extends JavaPlugin {
 
 				// [.1;true;2;12;10]
 				// [spacing;pitch;startTime;repeatTime;iterations]
-				
+
 				int left = 0;
 				int up = 0;
 				String matrixSection = powders + s + ".matrices";
-				
+
 				if (!(powderConfig.getConfigurationSection(matrixSection) == null)) {
 					for (String ss : powderConfig.getConfigurationSection(matrixSection).getKeys(false)) {
 						String eachSection = section + ".matrices." + ss;

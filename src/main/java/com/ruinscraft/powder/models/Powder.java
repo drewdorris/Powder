@@ -132,7 +132,7 @@ public class Powder {
 	public void addDust(Dust dust) {
 		dusts.add(dust);
 	}
-	
+
 	public List<PowderElement> getOriginalPowderElements() {
 		List<PowderElement> powderElements = new ArrayList<PowderElement>();
 		powderElements.addAll(getDusts());
@@ -140,7 +140,7 @@ public class Powder {
 		powderElements.addAll(getMatrices());
 		return powderElements;
 	}
-	
+
 	public List<PowderElement> getNewPowderElements() {
 		List<PowderElement> powderElements = new ArrayList<PowderElement>();
 		for (Dust dust : getDusts()) {
@@ -206,7 +206,7 @@ public class Powder {
 	public void setDefaultUp(int defaultUp) {
 		this.defaultUp = defaultUp;
 	}
-	
+
 	public boolean hasMovement() {
 		for (PowderElement element : getOriginalPowderElements()) {
 			if (!(element.getStartTime() == 0) || element.getLockedIterations() > 1) {

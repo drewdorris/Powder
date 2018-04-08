@@ -41,7 +41,7 @@ public class ParticleMatrix implements PowderElement {
 		this.lockedIterations = 1;
 		this.iterations = 0;
 	}
-	
+
 	public ParticleMatrix(ParticleMatrix particleMatrix) {
 		this.layers = particleMatrix.getLayers();
 		this.playerLeft = particleMatrix.getPlayerLeft();
@@ -137,7 +137,7 @@ public class ParticleMatrix implements PowderElement {
 	public int getIterations() {
 		return iterations;
 	}
-	
+
 	public void iterate() {
 		iterations++;
 	}
