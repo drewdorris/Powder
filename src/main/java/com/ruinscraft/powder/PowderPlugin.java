@@ -334,6 +334,8 @@ public class PowderPlugin extends JavaPlugin {
 						ParticleMatrix particleMatrix = new ParticleMatrix();
 						particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
 						particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
+						particleMatrix.setAddedPitch(powderConfig.getDouble(eachSection + ".addedPitch", 0));
+						particleMatrix.setAddedRotation(powderConfig.getDouble(eachSection + ".addedRotation", 0));
 						particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
 						particleMatrix.setRepeatTime(powderConfig.getInt(eachSection + ".repeatTime", 20));
 						particleMatrix.setLockedIterations(powderConfig.getInt(eachSection + ".iterations", 1));

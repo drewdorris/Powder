@@ -204,6 +204,10 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/" + label + " create <name> <Powder>", label);
 					return false;
 				}
+				if (!(powderHandler.getPowderTask(name) == null)) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "An active Powder with this name is already active!", label);
+					return false;
+				}
 				newPowder.spawn(player.getLocation(), name);
 			} else if (args[0].equals("remove")) {
 				if (!(player.hasPermission("powder.remove"))) {

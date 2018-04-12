@@ -21,6 +21,8 @@ public class ParticleMatrix implements PowderElement {
 	// spacing for this ParticleMatrix
 	private double spacing;
 	private boolean hasPitch;
+	private double addedPitch;
+	private double addedRotation;
 	// when to start displaying this ParticleMatrix
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -48,6 +50,8 @@ public class ParticleMatrix implements PowderElement {
 		this.playerUp = particleMatrix.getPlayerUp();
 		this.spacing = particleMatrix.getSpacing();
 		this.hasPitch = particleMatrix.hasPitch();
+		this.addedPitch = particleMatrix.getAddedPitch();
+		this.addedRotation = particleMatrix.getAddedRotation();
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
@@ -109,6 +113,22 @@ public class ParticleMatrix implements PowderElement {
 	public void setIfPitch(boolean hasPitch) {
 		this.hasPitch = hasPitch;
 	}
+	
+	public double getAddedPitch() {
+		return addedPitch;
+	}
+	
+	public void setAddedPitch(double addedPitch) {
+		this.addedPitch = addedPitch;
+	}
+	
+	public double getAddedRotation() {
+		return addedRotation;
+	}
+	
+	public void setAddedRotation(double addedRotation) {
+		this.addedRotation = addedRotation;
+	}
 
 	public int getStartTime() {
 		return startTime;
@@ -143,31 +163,30 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	// creates this ParticleMatrix at the designated location
-	public void create(Location location) {
+	public void create(final Location location) {
 		// get rotation (left/right) and pitch (up/down) of the player
-		final double playerRotation = ((location.getYaw()) % 360) * (Math.PI / 180);
-		final double playerPitch;
-
-		// distance between each row up/down
-		final double distanceBetweenRowsY;
-		// this would not do anything if the Powder has pitch movement disabled, since it's directly up/down
-		final double distanceBetweenRowsXZ;
+		final double playerRotation = ((location.getYaw() + getAddedRotation()) % 360) * (Math.PI / 180);
 
 		// if the Powder moves up/down with the head, set some values that will allow that to happen
 		// else, make them do nothing significant
+		float initialPitch;
 		if (hasPitch()) {
-			playerPitch = (location.getPitch() * (Math.PI / 180));
-			distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
-			distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);
+			initialPitch = location.getPitch();
 		} else {
-			playerPitch = 0;
-			distanceBetweenRowsY = spacing;
-			distanceBetweenRowsXZ = 0;
+			initialPitch = 0;
 		}
+		initialPitch = initialPitch + (float) getAddedPitch();
+		
+		final double playerPitch = (initialPitch * (Math.PI / 180));
+
+		// distance between each row up/down
+		final double distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
+		// this would not do anything if the Powder has pitch movement disabled, since it's directly up/down
+		final double distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);
 
 		// where to start in relation to the player/location
-		int left = getPlayerLeft();
-		int up = getPlayerUp();
+		final int left = getPlayerLeft();
+		final int up = getPlayerUp();
 
 		// amount to add between each individual particle
 		final double amountToAddX = PowderUtil.getDirLengthX(playerRotation, spacing);
