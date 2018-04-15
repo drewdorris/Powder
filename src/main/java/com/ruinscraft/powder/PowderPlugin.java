@@ -324,8 +324,6 @@ public class PowderPlugin extends JavaPlugin {
 				// [.1;true;2;12;10]
 				// [spacing;pitch;startTime;repeatTime;iterations]
 
-				int left = 0;
-				int up = 0;
 				String matrixSection = powders + s + ".matrices";
 
 				if (!(powderConfig.getConfigurationSection(matrixSection) == null)) {
@@ -339,6 +337,8 @@ public class PowderPlugin extends JavaPlugin {
 						particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
 						particleMatrix.setRepeatTime(powderConfig.getInt(eachSection + ".repeatTime", 20));
 						particleMatrix.setLockedIterations(powderConfig.getInt(eachSection + ".iterations", 1));
+						int left = 0;
+						int up = 0;
 						for (String sss : powderConfig.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
 							String eachEachSection = eachSection + ".layers." + sss;
 							Layer layer = new Layer();
