@@ -1,5 +1,6 @@
 package com.ruinscraft.powder.models;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,44 +20,94 @@ public class PowderTask {
 	// Location associated with this PowderTask, if the player is null
 	private Location location;
 	// Powder associated with this PowderTask
-	private Powder powder;
+	private List<Powder> powders;
 
 	// stores each active element with the tick it was last created (or first creation)
 	private Map<PowderElement, Integer> activeElements;
 
+	public PowderTask(UUID player, List<Powder> powders) {
+		this.name = null;
+		this.player = player;
+		this.location = null;
+		activeElements = new HashMap<PowderElement, Integer>();
+		this.powders = powders;
+	}
+	
 	public PowderTask(UUID player, Powder powder) {
 		this.name = null;
 		this.player = player;
 		this.location = null;
 		activeElements = new HashMap<PowderElement, Integer>();
-		this.powder = powder;
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
 	}
 
+	public PowderTask(Location location, List<Powder> powders) {
+		this.name = null;
+		this.player = null;
+		this.location = location;
+		activeElements = new HashMap<PowderElement, Integer>();
+		this.powders = powders;
+	}
+	
 	public PowderTask(Location location, Powder powder) {
 		this.name = null;
 		this.player = null;
 		this.location = location;
 		activeElements = new HashMap<PowderElement, Integer>();
-		this.powder = powder;
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
 	}
 
+
+	public PowderTask(String name, UUID player, List<Powder> powders) {
+		this.name = name;
+		this.player = player;
+		this.location = null;
+		activeElements = new HashMap<PowderElement, Integer>();
+		this.powders = powders;
+	}
+	
+	public PowderTask(String name, UUID player, Powder powder) {
+		this.name = name;
+		this.player = player;
+		this.location = null;
+		activeElements = new HashMap<PowderElement, Integer>();
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
+	}
+
+	public PowderTask(Location location, List<Powder> powders, String name) {
+		this.name = name;
+		this.player = null;
+		this.location = location;
+		activeElements = new HashMap<PowderElement, Integer>();
+		this.powders = powders;
+	}
+	
 	public PowderTask(Location location, Powder powder, String name) {
 		this.name = name;
 		this.player = null;
 		this.location = location;
 		activeElements = new HashMap<PowderElement, Integer>();
-		this.powder = powder;
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
 	}
 
-	public PowderTask(UUID player, Powder powder, Map<PowderElement, Integer> elements) {
+	public PowderTask(UUID player, List<Powder> powders, Map<PowderElement, Integer> elements) {
+		this.name = null;
 		this.player = player;
 		this.location = null;
 		activeElements = elements;
-		this.powder = powder;
+		this.powders = powders;
 	}
-	
+
 	public String getName() {
 		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public UUID getPlayerUUID() {
@@ -79,8 +130,8 @@ public class PowderTask {
 		return player != null;
 	}
 
-	public Powder getPowder() {
-		return powder;
+	public List<Powder> getPowders() {
+		return powders;
 	}
 
 	public Map<PowderElement, Integer> getActiveElements() {
@@ -99,6 +150,14 @@ public class PowderTask {
 
 	public void removeElement(PowderElement element) {
 		activeElements.remove(element);
+	}
+	
+	public void removeElements(Powder powder) {
+		for (PowderElement element : activeElements.keySet()) { 
+			if (powder.getOriginalPowderElements().equals(element)) {
+				activeElements.remove(element);
+			}
+		}
 	}
 
 }

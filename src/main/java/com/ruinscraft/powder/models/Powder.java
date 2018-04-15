@@ -224,6 +224,7 @@ public class Powder {
 	// spawns a given Powder for the given user
 	public void spawn(final Player player) {
 		PowderTask powderTask = new PowderTask(player.getUniqueId(), this);
+		powderTask.setName(player.getName() + "-" + PowderUtil.generateID(6));
 		spawn(powderTask);
 		PowderUtil.savePowdersForPlayer(player.getUniqueId());
 	}

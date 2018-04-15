@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -31,6 +32,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 public class PowderUtil {
 
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
+	public static Random random = new Random();
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
@@ -38,6 +40,19 @@ public class PowderUtil {
 
 	public static Set<UUID> getOnlineUUIDs() {
 		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
+	}
+	
+	public static Random getRandom() {
+		return random;
+	}
+	
+	public static String generateID(int length) {
+		StringBuilder id = new StringBuilder("");
+		for (int i = 0; i < length; i++) {
+			byte randomValue = (byte) ((random.nextInt(26) + 65) + (32 * random.nextInt(2)));
+			id.append(Character.toString((char) randomValue));
+		}
+		return id.toString();
 	}
 
 	// sends a message with the given prefix in config.yml
@@ -195,8 +210,8 @@ public class PowderUtil {
 		List<String> enabledPowders = new ArrayList<>();
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
-			if (powderTask.getPowder().hasMovement()) {
-				enabledPowders.add(powderTask.getPowder().getName());
+			if (powderTask.getPowders().get(0).hasMovement()) {
+				enabledPowders.add(powderTask.getPowders().get(0).getName());
 			}
 		}
 

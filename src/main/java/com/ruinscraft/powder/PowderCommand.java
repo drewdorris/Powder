@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 import java.util.Random;
+import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -16,6 +17,7 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
+import com.google.common.collect.Iterables;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
@@ -125,6 +127,59 @@ public class PowderCommand implements CommandExecutor {
 				listPowders(player, powderHandler.getPowders(), " list ", page, pageLength, label);
 				return false;
 				// list all categories
+			} else if (args[0].equals("cancel")) {
+				String powderTaskName;
+				try {
+					powderTaskName = args[1];
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Please specify a Powder.", label);
+					return false;
+				}
+				if (powderHandler.getPowder(powderTaskName) != null) {
+					Set<PowderTask> powderTasks = powderHandler.getPowderTasks(player.getUniqueId(), powderHandler.getPowder(powderTaskName));
+					if (powderTasks.isEmpty()) {
+						PowderUtil.sendPrefixMessage(player, ChatColor.RED + "There are none of this Powder currently active.", label);
+						return false;
+					} else {
+						powderTaskName = Iterables.get(powderTasks, 0).getName();
+					}
+				}
+				PowderTask powderTask = powderHandler.getPowderTask(powderTaskName);
+				if (powderTask == null) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Unknown Powder specified.", label);
+					return false;
+				}
+				if (powderHandler.removePowderTask(powderTask)) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Successfully cancelled '" + powderTaskName + "'.", label);
+				} else {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Could not cancel this Powder.", label);
+				}
+				return false;
+				// list all categories
+			} else if (args[0].equals("active")) {
+				PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Active Powders:", label);
+				int page;
+				try {
+					page = Integer.valueOf(args[1]);
+				} catch (Exception e) {
+					page = 1;
+				}
+				List<TextComponent> textComponents = new ArrayList<TextComponent>();
+				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
+					TextComponent textComponent = new TextComponent(powderTask.getPowders().get(0).getName());
+					textComponent.setColor(net.md_5.bungee.api.ChatColor.GRAY);
+					textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+							new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powder: " 
+									+ powderTask.getPowders().get(0).getName() + 
+									net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this Powder")
+									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+					textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+									"/" + label + " cancel " + powderTask.getName() ) );
+					textComponents.add(textComponent);
+				}
+				paginate(player, textComponents, " active " + String.valueOf(page), page, 7, label);
+				return false;
+				// list Powders by category
 			} else if (args[0].equals("categories")) {
 				if (!powderHandler.categoriesEnabled()) {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Categories are not enabled", label);
@@ -188,7 +243,6 @@ public class PowderCommand implements CommandExecutor {
 				listPowders(player, powderHandler.getSimilarPowders(search), 
 						" search " + search + " ", page, pageLength, label);
 				return false;
-				// list by category/Powder if other criteria not met
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {
 					return false;
@@ -271,27 +325,37 @@ public class PowderCommand implements CommandExecutor {
 					TextComponent text = new TextComponent();
 					text.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 					String powderTaskName = powderTask.getName();
-					boolean usingName = false;
-					String playerName = null;
-					if (powderTaskName == null) {
+					String playerName;
+					if (powderTask.getPlayerUUID() == null) {
+						playerName = null;
+					} else {
 						playerName = Bukkit.getPlayer(powderTask.getPlayerUUID()).getName();
-						powderTaskName = ChatColor.ITALIC + playerName + "'s Powder";
-						usingName = true;
 					}
-					text.addExtra(ChatColor.RED + powderTaskName + ChatColor.GRAY + " - " + nearby.get(powderTask) + "m");
+					text.addExtra(ChatColor.RED + powderTaskName + ChatColor.GRAY + " " + nearby.get(powderTask) + "m");
 					if (player.hasPermission("powder.remove")) {
-						if (usingName) {
+						if (powderTask.getPlayerUUID() != null) {
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-									new ComponentBuilder("Click to cancel all of " + playerName + "'s active Powders")
-									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powder: " 
+											+ powderTask.getPowders().get(0).getName() + 
+											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel " + playerName + "'s Powder")
+											.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-									"/" + label + " remove user " + playerName ) );
+											"/" + label + " remove " + powderTaskName ) );
 						} else {
+							List<Powder> taskPowders = powderTask.getPowders();
+							StringBuilder stringBuilder = new StringBuilder();
+							for (Powder taskPowder : taskPowders) {
+								stringBuilder.append(taskPowder.getName());
+								if (!(taskPowders.get(taskPowders.size() - 1) == taskPowder)) {
+									stringBuilder.append(", ");
+								}
+							}
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-									new ComponentBuilder("Click to cancel this active Powder")
-									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powders: " + stringBuilder.toString() + 
+											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this active Powder")
+											.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-									"/" + label + " remove " + powderTaskName ) );
+											"/" + label + " remove " + powderTaskName ) );
 						}
 					}
 					nearbyText.add(text);
@@ -361,12 +425,12 @@ public class PowderCommand implements CommandExecutor {
 					ChatColor.RED + "You already have " + maxSize + " Powders active!", label);
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
-						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getPowder().getName());
+						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getPowders().get(0).getName());
 				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powderTask.getPowder().getName() + "' is currently active. Click to cancel")
+						new ComponentBuilder("'" + powderTask.getPowders().get(0).getName() + "' is currently active. Click to cancel")
 						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
 				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powderTask.getPowder().getName() + " cancel" ) );
+						"/" + label + " " + powderTask.getPowders().get(0).getName() + " cancel" ) );
 				player.spigot().sendMessage(runningTaskText);
 			}
 			return false;

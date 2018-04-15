@@ -184,12 +184,12 @@ public class ParticleMatrix implements PowderElement {
 		double upwardPitch = ((location.clone().getPitch() + getAddedPitch() + 180) * Math.PI) / 180;
 		double forwardYaw = ((location.clone().getYaw() + getAddedRotation() + 90) * Math.PI) / 180;
 		double sidewaysYaw = ((location.clone().getYaw() + getAddedRotation() + 180) * Math.PI) / 180;
-		double upwardsTilt = ((getAddedTilt() + 90) * Math.PI) / 180;
-		double sidewaysTilt = ((getAddedTilt()) * Math.PI) / 180;
+		double upwardsTilt = ((getAddedTilt() + 180) * Math.PI) / 180;
+		double sidewaysTilt = ((getAddedTilt() + 90) * Math.PI) / 180;
 		final Vector sideToSideVector = (new Vector(Math.sin(forwardPitch) * Math.cos(sidewaysYaw), 
 				Math.cos(sidewaysTilt) * Math.sin(forwardPitch), Math.sin(forwardPitch) * Math.sin(sidewaysYaw)).normalize()).multiply(spacing);
 		final Vector upAndDownVector = (new Vector(Math.sin(upwardPitch) * Math.cos(forwardYaw), 
-				Math.cos(upwardPitch), Math.sin(upwardPitch) * Math.sin(forwardYaw) * Math.sin(upwardsTilt)).normalize()).multiply(spacing);
+				Math.cos(upwardPitch), Math.sin(upwardPitch) * Math.sin(forwardYaw))).normalize().multiply(spacing);
 		final Vector forwardVector = (new Vector(Math.sin(forwardPitch) * Math.cos(forwardYaw), 
 				Math.cos(forwardPitch), Math.sin(forwardPitch) * Math.sin(forwardYaw)).normalize()).multiply(spacing);
 		
