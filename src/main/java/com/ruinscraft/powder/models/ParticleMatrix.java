@@ -19,9 +19,14 @@ public class ParticleMatrix implements PowderElement {
 	private int playerUp;
 	// spacing for this ParticleMatrix
 	private double spacing;
+	// does the height of the player's eyes affect the direction of this ParticleMatrix?
 	private boolean hasPitch;
+	// add values to the pitch
 	private double addedPitch;
+	// add values to the rotation
 	private double addedRotation;
+	// add values to the tilt
+	private double addedTilt;
 	// when to start displaying this ParticleMatrix
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -51,6 +56,7 @@ public class ParticleMatrix implements PowderElement {
 		this.hasPitch = particleMatrix.hasPitch();
 		this.addedPitch = particleMatrix.getAddedPitch();
 		this.addedRotation = particleMatrix.getAddedRotation();
+		this.addedTilt = particleMatrix.getAddedTilt();
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
@@ -127,6 +133,14 @@ public class ParticleMatrix implements PowderElement {
 	
 	public void setAddedRotation(double addedRotation) {
 		this.addedRotation = addedRotation;
+	}
+	
+	public double getAddedTilt() {
+		return addedTilt;
+	}
+	
+	public void setAddedTilt(double addedTilt) {
+		this.addedTilt = addedTilt;
 	}
 
 	public int getStartTime() {
