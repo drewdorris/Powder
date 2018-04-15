@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.util.Vector;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class ParticleMatrix implements PowderElement {
@@ -161,100 +163,51 @@ public class ParticleMatrix implements PowderElement {
 	public void iterate() {
 		iterations++;
 	}
-
+	
 	// creates this ParticleMatrix at the designated location
 	public void create(final Location location) {
-		// get rotation (left/right) and pitch (up/down) of the player
-		final double playerRotation = ((location.getYaw() + getAddedRotation()) % 360) * (Math.PI / 180);
-
-		// if the Powder moves up/down with the head, set some values that will allow that to happen
-		// else, make them do nothing significant
-		float initialPitch;
-		if (hasPitch()) {
-			initialPitch = location.getPitch();
-		} else {
-			initialPitch = 0;
-		}
-		initialPitch = initialPitch + (float) getAddedPitch();
+		double forwardPitch = ((location.clone().getPitch() + 90) * Math.PI) / 180;
+		double upwardPitch = ((location.clone().getPitch() + 180) * Math.PI) / 180;
+		double forwardYaw = ((location.clone().getYaw() + 90) * Math.PI) / 180;
+		double sidewaysYaw = ((location.clone().getYaw() + 180) * Math.PI) / 180;
+		final Vector sideToSideVector = (new Vector(Math.sin(forwardPitch) * Math.cos(sidewaysYaw), 
+				0, Math.sin(forwardPitch) * Math.sin(sidewaysYaw)).normalize()).multiply(spacing);
+		final Vector upAndDownVector = (new Vector(Math.sin(upwardPitch) * Math.cos(forwardYaw), 
+				Math.cos(upwardPitch), Math.sin(upwardPitch) * Math.sin(forwardYaw)).normalize()).multiply(spacing);
+		final Vector forwardVector = (new Vector(Math.sin(forwardPitch) * Math.cos(forwardYaw), 
+				Math.cos(forwardPitch), Math.sin(forwardPitch) * Math.sin(forwardYaw)).normalize()).multiply(spacing);
 		
-		final double playerPitch = (initialPitch * (Math.PI / 180));
-
-		// distance between each row up/down
-		final double distanceBetweenRowsY = ((Math.sin((Math.PI / 2) - playerPitch)) * spacing);
-		// this would not do anything if the Powder has pitch movement disabled, since it's directly up/down
-		final double distanceBetweenRowsXZ = ((Math.cos((Math.PI / 2) + playerPitch)) * spacing);
-
-		// where to start in relation to the player/location
-		final int left = getPlayerLeft();
-		final int up = getPlayerUp();
-
-		// amount to add between each individual particle
-		final double amountToAddX = PowderUtil.getDirLengthX(playerRotation, spacing);
-		final double amountToAddZ = PowderUtil.getDirLengthZ(playerRotation, spacing);
-		// how far front/back the layer is
-		final double startARowX = PowderUtil.getDirLengthX(playerRotation + (Math.PI / 2), spacing);
-		final double startARowZ = PowderUtil.getDirLengthZ(playerRotation + (Math.PI / 2), spacing);
-		// if pitch is enabled, this will adjust the x & z for each row, since the Powder isn't top-down
-		final double moveWithPitchX = PowderUtil.getDirLengthX(playerRotation - (Math.PI / 2), distanceBetweenRowsXZ);
-		final double moveWithPitchZ = PowderUtil.getDirLengthZ(playerRotation - (Math.PI / 2), distanceBetweenRowsXZ);
-		// don't remember what this does
-		final double moveBackWithPitchX = PowderUtil.getDirLengthX(playerRotation, distanceBetweenRowsXZ);
-		final double moveBackWithPitchY = (Math.sin(0 - playerPitch) * spacing);
-		final double moveBackWithPitchZ = PowderUtil.getDirLengthZ(playerRotation, distanceBetweenRowsXZ);
-
-		// starts the Powder in relation to the given left & up
-		final double startX = location.getX() - 
-				(amountToAddX * left) + (moveWithPitchX * up);
-		final double startY = location.getY() + (distanceBetweenRowsY * up);
-		final double startZ = location.getZ() - 
-				(amountToAddZ * left) + (moveWithPitchZ * up);
-
-		// start off
-		double newX = startX;
-		double newY = startY;
-		double newZ = startZ;
-
 		for (Layer layer : getLayers()) {
-			// sets the position in relation to the layer's front/back position
-			double position = layer.getPosition();
-			newX = startX + (startARowX * position) + (moveBackWithPitchZ * position);
-			newY = startY + (moveBackWithPitchY * position);
-			newZ = startZ + (startARowZ * position) + (moveBackWithPitchX * position);
-
-			// rowsDownSoFar is how many rows that have been processed
-			int rowsDownSoFar = 0;
-			for (List<PowderParticle> row : layer.getRows()) {
-				for (PowderParticle powderParticle : row) {
-					// add the amount per particle given
-					newX = newX + amountToAddX;
-					newZ = newZ + amountToAddZ;
-
+			Location startingLocation = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
+					.add(sideToSideVector.clone().multiply(getPlayerLeft()))
+					.add(forwardVector.clone().multiply(layer.getPosition()));
+			for (List<PowderParticle> powderParticles : layer.getRows()) {
+				int i = 0;
+				for (PowderParticle powderParticle : powderParticles) {
+					i--;
 					if (powderParticle.getParticle() == null) {
+						startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
 						continue;
 					}
-
 					// spawn the particle
 					if (powderParticle.getData() == null) {
 						if (powderParticle.getXOff() == 0) {
-							location.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
+							location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 1, 
 									powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
 									powderParticle.getZOff() / 255, 1);
 							continue;
 						}
-						location.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 0, 
+						location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 0, 
 								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
 								powderParticle.getZOff() / 255, 1);
 					} else {
-						location.getWorld().spawnParticle(powderParticle.getParticle(), newX, newY, newZ, 1, 
+						location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 1, 
 								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
 								powderParticle.getZOff() / 255, (double) powderParticle.getData());
 					}
+					startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
 				}
-				// move the row down for the next row
-				rowsDownSoFar++;
-				newX = startX + (startARowX * position) - (moveWithPitchX * rowsDownSoFar);
-				newY = newY - distanceBetweenRowsY;
-				newZ = startZ + (startARowZ * position) - (moveWithPitchZ * rowsDownSoFar);
+				startingLocation = startingLocation.clone().subtract(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());
 			}
 		}
 	}
