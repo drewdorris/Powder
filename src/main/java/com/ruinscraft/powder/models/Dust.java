@@ -78,6 +78,10 @@ public class Dust implements PowderElement {
 	public void iterate() {
 		iterations++;
 	}
+	
+	public Dust clone() {
+		return new Dust(this);
+	}
 
 	// creates this Dust at the designated location
 	public void create(Location location) {

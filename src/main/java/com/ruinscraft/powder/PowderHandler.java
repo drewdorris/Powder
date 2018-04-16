@@ -96,7 +96,7 @@ public class PowderHandler {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : getPowderTasks(uuid)) {
 			if (powderTask.followsPlayer()) {
-				for (Powder taskPowder : powderTask.getPowders()) {
+				for (Powder taskPowder : powderTask.getPowders().keySet()) {
 					if (taskPowder.equals(powder)) {
 						playerPowderTasks.add(powderTask);
 						break;
@@ -112,8 +112,10 @@ public class PowderHandler {
 		Set<Player> players = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
 			if (powderTask.followsPlayer()) {
-				if (powderTask.getPowders().get(0).equals(powder)) {
-					players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+				for (Powder otherPowder : powderTask.getPowders().keySet()) {
+					if (otherPowder.equals(powder)) {
+						players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+					}
 				}
 			}
 		}
@@ -146,9 +148,16 @@ public class PowderHandler {
 	public Map<PowderTask, Integer> getNearbyPowderTasks(Location location, int range) {
 		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<PowderTask, Integer>();
 		for (PowderTask powderTask : powderTasks) {
-			Location taskLocation = powderTask.getCurrentLocation();
-			int distance = (int) location.distance(taskLocation);
-			nearbyPowderTasks.put(powderTask, distance);
+			int taskRange = Integer.MAX_VALUE;
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				int distance = (int) location.distance(powderTask.getPowders().get(powder));
+				if (distance < taskRange) {
+					taskRange = distance;
+				}
+			}
+			if (taskRange < range) {
+				nearbyPowderTasks.put(powderTask, taskRange);
+			}
 		}
 		return nearbyPowderTasks;
 	}
@@ -160,9 +169,11 @@ public class PowderHandler {
 
 	// adds a PowderTask
 	public void addPowderTask(PowderTask powderTask) {
-		for (PowderElement element : powderTask.getActiveElements().keySet()) {
-			if (element.getLockedIterations() == 0) {
-				element.setLockedIterations(Integer.MAX_VALUE);
+		for (Powder powder : powderTask.getPowders().keySet()) {
+			for (PowderElement powderElement : powder.getPowderElements().keySet()) {
+				if (powderElement.getLockedIterations() == 0) {
+					powderElement.setLockedIterations(Integer.MAX_VALUE);
+				}
 			}
 		}
 		powderTasks.add(powderTask);

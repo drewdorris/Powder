@@ -82,6 +82,10 @@ public class SoundEffect implements PowderElement {
 	public void iterate() {
 		iterations++;
 	}
+	
+	public SoundEffect clone() {
+		return new SoundEffect(this);
+	}
 
 	// creates this SoundEffect at the designated location
 	public void create(Location location) {

@@ -166,12 +166,16 @@ public class PowderCommand implements CommandExecutor {
 				}
 				List<TextComponent> textComponents = new ArrayList<TextComponent>();
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-					TextComponent textComponent = new TextComponent(powderTask.getPowders().get(0).getName());
+					String powderName = "null";
+					for (Powder taskPowder : powderTask.getPowders().keySet()) {
+						powderName = taskPowder.getName();
+						break;
+					}
+					TextComponent textComponent = new TextComponent(powderName);
 					textComponent.setColor(net.md_5.bungee.api.ChatColor.GRAY);
 					textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 							new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powder: " 
-									+ powderTask.getPowders().get(0).getName() + 
-									net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this Powder")
+									+ powderName + net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this Powder")
 									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 					textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 									"/" + label + " cancel " + powderTask.getName() ) );
@@ -262,7 +266,82 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "An active Powder with this name is already active!", label);
 					return false;
 				}
+				if (newPowder == null) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Unknown Powder '" + powderName + "'.", label);
+					return false;
+				}
 				newPowder.spawn(player.getLocation(), name);
+				PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + 
+						"Successfully created '" + name + "'.", label);
+				return true;
+			} else if (args[0].equals("addto")) {
+				if (!(player.hasPermission("powder.addto"))) {
+					return false;
+				}
+				String name;
+				String powderName;
+				Powder newPowder;
+				try {
+					name = args[1];
+					powderName = args[2];
+					newPowder = powderHandler.getPowder(powderName);
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/" + label + " addto <name> <Powder>", label);
+					return false;
+				}
+				if ((powderHandler.getPowderTask(name) == null)) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "The active Powder '" + name + "' does not exist.", label);
+					return false;
+				}
+				if (newPowder == null) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Unknown Powder '" + powderName + "'.", label);
+					return false;
+				}
+				PowderTask powderTask = powderHandler.getPowderTask(name);
+				if (powderTask.followsPlayer()) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Cannot edit an active Powder that follows a player!", label);
+					return false;
+				}
+				if (powderTask.addPowder(newPowder, player.getLocation())) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + 
+							"Added Powder '" + powderName + "' to '" + name + "'.", label);
+				}
+				return true;
+			} else if (args[0].equals("removefrom")) {
+				if (!(player.hasPermission("powder.addto"))) {
+					return false;
+				}
+				String name;
+				String powderName;
+				Powder newPowder;
+				try {
+					name = args[1];
+					powderName = args[2];
+					newPowder = powderHandler.getPowder(powderName);
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "/" + label + " removefrom <name> <Powder>", label);
+					return false;
+				}
+				if ((powderHandler.getPowderTask(name) == null)) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "The active Powder '" + name + "' does not exist.", label);
+					return false;
+				}
+				if (newPowder == null) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Unknown Powder '" + powderName + "'.", label);
+					return false;
+				}
+				PowderTask powderTask = powderHandler.getPowderTask(name);
+				if (powderTask.followsPlayer()) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Cannot edit an active Powder that follows a player!", label);
+					return false;
+				}
+				if (powderTask.removePowder(newPowder)) {
+					PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + 
+							"Removed Powder '" + powderName + "' from '" + name + "'.", label);
+				} else {
+					PowderUtil.sendPrefixMessage(player, ChatColor.RED + "Could not remove this Powder from '" + name + "'.", label);
+				}
+				return true;
 			} else if (args[0].equals("remove")) {
 				if (!(player.hasPermission("powder.remove"))) {
 					return false;
@@ -333,23 +412,22 @@ public class PowderCommand implements CommandExecutor {
 					}
 					text.addExtra(ChatColor.RED + powderTaskName + ChatColor.GRAY + " " + nearby.get(powderTask) + "m");
 					if (player.hasPermission("powder.remove")) {
+						Set<Powder> taskPowders = powderTask.getPowders().keySet();
+						StringBuilder stringBuilder = new StringBuilder();
+						for (Powder taskPowder : taskPowders) {
+							stringBuilder.append(taskPowder.getName());
+							if (!(Iterables.get(taskPowders, taskPowders.size() - 1) == taskPowder)) {
+								stringBuilder.append(", ");
+							}
+						}
 						if (powderTask.getPlayerUUID() != null) {
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powder: " 
-											+ powderTask.getPowders().get(0).getName() + 
+									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powders: " + stringBuilder.toString() + 
 											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel " + playerName + "'s Powder")
 											.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 											"/" + label + " remove " + powderTaskName ) );
 						} else {
-							List<Powder> taskPowders = powderTask.getPowders();
-							StringBuilder stringBuilder = new StringBuilder();
-							for (Powder taskPowder : taskPowders) {
-								stringBuilder.append(taskPowder.getName());
-								if (!(taskPowders.get(taskPowders.size() - 1) == taskPowder)) {
-									stringBuilder.append(", ");
-								}
-							}
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powders: " + stringBuilder.toString() + 
 											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this active Powder")
@@ -424,13 +502,17 @@ public class PowderCommand implements CommandExecutor {
 			PowderUtil.sendPrefixMessage(player, 
 					ChatColor.RED + "You already have " + maxSize + " Powders active!", label);
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
+				String powderName = "null";
+				for (Powder taskPowder : powderTask.getPowders().keySet()) {
+					powderName = taskPowder.getName();
+				}
 				TextComponent runningTaskText = new TextComponent(net.md_5.bungee.api.ChatColor.GRAY + "| " 
-						+ net.md_5.bungee.api.ChatColor.ITALIC + powderTask.getPowders().get(0).getName());
+						+ net.md_5.bungee.api.ChatColor.ITALIC + powderName);
 				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powderTask.getPowders().get(0).getName() + "' is currently active. Click to cancel")
+						new ComponentBuilder("'" + powderName + "' is currently active. Click to cancel")
 						.color(net.md_5.bungee.api.ChatColor.YELLOW).create() ) );
 				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powderTask.getPowders().get(0).getName() + " cancel" ) );
+						"/" + label + " " + powderName + " cancel" ) );
 				player.spigot().sendMessage(runningTaskText);
 			}
 			return false;
@@ -530,6 +612,7 @@ public class PowderCommand implements CommandExecutor {
 
 	// help message
 	public static void helpMessage(Player player, String label) {
+		
 		PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder Help", label);
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> " + ChatColor.GRAY + "- Use a Powder"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> cancel " + ChatColor.GRAY + "- Cancel a Powder"); 

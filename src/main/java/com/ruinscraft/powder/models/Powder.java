@@ -1,7 +1,9 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Location;
@@ -12,20 +14,16 @@ import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
-public class Powder {
+public class Powder implements Cloneable {
 
 	// name of the Powder
 	private String name;
 	// list of categories the Powder is in
 	private List<String> categories;
 	// the default spacing for the Powder
-	private double spacing;
-	// the list of particle matrices for the Powder
-	private List<ParticleMatrix> matrices;
-	// list of SoundEffects for the Powder
-	private List<SoundEffect> soundEffects;
-	// list of Dusts for the Powder
-	private List<Dust> dusts;
+	private double defaultSpacing;
+	// list of PowderElements (Dusts, SoundEffects, ParticleMatrices)
+	private Map<PowderElement, Integer> powderElements;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
 	private List<PowderParticle> powderParticles;
 	// is the Powder hidden from lists if you don't have permission for it?
@@ -38,39 +36,19 @@ public class Powder {
 	// initialize lists
 	public Powder() {
 		this.categories = new ArrayList<String>();
-		this.matrices = new ArrayList<ParticleMatrix>();
-		this.soundEffects = new ArrayList<SoundEffect>();
-		this.dusts = new ArrayList<Dust>();
+		this.powderElements = new HashMap<PowderElement, Integer>();
 		this.powderParticles = new ArrayList<PowderParticle>();
 	}
-
-	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
-			List<SoundEffect> soundEffects, List<Dust> dusts, List<PowderParticle> powderParticles, 
-			boolean hidden, int defaultLeft, int defaultUp) {
-		this.name = name;
-		this.categories = categories;
-		this.spacing = spacing;
-		this.matrices = matrices;
-		this.soundEffects = soundEffects;
-		this.dusts = dusts;
-		this.powderParticles = powderParticles;
-		this.hidden = hidden;
-		this.defaultLeft = defaultLeft;
-		this.defaultUp = defaultUp;
-	}
-
-	public Powder(String name, List<String> categories, float spacing, List<ParticleMatrix> matrices, 
-			boolean hidden, int defaultLeft, int defaultUp) {
-		this.name = name;
-		this.categories = categories;
-		this.spacing = spacing;
-		this.matrices = matrices;
-		this.soundEffects = new ArrayList<SoundEffect>();
-		this.dusts = new ArrayList<Dust>();
-		this.powderParticles = new ArrayList<PowderParticle>();
-		this.hidden = hidden;
-		this.defaultLeft = defaultLeft;
-		this.defaultUp = defaultUp;
+	
+	public Powder(Powder powder) {
+		name = powder.getName();
+		categories = powder.getCategories();
+		defaultLeft = powder.getDefaultLeft();
+		defaultUp = powder.getDefaultUp();
+		defaultSpacing = powder.getDefaultSpacing();
+		powderElements = powder.getClonedPowderElements();
+		powderParticles = powder.getPowderParticles();
+		hidden = powder.isHidden();
 	}
 
 	public String getName() {
@@ -90,72 +68,40 @@ public class Powder {
 	}
 
 	public double getDefaultSpacing() {
-		return spacing;
+		return defaultSpacing;
 	}
 
-	public void setDefaultSpacing(float spacing) {
-		this.spacing = spacing;
+	public void setDefaultSpacing(double defaultSpacing) {
+		this.defaultSpacing = defaultSpacing;
 	}
 
-	public List<ParticleMatrix> getMatrices() {
-		return matrices;
-	}
-
-	public void setMatrices(List<ParticleMatrix> particleMatrices) {
-		this.matrices = particleMatrices;
-	}
-
-	public void addMatrix(ParticleMatrix particleMatrix) {
-		matrices.add(particleMatrix);
-	}
-
-	public List<SoundEffect> getSoundEffects() {
-		return soundEffects;
-	}
-
-	public void setSoundEffects(List<SoundEffect> soundEffects) {
-		this.soundEffects = soundEffects;
-	}
-
-	public void addSoundEffect(SoundEffect soundEffect) {
-		soundEffects.add(soundEffect);
-	}
-
-	public List<Dust> getDusts() {
-		return dusts;
-	}
-
-	public void setDusts(List<Dust> dusts) {
-		this.dusts = dusts;
-	}
-
-	public void addDust(Dust dust) {
-		dusts.add(dust);
-	}
-
-	public List<PowderElement> getOriginalPowderElements() {
-		List<PowderElement> powderElements = new ArrayList<PowderElement>();
-		powderElements.addAll(getDusts());
-		powderElements.addAll(getSoundEffects());
-		powderElements.addAll(getMatrices());
+	public Map<PowderElement, Integer> getPowderElements() {
 		return powderElements;
 	}
 
-	public List<PowderElement> getNewPowderElements() {
-		List<PowderElement> powderElements = new ArrayList<PowderElement>();
-		for (Dust dust : getDusts()) {
-			Dust newDust = new Dust(dust);
-			powderElements.add(newDust);
-		}
-		for (SoundEffect soundEffect : getSoundEffects()) {
-			SoundEffect newSoundEffect = new SoundEffect(soundEffect);
-			powderElements.add(newSoundEffect);
-		}
-		for (ParticleMatrix particleMatrix : getMatrices()) {
-			ParticleMatrix newParticleMatrix = new ParticleMatrix(particleMatrix);
-			powderElements.add(newParticleMatrix);
+	public Map<PowderElement, Integer> getClonedPowderElements() {
+		Map<PowderElement, Integer> powderElements = new HashMap<PowderElement, Integer>();
+		for (PowderElement powderElement : this.powderElements.keySet()) {
+			powderElements.put(powderElement.clone(), PowdersCreationTask.getTick() + powderElement.getStartTime());
 		}
 		return powderElements;
+	}
+	
+	public void addPowderElement(PowderElement powderElement) {
+		if (powderElement.getLockedIterations() == 0) {
+			powderElement.setLockedIterations(Integer.MAX_VALUE);
+		}
+		powderElements.put(powderElement, PowdersCreationTask.getTick() + powderElement.getStartTime());
+	}
+	
+	public void addPowderElements(List<PowderElement> powderElements) {
+		for (PowderElement element : powderElements) {
+			addPowderElement(element);
+		}
+	}
+	
+	public void removePowderElement(PowderElement powderElement) {
+		powderElements.remove(powderElement);
 	}
 
 	public List<PowderParticle> getPowderParticles() {
@@ -208,7 +154,7 @@ public class Powder {
 	}
 
 	public boolean hasMovement() {
-		for (PowderElement element : getOriginalPowderElements()) {
+		for (PowderElement element : getPowderElements().keySet()) {
 			if (!(element.getStartTime() == 0) || element.getLockedIterations() > 1) {
 				return true;
 			}
@@ -217,7 +163,7 @@ public class Powder {
 	}
 
 	public void spawn(final Location location, final String name) {
-		PowderTask powderTask = new PowderTask(location, this, name);
+		PowderTask powderTask = new PowderTask(name, location, this);
 		spawn(powderTask);
 	}
 
@@ -232,7 +178,6 @@ public class Powder {
 	public void spawn(PowderTask powderTask) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		// create a PowderTask, add taskIDs to it
-		powderTask.addElements(getNewPowderElements());
 		if (powderHandler.getPowderTasks().isEmpty()) {
 			powderHandler.addPowderTask(powderTask);
 			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
@@ -257,6 +202,11 @@ public class Powder {
 		}
 
 		return success;
+	}
+	
+	@Override
+	public Powder clone() {
+		return new Powder(this);
 	}
 
 }

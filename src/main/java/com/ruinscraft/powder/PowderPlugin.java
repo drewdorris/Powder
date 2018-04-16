@@ -263,8 +263,11 @@ public class PowderPlugin extends JavaPlugin {
 						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
 						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
 						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.getSoundEffects().addAll(SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-								multiplier, startTime, repeatTime, iterations));
+						List<SoundEffect> songSoundEffects = SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
+								multiplier, startTime, repeatTime, iterations);
+						for (SoundEffect soundEffect : songSoundEffects) {
+							powder.addPowderElement(soundEffect);
+						}
 					}
 				}
 				if (!(powderConfig.getConfigurationSection(powders + s + ".sounds") == null)) {
@@ -278,7 +281,7 @@ public class PowderPlugin extends JavaPlugin {
 						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
 						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
 						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.addSoundEffect(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
+						powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
 					}
 				}
 				if (!(powderConfig.getConfigurationSection(powders + s + ".changes") == null)) {
@@ -317,7 +320,7 @@ public class PowderPlugin extends JavaPlugin {
 						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
 						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
 						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.addDust(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
+						powder.addPowderElement(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
 					}
 				}
 
@@ -404,10 +407,10 @@ public class PowderPlugin extends JavaPlugin {
 							}
 							particleMatrix.addLayer(layer);
 						}
-						powder.addMatrix(particleMatrix);
+						powder.addPowderElement(particleMatrix);
 					}
 				}
-				if (powder.getMatrices().isEmpty() && powder.getSoundEffects().isEmpty() && powder.getDusts().isEmpty()) {
+				if (powder.getPowderElements().isEmpty()) {
 					getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");
 					continue;
 				}

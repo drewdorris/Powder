@@ -2,7 +2,7 @@ package com.ruinscraft.powder.models;
 
 import org.bukkit.Location;
 
-public interface PowderElement {
+public interface PowderElement extends Cloneable {
 
 	void create(Location location); // create this element at this location
 
@@ -17,5 +17,7 @@ public interface PowderElement {
 	int getIterations(); // how many iterations so far
 
 	void iterate(); // add to getIterations()
+	
+	PowderElement clone();
 
 }
