@@ -33,15 +33,12 @@ public class ImageUtil {
 		URL url = PowderUtil.readURL(urlName);
 
 		try {
-
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
 			if (stream == null) {
 				throw new IOException("Error while attempting to read URL: " + url.toString());
 			}
 			BufferedImage bufferedImage = ImageIO.read(stream);
-
 			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
-
 		} catch (IOException io) {
 			io.printStackTrace();
 		} catch (Exception e) {
@@ -60,7 +57,6 @@ public class ImageUtil {
 			if (bufferedImage == null) {
 				throw new IOException("Error while attempting to read image: " + fileName);
 			}
-
 			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
 		} catch (IOException io) {
 			io.printStackTrace();
@@ -81,7 +77,6 @@ public class ImageUtil {
 			factor = ((double)bufferedImage.getWidth()/(double)bufferedImage.getHeight());
 			finalWidth = (int)(finalHeight * factor);
 		}   
-
 		BufferedImage resizedImg = new BufferedImage(finalWidth, finalHeight, BufferedImage.TRANSLUCENT);
 		Graphics2D g2 = resizedImg.createGraphics();
 		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
@@ -96,11 +91,8 @@ public class ImageUtil {
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
 		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
-
 			List<PowderParticle> row = new ArrayList<PowderParticle>();
-
 			for (int x = 0; x <= newImage.getWidth() - 1; x++) {
-
 				int pixel;
 				try {
 					pixel = newImage.getRGB(x, y);
@@ -110,7 +102,7 @@ public class ImageUtil {
 				}
 				// if pixel is transparent, make it null
 				if ((pixel >> 24) == 0x00) {
-					row.add(new PowderParticle(null, null));
+					row.add(new PowderParticle());
 					continue;
 				}
 				Color color = new Color(pixel);
@@ -120,13 +112,10 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				PowderParticle powderParticle = new PowderParticle(null, Particle.REDSTONE, arr, gee, bee);
+				PowderParticle powderParticle = new PowderParticle(Particle.REDSTONE, arr, gee, bee, null);
 				row.add(powderParticle);
-
 			}
-
 			rows.add(row);
-
 		}
 
 		return rows;

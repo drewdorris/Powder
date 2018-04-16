@@ -288,13 +288,14 @@ public class PowderPlugin extends JavaPlugin {
 					for (String ss : powderConfig.getConfigurationSection(powders + s + ".changes").getKeys(false)) {
 						String eachSection = section + ".changes." + ss;
 						String particleChar = powderConfig.getString(eachSection + ".particleChar", "A");
+						char character = particleChar.charAt(0);
 						String particleEnum = powderConfig.getString(eachSection + ".particleEnum", "HEART");
 						Particle particle = Particle.valueOf(particleEnum);
 						double xOffset = powderConfig.getDouble(eachSection + ".xOffset", 0);
 						double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
 						double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
 						double data = powderConfig.getDouble(eachSection + ".data", 0);
-						powder.addPowderParticle(new PowderParticle(particleChar, particle, xOffset, yOffset, zOffset, data));
+						powder.addPowderParticle(new PowderParticle(character, particle, xOffset, yOffset, zOffset, data));
 					}
 				}
 
@@ -306,13 +307,14 @@ public class PowderPlugin extends JavaPlugin {
 					for (String ss : powderConfig.getConfigurationSection(powders + s + ".dusts").getKeys(false)) {
 						String eachSection = section + ".dusts." + ss;
 						String dustName = powderConfig.getString(eachSection + ".name", "null");
-						PowderParticle powderParticle = powder.getPowderParticle(dustName);
+						char character = dustName.charAt(0);
+						PowderParticle powderParticle = powder.getPowderParticle(character);
 						if (powderParticle == null) {
 							try {
 								Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
-								powderParticle = new PowderParticle(dustName, particle);
+								powderParticle = new PowderParticle(character, particle);
 							} catch (Exception e) {
-								powderParticle = new PowderParticle(null, null);
+								powderParticle = new PowderParticle();
 							}
 						}
 						double radius = powderConfig.getDouble(eachSection + ".radius", 1);
@@ -390,15 +392,15 @@ public class PowderPlugin extends JavaPlugin {
 								// rows contain PowderParticles
 								List<PowderParticle> row = new ArrayList<PowderParticle>();
 								for (char character : t.toCharArray()) {
-									String string = String.valueOf(character);
 									PowderParticle powderParticle;
-									powderParticle = powder.getPowderParticle(string);
+									powderParticle = powder.getPowderParticle(character);
 									if (powderParticle == null) {
 										try {
+											String string = String.valueOf(character);
 											Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
-											powderParticle = new PowderParticle(string, particle);
+											powderParticle = new PowderParticle(character, particle);
 										} catch (Exception e) {
-											powderParticle = new PowderParticle(null, null);
+											powderParticle = new PowderParticle();
 										}
 									}
 									row.add(powderParticle);

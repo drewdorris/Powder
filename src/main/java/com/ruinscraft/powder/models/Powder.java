@@ -109,12 +109,9 @@ public class Powder implements Cloneable {
 	}
 
 	// get the PowderParticle assigned with the given enumName
-	public PowderParticle getPowderParticle(String enumName) {
+	public PowderParticle getPowderParticle(char enumName) {
 		for (PowderParticle powderParticle : powderParticles) {
-			if (powderParticle.getEnumName() == null) {
-				continue;
-			}
-			if (powderParticle.getEnumName().equals(enumName)) {
+			if (powderParticle.getCharacter() == enumName) {
 				return powderParticle;
 			}
 		}

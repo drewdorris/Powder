@@ -5,7 +5,7 @@ import org.bukkit.Particle;
 public class PowderParticle {
 
 	// enum name for the PowderParticle; one single character (name does not have to exist)
-	private String particleName;
+	private char particleChar;
 	// the Particle assigned with the PowderParticle
 	private Particle particle;
 	// x-offset data
@@ -16,10 +16,24 @@ public class PowderParticle {
 	private double zOff;
 	// extra data 
 	private Object data;
+	
+	public PowderParticle() {
+		particleChar = 0;
+		particle = null;
+	}
 
-	public PowderParticle(String particleName, Particle particle, 
+	public PowderParticle(char particleChar, Particle particle, 
 			double xOff, double yOff, double zOff, Object data) {
-		this.particleName = particleName;
+		this.particleChar = particleChar;
+		this.particle = particle;
+		this.xOff = xOff;
+		this.yOff = yOff;
+		this.zOff = zOff;
+		this.data = data;
+	}
+	
+	public PowderParticle(Particle particle, double xOff, double yOff, double zOff, Object data) {
+		this.particleChar = 0;
 		this.particle = particle;
 		this.xOff = xOff;
 		this.yOff = yOff;
@@ -27,28 +41,22 @@ public class PowderParticle {
 		this.data = data;
 	}
 
-	public PowderParticle(String particleName, Particle particle,
+	public PowderParticle(char particleChar, Particle particle,
 			double xOff, double yOff, double zOff) {
-		this.particleName = particleName;
+		this.particleChar = particleChar;
 		this.particle = particle;
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.zOff = zOff;
 	}
 
-	public PowderParticle(String particleName, Particle particle) {
-		this.particleName = particleName;
+	public PowderParticle(char particleChar, Particle particle) {
+		this.particleChar = particleChar;
 		this.particle = particle;
 	}
 
-	// null
-	public PowderParticle(Particle particle) {
-		this.particleName = null;
-		this.particle = particle;
-	}
-
-	public String getEnumName() {
-		return particleName;
+	public char getCharacter() {
+		return particleChar;
 	}
 
 	public Particle getParticle() {

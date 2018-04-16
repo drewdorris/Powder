@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Location;
+import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
 public class ParticleMatrix implements PowderElement {
@@ -208,7 +209,8 @@ public class ParticleMatrix implements PowderElement {
 				int i = 0;
 				for (PowderParticle powderParticle : powderParticles) {
 					i--;
-					if (powderParticle.getParticle() == null) {
+					Particle particle = powderParticle.getParticle();
+					if (particle == null) {
 						startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
 						continue;
 					}
