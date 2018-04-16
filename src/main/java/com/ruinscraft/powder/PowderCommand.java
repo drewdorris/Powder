@@ -308,7 +308,7 @@ public class PowderCommand implements CommandExecutor {
 				}
 				return true;
 			} else if (args[0].equals("removefrom")) {
-				if (!(player.hasPermission("powder.addto"))) {
+				if (!(player.hasPermission("powder.removefrom"))) {
 					return false;
 				}
 				String name;

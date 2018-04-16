@@ -84,7 +84,12 @@ public class PowderTask {
 	}
 
 	public boolean removePowder(Powder powder) {
-		return this.powders.remove(powder) != null;
+		for (Powder otherPowder : getPowders().keySet()) {
+			if (powder.getName().equals(otherPowder.getName())) {
+				return powders.remove(otherPowder) != null;
+			}
+		}
+		return false;
 	}
 
 }
