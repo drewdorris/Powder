@@ -97,7 +97,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : getPowderTasks(uuid)) {
 			if (powderTask.followsPlayer()) {
 				for (Powder taskPowder : powderTask.getPowders().keySet()) {
-					if (taskPowder.equals(powder)) {
+					if (taskPowder.getName().equals(powder.getName())) {
 						playerPowderTasks.add(powderTask);
 						break;
 					}
@@ -113,7 +113,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			if (powderTask.followsPlayer()) {
 				for (Powder otherPowder : powderTask.getPowders().keySet()) {
-					if (otherPowder.equals(powder)) {
+					if (otherPowder.getName().equals(powder.getName())) {
 						players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
 					}
 				}
@@ -144,13 +144,18 @@ public class PowderHandler {
 		}
 		return null;
 	}
-	
+
 	public Map<PowderTask, Integer> getNearbyPowderTasks(Location location, int range) {
 		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<PowderTask, Integer>();
 		for (PowderTask powderTask : powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
 			for (Powder powder : powderTask.getPowders().keySet()) {
-				int distance = (int) location.distance(powderTask.getPowders().get(powder));
+				int distance;
+				if (powderTask.followsPlayer()) {
+					distance = (int) location.distance(Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation());
+				} else {
+					distance = (int) location.distance(powderTask.getPowders().get(powder));
+				}
 				if (distance < taskRange) {
 					taskRange = distance;
 				}
@@ -183,7 +188,7 @@ public class PowderHandler {
 	public boolean removePowderTask(PowderTask powderTask) {
 		return powderTasks.remove(powderTask);
 	}
-	
+
 	// removes/ends a PowderTask
 	public boolean removePowderTasks(List<PowderTask> powderTasks) {
 		return powderTasks.removeAll(powderTasks);

@@ -176,12 +176,12 @@ public class PowderCommand implements CommandExecutor {
 					textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 							new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powder: " 
 									+ powderName + net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this Powder")
-									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+							.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 					textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-									"/" + label + " cancel " + powderTask.getName() ) );
+							"/" + label + " cancel " + powderTask.getName() ) );
 					textComponents.add(textComponent);
 				}
-				paginate(player, textComponents, " active " + String.valueOf(page), page, 7, label);
+				paginate(player, textComponents, " active ", page, 7, label);
 				return false;
 				// list Powders by category
 			} else if (args[0].equals("categories")) {
@@ -424,21 +424,21 @@ public class PowderCommand implements CommandExecutor {
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powders: " + stringBuilder.toString() + 
 											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel " + playerName + "'s Powder")
-											.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-											"/" + label + " remove " + powderTaskName ) );
+									"/" + label + " remove " + powderTaskName ) );
 						} else {
 							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 									new ComponentBuilder(net.md_5.bungee.api.ChatColor.GRAY + "Powders: " + stringBuilder.toString() + 
 											net.md_5.bungee.api.ChatColor.GREEN + "\nClick to cancel this active Powder")
-											.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
+									.color(net.md_5.bungee.api.ChatColor.GREEN).create() ) );
 							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-											"/" + label + " remove " + powderTaskName ) );
+									"/" + label + " remove " + powderTaskName ) );
 						}
 					}
 					nearbyText.add(text);
 				}
-				paginate(player, nearbyText, " nearby " + String.valueOf(page), page, 7, label);
+				paginate(player, nearbyText, " nearby ", page, 7, label);
 				return true;
 			} else {
 				if (powderHandler.categoriesEnabled()) {
@@ -612,7 +612,7 @@ public class PowderCommand implements CommandExecutor {
 
 	// help message
 	public static void helpMessage(Player player, String label) {
-		
+
 		PowderUtil.sendPrefixMessage(player, ChatColor.GRAY + "Powder Help", label);
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> " + ChatColor.GRAY + "- Use a Powder"); 
 		player.sendMessage(ChatColor.GRAY + "| " + ChatColor.RED + "/powder <powder> cancel " + ChatColor.GRAY + "- Cancel a Powder"); 
@@ -696,8 +696,7 @@ public class PowderCommand implements CommandExecutor {
 		TextComponent fullArrows = new TextComponent();
 		if (pageList.isEmpty()) {
 			player.sendMessage(ChatColor.RED + "None found.");
-			fullArrows.addExtra(leftArrow);
-			fullArrows.addExtra(middle);
+			return;
 		} else if ((!pageList.contains(list.get(0)) && pageList.contains(list.get(list.size() - 1)))) {
 			fullArrows.addExtra(leftArrow);
 			fullArrows.addExtra(middle);

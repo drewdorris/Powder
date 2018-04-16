@@ -17,22 +17,22 @@ public class PowderTask {
 	private UUID player;
 	// Powder associated with this PowderTask
 	private Map<Powder, Location> powders;
-	
-	public PowderTask(UUID player, Powder powder) {
+
+	public PowderTask(Powder powder, UUID player) {
 		this.name = null;
 		this.player = player;
 		powders = new HashMap<Powder, Location>();
 		powders.put(powder.clone(), null);
 	}
-	
-	public PowderTask(String name, Location location, Powder powder) {
-		this.name = null;
+
+	public PowderTask(String name, Powder powder, Location location) {
+		this.name = name;
 		this.player = null;
 		powders = new HashMap<Powder, Location>();
 		powders.put(powder.clone(), location);
 	}
-	
-	public PowderTask(String name, UUID player, Powder powder) {
+
+	public PowderTask(String name, Powder powder, UUID player) {
 		this.name = name;
 		this.player = player;
 		powders = new HashMap<Powder, Location>();
@@ -61,7 +61,7 @@ public class PowderTask {
 			return Bukkit.getPlayer(player).getLocation();
 		}
 	}
-	
+
 	public List<Location> getLocations() {
 		List<Location> locations = new ArrayList<Location>();
 		for (Location location : powders.values()) {
@@ -77,12 +77,12 @@ public class PowderTask {
 	public Map<Powder, Location> getPowders() {
 		return powders;
 	}
-	
+
 	public boolean addPowder(Powder powder, Location location) {
-		this.powders.put(powder, location);
+		this.powders.put(powder.clone(), location);
 		return true;
 	}
-	
+
 	public boolean removePowder(Powder powder) {
 		return this.powders.remove(powder) != null;
 	}

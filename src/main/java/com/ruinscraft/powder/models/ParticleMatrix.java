@@ -118,27 +118,27 @@ public class ParticleMatrix implements PowderElement {
 	public void setIfPitch(boolean hasPitch) {
 		this.hasPitch = hasPitch;
 	}
-	
+
 	public double getAddedPitch() {
 		return addedPitch;
 	}
-	
+
 	public void setAddedPitch(double addedPitch) {
 		this.addedPitch = addedPitch;
 	}
-	
+
 	public double getAddedRotation() {
 		return addedRotation;
 	}
-	
+
 	public void setAddedRotation(double addedRotation) {
 		this.addedRotation = addedRotation;
 	}
-	
+
 	public double getAddedTilt() {
 		return addedTilt;
 	}
-	
+
 	public void setAddedTilt(double addedTilt) {
 		this.addedTilt = addedTilt;
 	}
@@ -174,11 +174,11 @@ public class ParticleMatrix implements PowderElement {
 	public void iterate() {
 		iterations++;
 	}
-	
+
 	public ParticleMatrix clone() {
 		return new ParticleMatrix(this);
 	}
-	
+
 	// creates this ParticleMatrix at the designated location
 	public void create(final Location location) {
 		double forwardPitch = ((location.clone().getPitch() + getAddedPitch() - 180) * Math.PI) / 180;
@@ -199,7 +199,7 @@ public class ParticleMatrix implements PowderElement {
 				Math.cos(upwardPitch + sidewaysTilt), Math.sin(upwardPitch + sidewaysTilt) * Math.sin(forwardYaw))).normalize().multiply(spacing);
 		final Vector forwardVector = (new Vector(Math.sin(forwardPitch + sidewaysTilt) * Math.cos(forwardYaw), 
 				Math.cos(forwardPitch - sidewaysTilt), Math.sin(forwardPitch + sidewaysTilt) * Math.sin(forwardYaw)).normalize()).multiply(spacing);
-		
+
 		for (Layer layer : getLayers()) {
 			Location startingLocation = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp() + 1)))
 					.add(sideToSideVector.clone().multiply(getPlayerLeft()))

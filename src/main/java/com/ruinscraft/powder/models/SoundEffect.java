@@ -82,7 +82,7 @@ public class SoundEffect implements PowderElement {
 	public void iterate() {
 		iterations++;
 	}
-	
+
 	public SoundEffect clone() {
 		return new SoundEffect(this);
 	}

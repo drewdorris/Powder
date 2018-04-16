@@ -41,11 +41,11 @@ public class PowderUtil {
 	public static Set<UUID> getOnlineUUIDs() {
 		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
 	}
-	
+
 	public static Random getRandom() {
 		return random;
 	}
-	
+
 	public static String generateID(int length) {
 		StringBuilder id = new StringBuilder("");
 		for (int i = 0; i < length; i++) {
@@ -149,13 +149,13 @@ public class PowderUtil {
 	public static void loadPlayer(Player player) {
 		loadPowdersForPlayer(player.getUniqueId());
 	}
-	
+
 	public static void unloadServerPowders() {
-		
+
 	}
-	
+
 	public static void loadServerPowders() {
-		
+
 	}
 
 	// cosine of the given rotation, and multiplies it by the given spacing

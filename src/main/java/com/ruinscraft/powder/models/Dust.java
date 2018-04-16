@@ -22,7 +22,7 @@ public class Dust implements PowderElement {
 
 	// iterations so far
 	private int iterations;
-	
+
 	public Dust(Dust dust) {
 		this.powderParticle = dust.getPowderParticle();
 		this.radius = dust.getRadius();
@@ -74,11 +74,11 @@ public class Dust implements PowderElement {
 	public int getIterations() {
 		return iterations;
 	}
-	
+
 	public void iterate() {
 		iterations++;
 	}
-	
+
 	public Dust clone() {
 		return new Dust(this);
 	}

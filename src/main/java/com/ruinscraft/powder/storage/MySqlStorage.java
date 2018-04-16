@@ -31,7 +31,7 @@ public class MySqlStorage implements SqlStorage {
 		query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
 		insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
 		delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
-		
+
 		HikariConfig hikariConfig = new HikariConfig();
 
 		hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
@@ -128,7 +128,7 @@ public class MySqlStorage implements SqlStorage {
 				List<String> powders = new ArrayList<>();
 
 				ps.setString(1, uuid.toString());
-				
+
 				ResultSet rs = ps.executeQuery();
 
 				while (rs.next()) {

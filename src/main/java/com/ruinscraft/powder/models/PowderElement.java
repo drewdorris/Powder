@@ -17,7 +17,7 @@ public interface PowderElement extends Cloneable {
 	int getIterations(); // how many iterations so far
 
 	void iterate(); // add to getIterations()
-	
+
 	PowderElement clone();
 
 }

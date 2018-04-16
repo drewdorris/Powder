@@ -39,7 +39,7 @@ public class Powder implements Cloneable {
 		this.powderElements = new HashMap<PowderElement, Integer>();
 		this.powderParticles = new ArrayList<PowderParticle>();
 	}
-	
+
 	public Powder(Powder powder) {
 		name = powder.getName();
 		categories = powder.getCategories();
@@ -86,20 +86,20 @@ public class Powder implements Cloneable {
 		}
 		return powderElements;
 	}
-	
+
 	public void addPowderElement(PowderElement powderElement) {
 		if (powderElement.getLockedIterations() == 0) {
 			powderElement.setLockedIterations(Integer.MAX_VALUE);
 		}
 		powderElements.put(powderElement, PowdersCreationTask.getTick() + powderElement.getStartTime());
 	}
-	
+
 	public void addPowderElements(List<PowderElement> powderElements) {
 		for (PowderElement element : powderElements) {
 			addPowderElement(element);
 		}
 	}
-	
+
 	public void removePowderElement(PowderElement powderElement) {
 		powderElements.remove(powderElement);
 	}
@@ -163,13 +163,13 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(final Location location, final String name) {
-		PowderTask powderTask = new PowderTask(name, location, this);
+		PowderTask powderTask = new PowderTask(name, this, location);
 		spawn(powderTask);
 	}
 
 	// spawns a given Powder for the given user
 	public void spawn(final Player player) {
-		PowderTask powderTask = new PowderTask(player.getUniqueId(), this);
+		PowderTask powderTask = new PowderTask(this, player.getUniqueId());
 		powderTask.setName(player.getName() + "-" + PowderUtil.generateID(6));
 		spawn(powderTask);
 		PowderUtil.savePowdersForPlayer(player.getUniqueId());
@@ -203,7 +203,7 @@ public class Powder implements Cloneable {
 
 		return success;
 	}
-	
+
 	@Override
 	public Powder clone() {
 		return new Powder(this);
