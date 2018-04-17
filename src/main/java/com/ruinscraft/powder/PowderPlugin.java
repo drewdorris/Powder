@@ -37,8 +37,6 @@ public class PowderPlugin extends JavaPlugin {
 	private static PowderPlugin instance;
 	private static PowderHandler powderHandler;
 
-	public static String PREFIX;
-
 	private FileConfiguration config;
 	private List<FileConfiguration> powderConfigs;
 
@@ -68,8 +66,6 @@ public class PowderPlugin extends JavaPlugin {
 		getCommand("powder").setExecutor(new PowderCommand());
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
 
-		// prefix for all messages with prefixes
-		PREFIX = PowderUtil.color(config.getString("prefix"));
 	}
 
 	public void onDisable() {
@@ -194,6 +190,17 @@ public class PowderPlugin extends JavaPlugin {
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
+		
+		// prefix for all messages with prefixes
+		PowderUtil.PREFIX = PowderUtil.color(config.getString("prefix", "&7[&9Powder&7] "));
+		
+		String c = "colors.";
+		PowderUtil.INFO = ChatColor.valueOf(config.getString(c + "info", "GRAY"));
+		PowderUtil.HIGHLIGHT = ChatColor.valueOf(config.getString(c + "highlight", "RED"));
+		PowderUtil.HIGHLIGHT_TWO = ChatColor.valueOf(config.getString(c + "highlight_two", "GREEN"));
+		PowderUtil.HIGHLIGHT_THREE = ChatColor.valueOf(config.getString(c + "highlight_three", "YELLOW"));
+		PowderUtil.NO_PERM = ChatColor.valueOf(config.getString(c + "no_perm", "DARK_GRAY"));
+		PowderUtil.WARNING = ChatColor.valueOf(config.getString(c + "warning", "RED"));
 
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
@@ -216,7 +223,7 @@ public class PowderPlugin extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(player,
-						ChatColor.GRAY + "Loading Powders...", "powder");
+						PowderUtil.INFO + "Loading Powders...", "powder");
 			}
 		}
 
@@ -449,7 +456,7 @@ public class PowderPlugin extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(player,
-						ChatColor.GRAY + "All Powders loaded! (" + powderAmount + " total)", "powder");
+						PowderUtil.INFO + "All Powders loaded! (" + powderAmount + " total)", "powder");
 			}
 		}
 	}

@@ -36,12 +36,14 @@ public class PowderUtil {
 
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
 	public static Random random = new Random();
-	public static final ChatColor WARNING = ChatColor.RED;
-	public static final ChatColor HIGHLIGHT = ChatColor.RED;
-	public static final ChatColor HIGHLIGHT_TWO = ChatColor.GREEN;
-	public static final ChatColor HIGHLIGHT_THREE = ChatColor.YELLOW;
-	public static final ChatColor INFO = ChatColor.GRAY;
-	public static final ChatColor NO_PERM = ChatColor.DARK_GRAY;
+
+	public static String PREFIX;
+	public static ChatColor WARNING;
+	public static ChatColor HIGHLIGHT;
+	public static ChatColor HIGHLIGHT_TWO;
+	public static ChatColor HIGHLIGHT_THREE;
+	public static ChatColor INFO;
+	public static ChatColor NO_PERM;
 
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
@@ -77,7 +79,7 @@ public class PowderUtil {
 	public static void notifyOfReload() {
 		if (!(PowderPlugin.getInstance().useStorage())) {
 			for (Player player : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
-				PowderUtil.sendPrefixMessage(player, ChatColor.GRAY 
+				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO 
 						+ "Your Powders were cancelled due to a reload.", "powder");
 			}
 		}
@@ -96,9 +98,9 @@ public class PowderUtil {
 
 		BaseComponent fullMessage = new TextComponent();
 		fullMessage.setColor(PowderUtil.INFO);
-		TextComponent prefix = new TextComponent(PowderPlugin.PREFIX);
+		TextComponent prefix = new TextComponent(PowderUtil.PREFIX);
 		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("/" + label).color(net.md_5.bungee.api.ChatColor.GRAY).create() ) );
+				new ComponentBuilder("/" + label).color(PowderUtil.INFO).create() ) );
 		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
 		fullMessage.addExtra(prefix);
 		fullMessage.addExtra((TextComponent) message);
