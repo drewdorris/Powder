@@ -27,6 +27,7 @@ public class ParticleMatrix implements PowderElement {
 	// add values to the rotation
 	private double addedRotation;
 	// add values to the tilt
+	// experimental
 	private double addedTilt;
 	// when to start displaying this ParticleMatrix
 	private int startTime;

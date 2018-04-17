@@ -41,7 +41,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 			List<Powder> powdersToRemove = new ArrayList<Powder>();
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				if (powder.getPowderElements().isEmpty()) {
-					powderTasksToRemove.add(powderTask);
+					powdersToRemove.add(powder);
 					continue;
 				}
 				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
