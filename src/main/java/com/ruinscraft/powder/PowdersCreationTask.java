@@ -1,9 +1,7 @@
 package com.ruinscraft.powder;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.Iterator;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -28,48 +26,35 @@ public class PowdersCreationTask extends BukkitRunnable {
 			cancel();
 		}
 		tick++;
-		List<PowderTask> powderTasksToRemove = new ArrayList<PowderTask>();
-		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
-			Location location = null;
-			if (powderTask.followsPlayer()) {
-				location = Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation();
-			}
+		for (Iterator<PowderTask> powderTaskIterator = 
+				powderHandler.getPowderTasks().iterator(); powderTaskIterator.hasNext();) {
+			PowderTask powderTask = powderTaskIterator.next();
 			if (powderTask.getPowders().isEmpty()) {
-				powderTasksToRemove.add(powderTask);
+				powderTaskIterator.remove();
 				continue;
 			}
-			List<Powder> powdersToRemove = new ArrayList<Powder>();
-			for (Powder powder : powderTask.getPowders().keySet()) {
+			for (Iterator<Powder> powderIterator = 
+					powderTask.getPowders().iterator(); powderIterator.hasNext();) {
+				Powder powder = powderIterator.next();
+				Location location = powder.getCurrentLocation();
 				if (powder.getPowderElements().isEmpty()) {
-					powdersToRemove.add(powder);
+					powderIterator.remove();
 					continue;
 				}
-				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
-				for (PowderElement element : powder.getPowderElements().keySet()) {
+				for (Iterator<PowderElement> elementIterator = 
+						powder.getPowderElements().keySet().iterator(); powderIterator.hasNext();) {
+					PowderElement element = elementIterator.next();
 					if (powder.getPowderElements().get(element) + element.getRepeatTime() <= tick) {
 						if (element.getIterations() >= element.getLockedIterations()) {
-							elementsToRemove.add(element);
+							elementIterator.remove();
 							continue;
 						}
-						if (powderTask.getPowders().get(powder) == null) {
-							element.create(location);
-						} else {
-							element.create(powderTask.getPowders().get(powder));
-						}
+						element.create(location);
 						element.iterate();
 						powder.getPowderElements().put(element, tick);
 					}
 				}
-				for (PowderElement element : elementsToRemove) {
-					powder.removePowderElement(element);
-				}
 			}
-			for (Powder powder : powdersToRemove) {
-				powderTask.removePowder(powder);
-			}
-		}
-		for (PowderTask powderTask : powderTasksToRemove) {
-			powderHandler.removePowderTask(powderTask);
 		}
 	}
 

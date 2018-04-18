@@ -203,7 +203,7 @@ public class Powder {
 
 		return success;
 	}
-	
+
 	public Location getCurrentLocation() {
 		return null;
 	}

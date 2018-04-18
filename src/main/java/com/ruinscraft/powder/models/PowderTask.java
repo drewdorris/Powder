@@ -1,12 +1,8 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
-import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
 import com.ruinscraft.powder.models.powders.Powder;
@@ -15,30 +11,19 @@ public class PowderTask {
 
 	// name associated with this PowderTask (null if no player)
 	private String name;
-	// player associated with this PowderTask
-	private UUID player;
 	// Powder associated with this PowderTask
-	private Map<Powder, Location> powders;
+	private List<Powder> powders;
 
-	public PowderTask(Powder powder, UUID player) {
+	public PowderTask(Powder powder) {
 		this.name = null;
-		this.player = player;
-		powders = new HashMap<Powder, Location>();
-		powders.put(powder.clone(), null);
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
 	}
 
-	public PowderTask(String name, Powder powder, Location location) {
+	public PowderTask(String name, Powder powder) {
 		this.name = name;
-		this.player = null;
-		powders = new HashMap<Powder, Location>();
-		powders.put(powder.clone(), location);
-	}
-
-	public PowderTask(String name, Powder powder, UUID player) {
-		this.name = name;
-		this.player = player;
-		powders = new HashMap<Powder, Location>();
-		powders.put(powder.clone(), null);
+		powders = new ArrayList<Powder>();
+		powders.add(powder);
 	}
 
 	public String getName() {
@@ -49,46 +34,34 @@ public class PowderTask {
 		this.name = name;
 	}
 
-	public UUID getPlayerUUID() {
-		return player;
-	}
-
 	public Location getFirstLocation() {
-		if (player == null) {
-			for (Powder powder : powders.keySet()) {
-				return powders.get(powder);
-			}
-			return null;
-		} else {
-			return Bukkit.getPlayer(player).getLocation();
+		for (Powder powder : powders) {
+			return powder.getCurrentLocation();
 		}
+		return null;
 	}
 
 	public List<Location> getLocations() {
 		List<Location> locations = new ArrayList<Location>();
-		for (Location location : powders.values()) {
-			locations.add(location);
+		for (Powder powder : powders) {
+			locations.add(powder.getCurrentLocation());
 		}
 		return locations;
 	}
 
-	public boolean followsPlayer() {
-		return player != null;
-	}
-
-	public Map<Powder, Location> getPowders() {
+	public List<Powder> getPowders() {
 		return powders;
 	}
 
 	public boolean addPowder(Powder powder, Location location) {
-		this.powders.put(powder.clone(), location);
+		this.powders.add(powder);
 		return true;
 	}
 
 	public boolean removePowder(Powder powder) {
-		for (Powder otherPowder : getPowders().keySet()) {
+		for (Powder otherPowder : getPowders()) {
 			if (powder.getName().equals(otherPowder.getName())) {
-				return powders.remove(otherPowder) != null;
+				return powders.remove(otherPowder);
 			}
 		}
 		return false;
