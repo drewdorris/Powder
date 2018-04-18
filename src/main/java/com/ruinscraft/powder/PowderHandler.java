@@ -12,9 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.powders.Powder;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {

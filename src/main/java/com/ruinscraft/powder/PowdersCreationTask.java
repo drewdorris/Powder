@@ -7,9 +7,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.powders.Powder;
 
 public class PowdersCreationTask extends BukkitRunnable {
 

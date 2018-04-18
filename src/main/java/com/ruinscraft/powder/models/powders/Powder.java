@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.models.powders;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,6 +12,9 @@ import org.bukkit.entity.Player;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.models.PowderElement;
+import com.ruinscraft.powder.models.PowderParticle;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class Powder implements Cloneable {
@@ -201,9 +204,16 @@ public class Powder implements Cloneable {
 		return success;
 	}
 
-	@Override
-	public Powder clone() {
-		return new Powder(this);
+	public Powder clone(Class<? extends Powder> clazz) {
+		try {
+			return clazz.getConstructor(getClass()).newInstance(this);
+		} catch (Exception e) {
+			return null;
+		}
+	}
+	
+	public Location getCurrentLocation() {
+		return null;
 	}
 
 }

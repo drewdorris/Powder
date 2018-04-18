@@ -9,6 +9,8 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
+import com.ruinscraft.powder.models.powders.Powder;
+
 public class PowderTask {
 
 	// name associated with this PowderTask (null if no player)
