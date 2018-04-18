@@ -17,7 +17,7 @@ import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
-public class Powder implements Cloneable {
+public class Powder {
 
 	// name of the Powder
 	private String name;
@@ -202,14 +202,6 @@ public class Powder implements Cloneable {
 		}
 
 		return success;
-	}
-
-	public Powder clone(Class<? extends Powder> clazz) {
-		try {
-			return clazz.getConstructor(getClass()).newInstance(this);
-		} catch (Exception e) {
-			return null;
-		}
 	}
 	
 	public Location getCurrentLocation() {
