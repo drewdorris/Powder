@@ -7,14 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.trackers.EntityTracker;
+import com.ruinscraft.powder.models.trackers.PlayerTracker;
+import com.ruinscraft.powder.models.trackers.StationaryTracker;
+import com.ruinscraft.powder.models.trackers.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {
@@ -82,9 +85,11 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.followsPlayer()) {
-				if (powderTask.getPlayerUUID().equals(uuid)) {
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				Tracker tracker = powderTask.getPowders().get(powder);
+				if (tracker instanceof PlayerTracker) {
 					playerPowderTasks.add(powderTask);
+					break;
 				}
 			}
 		}
@@ -94,42 +99,22 @@ public class PowderHandler {
 	// gets all current PowderTasks under a player & Powder
 	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
-		for (PowderTask powderTask : getPowderTasks(uuid)) {
-			if (powderTask.followsPlayer()) {
-				for (Powder taskPowder : powderTask.getPowders().keySet()) {
-					if (taskPowder.getName().equals(powder.getName())) {
-						playerPowderTasks.add(powderTask);
-						break;
-					}
+		for (PowderTask powderTask : powderTasks) {
+			for (Powder otherPowder : powderTask.getPowders().keySet()) {
+				Tracker tracker = powderTask.getPowders().get(powder);
+				if (tracker instanceof PlayerTracker && powder.equals(otherPowder)) {
+					playerPowderTasks.add(powderTask);
+					break;
 				}
 			}
 		}
 		return playerPowderTasks;
 	}
 
-	// gets all current players using a Powder
-	public Set<Player> getPowderTaskUsers(Powder powder) {
-		Set<Player> players = new HashSet<>();
-		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.followsPlayer()) {
-				for (Powder otherPowder : powderTask.getPowders().keySet()) {
-					if (otherPowder.getName().equals(powder.getName())) {
-						players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
-					}
-				}
-			}
-		}
-		return players;
-	}
-
 	// gets all users who have a running PowderTask
-	public Set<Player> getAllPowderTaskUsers() {
-		Set<Player> players = new HashSet<>();
-		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.followsPlayer()) {
-				players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
-			}
-		}
+	public Set<UUID> getAllPowderTaskUsers() {
+		Set<UUID> players = new HashSet<>();
+		players.addAll(getCurrentPlayerTracks().values().stream().map(PlayerTracker::getUUID).collect(Collectors.toSet()));
 		return players;
 	}
 
@@ -150,12 +135,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
 			for (Powder powder : powderTask.getPowders().keySet()) {
-				int distance;
-				if (powderTask.followsPlayer()) {
-					distance = (int) location.distance(Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation());
-				} else {
-					distance = (int) location.distance(powderTask.getPowders().get(powder));
-				}
+				int distance = (int) location.distance(powderTask.getPowders().get(powder).getCurrentLocation());
 				if (distance < taskRange) {
 					taskRange = distance;
 				}
@@ -165,6 +145,60 @@ public class PowderHandler {
 			}
 		}
 		return nearbyPowderTasks;
+	}
+
+	public Map<Powder, PlayerTracker> getCurrentPlayerTracks() {
+		Map<Powder, PlayerTracker> playerTracks = new HashMap<Powder, PlayerTracker>();
+		for (PowderTask powderTask : powderTasks) {
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				Tracker tracker = powderTask.getPowders().get(powder);
+				if (tracker instanceof PlayerTracker) {
+					PlayerTracker playerTracker = (PlayerTracker) tracker;
+					playerTracks.put(powder, playerTracker);
+					break;
+				}
+			}
+		}
+		return playerTracks;
+	}
+
+	public Map<Powder, EntityTracker> getCurrentEntityTracks() {
+		Map<Powder, EntityTracker> entityTracks = new HashMap<Powder, EntityTracker>();
+		for (PowderTask powderTask : powderTasks) {
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				Tracker tracker = powderTask.getPowders().get(powder);
+				if (tracker instanceof EntityTracker) {
+					EntityTracker entityTracker = (EntityTracker) tracker;
+					entityTracks.put(powder, entityTracker);
+					break;
+				}
+			}
+		}
+		return entityTracks;
+	}
+
+	public Map<Powder, StationaryTracker> getCurrentStationaryTracks() {
+		Map<Powder, StationaryTracker> stationaryTracks = new HashMap<Powder, StationaryTracker>();
+		for (PowderTask powderTask : powderTasks) {
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				Tracker tracker = powderTask.getPowders().get(powder);
+				if (tracker instanceof EntityTracker) {
+					StationaryTracker stationaryTracker = (StationaryTracker) tracker;
+					stationaryTracks.put(powder, stationaryTracker);
+					break;
+				}
+			}
+		}
+		return stationaryTracks;
+	}
+
+	public PowderTask getPowderTask(Powder powder, Tracker tracker) {
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.getPowders().containsKey(powder) && powderTask.getPowders().containsValue(tracker)) {
+				return powderTask;
+			}
+		}
+		return null;
 	}
 
 	// ends all tasks associated with all PowderTasks

@@ -190,10 +190,10 @@ public class PowderPlugin extends JavaPlugin {
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
-		
+
 		// prefix for all messages with prefixes
 		PowderUtil.PREFIX = PowderUtil.color(config.getString("prefix", "&7[&9Powder&7] "));
-		
+
 		String c = "colors.";
 		PowderUtil.INFO = ChatColor.valueOf(config.getString(c + "info", "GRAY"));
 		PowderUtil.HIGHLIGHT = ChatColor.valueOf(config.getString(c + "highlight", "RED"));

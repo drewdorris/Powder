@@ -15,7 +15,7 @@ public class PowderTask {
 	private String name;
 	// Powder associated with this PowderTask
 	private Map<Powder, Tracker> powders;
-	
+
 	public PowderTask() {
 		this.powders = new HashMap<Powder, Tracker>();
 	}

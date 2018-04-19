@@ -7,11 +7,15 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.models.trackers.EntityTracker;
+import com.ruinscraft.powder.models.trackers.PlayerTracker;
+import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class Powder implements Cloneable {
@@ -159,15 +163,27 @@ public class Powder implements Cloneable {
 		return false;
 	}
 
-	public void spawn(final Location location, final String name) {
-		PowderTask powderTask = new PowderTask(name, this, location);
+	public void spawn(String name, Entity entity) {
+		PowderTask powderTask = new PowderTask(name, this, new EntityTracker(entity));
+		spawn(powderTask);
+	}
+
+	public void spawn(String name, Location location) {
+		PowderTask powderTask = new PowderTask(name, this, new StationaryTracker(location));
 		spawn(powderTask);
 	}
 
 	// spawns a given Powder for the given user
-	public void spawn(final Player player) {
-		PowderTask powderTask = new PowderTask(this, player.getUniqueId());
-		powderTask.setName(player.getName() + "-" + PowderUtil.generateID(6));
+	public void spawn(Player player) {
+		PowderTask powderTask = new PowderTask(player.getName() + "-" + PowderUtil.generateID(6), 
+				this, new PlayerTracker(player.getUniqueId()));
+		spawn(powderTask);
+		PowderUtil.savePowdersForPlayer(player.getUniqueId());
+	}
+
+	// spawns a given Powder for the given user
+	public void spawn(String name, Player player) {
+		PowderTask powderTask = new PowderTask(name, this, new PlayerTracker(player.getUniqueId()));
 		spawn(powderTask);
 		PowderUtil.savePowdersForPlayer(player.getUniqueId());
 	}

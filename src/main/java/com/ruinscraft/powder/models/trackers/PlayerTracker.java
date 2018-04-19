@@ -13,6 +13,10 @@ public class PlayerTracker implements Tracker {
 		this.uuid = uuid;
 	}
 
+	public UUID getUUID() {
+		return uuid;
+	}
+
 	@Override
 	public Location getCurrentLocation() {
 		return Bukkit.getPlayer(uuid).getEyeLocation();

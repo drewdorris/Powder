@@ -78,8 +78,8 @@ public class PowderUtil {
 	// notify players who have a running PowderTask of the reload
 	public static void notifyOfReload() {
 		if (!(PowderPlugin.getInstance().useStorage())) {
-			for (Player player : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO 
+			for (UUID uuid : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
 						+ "Your Powders were cancelled due to a reload.", "powder");
 			}
 		}

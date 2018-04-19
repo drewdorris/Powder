@@ -12,6 +12,10 @@ public class EntityTracker implements Tracker {
 		this.entity = entity;
 	}
 
+	public Entity getEntity() {
+		return entity;
+	}
+
 	@Override
 	public Location getCurrentLocation() {
 		if (entity instanceof LivingEntity) {

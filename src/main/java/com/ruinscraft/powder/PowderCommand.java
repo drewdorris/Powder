@@ -15,6 +15,7 @@ import org.bukkit.entity.Player;
 import com.google.common.collect.Iterables;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.ChatColor;
@@ -272,7 +273,7 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
 					return false;
 				}
-				newPowder.spawn(player.getLocation(), name);
+				newPowder.spawn(name, player.getLocation());
 				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 						"Successfully created '" + name + "'.", label);
 				return true;
@@ -300,11 +301,7 @@ public class PowderCommand implements CommandExecutor {
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
-				if (powderTask.followsPlayer()) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Cannot edit an active Powder that follows a player!", label);
-					return false;
-				}
-				if (powderTask.addPowder(newPowder, player.getLocation())) {
+				if (powderTask.addPowder(newPowder, new StationaryTracker(player.getLocation()))) {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 							"Added Powder '" + powderName + "' to '" + name + "'.", label);
 				}
@@ -333,10 +330,6 @@ public class PowderCommand implements CommandExecutor {
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
-				if (powderTask.followsPlayer()) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Cannot edit an active Powder that follows a player!", label);
-					return false;
-				}
 				if (powderTask.removePowder(newPowder)) {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 							"Removed Powder '" + powderName + "' from '" + name + "'.", label);
@@ -406,12 +399,6 @@ public class PowderCommand implements CommandExecutor {
 					TextComponent text = new TextComponent();
 					text.setColor(PowderUtil.INFO);
 					String powderTaskName = powderTask.getName();
-					String playerName;
-					if (powderTask.getPlayerUUID() == null) {
-						playerName = null;
-					} else {
-						playerName = Bukkit.getPlayer(powderTask.getPlayerUUID()).getName();
-					}
 					text.addExtra(PowderUtil.HIGHLIGHT + powderTaskName + PowderUtil.INFO + " " + nearby.get(powderTask) + "m");
 					if (player.hasPermission("powder.remove")) {
 						Set<Powder> taskPowders = powderTask.getPowders().keySet();
@@ -422,21 +409,12 @@ public class PowderCommand implements CommandExecutor {
 								stringBuilder.append(", ");
 							}
 						}
-						if (powderTask.getPlayerUUID() != null) {
-							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-									new ComponentBuilder(PowderUtil.INFO + "Powders: " + stringBuilder.toString() + 
-											PowderUtil.HIGHLIGHT_TWO + "\nClick to cancel " + playerName + "'s Powder")
-									.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
-							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-									"/" + label + " remove " + powderTaskName ) );
-						} else {
-							text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-									new ComponentBuilder(PowderUtil.INFO + "Powders: " + stringBuilder.toString() + 
-											PowderUtil.HIGHLIGHT_TWO + "\nClick to cancel this active Powder")
-									.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
-							text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-									"/" + label + " remove " + powderTaskName ) );
-						}
+						text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+								new ComponentBuilder(PowderUtil.INFO + "Powders: " + stringBuilder.toString() + 
+										PowderUtil.HIGHLIGHT_TWO + "\nClick to cancel this active Powder")
+								.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
+						text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
+								"/" + label + " remove " + powderTaskName ) );
 					}
 					nearbyText.add(text);
 				}
