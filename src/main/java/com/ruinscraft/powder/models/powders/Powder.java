@@ -14,10 +14,10 @@ import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderParticle;
-import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.tasks.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
-public class Powder {
+public class Powder implements Cloneable {
 
 	// name of the Powder
 	private String name;
@@ -203,9 +203,10 @@ public class Powder {
 
 		return success;
 	}
-
-	public Location getCurrentLocation() {
-		return null;
+	
+	@Override
+	public Powder clone() {
+		return new Powder(this);
 	}
 
 }
