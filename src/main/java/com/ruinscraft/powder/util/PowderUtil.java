@@ -22,8 +22,8 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.powders.Powder;
-import com.ruinscraft.powder.models.tasks.PowderTask;
+import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.models.PowderTask;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

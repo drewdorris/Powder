@@ -12,9 +12,9 @@ import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
+import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.powders.Powder;
-import com.ruinscraft.powder.models.tasks.PowderTask;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {
@@ -107,6 +107,32 @@ public class PowderHandler {
 		return playerPowderTasks;
 	}
 
+	// gets all current players using a Powder
+	public Set<Player> getPowderTaskUsers(Powder powder) {
+		Set<Player> players = new HashSet<>();
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.followsPlayer()) {
+				for (Powder otherPowder : powderTask.getPowders().keySet()) {
+					if (otherPowder.getName().equals(powder.getName())) {
+						players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+					}
+				}
+			}
+		}
+		return players;
+	}
+
+	// gets all users who have a running PowderTask
+	public Set<Player> getAllPowderTaskUsers() {
+		Set<Player> players = new HashSet<>();
+		for (PowderTask powderTask : powderTasks) {
+			if (powderTask.followsPlayer()) {
+				players.add(Bukkit.getPlayer(powderTask.getPlayerUUID()));
+			}
+		}
+		return players;
+	}
+
 	public PowderTask getPowderTask(String name) {
 		for (PowderTask powderTask : powderTasks) {
 			if (powderTask.getName() == null) {
@@ -123,9 +149,14 @@ public class PowderHandler {
 		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<PowderTask, Integer>();
 		for (PowderTask powderTask : powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
-			for (Powder powder : powderTask.getPowders()) {
-				int distance = (int) location.distance(powder.getCurrentLocation());
-				if (taskRange > distance) {
+			for (Powder powder : powderTask.getPowders().keySet()) {
+				int distance;
+				if (powderTask.followsPlayer()) {
+					distance = (int) location.distance(Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation());
+				} else {
+					distance = (int) location.distance(powderTask.getPowders().get(powder));
+				}
+				if (distance < taskRange) {
 					taskRange = distance;
 				}
 			}
@@ -143,7 +174,7 @@ public class PowderHandler {
 
 	// adds a PowderTask
 	public void addPowderTask(PowderTask powderTask) {
-		for (Powder powder : powderTask.getPowders()) {
+		for (Powder powder : powderTask.getPowders().keySet()) {
 			for (PowderElement powderElement : powder.getPowderElements().keySet()) {
 				if (powderElement.getLockedIterations() == 0) {
 					powderElement.setLockedIterations(Integer.MAX_VALUE);

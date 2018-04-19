@@ -1,13 +1,15 @@
 package com.ruinscraft.powder;
 
-import java.util.Iterator;
+import java.util.ArrayList;
+import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.powders.Powder;
-import com.ruinscraft.powder.models.tasks.PowderTask;
+import com.ruinscraft.powder.models.PowderTask;
 
 public class PowdersCreationTask extends BukkitRunnable {
 
@@ -26,35 +28,48 @@ public class PowdersCreationTask extends BukkitRunnable {
 			cancel();
 		}
 		tick++;
-		for (Iterator<PowderTask> powderTaskIterator = 
-				powderHandler.getPowderTasks().iterator(); powderTaskIterator.hasNext();) {
-			PowderTask powderTask = powderTaskIterator.next();
+		List<PowderTask> powderTasksToRemove = new ArrayList<PowderTask>();
+		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
+			Location location = null;
+			if (powderTask.followsPlayer()) {
+				location = Bukkit.getPlayer(powderTask.getPlayerUUID()).getEyeLocation();
+			}
 			if (powderTask.getPowders().isEmpty()) {
-				powderTaskIterator.remove();
+				powderTasksToRemove.add(powderTask);
 				continue;
 			}
-			for (Iterator<Powder> powderIterator = 
-					powderTask.getPowders().iterator(); powderIterator.hasNext();) {
-				Powder powder = powderIterator.next();
-				Location location = powder.getCurrentLocation();
+			List<Powder> powdersToRemove = new ArrayList<Powder>();
+			for (Powder powder : powderTask.getPowders().keySet()) {
 				if (powder.getPowderElements().isEmpty()) {
-					powderIterator.remove();
+					powdersToRemove.add(powder);
 					continue;
 				}
-				for (Iterator<PowderElement> elementIterator = 
-						powder.getPowderElements().keySet().iterator(); powderIterator.hasNext();) {
-					PowderElement element = elementIterator.next();
+				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
+				for (PowderElement element : powder.getPowderElements().keySet()) {
 					if (powder.getPowderElements().get(element) + element.getRepeatTime() <= tick) {
 						if (element.getIterations() >= element.getLockedIterations()) {
-							elementIterator.remove();
+							elementsToRemove.add(element);
 							continue;
 						}
-						element.create(location);
+						if (powderTask.getPowders().get(powder) == null) {
+							element.create(location);
+						} else {
+							element.create(powderTask.getPowders().get(powder));
+						}
 						element.iterate();
 						powder.getPowderElements().put(element, tick);
 					}
 				}
+				for (PowderElement element : elementsToRemove) {
+					powder.removePowderElement(element);
+				}
 			}
+			for (Powder powder : powdersToRemove) {
+				powderTask.removePowder(powder);
+			}
+		}
+		for (PowderTask powderTask : powderTasksToRemove) {
+			powderHandler.removePowderTask(powderTask);
 		}
 	}
 

@@ -21,9 +21,9 @@ import com.ruinscraft.powder.models.Dust;
 import com.ruinscraft.powder.models.Layer;
 import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.ParticleName;
+import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.SoundEffect;
-import com.ruinscraft.powder.models.powders.Powder;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ImageUtil;
@@ -190,10 +190,10 @@ public class PowderPlugin extends JavaPlugin {
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
-
+		
 		// prefix for all messages with prefixes
 		PowderUtil.PREFIX = PowderUtil.color(config.getString("prefix", "&7[&9Powder&7] "));
-
+		
 		String c = "colors.";
 		PowderUtil.INFO = ChatColor.valueOf(config.getString(c + "info", "GRAY"));
 		PowderUtil.HIGHLIGHT = ChatColor.valueOf(config.getString(c + "highlight", "RED"));

@@ -13,8 +13,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Iterables;
-import com.ruinscraft.powder.models.powders.Powder;
-import com.ruinscraft.powder.models.tasks.PowderTask;
+import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.ChatColor;
