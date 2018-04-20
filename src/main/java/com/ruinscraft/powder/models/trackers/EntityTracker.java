@@ -14,7 +14,7 @@ public class EntityTracker implements Tracker {
 	public EntityTracker(Entity entity) {
 		this.entityId = entity.getUniqueId();
 	}
-	
+
 	public EntityTracker(UUID entityId) {
 		this.entityId = entityId;
 	}
@@ -22,7 +22,7 @@ public class EntityTracker implements Tracker {
 	public Entity getEntity() {
 		return Bukkit.getEntity(entityId);
 	}
-	
+
 	public UUID getEntityUUID() {
 		return entityId;
 	}

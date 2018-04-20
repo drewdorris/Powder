@@ -164,7 +164,7 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(Entity entity) {
-		PowderTask powderTask = new PowderTask(entity.getCustomName() + "-" + PowderUtil.generateID(8),
+		PowderTask powderTask = new PowderTask(entity.getName() + "-" + PowderUtil.generateID(8),
 				this, new EntityTracker(entity));
 		spawn(powderTask);
 	}
