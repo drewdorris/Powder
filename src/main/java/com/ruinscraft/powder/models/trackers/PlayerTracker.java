@@ -18,6 +18,11 @@ public class PlayerTracker implements Tracker {
 	}
 
 	@Override
+	public TrackerType getType() {
+		return TrackerType.PLAYER;
+	}
+
+	@Override
 	public Location getCurrentLocation() {
 		return Bukkit.getPlayer(uuid).getEyeLocation();
 	}

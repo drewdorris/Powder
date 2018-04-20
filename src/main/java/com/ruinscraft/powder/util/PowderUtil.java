@@ -16,8 +16,13 @@ import java.util.Random;
 import java.util.Set;
 import java.util.UUID;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
@@ -48,11 +53,11 @@ public class PowderUtil {
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
-	
+
 	public static TextComponent format(String string) {
 		return new TextComponent(TextComponent.fromLegacyText(string));
 	}
-	
+
 	// check permission for the Powder or for a category that contains the Powder
 	public static boolean hasPermission(Player player, Powder powder) {
 		if (player.hasPermission("powder.powder.*")) {
@@ -84,7 +89,7 @@ public class PowderUtil {
 			}
 		}
 	}
-	
+
 	// sends a message with the given prefix in config.yml
 	// label is the base command, i.e. "powder" or "pdr" or "pow"
 	public static void sendPrefixMessage(Player player, Object message, String label) {
@@ -107,7 +112,7 @@ public class PowderUtil {
 
 		player.spigot().sendMessage(fullMessage);
 	}
-	
+
 	// reload config and all Powders, while saving database
 	public static void reloadCommand() {
 		PowderPlugin.getInstance().loadConfig();
@@ -398,6 +403,24 @@ public class PowderUtil {
 		paginateAndSend(player, listOfCategories, input, page, pageLength, label);
 	}
 
+	public static Entity getNearestEntityInSight(Player player, int range) {
+		List<Entity> entities = player.getNearbyEntities(range, range, range);
+		List<Location> locations = player.getLineOfSight(Stream.of(Material.AIR, Material.WATER)
+				.collect(Collectors.toSet()), 7).stream().map(Block::getLocation).collect(Collectors.toList());
+		Entity nearestEntity = null;
+		double closest = range;
+		for (Location location : locations) {
+			for (Entity entity : entities) {
+				double distance = location.distanceSquared(entity.getLocation());
+				if (distance < closest) {
+					nearestEntity = entity;
+					closest = distance;
+				}
+			}
+		}
+		return nearestEntity;
+	}
+
 	public static Set<UUID> getOnlineUUIDs() {
 		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
 	}
@@ -485,24 +508,6 @@ public class PowderUtil {
 	// loads player from database
 	public static void loadPlayer(Player player) {
 		loadPowdersForPlayer(player.getUniqueId());
-	}
-
-	public static void unloadServerPowders() {
-
-	}
-
-	public static void loadServerPowders() {
-
-	}
-
-	// cosine of the given rotation, and multiplies it by the given spacing
-	public static double getDirLengthX(double rot, double spacing) {
-		return (spacing * Math.cos(rot));
-	}
-
-	// sine of the given rotation, and multiplies it by the given spacing
-	public static double getDirLengthZ(double rot, double spacing) {
-		return (spacing * Math.sin(rot));
 	}
 
 	// cancels a given Powder for the given player

@@ -11,6 +11,11 @@ public class StationaryTracker implements Tracker {
 	}
 
 	@Override
+	public TrackerType getType() {
+		return TrackerType.STATIONARY;
+	}
+
+	@Override
 	public Location getCurrentLocation() {
 		return location;
 	}

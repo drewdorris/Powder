@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Iterables;
@@ -250,6 +251,32 @@ public class PowderCommand implements CommandExecutor {
 				PowderUtil.listPowders(player, powderHandler.getSimilarPowders(search), 
 						" search " + search + " ", page, pageLength, label);
 				return false;
+			} else if (args[0].equals("attach")) {
+				if (!(player.hasPermission("powder.attach"))) {
+					return false;
+				}
+				String powderName;
+				Powder newPowder;
+				try {
+					powderName = args[1];
+					newPowder = powderHandler.getPowder(powderName);
+				} catch (Exception e) {
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " attach <Powder>", label);
+					return false;
+				}
+				if (newPowder == null) {
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
+					return false;
+				}
+				Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
+				if (entity == null) {
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Entity not found in your line of sight.", label);
+					return false;
+				}
+				newPowder.spawn(entity);
+				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
+						"Successfully assigned '" + newPowder.getName() + "' to '" + entity.getCustomName() + "'.", label);
+				return true;
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {
 					return false;

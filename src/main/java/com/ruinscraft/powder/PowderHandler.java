@@ -18,6 +18,7 @@ import com.ruinscraft.powder.models.trackers.EntityTracker;
 import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
+import com.ruinscraft.powder.models.trackers.TrackerType;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {
@@ -87,7 +88,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
-				if (tracker instanceof PlayerTracker) {
+				if (tracker.getType() == TrackerType.PLAYER) {
 					playerPowderTasks.add(powderTask);
 					break;
 				}
@@ -101,8 +102,8 @@ public class PowderHandler {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder otherPowder : powderTask.getPowders().keySet()) {
-				Tracker tracker = powderTask.getPowders().get(powder);
-				if (tracker instanceof PlayerTracker && powder.equals(otherPowder)) {
+				Tracker tracker = powderTask.getPowders().get(otherPowder);
+				if (tracker.getType() == TrackerType.PLAYER && powder.equals(otherPowder)) {
 					playerPowderTasks.add(powderTask);
 					break;
 				}
@@ -152,7 +153,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
-				if (tracker instanceof PlayerTracker) {
+				if (tracker.getType() == TrackerType.PLAYER) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					playerTracks.put(powder, playerTracker);
 					break;
@@ -167,7 +168,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
-				if (tracker instanceof EntityTracker) {
+				if (tracker.getType() == TrackerType.ENTITY) {
 					EntityTracker entityTracker = (EntityTracker) tracker;
 					entityTracks.put(powder, entityTracker);
 					break;
@@ -182,7 +183,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
-				if (tracker instanceof EntityTracker) {
+				if (tracker.getType() == TrackerType.ENTITY) {
 					StationaryTracker stationaryTracker = (StationaryTracker) tracker;
 					stationaryTracks.put(powder, stationaryTracker);
 					break;

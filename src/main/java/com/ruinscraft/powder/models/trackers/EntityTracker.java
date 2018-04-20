@@ -17,6 +17,11 @@ public class EntityTracker implements Tracker {
 	}
 
 	@Override
+	public TrackerType getType() {
+		return TrackerType.ENTITY;
+	}
+
+	@Override
 	public Location getCurrentLocation() {
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity) entity;
