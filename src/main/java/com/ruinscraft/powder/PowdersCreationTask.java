@@ -1,7 +1,6 @@
 package com.ruinscraft.powder;
 
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -9,6 +8,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.models.trackers.EntityTracker;
+import com.ruinscraft.powder.models.trackers.TrackerType;
 import com.ruinscraft.powder.models.Powder;
 
 public class PowdersCreationTask extends BukkitRunnable {
@@ -33,6 +34,13 @@ public class PowdersCreationTask extends BukkitRunnable {
 			List<Powder> powdersToRemove = new ArrayList<Powder>();
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Location location = powderTask.getPowders().get(powder).getCurrentLocation();
+				if (powderTask.getPowders().get(powder).getType() == TrackerType.ENTITY) {
+					EntityTracker entityTracker = (EntityTracker) powderTask.getPowders().get(powder);
+					if (entityTracker.getEntity().isDead()) {
+						powdersToRemove.add(powder);
+						continue;
+					}
+				}
 				if (powder.getPowderElements().isEmpty()) {
 					powdersToRemove.add(powder);
 					continue;

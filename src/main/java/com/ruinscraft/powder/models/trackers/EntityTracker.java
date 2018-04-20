@@ -1,19 +1,30 @@
 package com.ruinscraft.powder.models.trackers;
 
+import java.util.UUID;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 
 public class EntityTracker implements Tracker {
 
-	private Entity entity;
+	private UUID entityId;
 
 	public EntityTracker(Entity entity) {
-		this.entity = entity;
+		this.entityId = entity.getUniqueId();
+	}
+	
+	public EntityTracker(UUID entityId) {
+		this.entityId = entityId;
 	}
 
 	public Entity getEntity() {
-		return entity;
+		return Bukkit.getEntity(entityId);
+	}
+	
+	public UUID getEntityUUID() {
+		return entityId;
 	}
 
 	@Override
@@ -23,6 +34,7 @@ public class EntityTracker implements Tracker {
 
 	@Override
 	public Location getCurrentLocation() {
+		Entity entity = Bukkit.getEntity(entityId);
 		if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity) entity;
 			return livingEntity.getEyeLocation();

@@ -103,7 +103,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder otherPowder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(otherPowder);
-				if (tracker.getType() == TrackerType.PLAYER && powder.equals(otherPowder)) {
+				if (tracker.getType() == TrackerType.PLAYER && powder.getName().equals(otherPowder.getName())) {
 					playerPowderTasks.add(powderTask);
 					break;
 				}
