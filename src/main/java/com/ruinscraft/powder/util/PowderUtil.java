@@ -160,6 +160,10 @@ public class PowderUtil {
 			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
 					"/powder remove <name> " + PowderUtil.INFO + "- Removes a named Powder"));
 		}
+		if (player.hasPermission("powder.attach")) {
+			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
+					"/powder attach <Powder> " + PowderUtil.INFO + "- Attaches a Powder to an entity in front of you"));
+		}
 		if (player.hasPermission("powder.addto")) {
 			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
 					"/powder addto <name> <Powder> " + PowderUtil.INFO + "- Adds a Powder to an existing named Powder"));

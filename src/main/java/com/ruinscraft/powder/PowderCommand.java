@@ -273,6 +273,12 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Entity not found in your line of sight.", label);
 					return false;
 				}
+				if (entity instanceof Player) {
+					newPowder.spawn((Player) entity);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
+							"Successfully assigned '" + newPowder.getName() + "' to " + entity.getName() + ".", label);
+					return true;
+				}
 				newPowder.spawn(entity);
 				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 						"Successfully assigned '" + newPowder.getName() + "' to '" + entity.getCustomName() + "'.", label);
