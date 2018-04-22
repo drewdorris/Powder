@@ -11,8 +11,10 @@ public class Dust implements PowderElement {
 	private PowderParticle powderParticle;
 	// the limit radius that this Dust can be spawned in in
 	private double radius;
-	// the limit height (up & down) that this Dust can be spawned in
+	// the mean height of where the Dust should be spawned
 	private double height;
+	// the distance in y value up/down from getHeight() where 
+	private double span;
 	// when to start displaying this Dust
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -27,16 +29,19 @@ public class Dust implements PowderElement {
 		this.powderParticle = dust.getPowderParticle();
 		this.radius = dust.getRadius();
 		this.height = dust.getHeight();
+		this.span = dust.getYSpan();
 		this.startTime = dust.getStartTime();
 		this.repeatTime = dust.getRepeatTime();
 		this.lockedIterations = dust.getLockedIterations();
 		this.iterations = 0;
 	}
 
-	public Dust(PowderParticle powderParticle, double radius, double height, int startTime, int repeatTime, int lockedIterations) {
+	public Dust(PowderParticle powderParticle, double radius, double height, 
+			double span, int startTime, int repeatTime, int lockedIterations) {
 		this.powderParticle = powderParticle;
 		this.radius = radius;
 		this.height = height;
+		this.span = span;
 		this.startTime = startTime;
 		this.repeatTime = repeatTime;
 		this.lockedIterations = lockedIterations;
@@ -53,6 +58,10 @@ public class Dust implements PowderElement {
 
 	public double getHeight() {
 		return height;
+	}
+	
+	public double getYSpan() {
+		return span;
 	}
 
 	public int getStartTime() {
@@ -86,7 +95,7 @@ public class Dust implements PowderElement {
 	// creates this Dust at the designated location
 	public void create(Location location) {
 		Location particleLocation = location.clone().add((Math.random() - .5) * (2 * getRadius()), 
-				(Math.random() - .5) * (2 * getHeight()) - 1, (Math.random() - .5) * (2 * getRadius()));
+				((Math.random() - .5) * getYSpan()) + getHeight() - .625, (Math.random() - .5) * (2 * getRadius()));
 		// if no block in the way
 		if (particleLocation.getBlock().isEmpty()) {
 			PowderParticle powderParticle = getPowderParticle();

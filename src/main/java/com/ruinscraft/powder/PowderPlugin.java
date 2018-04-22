@@ -317,7 +317,7 @@ public class PowderPlugin extends JavaPlugin {
 				if (!(powderConfig.getConfigurationSection(section + ".dusts") == null)) {
 					for (String ss : powderConfig.getConfigurationSection(section + ".dusts").getKeys(false)) {
 						String eachSection = section + ".dusts." + ss;
-						String dustName = powderConfig.getString(eachSection + ".name", "null");
+						String dustName = powderConfig.getString(eachSection + ".particleChar", "null");
 						char character = dustName.charAt(0);
 						PowderParticle powderParticle = powder.getPowderParticle(character);
 						if (powderParticle == null) {
@@ -330,6 +330,7 @@ public class PowderPlugin extends JavaPlugin {
 						}
 						double radius = powderConfig.getDouble(eachSection + ".radius", 1);
 						double height = powderConfig.getDouble(eachSection + ".height", 1);
+						double span = powderConfig.getDouble(eachSection + ".span", 1);
 						List<PowderElement> addedPowderElements = new ArrayList<PowderElement>();
 						if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
 							String noteName = powderConfig.getString(eachSection + ".attachedToNote", "BLOCK_NOTE_HARP");
@@ -337,8 +338,8 @@ public class PowderPlugin extends JavaPlugin {
 								 if (powderElement instanceof SoundEffect) {
 									 SoundEffect soundEffect = (SoundEffect) powderElement;
 									 if (soundEffect.getSound().name().equals(noteName)) {
-										 addedPowderElements.add(new Dust(powderParticle, radius, height, 
-												 soundEffect.getStartTime(), soundEffect.getRepeatTime(), 1));
+										 addedPowderElements.add(new Dust(powderParticle, radius, height, span, 
+												 soundEffect.getStartTime(), soundEffect.getRepeatTime(), soundEffect.getLockedIterations()));
 									 }
 								 }
 							}
@@ -348,7 +349,8 @@ public class PowderPlugin extends JavaPlugin {
 						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
 						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
 						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.addPowderElement(new Dust(powderParticle, radius, height, startTime, repeatTime, iterations));
+						powder.addPowderElement(new Dust(powderParticle, radius, height, span, 
+								startTime, repeatTime, iterations));
 					}
 				}
 
