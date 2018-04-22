@@ -203,8 +203,8 @@ public class ParticleMatrix implements PowderElement {
 				Math.cos(forwardPitch - sidewaysTilt), Math.sin(forwardPitch + sidewaysTilt) * Math.sin(forwardYaw)).normalize()).multiply(spacing);
 
 		for (Layer layer : getLayers()) {
-			Location startingLocation = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp() + 1)))
-					.add(sideToSideVector.clone().multiply(getPlayerLeft()))
+			Location startingLocation = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
+					.subtract(sideToSideVector.clone().multiply(getPlayerLeft()))
 					.add(forwardVector.clone().multiply(layer.getPosition()));
 			for (List<PowderParticle> powderParticles : layer.getRows()) {
 				int i = 0;
@@ -212,16 +212,16 @@ public class ParticleMatrix implements PowderElement {
 					i--;
 					Particle particle = powderParticle.getParticle();
 					if (particle == null) {
-						startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
+						startingLocation = startingLocation.clone().add(sideToSideVector.clone());
 						continue;
 					}
 					// spawn the particle
 					location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), powderParticle.getAmount(), 
 							powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
 							powderParticle.getZOff() / 255, powderParticle.getData());
-					startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
+					startingLocation = startingLocation.clone().add(sideToSideVector.clone());
 				}
-				startingLocation = startingLocation.clone().subtract(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());
+				startingLocation = startingLocation.clone().add(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());
 			}
 		}
 	}

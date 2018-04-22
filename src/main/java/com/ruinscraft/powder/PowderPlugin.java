@@ -405,11 +405,11 @@ public class PowderPlugin extends JavaPlugin {
 										left = (t.indexOf("?")) + 1;
 										// set default if it's the matrix spawned immediately 
 										if (particleMatrix.getStartTime() == 0) {
-											powder.setDefaultLeft(left);
-											powder.setDefaultUp(up);
+											powder.setDefaultLeft(left - 1);
+											powder.setDefaultUp(up + 1);
 										}
-										particleMatrix.setPlayerLeft(left);
-										particleMatrix.setPlayerUp(up);
+										particleMatrix.setPlayerLeft(left - 1);
+										particleMatrix.setPlayerUp(up + 1);
 									}
 								}
 								// add a row to the Layer if it has gone through everything

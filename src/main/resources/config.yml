@@ -2,21 +2,17 @@
 ##  Powder  ##
 ## # #  # # ##
 
-## Prefix before each plugin message
 prefix: '&7[&9Powder&7] '
 
-## Maximum amount of Powders that a user can be using at one time
-maxPowdersAtOneTime: 3
+colors:
+  info: 'GRAY'
+  highlight: 'LIGHT_PURPLE'
+  highlight_two: 'GREEN'
+  highlight_three: 'YELLOW'
+  no_perm: 'DARK_GRAY'
+  warning: 'RED'
 
-## If true, users can use the same Powder multiple times at once
-allowSamePowdersAtOneTime: true
-
-## Minimum time allowed between usage of Powders
-secondsBetweenPowderUsage: 3
-
-## Powders per page in the list of Powders
-pageLength: 7
-
+## Use storage to continue Powders between each server
 storage:
   mysql:
     use: false
@@ -26,3 +22,37 @@ storage:
     table: powders
     username: root
     password: password
+
+## Maximum amount of Powders that a user can be using at one time
+maxPowdersAtOneTime: 3
+
+## If true, users can use the same Powder multiple times at once
+allowSamePowdersAtOneTime: true
+
+## Minimum time allowed between usage of Powders
+secondsBetweenPowderUsage: 5
+
+## Powders per page in the list of Powders
+pageLength: 7
+
+## Divide Powders into categories
+categoriesEnabled: true
+
+## List of categories
+## {total} -- Number of Powders in this category
+## {total-hidden} -- Number of unhidden Powders in this category
+categories:
+  Emojis:
+    desc: '{total} Emojis'
+  Flags:
+    desc: '{total} Flags of Countries'
+  Songs:
+    desc: '{total} Songs with Effects'
+  Effects:
+    desc: '{total} Random Particles / Effects'
+  Crowns:
+    desc: '{total} Particles Around your Head'
+
+## Where to source Powder configuration files from
+powderSources:
+  - 'powders.yml'
