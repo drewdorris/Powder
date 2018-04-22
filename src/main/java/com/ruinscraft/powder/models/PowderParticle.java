@@ -8,6 +8,8 @@ public class PowderParticle {
 	private char particleChar;
 	// the Particle assigned with the PowderParticle
 	private Particle particle;
+	// amount of Particles
+	private int amount;
 	// x-offset data
 	private double xOff;
 	// y-offset data
@@ -15,39 +17,33 @@ public class PowderParticle {
 	// z-offset data
 	private double zOff;
 	// extra data 
-	private Object data;
+	private double data;
 	
 	public PowderParticle() {
 		particleChar = 0;
 		particle = null;
 	}
 
-	public PowderParticle(char particleChar, Particle particle, 
-			double xOff, double yOff, double zOff, Object data) {
+	public PowderParticle(char particleChar, Particle particle, int amount, 
+			double xOff, double yOff, double zOff, double data) {
 		this.particleChar = particleChar;
 		this.particle = particle;
+		this.amount = amount;
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.zOff = zOff;
 		this.data = data;
 	}
 	
-	public PowderParticle(Particle particle, double xOff, double yOff, double zOff, Object data) {
+	public PowderParticle(Particle particle, int amount, 
+			double xOff, double yOff, double zOff, double data) {
 		this.particleChar = 0;
 		this.particle = particle;
+		this.amount = amount;
 		this.xOff = xOff;
 		this.yOff = yOff;
 		this.zOff = zOff;
 		this.data = data;
-	}
-
-	public PowderParticle(char particleChar, Particle particle,
-			double xOff, double yOff, double zOff) {
-		this.particleChar = particleChar;
-		this.particle = particle;
-		this.xOff = xOff;
-		this.yOff = yOff;
-		this.zOff = zOff;
 	}
 
 	public PowderParticle(char particleChar, Particle particle) {
@@ -62,6 +58,10 @@ public class PowderParticle {
 	public Particle getParticle() {
 		return particle;
 	}
+	
+	public int getAmount() {
+		return amount;
+	}
 
 	public double getXOff() {
 		return xOff;
@@ -75,7 +75,7 @@ public class PowderParticle {
 		return zOff;
 	}
 
-	public Object getData() {
+	public double getData() {
 		return data;
 	}
 

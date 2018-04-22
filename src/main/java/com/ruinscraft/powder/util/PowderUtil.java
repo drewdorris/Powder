@@ -442,6 +442,14 @@ public class PowderUtil {
 		return id.toString();
 	}
 
+	public static String getFileNameFromURL(String url) {
+		if (url.contains("/")) {
+			return url.substring(url.indexOf("/"), url.length() - 1);
+		} else {
+			return url;
+		}
+	}
+
 	// returns a URL from a string, adds http:// if appended
 	public static URL readURL(String urlName) {
 		URL url;

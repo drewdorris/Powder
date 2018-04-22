@@ -216,21 +216,9 @@ public class ParticleMatrix implements PowderElement {
 						continue;
 					}
 					// spawn the particle
-					if (powderParticle.getData() == null) {
-						if (powderParticle.getXOff() == 0) {
-							location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 1, 
-									powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
-									powderParticle.getZOff() / 255, 1);
-							continue;
-						}
-						location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 0, 
-								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255, 
-								powderParticle.getZOff() / 255, 1);
-					} else {
-						location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), 1, 
-								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-								powderParticle.getZOff() / 255, (double) powderParticle.getData());
-					}
+					location.getWorld().spawnParticle(powderParticle.getParticle(), startingLocation.clone(), powderParticle.getAmount(), 
+							powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+							powderParticle.getZOff() / 255, powderParticle.getData());
 					startingLocation = startingLocation.clone().subtract(sideToSideVector.clone());
 				}
 				startingLocation = startingLocation.clone().subtract(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());

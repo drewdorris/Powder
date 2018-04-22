@@ -85,21 +85,14 @@ public class Dust implements PowderElement {
 
 	// creates this Dust at the designated location
 	public void create(Location location) {
-		double radiusZoneX = (Math.random() - .5) * (2 * getRadius());
-		double radiusZoneZ = (Math.random() - .5) * (2 * getRadius());
-		double heightZone = (Math.random() - .5) * (2 * getHeight());
-		Location particleLocation = location.add(radiusZoneX, heightZone + 1, radiusZoneZ);
+		Location particleLocation = location.clone().add((Math.random() - .5) * (2 * getRadius()), 
+				(Math.random() - .5) * (2 * getHeight()) - 1, (Math.random() - .5) * (2 * getRadius()));
 		// if no block in the way
 		if (particleLocation.getBlock().isEmpty()) {
 			PowderParticle powderParticle = getPowderParticle();
-			if (powderParticle.getData() == null) {
-				location.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 0, (powderParticle.getXOff() / 255), 
-						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 1);
-			} else {
-				location.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, 1, (powderParticle.getXOff() / 255), 
-						powderParticle.getYOff() / 255, powderParticle.getZOff() / 255, 
-						(double) powderParticle.getData());
-			}
+			location.getWorld().spawnParticle(powderParticle.getParticle(), particleLocation, powderParticle.getAmount(), 
+					powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+					powderParticle.getZOff() / 255, (double) powderParticle.getData());
 		}
 	}
 

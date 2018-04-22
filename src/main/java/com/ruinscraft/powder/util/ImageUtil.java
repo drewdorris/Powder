@@ -20,16 +20,26 @@ import com.ruinscraft.powder.models.PowderParticle;
 
 public class ImageUtil {
 
-	public static List<List<PowderParticle>> getRows(List<List<PowderParticle>> rows, String name, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRows(List<List<PowderParticle>> rows, String name, 
+			int resizedWidth, int resizedHeight) throws IOException {
 		if (name.contains("/")) {
 			return getRowsFromURL(rows, name, resizedWidth, resizedHeight);
 		} else {
 			return getRowsFromPath(rows, name, resizedWidth, resizedHeight);
 		}
 	}
+	
+	public static boolean imageExists(String fileName) {
+		if (new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName).exists()) {
+			return true;
+		} else {
+			return false;
+		}
+	}
 
 	// gets rows of a Layer from an image from a URL
-	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, String urlName, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, String urlName, 
+			int resizedWidth, int resizedHeight) throws IOException {
 		URL url = PowderUtil.readURL(urlName);
 
 		try {
@@ -49,7 +59,8 @@ public class ImageUtil {
 	}
 
 	// gets rows of a Layer from an image from a path in the data folder
-	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, String fileName, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, 
+			String fileName, int resizedWidth, int resizedHeight) throws IOException {
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
 			BufferedImage bufferedImage;
@@ -66,16 +77,16 @@ public class ImageUtil {
 	}
 
 	// scales an image to the given width/height (height is generally ignored)
-	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height){
+	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height) {
 		int finalWidth = width;
 		int finalHeight = height;
-		double factor = 1.0d;
-		if(bufferedImage.getWidth() > bufferedImage.getHeight()){
-			factor = ((double)bufferedImage.getHeight()/(double)bufferedImage.getWidth());
-			finalHeight = (int)(finalWidth * factor);                
-		}else{
-			factor = ((double)bufferedImage.getWidth()/(double)bufferedImage.getHeight());
-			finalWidth = (int)(finalHeight * factor);
+		double factor = 1.0;
+		if (bufferedImage.getWidth() > bufferedImage.getHeight()) {
+			factor = ((double) bufferedImage.getHeight() / (double) bufferedImage.getWidth());
+			finalHeight = (int) (finalWidth * factor);                
+		} else {
+			factor = ((double) bufferedImage.getWidth() / (double) bufferedImage.getHeight());
+			finalWidth = (int) (finalHeight * factor);
 		}   
 		BufferedImage resizedImg = new BufferedImage(finalWidth, finalHeight, BufferedImage.TRANSLUCENT);
 		Graphics2D g2 = resizedImg.createGraphics();
@@ -112,7 +123,7 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				PowderParticle powderParticle = new PowderParticle(Particle.REDSTONE, arr, gee, bee, null);
+				PowderParticle powderParticle = new PowderParticle(Particle.REDSTONE, 0, arr, gee, bee, 1);
 				row.add(powderParticle);
 			}
 			rows.add(row);
