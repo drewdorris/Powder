@@ -47,14 +47,14 @@ public class PowdersCreationTask extends BukkitRunnable {
 				Location location = powderTask.getPowders().get(powder).getCurrentLocation();
 				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
 				for (PowderElement element : powder.getPowderElements().keySet()) {
-					if (powder.getPowderElements().get(element) + element.getRepeatTime() <= tick) {
+					if (powder.getPowderElements().get(element) <= tick) {
 						if (element.getIterations() >= element.getLockedIterations()) {
 							elementsToRemove.add(element);
 							continue;
 						}
 						element.create(location);
 						element.iterate();
-						powder.getPowderElements().put(element, tick);
+						powder.getPowderElements().put(element, tick + element.getRepeatTime());
 					}
 				}
 				for (PowderElement element : elementsToRemove) {
