@@ -89,8 +89,11 @@ public class PowderHandler {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
 				if (tracker.getType() == TrackerType.PLAYER) {
-					playerPowderTasks.add(powderTask);
-					break;
+					PlayerTracker playerTracker = (PlayerTracker) tracker;
+					if (playerTracker.getUUID().equals(uuid)) {
+						playerPowderTasks.add(powderTask);
+						break;
+					}
 				}
 			}
 		}
@@ -104,8 +107,11 @@ public class PowderHandler {
 			for (Powder otherPowder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(otherPowder);
 				if (tracker.getType() == TrackerType.PLAYER && powder.getName().equals(otherPowder.getName())) {
-					playerPowderTasks.add(powderTask);
-					break;
+					PlayerTracker playerTracker = (PlayerTracker) tracker;
+					if (playerTracker.getUUID().equals(uuid)) {
+						playerPowderTasks.add(powderTask);
+						break;
+					}
 				}
 			}
 		}
