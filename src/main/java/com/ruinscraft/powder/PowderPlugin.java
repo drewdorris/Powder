@@ -360,6 +360,7 @@ public class PowderPlugin extends JavaPlugin {
 				if (!(powderConfig.getConfigurationSection(section + ".matrices") == null)) {
 					for (String ss : powderConfig.getConfigurationSection(section + ".matrices").getKeys(false)) {
 						String eachSection = section + ".matrices." + ss;
+						boolean containsPlayer = false;
 						ParticleMatrix particleMatrix = new ParticleMatrix();
 						particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
 						particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
@@ -403,6 +404,7 @@ public class PowderPlugin extends JavaPlugin {
 									up++;
 									// if the string contains location/player
 									if (t.contains("?")) {
+										containsPlayer = true;
 										// set the left & up of the Layer so createPowders() knows where to start
 										left = (t.indexOf("?")) + 1;
 										// set default if it's the matrix spawned immediately 
@@ -434,6 +436,10 @@ public class PowderPlugin extends JavaPlugin {
 								layer.addRow(row);
 							}
 							particleMatrix.addLayer(layer);
+						}
+						if (!containsPlayer) {
+							particleMatrix.setPlayerLeft(powder.getDefaultLeft());
+							particleMatrix.setPlayerUp(powder.getDefaultUp());
 						}
 						powder.addPowderElement(particleMatrix);
 					}

@@ -281,7 +281,7 @@ public class PowderCommand implements CommandExecutor {
 				}
 				newPowder.spawn(entity);
 				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-						"Successfully assigned '" + newPowder.getName() + "' to '" + entity.getCustomName() + "'.", label);
+						"Successfully assigned '" + newPowder.getName() + "' to '" + PowderUtil.cleanEntityName(entity) + "'.", label);
 				return true;
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {

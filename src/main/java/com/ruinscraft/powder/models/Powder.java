@@ -164,8 +164,8 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(Entity entity) {
-		PowderTask powderTask = new PowderTask(entity.getName() + "-" + PowderUtil.generateID(8),
-				this, new EntityTracker(entity));
+		PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
+				PowderUtil.generateID(8), this, new EntityTracker(entity));
 		spawn(powderTask);
 	}
 
@@ -176,7 +176,7 @@ public class Powder implements Cloneable {
 
 	// spawns a given Powder for the given user
 	public void spawn(Player player) {
-		PowderTask powderTask = new PowderTask(player.getName() + "-" + PowderUtil.generateID(6), 
+		PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6), 
 				this, new PlayerTracker(player.getUniqueId()));
 		spawn(powderTask);
 		PowderUtil.savePowdersForPlayer(player.getUniqueId());

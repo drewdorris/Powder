@@ -3,6 +3,7 @@ package com.ruinscraft.powder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -50,9 +51,11 @@ public class PowdersCreationTask extends BukkitRunnable {
 					if (powder.getPowderElements().get(element) <= tick) {
 						if (element.getIterations() >= element.getLockedIterations()) {
 							elementsToRemove.add(element);
-							continue;
+							return;
 						}
-						element.create(location);
+						Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+							element.create(location);
+						});
 						element.iterate();
 						powder.getPowderElements().put(element, tick + element.getRepeatTime());
 					}

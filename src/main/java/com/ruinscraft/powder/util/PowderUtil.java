@@ -424,6 +424,17 @@ public class PowderUtil {
 		}
 		return nearestEntity;
 	}
+	
+	public static String cleanEntityName(Entity entity) {
+		String name = entity.getName().replaceAll(" ", "-");
+		if (name.contains("entity")) {
+			name = name.replace("entity.", "").replace(".name", "");
+		}
+		if (name == "null") {
+			name = "Unknown";
+		}
+		return name;
+	}
 
 	public static Set<UUID> getOnlineUUIDs() {
 		return Bukkit.getOnlinePlayers().stream().map(Player::getUniqueId).collect(Collectors.toSet());
