@@ -36,11 +36,10 @@ public class PowderCommand implements CommandExecutor {
 			try {
 				if (args[0].equals("reload")) {
 					// reload
-					PowderUtil.notifyOfReload();
 					PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 						@Override
 						public void run() {
-							PowderUtil.reloadCommand();
+							PowderPlugin.getInstance().reload();
 						}
 					});
 				} else {
@@ -95,12 +94,10 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "You don't have permission to do this.", label);
 					return false;
 				}
-				// reload if permission
-				PowderUtil.notifyOfReload();
 				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
 					@Override
 					public void run() {
-						PowderUtil.reloadCommand();
+						PowderPlugin.getInstance().reload();
 					}
 				});
 				return true;

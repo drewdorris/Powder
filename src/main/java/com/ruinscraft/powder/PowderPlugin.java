@@ -2,34 +2,24 @@ package com.ruinscraft.powder;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ruinscraft.powder.models.Dust;
-import com.ruinscraft.powder.models.Layer;
-import com.ruinscraft.powder.models.ParticleMatrix;
-import com.ruinscraft.powder.models.ParticleName;
 import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.PowderParticle;
-import com.ruinscraft.powder.models.SoundEffect;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
-import com.ruinscraft.powder.util.ImageUtil;
+import com.ruinscraft.powder.util.YamlUtil;
 import com.ruinscraft.powder.util.PowderUtil;
-import com.ruinscraft.powder.util.SoundUtil;
 
 import net.md_5.bungee.api.ChatColor;
 
@@ -50,7 +40,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		loadConfig();
+		YamlUtil.loadConfig(config);
 
 		enableStorage();
 
@@ -79,6 +69,26 @@ public class PowderPlugin extends JavaPlugin {
 		powderHandler.clearEverything();
 
 		instance = null;
+	}
+	
+	public void reload() {
+		YamlUtil.loadConfig(config);
+
+		if (useStorage()) {
+			PowderUtil.savePowdersForOnline();
+		}
+
+		enableStorage();
+		loadPowdersFromSources();
+
+		if (useStorage()) {
+			PowderUtil.loadPowdersForOnline();
+		} else {
+			for (UUID uuid : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
+						+ "Your Powders were cancelled due to a reload.", "powder");
+			}
+		}
 	}
 
 	// end all current tasks & reinitialize powderHandler
@@ -173,21 +183,9 @@ public class PowderPlugin extends JavaPlugin {
 		}
 	}
 
-	public void loadConfig() {
-		File configFile = new File(getDataFolder(), "config.yml");
-		if (!configFile.exists()) {
-			getLogger().info("config.yml not found, creating!");
-			saveDefaultConfig();
-		}
-		reloadConfig();
-		config = getConfig();
-	}
-
-	// load all Powders from their source yaml files
-	@SuppressWarnings("unchecked")
 	public void loadPowdersFromSources() {
 		// load source yaml files
-		loadPowderConfigs();
+		powderConfigs = YamlUtil.loadPowderConfigs(powderConfigs);
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
@@ -206,18 +204,7 @@ public class PowderPlugin extends JavaPlugin {
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
 
-		if (powderHandler.categoriesEnabled()) {
-			for (String s : config.getConfigurationSection("categories").getKeys(false)) {
-				powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
-			}
-			if (!powderHandler.getCategories().keySet().contains("Other")) {
-				powderHandler.addCategory("Other", "Unsorted Powders");
-			}
-		}
-
-		List<String> powderNames = new ArrayList<>();
-
-		String powders = "powders.";
+		YamlUtil.reloadCategories();
 
 		// alert online players of the reload
 		getLogger().info("Loading Powders...");
@@ -228,252 +215,30 @@ public class PowderPlugin extends JavaPlugin {
 			}
 		}
 
+		List<String> powderNames = new ArrayList<>();
 		for (FileConfiguration powderConfig : powderConfigs) {
 			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-				Powder powder = new Powder();
-
-				String section = powders + s;
-
-				// set some given values if they exist, default value if they don't
-				powder.setName(powderConfig.getString(section + ".name", null));
-				powder.setDefaultSpacing((float) powderConfig.getDouble(section + ".spacing", .5F));
-				powder.setHidden(powderConfig.getBoolean(section + ".hidden", false));
-
-				// add categories if enabled
-				if (powderHandler.categoriesEnabled()) {
-					for (String t : (List<String>) powderConfig.getList(section + ".categories", new ArrayList<String>())) {
-						if (!(powderHandler.getCategories().keySet().contains(t))) {
-							getLogger().warning("Invalid category '" + t + 
-									"' for '" + powder.getName() + "' in " + powderConfig.getName());
-							continue;
-						}
-						powder.addCategory(t);
-					}
-					if (powder.getCategories().isEmpty()) {
-						powder.addCategory("Other");
-					}
+				Powder powder = YamlUtil.loadPowderFromConfig(powderConfig, s);
+				if (powder != null) {
+					getPowderHandler().addPowder(powder);
+					powderNames.add(powder.getName());
 				}
-
-				// SoundEffect
-				// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
-				// 'sound;volume;pitch;startTime;repeatTime;iterations'
-
-				// song
-				// 'Shrek.nbs;50;2;0;2400;2'
-				// 'fileName;volume;multiplier;startTime;repeatTime;iterations'
-
-				if (!(powderConfig.getConfigurationSection(section + ".songs") == null)) {
-					for (String ss : powderConfig.getConfigurationSection(section + ".songs").getKeys(false)) {
-						String eachSection = section + ".songs." + ss;
-						String fileName = powderConfig.getString(eachSection + ".fileName", "unknownfile.nbs");
-						double volume = powderConfig.getDouble(eachSection + ".volume", 1);
-						double multiplier = powderConfig.getDouble(eachSection + ".multiplier", 1);
-						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						List<SoundEffect> songSoundEffects = SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-								multiplier, startTime, repeatTime, iterations);
-						for (SoundEffect soundEffect : songSoundEffects) {
-							powder.addPowderElement(soundEffect);
-						}
-					}
-				}
-				if (!(powderConfig.getConfigurationSection(section + ".sounds") == null)) {
-					for (String ss : powderConfig.getConfigurationSection(section + ".sounds").getKeys(false)) {
-						String eachSection = section + ".sounds." + ss;
-						String soundEnum = powderConfig.getString(eachSection + ".soundEnum", "BLOCK_NOTE_CHIME");
-						Sound sound = Sound.valueOf(soundEnum);
-						double volume = powderConfig.getDouble(eachSection + ".volume", 1);
-						float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
-						soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
-						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
-					}
-				}
-
-
-				if (!(powderConfig.getConfigurationSection(section + ".changes") == null)) {
-					for (String ss : powderConfig.getConfigurationSection(section + ".changes").getKeys(false)) {
-						String eachSection = section + ".changes." + ss;
-						String particleChar = powderConfig.getString(eachSection + ".particleChar", "A");
-						char character = particleChar.charAt(0);
-						String particleEnum = powderConfig.getString(eachSection + ".particleEnum", "HEART");
-						Particle particle = Particle.valueOf(particleEnum);
-						int amount = powderConfig.getInt(eachSection + ".amount", 1);
-						double xOffset = powderConfig.getDouble(eachSection + ".xOffset", 0);
-						double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
-						double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
-						double data = powderConfig.getDouble(eachSection + ".data", 0);
-						powder.addPowderParticle(new PowderParticle(character, particle, amount, xOffset, yOffset, zOffset, data));
-					}
-				}
-
-				// Dust
-				// 'A;2;1;3;3;0'
-				// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
-
-				if (!(powderConfig.getConfigurationSection(section + ".dusts") == null)) {
-					for (String ss : powderConfig.getConfigurationSection(section + ".dusts").getKeys(false)) {
-						String eachSection = section + ".dusts." + ss;
-						String dustName = powderConfig.getString(eachSection + ".particleChar", "null");
-						char character = dustName.charAt(0);
-						PowderParticle powderParticle = powder.getPowderParticle(character);
-						if (powderParticle == null) {
-							try {
-								Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
-								powderParticle = new PowderParticle(character, particle);
-							} catch (Exception e) {
-								powderParticle = new PowderParticle();
-							}
-						}
-						double radius = powderConfig.getDouble(eachSection + ".radius", 1);
-						double height = powderConfig.getDouble(eachSection + ".height", 1);
-						double span = powderConfig.getDouble(eachSection + ".span", 1);
-						List<PowderElement> addedPowderElements = new ArrayList<PowderElement>();
-						if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
-							String noteName = powderConfig.getString(eachSection + ".attachedToNote", "BLOCK_NOTE_HARP");
-							for (PowderElement powderElement : powder.getPowderElements().keySet()) {
-								 if (powderElement instanceof SoundEffect) {
-									 SoundEffect soundEffect = (SoundEffect) powderElement;
-									 if (soundEffect.getSound().name().equals(noteName)) {
-										 addedPowderElements.add(new Dust(powderParticle, radius, height, span, 
-												 soundEffect.getStartTime(), soundEffect.getRepeatTime(), soundEffect.getLockedIterations()));
-									 }
-								 }
-							}
-							powder.addPowderElements(addedPowderElements);
-							continue;
-						}
-						int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-						int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-						int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-						powder.addPowderElement(new Dust(powderParticle, radius, height, span, 
-								startTime, repeatTime, iterations));
-					}
-				}
-
-				// [.1;true;2;12;10]
-				// [spacing;pitch;startTime;repeatTime;iterations]
-
-				if (!(powderConfig.getConfigurationSection(section + ".matrices") == null)) {
-					for (String ss : powderConfig.getConfigurationSection(section + ".matrices").getKeys(false)) {
-						String eachSection = section + ".matrices." + ss;
-						boolean containsPlayer = false;
-						ParticleMatrix particleMatrix = new ParticleMatrix();
-						particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
-						particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
-						particleMatrix.setAddedPitch(powderConfig.getDouble(eachSection + ".addedPitch", 0));
-						particleMatrix.setAddedRotation(powderConfig.getDouble(eachSection + ".addedRotation", 0));
-						particleMatrix.setAddedTilt(powderConfig.getDouble(eachSection + ".addedTilt", 0));
-						particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
-						particleMatrix.setRepeatTime(powderConfig.getInt(eachSection + ".repeatTime", 20));
-						particleMatrix.setLockedIterations(powderConfig.getInt(eachSection + ".iterations", 1));
-						int left = 0;
-						int up = 0;
-						for (String sss : powderConfig.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
-							String eachEachSection = eachSection + ".layers." + sss;
-							Layer layer = new Layer();
-							layer.setPosition(powderConfig.getDouble(eachEachSection + ".position", 0));
-							for (String t : (List<String>) powderConfig.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
-								if (t.contains(":")) {
-									if (t.contains("img:")) {
-										String urlName;
-										int width;
-										int height;
-										t = t.replace("img:", "");
-										urlName = t.substring(0, t.indexOf(";"));
-										t = t.substring(t.indexOf(";") + 1, t.length());
-										width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-										t = t.substring(t.indexOf(";") + 1, t.length());
-										height = Integer.valueOf(t);
-										try {
-											ImageUtil.getRows(layer.getRows(), urlName, width, height);
-										} catch (IOException io) {
-											getLogger().warning("Failed to load image: '" + urlName + "'");
-											continue;
-										}
-										// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
-										up = up + height;
-									}
-									continue;
-								}
-								// if the Layer is in the same position as where the location/player is
-								if (layer.getPosition() == 0) {
-									up++;
-									// if the string contains location/player
-									if (t.contains("?")) {
-										containsPlayer = true;
-										// set the left & up of the Layer so createPowders() knows where to start
-										left = (t.indexOf("?")) + 1;
-										// set default if it's the matrix spawned immediately 
-										if (particleMatrix.getStartTime() == 0) {
-											powder.setDefaultLeft(left - 1);
-											powder.setDefaultUp(up + 1);
-										}
-										particleMatrix.setPlayerLeft(left - 1);
-										particleMatrix.setPlayerUp(up + 1);
-									}
-								}
-								// add a row to the Layer if it has gone through everything
-								// rows contain PowderParticles
-								List<PowderParticle> row = new ArrayList<PowderParticle>();
-								for (char character : t.toCharArray()) {
-									PowderParticle powderParticle;
-									powderParticle = powder.getPowderParticle(character);
-									if (powderParticle == null) {
-										try {
-											String string = String.valueOf(character);
-											Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
-											powderParticle = new PowderParticle(character, particle);
-										} catch (Exception e) {
-											powderParticle = new PowderParticle();
-										}
-									}
-									row.add(powderParticle);
-								}
-								layer.addRow(row);
-							}
-							particleMatrix.addLayer(layer);
-						}
-						if (!containsPlayer) {
-							particleMatrix.setPlayerLeft(powder.getDefaultLeft());
-							particleMatrix.setPlayerUp(powder.getDefaultUp());
-						}
-						powder.addPowderElement(particleMatrix);
-					}
-				}
-
-				if (powder.getPowderElements().isEmpty()) {
-					getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");
-					continue;
-				}
-				powderNames.add(powder.getName());
-				getPowderHandler().addPowder(powder);
 			}
 		}
 
 		// do this again to load {total} parameter
-		if (powderHandler.categoriesEnabled()) {
-			for (String s : config.getConfigurationSection("categories").getKeys(false)) {
-				powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
-			}
-			if (!powderHandler.getCategories().keySet().contains("Other")) {
-				powderHandler.addCategory("Other", "Unsorted Powders");
-			}
-		}
+		YamlUtil.reloadCategories();
 
 		String powderAmount = String.valueOf(powderNames.size());
 
 		// alert console of the Powders loaded
 		StringBuilder msg = new StringBuilder();
 		msg.append("Loaded Powders: ");
-		for (String effect : powderNames) {
-			if (powderNames.get(powderNames.size() - 1).equals(effect)) {
-				msg.append(effect + ". " + powderAmount + " total!");
+		for (String powderName : powderNames) {
+			if (powderNames.get(powderNames.size() - 1).equals(powderName)) {
+				msg.append(powderName + ". " + powderAmount + " total!");
 			} else {
-				msg.append(effect + ", ");
+				msg.append(powderName + ", ");
 			}
 		}
 		getLogger().info(msg.toString());

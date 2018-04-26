@@ -39,7 +39,7 @@ public class EntityTracker implements Tracker {
 			LivingEntity livingEntity = (LivingEntity) entity;
 			return livingEntity.getEyeLocation();
 		} else {
-			return entity.getLocation();
+			return entity.getLocation().clone().add(0, .5, 0);
 		}
 	}
 

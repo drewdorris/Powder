@@ -194,7 +194,7 @@ public class Powder implements Cloneable {
 		// create a PowderTask, add taskIDs to it
 		if (powderHandler.getPowderTasks().isEmpty()) {
 			powderHandler.addPowderTask(powderTask);
-			new PowdersCreationTask().runTaskTimerAsynchronously(PowderPlugin.getInstance(), 0L, 1L);
+			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
 		} else {
 			powderHandler.addPowderTask(powderTask);
 		}

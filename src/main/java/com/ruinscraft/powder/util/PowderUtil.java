@@ -80,16 +80,6 @@ public class PowderUtil {
 		return true;
 	}
 
-	// notify players who have a running PowderTask of the reload
-	public static void notifyOfReload() {
-		if (!(PowderPlugin.getInstance().useStorage())) {
-			for (UUID uuid : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
-				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
-						+ "Your Powders were cancelled due to a reload.", "powder");
-			}
-		}
-	}
-
 	// sends a message with the given prefix in config.yml
 	// label is the base command, i.e. "powder" or "pdr" or "pow"
 	public static void sendPrefixMessage(Player player, Object message, String label) {
@@ -111,22 +101,6 @@ public class PowderUtil {
 		fullMessage.addExtra((TextComponent) message);
 
 		player.spigot().sendMessage(fullMessage);
-	}
-
-	// reload config and all Powders, while saving database
-	public static void reloadCommand() {
-		PowderPlugin.getInstance().loadConfig();
-
-		if (PowderPlugin.getInstance().useStorage()) {
-			PowderUtil.savePowdersForOnline();
-		}
-
-		PowderPlugin.getInstance().enableStorage();
-		PowderPlugin.getInstance().loadPowdersFromSources();
-
-		if (PowderPlugin.getInstance().useStorage()) {
-			PowderUtil.loadPowdersForOnline();
-		}
 	}
 
 	// help message
