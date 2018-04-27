@@ -18,7 +18,7 @@ public class PowderParticle {
 	private double zOff;
 	// extra data 
 	private double data;
-	
+
 	public PowderParticle() {
 		particleChar = 0;
 		particle = null;
@@ -34,7 +34,7 @@ public class PowderParticle {
 		this.zOff = zOff;
 		this.data = data;
 	}
-	
+
 	public PowderParticle(Particle particle, int amount, 
 			double xOff, double yOff, double zOff, double data) {
 		this.particleChar = 0;
@@ -58,7 +58,7 @@ public class PowderParticle {
 	public Particle getParticle() {
 		return particle;
 	}
-	
+
 	public int getAmount() {
 		return amount;
 	}

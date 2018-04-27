@@ -37,7 +37,8 @@ public class SoundEffect implements PowderElement {
 		this.iterations = 0;
 	}
 
-	public SoundEffect(Sound sound, double volume, double pitch, int startTime, int repeatTime, int lockedIterations) {
+	public SoundEffect(Sound sound, double volume, double pitch, 
+			int startTime, int repeatTime, int lockedIterations) {
 		this.sound = sound;
 		this.volume = volume;
 		this.pitch = pitch;

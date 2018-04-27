@@ -28,9 +28,10 @@ public class ImageUtil {
 			return getRowsFromPath(rows, name, resizedWidth, resizedHeight);
 		}
 	}
-	
+
 	public static boolean imageExists(String fileName) {
-		if (new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName).exists()) {
+		if (new File(PowderPlugin.getInstance().getDataFolder() + 
+				"/images", fileName).exists()) {
 			return true;
 		} else {
 			return false;
@@ -38,8 +39,8 @@ public class ImageUtil {
 	}
 
 	// gets rows of a Layer from an image from a URL
-	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows, String urlName, 
-			int resizedWidth, int resizedHeight) throws IOException {
+	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows,
+			String urlName, int resizedWidth, int resizedHeight) throws IOException {
 		URL url = PowderUtil.readURL(urlName);
 
 		try {
@@ -75,7 +76,6 @@ public class ImageUtil {
 
 		return rows;
 	}
-
 	// scales an image to the given width/height (height is generally ignored)
 	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height) {
 		int finalWidth = width;
@@ -88,17 +88,20 @@ public class ImageUtil {
 			factor = ((double) bufferedImage.getWidth() / (double) bufferedImage.getHeight());
 			finalWidth = (int) (finalHeight * factor);
 		}   
-		BufferedImage resizedImg = new BufferedImage(finalWidth, finalHeight, BufferedImage.TRANSLUCENT);
+		BufferedImage resizedImg = new BufferedImage(finalWidth, 
+				finalHeight, BufferedImage.TRANSLUCENT);
 		Graphics2D g2 = resizedImg.createGraphics();
-		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+		g2.setRenderingHint(RenderingHints.KEY_INTERPOLATION, 
+				RenderingHints.VALUE_INTERPOLATION_BILINEAR);
 		g2.drawImage(bufferedImage, 0, 0, finalWidth, finalHeight, null);
 		g2.dispose();
 		return resizedImg;
 	}
 
-	// creates PowderParticles from pixels and adds them to the rows, which are then added to the Layer
-	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, BufferedImage bufferedImage, 
-			int resizedWidth, int resizedHeight) {
+	// creates PowderParticles from pixels and adds them to the rows
+	// which are then added to the Layer
+	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, 
+			BufferedImage bufferedImage, int resizedWidth, int resizedHeight) {
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
 		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
@@ -108,7 +111,8 @@ public class ImageUtil {
 				try {
 					pixel = newImage.getRGB(x, y);
 				} catch (Exception e) {
-					PowderPlugin.getInstance().getLogger().warning("Error while processing pixel " + x + ";" + y + " in image!");
+					PowderPlugin.getInstance().getLogger().warning(
+							"Error while processing pixel " + x + ";" + y + " in image!");
 					continue;
 				}
 				// if pixel is transparent, make it null
@@ -123,7 +127,8 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				PowderParticle powderParticle = new PowderParticle(Particle.REDSTONE, 0, arr, gee, bee, 1);
+				PowderParticle powderParticle = new PowderParticle(
+						Particle.REDSTONE, 0, arr, gee, bee, 1);
 				row.add(powderParticle);
 			}
 			rows.add(row);

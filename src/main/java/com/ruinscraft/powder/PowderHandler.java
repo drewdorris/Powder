@@ -106,7 +106,8 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder otherPowder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(otherPowder);
-				if (tracker.getType() == TrackerType.PLAYER && powder.getName().equals(otherPowder.getName())) {
+				if (tracker.getType() == TrackerType.PLAYER && 
+						powder.getName().equals(otherPowder.getName())) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					if (playerTracker.getUUID().equals(uuid)) {
 						playerPowderTasks.add(powderTask);
@@ -121,7 +122,8 @@ public class PowderHandler {
 	// gets all users who have a running PowderTask
 	public Set<UUID> getAllPowderTaskUsers() {
 		Set<UUID> players = new HashSet<>();
-		players.addAll(getCurrentPlayerTracks().values().stream().map(PlayerTracker::getUUID).collect(Collectors.toSet()));
+		players.addAll(getCurrentPlayerTracks().values().stream()
+				.map(PlayerTracker::getUUID).collect(Collectors.toSet()));
 		return players;
 	}
 
@@ -130,7 +132,8 @@ public class PowderHandler {
 			if (powderTask.getName() == null) {
 				continue;
 			}
-			if (powderTask.getName().equals(name) || powderTask.getName() == null && name == null) {
+			if (powderTask.getName().equals(name) || 
+					powderTask.getName() == null && name == null) {
 				return powderTask;
 			}
 		}
@@ -142,7 +145,8 @@ public class PowderHandler {
 		for (PowderTask powderTask : powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
 			for (Powder powder : powderTask.getPowders().keySet()) {
-				int distance = (int) location.distance(powderTask.getPowders().get(powder).getCurrentLocation());
+				int distance = (int) location.distance(
+						powderTask.getPowders().get(powder).getCurrentLocation());
 				if (distance < taskRange) {
 					taskRange = distance;
 				}
@@ -185,7 +189,8 @@ public class PowderHandler {
 	}
 
 	public Map<Powder, StationaryTracker> getCurrentStationaryTracks() {
-		Map<Powder, StationaryTracker> stationaryTracks = new HashMap<Powder, StationaryTracker>();
+		Map<Powder, StationaryTracker> stationaryTracks = 
+				new HashMap<Powder, StationaryTracker>();
 		for (PowderTask powderTask : powderTasks) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				Tracker tracker = powderTask.getPowders().get(powder);
@@ -201,7 +206,8 @@ public class PowderHandler {
 
 	public PowderTask getPowderTask(Powder powder, Tracker tracker) {
 		for (PowderTask powderTask : powderTasks) {
-			if (powderTask.getPowders().containsKey(powder) && powderTask.getPowders().containsValue(tracker)) {
+			if (powderTask.getPowders().containsKey(powder) && 
+					powderTask.getPowders().containsValue(tracker)) {
 				return powderTask;
 			}
 		}
@@ -300,7 +306,8 @@ public class PowderHandler {
 	public void addCategory(String category, String description) {
 		this.categories.put(category, PowderUtil.color(description
 				.replace("{total}", String.valueOf(getPowdersFromCategory(category).size()))
-				.replace("{total-hidden}", String.valueOf(getUnhiddenPowdersFromCategory(category).size()))));
+				.replace("{total-hidden}", 
+						String.valueOf(getUnhiddenPowdersFromCategory(category).size()))));
 	}
 
 	// sets description for a given category

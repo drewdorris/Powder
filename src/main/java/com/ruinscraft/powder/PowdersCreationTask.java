@@ -34,8 +34,10 @@ public class PowdersCreationTask extends BukkitRunnable {
 			List<Powder> powdersToRemove = new ArrayList<Powder>();
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				if (powderTask.getPowders().get(powder).getType() == TrackerType.ENTITY) {
-					EntityTracker entityTracker = (EntityTracker) powderTask.getPowders().get(powder);
-					if (entityTracker.getEntity() == null || entityTracker.getEntity().isDead()) {
+					EntityTracker entityTracker = 
+							(EntityTracker) powderTask.getPowders().get(powder);
+					if (entityTracker.getEntity() == null 
+							|| entityTracker.getEntity().isDead()) {
 						powdersToRemove.add(powder);
 						continue;
 					}
@@ -44,7 +46,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 					powdersToRemove.add(powder);
 					continue;
 				}
-				Location location = powderTask.getPowders().get(powder).getCurrentLocation();
+				Location location = 
+						powderTask.getPowders().get(powder).getCurrentLocation();
 				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
 				for (PowderElement element : powder.getPowderElements().keySet()) {
 					if (powder.getPowderElements().get(element) <= tick) {
@@ -54,7 +57,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 						}
 						element.create(location);
 						element.iterate();
-						powder.getPowderElements().put(element, tick + element.getRepeatTime());
+						powder.getPowderElements().put(
+								element, tick + element.getRepeatTime());
 					}
 				}
 				for (PowderElement element : elementsToRemove) {

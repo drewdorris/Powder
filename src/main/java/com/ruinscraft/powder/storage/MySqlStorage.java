@@ -26,8 +26,10 @@ public class MySqlStorage implements SqlStorage {
 	private String insert_powder;
 	private String delete_powders;
 
-	public MySqlStorage(String host, int port, String database, String username, String password, String powdersTable) {
-		create_table = "CREATE TABLE IF NOT EXISTS " + powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
+	public MySqlStorage(String host, int port, 
+			String database, String username, String password, String powdersTable) {
+		create_table = "CREATE TABLE IF NOT EXISTS " + 
+				powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
 		query_powders = "SELECT * FROM " + powdersTable + " WHERE uuid = ?;";
 		insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
 		delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";

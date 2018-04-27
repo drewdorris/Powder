@@ -36,19 +36,19 @@ public class PowderCommand implements CommandExecutor {
 			try {
 				if (args[0].equals("reload")) {
 					// reload
-					PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
-						@Override
-						public void run() {
-							PowderPlugin.getInstance().reload();
-						}
+					PowderPlugin.getInstance().getServer().getScheduler()
+					.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+						PowderPlugin.getInstance().reload();
 					});
 				} else {
 					PowderPlugin.getInstance().getLogger().info(
-							PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
+							PowderPlugin.getInstance().getName() + 
+							" | " + PowderPlugin.getInstance().getDescription());
 				}
 			} catch (Exception e) {
 				PowderPlugin.getInstance().getLogger().info(
-						PowderPlugin.getInstance().getName() + " | " + PowderPlugin.getInstance().getDescription());
+						PowderPlugin.getInstance().getName() + 
+						" | " + PowderPlugin.getInstance().getDescription());
 			}
 			return true;
 		}
@@ -57,7 +57,9 @@ public class PowderCommand implements CommandExecutor {
 
 		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {
-			PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "You don't have permission to use /" + label + ".", label);
+			PowderUtil.sendPrefixMessage(player, 
+					PowderUtil.WARNING + "You don't have permission to use /" + 
+							label + ".", label);
 			return false;
 		}
 
@@ -69,9 +71,13 @@ public class PowderCommand implements CommandExecutor {
 		// if no args, lists categories if categories enabled, else list all Powders
 		if (args.length < 1) {
 			if (powderHandler.categoriesEnabled()) {
-				PowderUtil.listCategories(player, powderHandler.getCategories(), " categories ", 1, pageLength, label);
+				PowderUtil.listCategories(
+						player, powderHandler.getCategories(), 
+						" categories ", 1, pageLength, label);
 			} else {
-				PowderUtil.listPowders(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
+				PowderUtil.listPowders(
+						player, powderHandler.getPowders(), 
+						" list ", 1, pageLength, label);
 			}
 			return false;
 		}
@@ -91,14 +97,14 @@ public class PowderCommand implements CommandExecutor {
 				return false;
 			} else if (args[0].equals("reload")) {
 				if (!(player.hasPermission("powder.reload"))) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "You don't have permission to do this.", label);
+					PowderUtil.sendPrefixMessage(
+							player, PowderUtil.WARNING + 
+							"You don't have permission to do this.", label);
 					return false;
 				}
-				PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), new Runnable() {
-					@Override
-					public void run() {
-						PowderPlugin.getInstance().reload();
-					}
+				PowderPlugin.getInstance().getServer().getScheduler()
+				.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+					PowderPlugin.getInstance().reload();
 				});
 				return true;
 			} else if (args[0].equals("*")) {
@@ -109,12 +115,15 @@ public class PowderCommand implements CommandExecutor {
 				} else {
 					// cancel all Powders
 					if (powderHandler.getPowderTasks(player.getUniqueId()).isEmpty()) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "There are no Powders currently active.", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + 
+								"There are no Powders currently active.", label);
 						return false;
 					}
 					int amount = PowderUtil.cancelAllPowders(player.getUniqueId());
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Successfully cancelled all Powders! (" + 
-							amount + " total)", label);
+					PowderUtil.sendPrefixMessage(player, 
+							PowderUtil.INFO + "Successfully cancelled all Powders! (" + 
+									amount + " total)", label);
 					return true;
 				}
 				// list Powders, not by category
@@ -125,7 +134,8 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				PowderUtil.listPowders(player, powderHandler.getPowders(), " list ", page, pageLength, label);
+				PowderUtil.listPowders(player, powderHandler.getPowders(), 
+						" list ", page, pageLength, label);
 				return false;
 				// list all categories
 			} else if (args[0].equals("cancel")) {
@@ -133,13 +143,17 @@ public class PowderCommand implements CommandExecutor {
 				try {
 					powderTaskName = args[1];
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Please specify a Powder.", label);
+					PowderUtil.sendPrefixMessage(player, 
+							PowderUtil.WARNING + "Please specify a Powder.", label);
 					return false;
 				}
 				if (powderHandler.getPowder(powderTaskName) != null) {
-					Set<PowderTask> powderTasks = powderHandler.getPowderTasks(player.getUniqueId(), powderHandler.getPowder(powderTaskName));
+					Set<PowderTask> powderTasks = powderHandler.getPowderTasks(
+							player.getUniqueId(), 
+							powderHandler.getPowder(powderTaskName));
 					if (powderTasks.isEmpty()) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "There are none of this Powder currently active.", label);
+						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+								"There are none of this Powder currently active.", label);
 						return false;
 					} else {
 						powderTaskName = Iterables.get(powderTasks, 0).getName();
@@ -147,18 +161,22 @@ public class PowderCommand implements CommandExecutor {
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(powderTaskName);
 				if (powderTask == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder specified.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown Powder specified.", label);
 					return false;
 				}
 				if (powderHandler.removePowderTask(powderTask)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Successfully cancelled '" + powderTaskName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
+							"Successfully cancelled '" + powderTaskName + "'.", label);
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Could not cancel this Powder.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Could not cancel this Powder.", label);
 				}
 				return false;
 				// list all categories
 			} else if (args[0].equals("active")) {
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Active Powders:", label);
+				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
+						"Active Powders:", label);
 				int page;
 				try {
 					page = Integer.valueOf(args[1]);
@@ -176,7 +194,8 @@ public class PowderCommand implements CommandExecutor {
 					textComponent.setColor(PowderUtil.INFO);
 					textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 							new ComponentBuilder(PowderUtil.INFO + "Powder: " 
-									+ powderName + PowderUtil.HIGHLIGHT_TWO + "\nClick to cancel this Powder")
+									+ powderName + PowderUtil.HIGHLIGHT_TWO + 
+									"\nClick to cancel this Powder")
 							.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
 					textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 							"/" + label + " cancel " + powderTask.getName() ) );
@@ -187,8 +206,10 @@ public class PowderCommand implements CommandExecutor {
 				// list Powders by category
 			} else if (args[0].equals("categories")) {
 				if (!powderHandler.categoriesEnabled()) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Categories are not enabled", label);
-					PowderUtil.listPowders(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
+					PowderUtil.sendPrefixMessage(player, 
+							PowderUtil.WARNING + "Categories are not enabled", label);
+					PowderUtil.listPowders(player, powderHandler.getPowders(), 
+							" list ", 1, pageLength, label);
 					return false;
 				}
 				int page;
@@ -197,13 +218,16 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				PowderUtil.listCategories(player, powderHandler.getCategories(), " categories ", page, pageLength, label);
+				PowderUtil.listCategories(player, powderHandler.getCategories(), 
+						" categories ", page, pageLength, label);
 				return false;
 				// list Powders by category
 			} else if (args[0].equals("category")) {
 				if (!powderHandler.categoriesEnabled()) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Categories are not enabled", label);
-					PowderUtil.listPowders(player, powderHandler.getPowders(), " list ", 1, pageLength, label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Categories are not enabled", label);
+					PowderUtil.listPowders(player, powderHandler.getPowders(), 
+							" list ", 1, pageLength, label);
 					return false;
 				}
 				String category;
@@ -211,7 +235,8 @@ public class PowderCommand implements CommandExecutor {
 				try {
 					category = args[1];
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " category <category> [page]", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + 
+							label + " category <category> [page]", label);
 					return false;
 				}
 				try {
@@ -221,13 +246,19 @@ public class PowderCommand implements CommandExecutor {
 				}
 				// list categories with similar names if given category does not exist
 				if (powderHandler.getCategory(category) == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown category '" + args[0] + "'. Similar categories:", label);
-					Map<String, String> similarCategories = powderHandler.getSimilarCategories(args[0]);
-					PowderUtil.listCategories(player, similarCategories, " category " + category + " ", page, pageLength, label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown category '" + args[0] + 
+							"'. Similar categories:", label);
+					Map<String, String> similarCategories = 
+							powderHandler.getSimilarCategories(args[0]);
+					PowderUtil.listCategories(player, similarCategories, 
+							" category " + category + " ", page, pageLength, label);
 					// else, list Powders by category
 				} else {
 					String correctCategory = powderHandler.getCategory(category);
-					PowderUtil.listPowders(player, powderHandler.getPowdersFromCategory(correctCategory), " category " + category + " ", page, pageLength, label);
+					PowderUtil.listPowders(player, 
+							powderHandler.getPowdersFromCategory(correctCategory), 
+							" category " + category + " ", page, pageLength, label);
 				}
 				return true;
 				// search by Powder name
@@ -237,7 +268,8 @@ public class PowderCommand implements CommandExecutor {
 				try {
 					search = args[1];
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/powder search <term> [page]", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"/powder search <term> [page]", label);
 					return false;
 				}
 				try {
@@ -258,27 +290,32 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[1];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " attach <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"/" + label + " attach <Powder>", label);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown Powder '" + powderName + "'.", label);
 					return false;
 				}
 				Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
 				if (entity == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Entity not found in your line of sight.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Entity not found in your line of sight.", label);
 					return false;
 				}
 				if (entity instanceof Player) {
 					newPowder.spawn((Player) entity);
 					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-							"Successfully assigned '" + newPowder.getName() + "' to " + entity.getName() + ".", label);
+							"Successfully assigned '" + newPowder.getName() + 
+							"' to " + entity.getName() + ".", label);
 					return true;
 				}
 				newPowder.spawn(entity);
 				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-						"Successfully assigned '" + newPowder.getName() + "' to '" + PowderUtil.cleanEntityName(entity) + "'.", label);
+						"Successfully assigned '" + newPowder.getName() + 
+						"' to '" + PowderUtil.cleanEntityName(entity) + "'.", label);
 				return true;
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {
@@ -292,15 +329,18 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " create <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"/" + label + " create <name> <Powder>", label);
 					return false;
 				}
 				if (!(powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "An active Powder with this name is already active!", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"An active Powder with this name is already active!", label);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown Powder '" + powderName + "'.", label);
 					return false;
 				}
 				newPowder.spawn(name, player.getLocation());
@@ -319,19 +359,23 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " addto <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"/" + label + " addto <name> <Powder>", label);
 					return false;
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "The active Powder '" + name + "' does not exist.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"The active Powder '" + name + "' does not exist.", label);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown Powder '" + powderName + "'.", label);
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
-				if (powderTask.addPowder(newPowder, new StationaryTracker(player.getLocation()))) {
+				if (powderTask.addPowder(newPowder, 
+						new StationaryTracker(player.getLocation()))) {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 							"Added Powder '" + powderName + "' to '" + name + "'.", label);
 				}
@@ -348,15 +392,18 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + " removefrom <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"/" + label + " removefrom <name> <Powder>", label);
 					return false;
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "The active Powder '" + name + "' does not exist.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"The active Powder '" + name + "' does not exist.", label);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Unknown Powder '" + powderName + "'.", label);
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
@@ -364,7 +411,8 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
 							"Removed Powder '" + powderName + "' from '" + name + "'.", label);
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Could not remove this Powder from '" + name + "'.", label);
+					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
+							"Could not remove this Powder from '" + name + "'.", label);
 				}
 				return true;
 			} else if (args[0].equals("remove")) {
@@ -373,7 +421,8 @@ public class PowderCommand implements CommandExecutor {
 				}
 				if (args.length < 2) {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + 
-							" remove <name> " + PowderUtil.INFO + "or" + PowderUtil.WARNING + " /" + label + " remove user <username>", label);
+							" remove <name> " + PowderUtil.INFO + "or" + PowderUtil.WARNING + 
+							" /" + label + " remove user <username>", label);
 					return false;
 				}
 				if (args[1].equals("user")) {
@@ -381,35 +430,46 @@ public class PowderCommand implements CommandExecutor {
 					try {
 						powderUser = Bukkit.getPlayer(args[2]);
 					} catch (Exception e) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Invalid player.", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + "Invalid player.", label);
 						return false;
 					}
 					if (powderUser == null) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Invalid player.", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + "Invalid player.", label);
 						return false;
 					}
-					if (powderHandler.getPowderTasks().removeAll(powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
+					if (powderHandler.getPowderTasks()
+							.removeAll(powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
 						if (!(powderUser.equals(player))) {
-							PowderUtil.sendPrefixMessage(powderUser, PowderUtil.WARNING + "Your Powders were canceled by another user.", label);
+							PowderUtil.sendPrefixMessage(powderUser, 
+									PowderUtil.WARNING + 
+									"Your Powders were canceled by another user.", label);
 						}
 						PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-								"Successfully removed " + powderUser.getName() + "'s Powders.", label);
+								"Successfully removed " + 
+								powderUser.getName() + "'s Powders.", label);
 					} else {
 						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-								"Could not remove " + powderUser.getName() + "'s Powders.", label);
+								"Could not remove " + 
+								powderUser.getName() + "'s Powders.", label);
 					}
 				} else {
 					String name;
 					try {
 						name = args[1];
 					} catch (Exception e) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/powder remove <name>", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + "/powder remove <name>", label);
 						return false;
 					}
 					if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Successfully removed '" + name + "'.", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.INFO + "Successfully removed '" + name + "'.", label);
 					} else {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Could not find or remove '" + name + "'.", label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + 
+								"Could not find or remove '" + name + "'.", label);
 					}
 				}
 			} else if (args[0].equals("nearby")) {
@@ -422,26 +482,32 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Nearby active Powders:", label);
-				Map<PowderTask, Integer> nearby = powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
+				PowderUtil.sendPrefixMessage(player, 
+						PowderUtil.INFO + "Nearby active Powders:", label);
+				Map<PowderTask, Integer> nearby = 
+						powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
 				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
 				for (PowderTask powderTask : nearby.keySet()) {
 					TextComponent text = new TextComponent();
 					text.setColor(PowderUtil.INFO);
 					String powderTaskName = powderTask.getName();
-					text.addExtra(PowderUtil.HIGHLIGHT + powderTaskName + PowderUtil.INFO + " " + nearby.get(powderTask) + "m");
+					text.addExtra(PowderUtil.HIGHLIGHT + 
+							powderTaskName + PowderUtil.INFO + " " + nearby.get(powderTask) + "m");
 					if (player.hasPermission("powder.remove")) {
 						Set<Powder> taskPowders = powderTask.getPowders().keySet();
 						StringBuilder stringBuilder = new StringBuilder();
 						for (Powder taskPowder : taskPowders) {
 							stringBuilder.append(taskPowder.getName());
-							if (!(Iterables.get(taskPowders, taskPowders.size() - 1) == taskPowder)) {
+							if (!(Iterables.get(taskPowders, 
+									taskPowders.size() - 1) == taskPowder)) {
 								stringBuilder.append(", ");
 							}
 						}
 						text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(PowderUtil.INFO + "Powders: " + stringBuilder.toString() + 
-										PowderUtil.HIGHLIGHT_TWO + "\nClick to cancel this active Powder")
+								new ComponentBuilder(PowderUtil.INFO + 
+										"Powders: " + stringBuilder.toString() + 
+										PowderUtil.HIGHLIGHT_TWO + 
+										"\nClick to cancel this active Powder")
 								.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
 						text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 								"/" + label + " remove " + powderTaskName ) );
@@ -453,15 +519,24 @@ public class PowderCommand implements CommandExecutor {
 			} else {
 				if (powderHandler.categoriesEnabled()) {
 					if (powderHandler.getCategory(args[0]) != null) {
-						PowderUtil.listPowders(player, powderHandler.getPowdersFromCategory(args[0]), " category " + args[0] + " ", 1, pageLength, label);
+						PowderUtil.listPowders(player, 
+								powderHandler.getPowdersFromCategory(args[0]), 
+								" category " + args[0] + " ", 1, pageLength, label);
 						return true;
 					} else {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown category '" + args[0] + "'. Similar categories:", label);
-						PowderUtil.listCategories(player, powderHandler.getSimilarCategories(args[0]), " category " + args[0] + " ", 1, pageLength, label);
+						PowderUtil.sendPrefixMessage(player, 
+								PowderUtil.WARNING + "Unknown category '" + 
+										args[0] + "'. Similar categories:", label);
+						PowderUtil.listCategories(player, 
+								powderHandler.getSimilarCategories(args[0]), 
+								" category " + args[0] + " ", 1, pageLength, label);
 					}
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "Unknown Powder '" + args[0] + "'. Similar Powders:", label);
-					PowderUtil.listPowders(player, powderHandler.getSimilarPowders(args[0]), " list ", 1, pageLength, label);
+					PowderUtil.sendPrefixMessage(player, 
+							PowderUtil.WARNING + "Unknown Powder '" + args[0] + 
+							"'. Similar Powders:", label);
+					PowderUtil.listPowders(player, powderHandler.getSimilarPowders(args[0]), 
+							" list ", 1, pageLength, label);
 				}
 				return false;
 			}
@@ -472,21 +547,25 @@ public class PowderCommand implements CommandExecutor {
 		// if no permission for the specific Powder
 		if (!PowderUtil.hasPermission(player, powder)) {
 			PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
-					+ "You don't have permission to use the Powder '" + powder.getName() + "'.", label);
+					+ "You don't have permission to use the Powder '" + 
+					powder.getName() + "'.", label);
 			return false;
 		}
 
 		// if another argument after the Powder name
 		if (args.length > 1) {
 			if (args[1].equalsIgnoreCase("cancel")) {
-				int taskAmount = powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
+				int taskAmount = 
+						powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				// cancel if exists
 				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Powder '" + powder.getName() + "' cancelled! (" + 
+					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
+							"Powder '" + powder.getName() + "' cancelled! (" + 
 							taskAmount + " total)", label);
 				} else {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
-							+ "There are no '" + powder.getName() + "' Powders currently active.", label);
+							+ "There are no '" + powder.getName() + 
+							"' Powders currently active.", label);
 				}
 			}
 			return false;
@@ -495,9 +574,12 @@ public class PowderCommand implements CommandExecutor {
 		// if this Powder is already running for the player
 		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 			// if multiple uses of one Powder are not allowed, cancel it
-			if (!(PowderPlugin.getInstance().getConfig().getBoolean("allowSamePowdersAtOneTime"))) {
+			if (!(PowderPlugin.getInstance().getConfig()
+					.getBoolean("allowSamePowdersAtOneTime"))) {
 				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Powder '" + powder.getName() + "' cancelled!", label);
+					PowderUtil.sendPrefixMessage(player, 
+							PowderUtil.INFO + "Powder '" + 
+									powder.getName() + "' cancelled!", label);
 				} else {
 					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
 							+ "There are no active '" + powder.getName() + "' Powders.", label);
@@ -510,7 +592,8 @@ public class PowderCommand implements CommandExecutor {
 		int maxSize = PowderPlugin.getInstance().getConfig().getInt("maxPowdersAtOneTime");
 		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
 			PowderUtil.sendPrefixMessage(player, 
-					PowderUtil.WARNING + "You already have " + maxSize + " Powders active!", label);
+					PowderUtil.WARNING + "You already have " + 
+							maxSize + " Powders active!", label);
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				String powderName = "null";
 				for (Powder taskPowder : powderTask.getPowders().keySet()) {
@@ -519,7 +602,8 @@ public class PowderCommand implements CommandExecutor {
 				TextComponent runningTaskText = new TextComponent(PowderUtil.INFO + "| " 
 						+ ChatColor.ITALIC + powderName);
 				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powderName + "' is currently active. Click to cancel")
+						new ComponentBuilder("'" + powderName + 
+								"' is currently active. Click to cancel")
 						.color(PowderUtil.HIGHLIGHT_THREE).create() ) );
 				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
 						"/" + label + " " + powderName + " cancel" ) );
@@ -533,16 +617,16 @@ public class PowderCommand implements CommandExecutor {
 		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
 			PowderUtil.sendPrefixMessage(player, 
-					PowderUtil.WARNING + "Please wait " + waitTime + " seconds between using each Powder.", label);
+					PowderUtil.WARNING + "Please wait " + waitTime + 
+					" seconds between using each Powder.", label);
 			return false;
 		}
 		// if there's a wait time between using each Powder
 		if (!(waitTime <= 0)) {
 			// add user to this list of recent command senders for the given amount of time
-			PowderPlugin.getInstance().getServer().getScheduler().scheduleSyncDelayedTask(PowderPlugin.getInstance(), new Runnable() {
-				public void run() {
-					recentCommandSenders.remove(player);
-				}
+			PowderPlugin.getInstance().getServer().getScheduler()
+			.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+				recentCommandSenders.remove(player);
 			}, (waitTime * 20));
 			recentCommandSenders.add(player);
 		}

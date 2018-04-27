@@ -27,7 +27,7 @@ import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.SoundEffect;
 
 public class YamlUtil {
-	
+
 	public static FileConfiguration loadConfig() {
 		FileConfiguration config = null;
 		PowderPlugin instance = PowderPlugin.getInstance();
@@ -40,7 +40,7 @@ public class YamlUtil {
 		config = instance.getConfig();
 		return config;
 	}
-	
+
 	public static List<FileConfiguration> loadPowderConfigs() {
 		// list of configuration files that contain Powders
 		List<FileConfiguration> powderConfigs = new ArrayList<FileConfiguration>();
@@ -87,15 +87,17 @@ public class YamlUtil {
 
 		// if powders.yml is listed as a source but doesn't exist, create it
 		File defaultPowderConfig = new File(dataFolder, "powders.yml");
-		if (!defaultPowderConfig.exists() && config.getStringList("powderSources").contains("powders.yml")) {
+		if (!defaultPowderConfig.exists() 
+				&& config.getStringList("powderSources").contains("powders.yml")) {
 			logger.info("powders.yml not found but listed as a source, creating!");
 			PowderPlugin.getInstance().saveResource("powders.yml", false);
-			FileConfiguration powderConfig = YamlConfiguration.loadConfiguration(defaultPowderConfig);
+			FileConfiguration powderConfig = 
+					YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
 		}
 		return powderConfigs;
 	}
-	
+
 	public static void reloadCategories() {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		FileConfiguration config = PowderPlugin.getInstance().getConfig();
@@ -108,11 +110,11 @@ public class YamlUtil {
 			}
 		}
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	public static Powder loadPowderFromConfig(FileConfiguration powderConfig, String s) {
 		Powder powder = new Powder();
-		
+
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		Logger logger = PowderPlugin.getInstance().getLogger();
 
@@ -128,7 +130,8 @@ public class YamlUtil {
 
 		// add categories if enabled
 		if (powderHandler.categoriesEnabled()) {
-			for (String t : (List<String>) powderConfig.getList(section + ".categories", new ArrayList<String>())) {
+			for (String t : (List<String>) powderConfig
+					.getList(section + ".categories", new ArrayList<String>())) {
 				if (!(powderHandler.getCategories().keySet().contains(t))) {
 					logger.warning("Invalid category '" + t + 
 							"' for '" + powder.getName() + "' in " + powderConfig.getName());
@@ -140,34 +143,32 @@ public class YamlUtil {
 				powder.addCategory("Other");
 			}
 		}
-
-		// SoundEffect
-		// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
-		// 'sound;volume;pitch;startTime;repeatTime;iterations'
-
-		// song
-		// 'Shrek.nbs;50;2;0;2400;2'
-		// 'fileName;volume;multiplier;startTime;repeatTime;iterations'
-
 		if (!(powderConfig.getConfigurationSection(section + ".songs") == null)) {
-			for (String ss : powderConfig.getConfigurationSection(section + ".songs").getKeys(false)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".songs").getKeys(false)) {
 				String eachSection = section + ".songs." + ss;
-				String fileName = powderConfig.getString(eachSection + ".fileName", "unknownfile.nbs");
-				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
-				double multiplier = powderConfig.getDouble(eachSection + ".multiplier", 1);
-				List<SoundEffect> songSoundEffects = SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-						multiplier, getStart(powderConfig, powder, eachSection), 
-						getRepeat(powderConfig, powder, eachSection), 
-						getIterations(powderConfig, powder, eachSection));
+				String fileName = powderConfig
+						.getString(eachSection + ".fileName", "unknownfile.nbs");
+				double volume = powderConfig
+						.getDouble(eachSection + ".volume", 1);
+				double multiplier = powderConfig
+						.getDouble(eachSection + ".multiplier", 1);
+				List<SoundEffect> songSoundEffects = 
+						SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
+								multiplier, getStart(powderConfig, powder, eachSection), 
+								getRepeat(powderConfig, powder, eachSection), 
+								getIterations(powderConfig, powder, eachSection));
 				for (SoundEffect soundEffect : songSoundEffects) {
 					powder.addPowderElement(soundEffect);
 				}
 			}
 		}
 		if (!(powderConfig.getConfigurationSection(section + ".sounds") == null)) {
-			for (String ss : powderConfig.getConfigurationSection(section + ".sounds").getKeys(false)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".sounds").getKeys(false)) {
 				String eachSection = section + ".sounds." + ss;
-				String soundEnum = powderConfig.getString(eachSection + ".soundEnum", "BLOCK_NOTE_CHIME");
+				String soundEnum = powderConfig.getString(eachSection + ".soundEnum", 
+						"BLOCK_NOTE_CHIME");
 				Sound sound = Sound.valueOf(soundEnum);
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
@@ -178,37 +179,36 @@ public class YamlUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
-
-
 		if (!(powderConfig.getConfigurationSection(section + ".changes") == null)) {
-			for (String ss : powderConfig.getConfigurationSection(section + ".changes").getKeys(false)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".changes").getKeys(false)) {
 				String eachSection = section + ".changes." + ss;
-				String particleChar = powderConfig.getString(eachSection + ".particleChar", "A");
+				String particleChar = powderConfig.getString(
+						eachSection + ".particleChar", "A");
 				char character = particleChar.charAt(0);
-				String particleEnum = powderConfig.getString(eachSection + ".particleEnum", "HEART");
+				String particleEnum = powderConfig.getString(
+						eachSection + ".particleEnum", "HEART");
 				Particle particle = Particle.valueOf(particleEnum);
 				int amount = powderConfig.getInt(eachSection + ".amount", 1);
 				double xOffset = powderConfig.getDouble(eachSection + ".xOffset", 0);
 				double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
 				double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
 				double data = powderConfig.getDouble(eachSection + ".data", 0);
-				powder.addPowderParticle(new PowderParticle(character, particle, amount, xOffset, yOffset, zOffset, data));
+				powder.addPowderParticle(new PowderParticle(character, particle, 
+						amount, xOffset, yOffset, zOffset, data));
 			}
 		}
-
-		// Dust
-		// 'A;2;1;3;3;0'
-		// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
-
 		if (!(powderConfig.getConfigurationSection(section + ".dusts") == null)) {
-			for (String ss : powderConfig.getConfigurationSection(section + ".dusts").getKeys(false)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".dusts").getKeys(false)) {
 				String eachSection = section + ".dusts." + ss;
 				String dustName = powderConfig.getString(eachSection + ".particleChar", "null");
 				char character = dustName.charAt(0);
 				PowderParticle powderParticle = powder.getPowderParticle(character);
 				if (powderParticle == null) {
 					try {
-						Particle particle = Particle.valueOf(ParticleName.valueOf(dustName).getName());
+						Particle particle = Particle.valueOf(
+								ParticleName.valueOf(dustName).getName());
 						powderParticle = new PowderParticle(character, particle);
 					} catch (Exception e) {
 						powderParticle = new PowderParticle();
@@ -219,15 +219,17 @@ public class YamlUtil {
 				double span = powderConfig.getDouble(eachSection + ".span", 1);
 				List<PowderElement> addedPowderElements = new ArrayList<PowderElement>();
 				if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
-					String noteName = powderConfig.getString(eachSection + ".attachedToNote", "BLOCK_NOTE_HARP");
+					String noteName = powderConfig.getString(eachSection + ".attachedToNote", 
+							"BLOCK_NOTE_HARP");
 					for (PowderElement powderElement : powder.getPowderElements().keySet()) {
-						 if (powderElement instanceof SoundEffect) {
-							 SoundEffect soundEffect = (SoundEffect) powderElement;
-							 if (soundEffect.getSound().name().equals(noteName)) {
-								 addedPowderElements.add(new Dust(powderParticle, radius, height, span, 
-										 soundEffect.getStartTime(), soundEffect.getRepeatTime(), soundEffect.getLockedIterations()));
-							 }
-						 }
+						if (powderElement instanceof SoundEffect) {
+							SoundEffect soundEffect = (SoundEffect) powderElement;
+							if (soundEffect.getSound().name().equals(noteName)) {
+								addedPowderElements.add(new Dust(powderParticle, radius, height, span, 
+										soundEffect.getStartTime(), soundEffect.getRepeatTime(), 
+										soundEffect.getLockedIterations()));
+							}
+						}
 					}
 					powder.addPowderElements(addedPowderElements);
 					continue;
@@ -238,30 +240,37 @@ public class YamlUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
-
-		// [.1;true;2;12;10]
-		// [spacing;pitch;startTime;repeatTime;iterations]
-
 		if (!(powderConfig.getConfigurationSection(section + ".matrices") == null)) {
-			for (String ss : powderConfig.getConfigurationSection(section + ".matrices").getKeys(false)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".matrices").getKeys(false)) {
 				String eachSection = section + ".matrices." + ss;
 				boolean containsPlayer = false;
 				ParticleMatrix particleMatrix = new ParticleMatrix();
-				particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", powder.getDefaultSpacing()));
-				particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
-				particleMatrix.setAddedPitch(powderConfig.getDouble(eachSection + ".addedPitch", 0));
-				particleMatrix.setAddedRotation(powderConfig.getDouble(eachSection + ".addedRotation", 0));
-				particleMatrix.setAddedTilt(powderConfig.getDouble(eachSection + ".addedTilt", 0));
-				particleMatrix.setStartTime(getStart(powderConfig, powder, eachSection));
-				particleMatrix.setRepeatTime(getRepeat(powderConfig, powder, eachSection));
-				particleMatrix.setLockedIterations(getIterations(powderConfig, powder, eachSection));
+				particleMatrix.setSpacing(powderConfig.getDouble(
+						eachSection + ".spacing", powder.getDefaultSpacing()));
+				particleMatrix.setIfPitch(powderConfig.getBoolean(
+						eachSection + ".hasPitch", false));
+				particleMatrix.setAddedPitch(powderConfig.getDouble(
+						eachSection + ".addedPitch", 0));
+				particleMatrix.setAddedRotation(powderConfig.getDouble(
+						eachSection + ".addedRotation", 0));
+				particleMatrix.setAddedTilt(powderConfig.getDouble(
+						eachSection + ".addedTilt", 0));
+				particleMatrix.setStartTime(
+						getStart(powderConfig, powder, eachSection));
+				particleMatrix.setRepeatTime(
+						getRepeat(powderConfig, powder, eachSection));
+				particleMatrix.setLockedIterations(
+						getIterations(powderConfig, powder, eachSection));
 				int left = 0;
 				int up = 0;
-				for (String sss : powderConfig.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
+				for (String sss : powderConfig
+						.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
 					String eachEachSection = eachSection + ".layers." + sss;
 					Layer layer = new Layer();
 					layer.setPosition(powderConfig.getDouble(eachEachSection + ".position", 0));
-					for (String t : (List<String>) powderConfig.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
+					for (String t : (List<String>) powderConfig
+							.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
 						if (t.contains(":")) {
 							if (t.contains("img:")) {
 								String urlName;
@@ -279,7 +288,8 @@ public class YamlUtil {
 									logger.warning("Failed to load image: '" + urlName + "'");
 									continue;
 								}
-								// add height to compensate for dist. from location (might not necessarily correspond w/ actual image)
+								// add height to compensate for dist. from location 
+								// (might not necessarily correspond w/ actual image)
 								up = up + height;
 							}
 							continue;
@@ -290,7 +300,8 @@ public class YamlUtil {
 							// if the string contains location/player
 							if (t.contains("?")) {
 								containsPlayer = true;
-								// set the left & up of the Layer so createPowders() knows where to start
+								// set the left & up of the Layer
+								// so that createPowders() knows where to start
 								left = (t.indexOf("?")) + 1;
 								// set default if it's the matrix spawned immediately 
 								if (particleMatrix.getStartTime() == 0) {
@@ -310,7 +321,8 @@ public class YamlUtil {
 							if (powderParticle == null) {
 								try {
 									String string = String.valueOf(character);
-									Particle particle = Particle.valueOf(ParticleName.valueOf(string).getName());
+									Particle particle = Particle.valueOf(
+											ParticleName.valueOf(string).getName());
 									powderParticle = new PowderParticle(character, particle);
 								} catch (Exception e) {
 									powderParticle = new PowderParticle();
@@ -329,22 +341,22 @@ public class YamlUtil {
 				powder.addPowderElement(particleMatrix);
 			}
 		}
-
 		if (powder.getPowderElements().isEmpty()) {
-			PowderPlugin.getInstance().getLogger().warning("Powder '" + powder.getName() + "' appears empty and was not loaded.");
+			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
+					powder.getName() + "' appears empty and was not loaded.");
 			return null;
 		}
 		return powder;
 	}
-	
+
 	public static int getStart(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".startTime", powder.getDefaultStartTime());
 	}
-	
+
 	public static int getRepeat(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".repeatTime", powder.getDefaultRepeatTime());
 	}
-	
+
 	public static int getIterations(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".iterations", powder.getDefaultLockedIterations());
 	}

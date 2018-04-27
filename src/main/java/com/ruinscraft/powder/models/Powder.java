@@ -38,7 +38,8 @@ public class Powder implements Cloneable {
 	private List<PowderParticle> powderParticles;
 	// is the Powder hidden from lists if you don't have permission for it?
 	private boolean hidden;
-	// if unspecified in each ParticleMatrix, how far left should the player/location be from the start of creating the Powder?
+	// if unspecified in each ParticleMatrix, 
+	// how far left should the player/location be from the start of creating the Powder?
 	private int defaultLeft;
 	// same, except how far up
 	private int defaultUp;
@@ -84,27 +85,27 @@ public class Powder implements Cloneable {
 	public void setDefaultSpacing(double defaultSpacing) {
 		this.defaultSpacing = defaultSpacing;
 	}
-	
+
 	public int getDefaultStartTime() {
 		return defaultStartTime;
 	}
-	
+
 	public void setDefaultStartTime(int defaultStartTime) {
 		this.defaultStartTime = defaultStartTime;
 	}
-	
+
 	public int getDefaultRepeatTime() {
 		return defaultRepeatTime;
 	}
-	
+
 	public void setDefaultRepeatTime(int defaultRepeatTime) {
 		this.defaultRepeatTime = defaultRepeatTime;
 	}
-	
+
 	public int getDefaultLockedIterations() {
 		return defaultLockedIterations;
 	}
-	
+
 	public void setDefaultLockedIterations(int defaultLockedIterations) {
 		this.defaultLockedIterations = defaultLockedIterations;
 	}
@@ -116,7 +117,8 @@ public class Powder implements Cloneable {
 	public Map<PowderElement, Integer> getClonedPowderElements() {
 		Map<PowderElement, Integer> powderElements = new HashMap<PowderElement, Integer>();
 		for (PowderElement powderElement : this.powderElements.keySet()) {
-			powderElements.put(powderElement.clone(), PowdersCreationTask.getTick() + powderElement.getStartTime());
+			powderElements.put(powderElement.clone(), 
+					PowdersCreationTask.getTick() + powderElement.getStartTime());
 		}
 		return powderElements;
 	}
@@ -125,7 +127,8 @@ public class Powder implements Cloneable {
 		if (powderElement.getLockedIterations() == 0) {
 			powderElement.setLockedIterations(Integer.MAX_VALUE);
 		}
-		powderElements.put(powderElement, PowdersCreationTask.getTick() + powderElement.getStartTime());
+		powderElements.put(powderElement, 
+				PowdersCreationTask.getTick() + powderElement.getStartTime());
 	}
 
 	public void addPowderElements(List<PowderElement> powderElements) {

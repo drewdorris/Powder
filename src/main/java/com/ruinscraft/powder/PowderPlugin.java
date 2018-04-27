@@ -45,7 +45,8 @@ public class PowderPlugin extends JavaPlugin {
 		enableStorage();
 
 		// load all powders async & load users' powders if storage is enabled
-		PowderPlugin.getInstance().getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+		PowderPlugin.getInstance().getServer().getScheduler()
+		.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			loadPowdersFromSources();
 
 			// load all saved powders from db if enabled
@@ -56,7 +57,6 @@ public class PowderPlugin extends JavaPlugin {
 
 		getCommand("powder").setExecutor(new PowderCommand());
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-
 	}
 
 	public void onDisable() {
@@ -70,7 +70,7 @@ public class PowderPlugin extends JavaPlugin {
 
 		instance = null;
 	}
-	
+
 	public void reload() {
 		config = YamlUtil.loadConfig();
 
@@ -84,7 +84,8 @@ public class PowderPlugin extends JavaPlugin {
 		if (useStorage()) {
 			PowderUtil.loadPowdersForOnline();
 		} else {
-			for (UUID uuid : PowderPlugin.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+			for (UUID uuid : PowderPlugin
+					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
 				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
 						+ "Your Powders were cancelled due to a reload.", "powder");
 			}
@@ -175,10 +176,12 @@ public class PowderPlugin extends JavaPlugin {
 
 		// if powders.yml is listed as a source but doesn't exist, create it
 		File defaultPowderConfig = new File(getDataFolder(), "powders.yml");
-		if (!defaultPowderConfig.exists() && config.getStringList("powderSources").contains("powders.yml")) {
+		if (!defaultPowderConfig.exists() && 
+				config.getStringList("powderSources").contains("powders.yml")) {
 			getLogger().info("powders.yml not found but listed as a source, creating!");
 			saveResource("powders.yml", false);
-			FileConfiguration powderConfig = YamlConfiguration.loadConfiguration(defaultPowderConfig);
+			FileConfiguration powderConfig = 
+					YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
 		}
 	}
@@ -194,12 +197,18 @@ public class PowderPlugin extends JavaPlugin {
 		PowderUtil.PREFIX = PowderUtil.color(config.getString("prefix", "&7[&9Powder&7] "));
 
 		String c = "colors.";
-		PowderUtil.INFO = ChatColor.valueOf(config.getString(c + "info", "GRAY"));
-		PowderUtil.HIGHLIGHT = ChatColor.valueOf(config.getString(c + "highlight", "RED"));
-		PowderUtil.HIGHLIGHT_TWO = ChatColor.valueOf(config.getString(c + "highlight_two", "GREEN"));
-		PowderUtil.HIGHLIGHT_THREE = ChatColor.valueOf(config.getString(c + "highlight_three", "YELLOW"));
-		PowderUtil.NO_PERM = ChatColor.valueOf(config.getString(c + "no_perm", "DARK_GRAY"));
-		PowderUtil.WARNING = ChatColor.valueOf(config.getString(c + "warning", "RED"));
+		PowderUtil.INFO = 
+				ChatColor.valueOf(config.getString(c + "info", "GRAY"));
+		PowderUtil.HIGHLIGHT = 
+				ChatColor.valueOf(config.getString(c + "highlight", "RED"));
+		PowderUtil.HIGHLIGHT_TWO = 
+				ChatColor.valueOf(config.getString(c + "highlight_two", "GREEN"));
+		PowderUtil.HIGHLIGHT_THREE = 
+				ChatColor.valueOf(config.getString(c + "highlight_three", "YELLOW"));
+		PowderUtil.NO_PERM = 
+				ChatColor.valueOf(config.getString(c + "no_perm", "DARK_GRAY"));
+		PowderUtil.WARNING = 
+				ChatColor.valueOf(config.getString(c + "warning", "RED"));
 
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
@@ -246,8 +255,9 @@ public class PowderPlugin extends JavaPlugin {
 		// alert online players with permission of the Powders loaded
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
-				PowderUtil.sendPrefixMessage(player,
-						PowderUtil.INFO + "All Powders loaded! (" + powderAmount + " total)", "powder");
+				PowderUtil.sendPrefixMessage(
+						player, PowderUtil.INFO + 
+						"All Powders loaded! (" + powderAmount + " total)", "powder");
 			}
 		}
 	}
