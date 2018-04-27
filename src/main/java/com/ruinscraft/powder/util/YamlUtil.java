@@ -120,7 +120,10 @@ public class YamlUtil {
 
 		// set some given values if they exist, default value if they don't
 		powder.setName(powderConfig.getString(section + ".name", null));
-		powder.setDefaultSpacing((float) powderConfig.getDouble(section + ".spacing", .5F));
+		powder.setDefaultSpacing((float) powderConfig.getDouble(section + ".defaultSpacing", .1F));
+		powder.setDefaultStartTime(powderConfig.getInt(section + ".defaultStartTime", 0));
+		powder.setDefaultRepeatTime(powderConfig.getInt(section + ".defaultRepeatTime", 20));
+		powder.setDefaultLockedIterations(powderConfig.getInt(section + ".defaultIterations", 1));
 		powder.setHidden(powderConfig.getBoolean(section + ".hidden", false));
 
 		// add categories if enabled
@@ -152,11 +155,10 @@ public class YamlUtil {
 				String fileName = powderConfig.getString(eachSection + ".fileName", "unknownfile.nbs");
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				double multiplier = powderConfig.getDouble(eachSection + ".multiplier", 1);
-				int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-				int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-				int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
 				List<SoundEffect> songSoundEffects = SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-						multiplier, startTime, repeatTime, iterations);
+						multiplier, getStart(powderConfig, powder, eachSection), 
+						getRepeat(powderConfig, powder, eachSection), 
+						getIterations(powderConfig, powder, eachSection));
 				for (SoundEffect soundEffect : songSoundEffects) {
 					powder.addPowderElement(soundEffect);
 				}
@@ -170,10 +172,10 @@ public class YamlUtil {
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
 				soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
-				int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-				int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-				int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
-				powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, startTime, repeatTime, iterations));
+				powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, 
+						getStart(powderConfig, powder, eachSection), 
+						getRepeat(powderConfig, powder, eachSection), 
+						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
 
@@ -230,11 +232,10 @@ public class YamlUtil {
 					powder.addPowderElements(addedPowderElements);
 					continue;
 				}
-				int startTime = powderConfig.getInt(eachSection + ".startTime", 0);
-				int repeatTime = powderConfig.getInt(eachSection + ".repeatTime", 20);
-				int iterations = powderConfig.getInt(eachSection + ".iterations", 1);
 				powder.addPowderElement(new Dust(powderParticle, radius, height, span, 
-						startTime, repeatTime, iterations));
+						getStart(powderConfig, powder, eachSection), 
+						getRepeat(powderConfig, powder, eachSection), 
+						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
 
@@ -246,14 +247,14 @@ public class YamlUtil {
 				String eachSection = section + ".matrices." + ss;
 				boolean containsPlayer = false;
 				ParticleMatrix particleMatrix = new ParticleMatrix();
-				particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", .1));
+				particleMatrix.setSpacing(powderConfig.getDouble(eachSection + ".spacing", powder.getDefaultSpacing()));
 				particleMatrix.setIfPitch(powderConfig.getBoolean(eachSection + ".hasPitch", false));
 				particleMatrix.setAddedPitch(powderConfig.getDouble(eachSection + ".addedPitch", 0));
 				particleMatrix.setAddedRotation(powderConfig.getDouble(eachSection + ".addedRotation", 0));
 				particleMatrix.setAddedTilt(powderConfig.getDouble(eachSection + ".addedTilt", 0));
-				particleMatrix.setStartTime(powderConfig.getInt(eachSection + ".startTime", 0));
-				particleMatrix.setRepeatTime(powderConfig.getInt(eachSection + ".repeatTime", 20));
-				particleMatrix.setLockedIterations(powderConfig.getInt(eachSection + ".iterations", 1));
+				particleMatrix.setStartTime(getStart(powderConfig, powder, eachSection));
+				particleMatrix.setRepeatTime(getRepeat(powderConfig, powder, eachSection));
+				particleMatrix.setLockedIterations(getIterations(powderConfig, powder, eachSection));
 				int left = 0;
 				int up = 0;
 				for (String sss : powderConfig.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
@@ -334,6 +335,18 @@ public class YamlUtil {
 			return null;
 		}
 		return powder;
+	}
+	
+	public static int getStart(FileConfiguration powderConfig, Powder powder, String section) {
+		return powderConfig.getInt(section + ".startTime", powder.getDefaultStartTime());
+	}
+	
+	public static int getRepeat(FileConfiguration powderConfig, Powder powder, String section) {
+		return powderConfig.getInt(section + ".repeatTime", powder.getDefaultRepeatTime());
+	}
+	
+	public static int getIterations(FileConfiguration powderConfig, Powder powder, String section) {
+		return powderConfig.getInt(section + ".iterations", powder.getDefaultLockedIterations());
 	}
 
 }

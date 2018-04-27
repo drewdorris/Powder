@@ -24,8 +24,14 @@ public class Powder implements Cloneable {
 	private String name;
 	// list of categories the Powder is in
 	private List<String> categories;
-	// the default spacing for the Powder
+	// the spacing for ParticleMatrices in the Powder if not specified
 	private double defaultSpacing;
+	// the start time for PowderElements in the Powder if not specified
+	private int defaultStartTime;
+	// the repeat time for PowderElements in the Powder if not specified
+	private int defaultRepeatTime;
+	// the maximum iterations for PowderElements in the Powder if not specified
+	private int defaultLockedIterations;
 	// list of PowderElements (Dusts, SoundEffects, ParticleMatrices)
 	private Map<PowderElement, Integer> powderElements;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
@@ -77,6 +83,30 @@ public class Powder implements Cloneable {
 
 	public void setDefaultSpacing(double defaultSpacing) {
 		this.defaultSpacing = defaultSpacing;
+	}
+	
+	public int getDefaultStartTime() {
+		return defaultStartTime;
+	}
+	
+	public void setDefaultStartTime(int defaultStartTime) {
+		this.defaultStartTime = defaultStartTime;
+	}
+	
+	public int getDefaultRepeatTime() {
+		return defaultRepeatTime;
+	}
+	
+	public void setDefaultRepeatTime(int defaultRepeatTime) {
+		this.defaultRepeatTime = defaultRepeatTime;
+	}
+	
+	public int getDefaultLockedIterations() {
+		return defaultLockedIterations;
+	}
+	
+	public void setDefaultLockedIterations(int defaultLockedIterations) {
+		this.defaultLockedIterations = defaultLockedIterations;
 	}
 
 	public Map<PowderElement, Integer> getPowderElements() {
