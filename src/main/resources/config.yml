@@ -46,8 +46,6 @@ categories:
     desc: '{total} Emojis'
   Flags:
     desc: '{total} Flags of Countries'
-  Songs:
-    desc: '{total} Songs with Effects'
   Effects:
     desc: '{total} Random Particles / Effects'
   Crowns:

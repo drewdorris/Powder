@@ -40,7 +40,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		YamlUtil.loadConfig(config);
+		config = YamlUtil.loadConfig();
 
 		enableStorage();
 
@@ -72,7 +72,7 @@ public class PowderPlugin extends JavaPlugin {
 	}
 	
 	public void reload() {
-		YamlUtil.loadConfig(config);
+		config = YamlUtil.loadConfig();
 
 		if (useStorage()) {
 			PowderUtil.savePowdersForOnline();
@@ -185,7 +185,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void loadPowdersFromSources() {
 		// load source yaml files
-		powderConfigs = YamlUtil.loadPowderConfigs(powderConfigs);
+		powderConfigs = YamlUtil.loadPowderConfigs();
 
 		// remove all existing tasks/Powders
 		cleanHandlers();

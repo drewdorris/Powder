@@ -28,7 +28,8 @@ import com.ruinscraft.powder.models.SoundEffect;
 
 public class YamlUtil {
 	
-	public static void loadConfig(FileConfiguration config) {
+	public static FileConfiguration loadConfig() {
+		FileConfiguration config = null;
 		PowderPlugin instance = PowderPlugin.getInstance();
 		File configFile = new File(instance.getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
@@ -37,11 +38,12 @@ public class YamlUtil {
 		}
 		instance.reloadConfig();
 		config = instance.getConfig();
+		return config;
 	}
 	
-	public static List<FileConfiguration> loadPowderConfigs(List<FileConfiguration> powderConfigs) {
+	public static List<FileConfiguration> loadPowderConfigs() {
 		// list of configuration files that contain Powders
-		powderConfigs = new ArrayList<FileConfiguration>();
+		List<FileConfiguration> powderConfigs = new ArrayList<FileConfiguration>();
 
 		Logger logger = PowderPlugin.getInstance().getLogger();
 		FileConfiguration config = PowderPlugin.getInstance().getConfig();
