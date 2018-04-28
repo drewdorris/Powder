@@ -26,7 +26,7 @@ import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderParticle;
 import com.ruinscraft.powder.models.SoundEffect;
 
-public class YamlUtil {
+public class ConfigUtil {
 
 	public static FileConfiguration loadConfig() {
 		FileConfiguration config = null;

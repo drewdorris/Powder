@@ -18,7 +18,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
-import com.ruinscraft.powder.util.YamlUtil;
+import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.ChatColor;
@@ -40,7 +40,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		config = YamlUtil.loadConfig();
+		config = ConfigUtil.loadConfig();
 
 		enableStorage();
 
@@ -72,7 +72,7 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void reload() {
-		config = YamlUtil.loadConfig();
+		config = ConfigUtil.loadConfig();
 
 		if (useStorage()) {
 			PowderUtil.savePowdersForOnline();
@@ -188,7 +188,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void loadPowdersFromSources() {
 		// load source yaml files
-		powderConfigs = YamlUtil.loadPowderConfigs();
+		powderConfigs = ConfigUtil.loadPowderConfigs();
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
@@ -213,7 +213,7 @@ public class PowderPlugin extends JavaPlugin {
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
 
-		YamlUtil.reloadCategories();
+		ConfigUtil.reloadCategories();
 
 		// alert online players of the reload
 		getLogger().info("Loading Powders...");
@@ -227,7 +227,7 @@ public class PowderPlugin extends JavaPlugin {
 		List<String> powderNames = new ArrayList<>();
 		for (FileConfiguration powderConfig : powderConfigs) {
 			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-				Powder powder = YamlUtil.loadPowderFromConfig(powderConfig, s);
+				Powder powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
 				if (powder != null) {
 					getPowderHandler().addPowder(powder);
 					powderNames.add(powder.getName());
@@ -236,7 +236,7 @@ public class PowderPlugin extends JavaPlugin {
 		}
 
 		// do this again to load {total} parameter
-		YamlUtil.reloadCategories();
+		ConfigUtil.reloadCategories();
 
 		String powderAmount = String.valueOf(powderNames.size());
 
