@@ -122,11 +122,22 @@ public class YamlUtil {
 
 		// set some given values if they exist, default value if they don't
 		powder.setName(powderConfig.getString(section + ".name", null));
-		powder.setDefaultSpacing((float) powderConfig.getDouble(section + ".defaultSpacing", .1F));
-		powder.setDefaultStartTime(powderConfig.getInt(section + ".defaultStartTime", 0));
-		powder.setDefaultRepeatTime(powderConfig.getInt(section + ".defaultRepeatTime", 20));
-		powder.setDefaultLockedIterations(powderConfig.getInt(section + ".defaultIterations", 1));
-		powder.setHidden(powderConfig.getBoolean(section + ".hidden", false));
+		powder.setDefaultSpacing(
+				powderConfig.getDouble(section + ".defaultSpacing", .1));
+		powder.setDefaultStartTime(
+				powderConfig.getInt(section + ".defaultStartTime", 0));
+		powder.setDefaultRepeatTime(
+				powderConfig.getInt(section + ".defaultRepeatTime", 20));
+		powder.setDefaultLockedIterations(
+				powderConfig.getInt(section + ".defaultIterations", 1));
+		powder.setDefaultAddedPitch(
+				powderConfig.getDouble(section + ".defaultAddedPitch", 0));
+		powder.setDefaultAddedRotation(
+				powderConfig.getDouble(section + ".defaultAddedRotation", 0));
+		powder.setDefaultAddedTilt(
+				powderConfig.getDouble(section + ".defaultAddedTilt", 0));
+		powder.setHidden(
+				powderConfig.getBoolean(section + ".hidden", false));
 
 		// add categories if enabled
 		if (powderHandler.categoriesEnabled()) {

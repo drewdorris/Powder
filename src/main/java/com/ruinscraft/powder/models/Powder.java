@@ -32,6 +32,12 @@ public class Powder implements Cloneable {
 	private int defaultRepeatTime;
 	// the maximum iterations for PowderElements in the Powder if not specified
 	private int defaultLockedIterations;
+	// the added pitch for ParticleMatrices in the Powder if not specified
+	private double defaultAddedPitch;
+	// the added rotation for ParticleMatrices in the Powder if not specified
+	private double defaultAddedRotation;
+	// the added tilt for ParticleMatrices in the Powder if not specified
+	private double defaultAddedTilt;
 	// list of PowderElements (Dusts, SoundEffects, ParticleMatrices)
 	private Map<PowderElement, Integer> powderElements;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
@@ -57,6 +63,12 @@ public class Powder implements Cloneable {
 		defaultLeft = powder.getDefaultLeft();
 		defaultUp = powder.getDefaultUp();
 		defaultSpacing = powder.getDefaultSpacing();
+		defaultStartTime = powder.getDefaultStartTime();
+		defaultRepeatTime = powder.getDefaultRepeatTime();
+		defaultAddedPitch = powder.getDefaultAddedPitch();
+		defaultAddedRotation = powder.getDefaultAddedRotation();
+		defaultAddedTilt = powder.getDefaultAddedTilt();
+		defaultLockedIterations = powder.getDefaultLockedIterations();
 		powderElements = powder.getClonedPowderElements();
 		powderParticles = powder.getPowderParticles();
 		hidden = powder.isHidden();
@@ -108,6 +120,30 @@ public class Powder implements Cloneable {
 
 	public void setDefaultLockedIterations(int defaultLockedIterations) {
 		this.defaultLockedIterations = defaultLockedIterations;
+	}
+
+	public double getDefaultAddedPitch() {
+		return defaultAddedPitch;
+	}
+
+	public void setDefaultAddedPitch(double defaultAddedPitch) {
+		this.defaultAddedPitch = defaultAddedPitch;
+	}
+
+	public double getDefaultAddedRotation() {
+		return defaultAddedRotation;
+	}
+
+	public void setDefaultAddedRotation(double defaultAddedRotation) {
+		this.defaultAddedRotation = defaultAddedRotation;
+	}
+
+	public double getDefaultAddedTilt() {
+		return defaultAddedTilt;
+	}
+
+	public void setDefaultAddedTilt(double defaultAddedTilt) {
+		this.defaultAddedTilt = defaultAddedTilt;
 	}
 
 	public Map<PowderElement, Integer> getPowderElements() {
