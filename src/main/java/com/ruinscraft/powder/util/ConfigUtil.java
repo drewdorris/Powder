@@ -232,7 +232,7 @@ public class ConfigUtil {
 				if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
 					String noteName = powderConfig.getString(eachSection + ".attachedToNote", 
 							"BLOCK_NOTE_HARP");
-					for (PowderElement powderElement : powder.getPowderElements().keySet()) {
+					for (PowderElement powderElement : powder.getPowderElements()) {
 						if (powderElement instanceof SoundEffect) {
 							SoundEffect soundEffect = (SoundEffect) powderElement;
 							if (soundEffect.getSound().name().equals(noteName)) {

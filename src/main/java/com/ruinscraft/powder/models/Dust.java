@@ -2,6 +2,8 @@ package com.ruinscraft.powder.models;
 
 import org.bukkit.Location;
 
+import com.ruinscraft.powder.PowdersCreationTask;
+
 public class Dust implements PowderElement {
 
 	// 'A;2;1;3;3;0'
@@ -21,6 +23,7 @@ public class Dust implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
+	private int nextTick;
 
 	// iterations so far
 	private int iterations;
@@ -33,6 +36,7 @@ public class Dust implements PowderElement {
 		this.startTime = dust.getStartTime();
 		this.repeatTime = dust.getRepeatTime();
 		this.lockedIterations = dust.getLockedIterations();
+		this.nextTick = PowdersCreationTask.getTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -86,6 +90,11 @@ public class Dust implements PowderElement {
 
 	public void iterate() {
 		iterations++;
+		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+	}
+
+	public int getNextTick() {
+		return nextTick;
 	}
 
 	public Dust clone() {

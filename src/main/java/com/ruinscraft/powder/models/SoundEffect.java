@@ -3,6 +3,8 @@ package com.ruinscraft.powder.models;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 
+import com.ruinscraft.powder.PowdersCreationTask;
+
 public class SoundEffect implements PowderElement {
 
 	// 'BLOCK_NOTE_PLING;4.0;1.50;2;10;200'
@@ -23,6 +25,7 @@ public class SoundEffect implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
+	private int nextTick;
 
 	// iterations so far
 	private int iterations;
@@ -34,6 +37,7 @@ public class SoundEffect implements PowderElement {
 		this.startTime = soundEffect.getStartTime();
 		this.repeatTime = soundEffect.getRepeatTime();
 		this.lockedIterations = soundEffect.getLockedIterations();
+		this.nextTick = PowdersCreationTask.getTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -82,6 +86,11 @@ public class SoundEffect implements PowderElement {
 
 	public void iterate() {
 		iterations++;
+		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+	}
+
+	public int getNextTick() {
+		return nextTick;
 	}
 
 	public SoundEffect clone() {

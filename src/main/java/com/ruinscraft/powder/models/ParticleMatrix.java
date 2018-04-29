@@ -7,6 +7,8 @@ import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.util.Vector;
 
+import com.ruinscraft.powder.PowdersCreationTask;
+
 public class ParticleMatrix implements PowderElement {
 
 	// [.1;true;2;12;10]
@@ -35,6 +37,8 @@ public class ParticleMatrix implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
+	
+	private int nextTick;
 
 	// iterations so far
 	private int iterations;
@@ -62,6 +66,7 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
+		this.nextTick = PowdersCreationTask.getTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -175,6 +180,11 @@ public class ParticleMatrix implements PowderElement {
 
 	public void iterate() {
 		iterations++;
+		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+	}
+
+	public int getNextTick() {
+		return nextTick;
 	}
 
 	public ParticleMatrix clone() {

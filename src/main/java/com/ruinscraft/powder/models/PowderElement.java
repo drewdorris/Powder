@@ -18,6 +18,8 @@ public interface PowderElement extends Cloneable {
 
 	void iterate(); // add to getIterations()
 
+	int getNextTick(); // the tick for the PowderElement to play
+
 	PowderElement clone();
 
 }

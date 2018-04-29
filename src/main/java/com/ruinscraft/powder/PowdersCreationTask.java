@@ -1,9 +1,9 @@
 package com.ruinscraft.powder;
 
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -44,26 +44,28 @@ public class PowdersCreationTask extends BukkitRunnable {
 						continue;
 					}
 				}
-				Map<PowderElement, Integer> activeElementsInPowder = powder.getPowderElements();
+				List<PowderElement> activeElementsInPowder = powder.getPowderElements();
 				if (activeElementsInPowder.isEmpty()) {
 					activePowdersInTask.remove(activePowder);
 					continue;
 				}
-				Set<PowderElement> elementsDueForCheck = activeElementsInPowder.entrySet().stream()
-						.filter(e -> e.getValue() <= tick).map(Entry::getKey)
-						.collect(Collectors.toSet());
-				for (PowderElement dueElement : elementsDueForCheck) {
-					if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
-						activeElementsInPowder.remove(dueElement);
-						continue;
+				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
+				for (PowderElement dueElement : activeElementsInPowder) {
+					if (dueElement.getNextTick() <= getTick()) {
+						if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
+							elementsToRemove.add(dueElement);
+							continue;
+						}
+						dueElement.create(tracker.getCurrentLocation());
+						dueElement.iterate();
 					}
-					dueElement.create(tracker.getCurrentLocation());
-					dueElement.iterate();
-					activeElementsInPowder.put(dueElement, tick + dueElement.getRepeatTime());
+				}
+				for (PowderElement elementToRemove : elementsToRemove) {
+					activeElementsInPowder.remove(elementToRemove);
 				}
 			}
 		}
-		powderHandler.getPowderTasks().removeIf(e -> e.getPowders().isEmpty());
+		powderHandler.getPowderTasks().removeIf(t -> t.getPowders().isEmpty());
 	}
 
 	public static int getTick() {
