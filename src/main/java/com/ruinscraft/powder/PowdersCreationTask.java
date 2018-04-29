@@ -1,6 +1,5 @@
 package com.ruinscraft.powder;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -49,19 +48,13 @@ public class PowdersCreationTask extends BukkitRunnable {
 					activePowdersInTask.remove(activePowder);
 					continue;
 				}
-				List<PowderElement> elementsToRemove = new ArrayList<PowderElement>();
-				for (PowderElement dueElement : activeElementsInPowder) {
-					if (dueElement.getNextTick() <= getTick()) {
-						if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
-							elementsToRemove.add(dueElement);
-							continue;
-						}
-						dueElement.create(tracker.getCurrentLocation());
-						dueElement.iterate();
+				for (PowderElement dueElement : powder.getDuePowderElements()) {
+					if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
+						activeElementsInPowder.remove(dueElement);
+						continue;
 					}
-				}
-				for (PowderElement elementToRemove : elementsToRemove) {
-					activeElementsInPowder.remove(elementToRemove);
+					dueElement.create(tracker.getCurrentLocation());
+					dueElement.iterate();
 				}
 			}
 		}
