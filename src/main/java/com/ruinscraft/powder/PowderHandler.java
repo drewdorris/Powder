@@ -238,7 +238,7 @@ public class PowderHandler {
 
 	// removes/ends a PowderTask
 	public boolean removePowderTasks(List<PowderTask> powderTasks) {
-		return powderTasks.removeAll(powderTasks);
+		return this.powderTasks.removeAll(powderTasks);
 	}
 
 	public Map<String, String> getCategories() {

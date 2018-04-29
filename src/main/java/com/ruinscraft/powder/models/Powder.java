@@ -1,10 +1,9 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
@@ -39,7 +38,7 @@ public class Powder implements Cloneable {
 	// the added tilt for ParticleMatrices in the Powder if not specified
 	private double defaultAddedTilt;
 	// list of PowderElements (Dusts, SoundEffects, ParticleMatrices)
-	private Map<PowderElement, Integer> powderElements;
+	private ConcurrentHashMap<PowderElement, Integer> powderElements;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
 	private List<PowderParticle> powderParticles;
 	// is the Powder hidden from lists if you don't have permission for it?
@@ -53,7 +52,7 @@ public class Powder implements Cloneable {
 	// initialize lists
 	public Powder() {
 		this.categories = new ArrayList<String>();
-		this.powderElements = new HashMap<PowderElement, Integer>();
+		this.powderElements = new ConcurrentHashMap<PowderElement, Integer>();
 		this.powderParticles = new ArrayList<PowderParticle>();
 	}
 
@@ -146,12 +145,13 @@ public class Powder implements Cloneable {
 		this.defaultAddedTilt = defaultAddedTilt;
 	}
 
-	public Map<PowderElement, Integer> getPowderElements() {
+	public ConcurrentHashMap<PowderElement, Integer> getPowderElements() {
 		return powderElements;
 	}
 
-	public Map<PowderElement, Integer> getClonedPowderElements() {
-		Map<PowderElement, Integer> powderElements = new HashMap<PowderElement, Integer>();
+	public ConcurrentHashMap<PowderElement, Integer> getClonedPowderElements() {
+		ConcurrentHashMap<PowderElement, Integer> powderElements = 
+				new ConcurrentHashMap<PowderElement, Integer>();
 		for (PowderElement powderElement : this.powderElements.keySet()) {
 			powderElements.put(powderElement.clone(), 
 					PowdersCreationTask.getTick() + powderElement.getStartTime());
