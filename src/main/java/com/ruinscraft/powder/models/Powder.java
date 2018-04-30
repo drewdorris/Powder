@@ -148,10 +148,10 @@ public class Powder implements Cloneable {
 		return powderElements;
 	}
 	
-	public List<PowderElement> getDuePowderElements() {
+	public List<PowderElement> getDuePowderElements(int tick) {
 		List<PowderElement> duePowderElements = new ArrayList<PowderElement>();
 		for (PowderElement powderElement : powderElements) {
-			if (powderElement.getNextTick() <= PowdersCreationTask.getTick()) {
+			if (powderElement.getNextTick() <= tick) {
 				duePowderElements.add(powderElement);
 			}
 		}

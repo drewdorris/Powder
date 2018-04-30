@@ -103,18 +103,15 @@ public class Dust implements PowderElement {
 
 	// creates this Dust at the designated location
 	public void create(Location location) {
-		Location particleLocation = 
-				location.clone().add((Math.random() - .5) * (2 * getRadius()), 
+		PowderParticle powderParticle = getPowderParticle();
+		location.getWorld().spawnParticle(
+				powderParticle.getParticle(), location.clone().add(
+						(Math.random() - .5) * (2 * getRadius()), 
 						((Math.random() - .5) * getYSpan()) + getHeight() - .625,
-						(Math.random() - .5) * (2 * getRadius()));
-		// if no block in the way
-		if (particleLocation.getBlock().isEmpty()) {
-			PowderParticle powderParticle = getPowderParticle();
-			location.getWorld().spawnParticle(
-					powderParticle.getParticle(), particleLocation, powderParticle.getAmount(), 
-					powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-					powderParticle.getZOff() / 255, (double) powderParticle.getData());
-		}
+						(Math.random() - .5) * (2 * getRadius())), 
+				powderParticle.getAmount(), 
+				powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+				powderParticle.getZOff() / 255, (double) powderParticle.getData());
 	}
 
 }

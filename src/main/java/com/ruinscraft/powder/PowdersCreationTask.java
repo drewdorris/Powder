@@ -48,7 +48,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 					activePowdersInTask.remove(activePowder);
 					continue;
 				}
-				for (PowderElement dueElement : powder.getDuePowderElements()) {
+				for (PowderElement dueElement : powder.getDuePowderElements(tick)) {
 					if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
 						activeElementsInPowder.remove(dueElement);
 						continue;
