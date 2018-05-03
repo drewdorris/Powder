@@ -27,6 +27,7 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.models.Message;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderTask;
 
@@ -80,27 +81,45 @@ public class PowderUtil {
 		}
 		return true;
 	}
+	
+	public static String getMessage(Message message) {
+		return color(PowderPlugin.getInstance().getMessages().get(message));
+	}
 
 	// sends a message with the given prefix in config.yml
 	// label is the base command, i.e. "powder" or "pdr" or "pow"
-	public static void sendPrefixMessage(Player player, Object message, String label) {
-		if (!(message instanceof String) && !(message instanceof BaseComponent)) {
-			return;
-		}
-		if (message instanceof String) {
-			String messageText = (String) message;
-			message = new TextComponent(messageText);
-		}
-
+	public static void sendPrefixMessage(Player player, String message, String label) {
+		TextComponent textComponent = format((String) message);
+		sendPrefixMessage(player, textComponent, label);
+	}
+	
+	public static void sendPrefixMessage(Player player, Message message, String label) {
+		sendPrefixMessage(player, color(PowderUtil.getMessage(message)), label);
+	}
+	
+	public static void sendPrefixMessage(Player player, TextComponent message, String label) {
+		BaseComponent fullMessage = new TextComponent();
+		fullMessage.setColor(PowderUtil.INFO);
+		TextComponent prefix = new TextComponent(PowderUtil.getMessage(Message.PREFIX));
+		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder(PowderUtil.getMessage(Message.PREFIX_HOVER))
+				.color(PowderUtil.INFO).create() ) );
+		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
+		fullMessage.addExtra(prefix);
+		fullMessage.addExtra(message);
+		player.spigot().sendMessage(fullMessage);
+	}
+	
+	public static void sendPrefixMessage(Player player, 
+			TextComponent message, TextComponent hover, String label) {
 		BaseComponent fullMessage = new TextComponent();
 		fullMessage.setColor(PowderUtil.INFO);
 		TextComponent prefix = new TextComponent(PowderUtil.PREFIX);
 		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("/" + label).color(PowderUtil.INFO).create() ) );
+				new ComponentBuilder(hover).color(PowderUtil.INFO).create() ) );
 		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
 		fullMessage.addExtra(prefix);
-		fullMessage.addExtra((TextComponent) message);
-
+		fullMessage.addExtra(message);
 		player.spigot().sendMessage(fullMessage);
 	}
 

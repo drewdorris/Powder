@@ -14,6 +14,7 @@ import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Iterables;
+import com.ruinscraft.powder.models.Message;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
@@ -58,8 +59,7 @@ public class PowderCommand implements CommandExecutor {
 		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {
 			PowderUtil.sendPrefixMessage(player, 
-					PowderUtil.WARNING + "You don't have permission to use /" + 
-							label + ".", label);
+					Message.MAIN_NO_PERMISSION, label);
 			return false;
 		}
 

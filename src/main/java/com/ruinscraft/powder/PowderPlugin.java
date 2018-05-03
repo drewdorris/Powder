@@ -6,7 +6,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -15,6 +17,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.ruinscraft.powder.models.Message;
 import com.ruinscraft.powder.models.Powder;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
@@ -31,6 +34,8 @@ public class PowderPlugin extends JavaPlugin {
 	private FileConfiguration config;
 	private List<FileConfiguration> powderConfigs;
 
+	private static Map<Message, String> messages;
+
 	private Storage storage;
 
 	public static PowderPlugin getInstance() {
@@ -41,6 +46,8 @@ public class PowderPlugin extends JavaPlugin {
 		instance = this;
 
 		config = ConfigUtil.loadConfig();
+
+		loadMessages();
 
 		enableStorage();
 
@@ -78,6 +85,7 @@ public class PowderPlugin extends JavaPlugin {
 			PowderUtil.savePowdersForOnline();
 		}
 
+		loadMessages();
 		enableStorage();
 		loadPowdersFromSources();
 
@@ -106,6 +114,25 @@ public class PowderPlugin extends JavaPlugin {
 
 	public List<FileConfiguration> getPowderConfigs() {
 		return powderConfigs;
+	}
+	
+	public Map<Message, String> getMessages() {
+		return messages;
+	}
+
+	public void loadMessages() {
+		messages = new HashMap<Message, String>();
+		String fileName = config.getString("locale", "en_US");
+		File file = new File(getDataFolder() + "/locale", fileName);
+		FileConfiguration locale = YamlConfiguration.loadConfiguration(file);
+		for (Message message : Message.values()) {
+			String actualMessage = locale.getString(message.name());
+			if (actualMessage == null) {
+				getLogger().warning("No message specified for '" + 
+						message.name() + "' in '" + fileName + ". Is your version of Powder outdated?");
+			}
+			messages.put(message, actualMessage);
+		}
 	}
 
 	public Storage getStorage() {
