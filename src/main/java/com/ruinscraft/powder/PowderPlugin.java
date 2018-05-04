@@ -2,8 +2,10 @@ package com.ruinscraft.powder;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -25,6 +27,7 @@ import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderPlugin extends JavaPlugin {
 
@@ -34,7 +37,7 @@ public class PowderPlugin extends JavaPlugin {
 	private FileConfiguration config;
 	private List<FileConfiguration> powderConfigs;
 
-	private static Map<Message, String> messages;
+	private static Map<Message, TextComponent> messages;
 
 	private Storage storage;
 
@@ -116,22 +119,43 @@ public class PowderPlugin extends JavaPlugin {
 		return powderConfigs;
 	}
 	
-	public Map<Message, String> getMessages() {
+	public Map<Message, TextComponent> getMessages() {
 		return messages;
 	}
 
 	public void loadMessages() {
-		messages = new HashMap<Message, String>();
-		String fileName = config.getString("locale", "en_US");
+		messages = new HashMap<Message, TextComponent>();
+		String fileName = config.getString("locale", "english_US.yml");
 		File file = new File(getDataFolder() + "/locale", fileName);
-		FileConfiguration locale = YamlConfiguration.loadConfiguration(file);
+		if (!file.exists()) {
+			saveResource(file.getPath(), false);
+		}
+		FileConfiguration locale = YamlConfiguration
+				.loadConfiguration(file);
+		Reader reader = new InputStreamReader(getResource("locale/" + fileName));
+		FileConfiguration defaults = YamlConfiguration
+				.loadConfiguration(reader);
+		locale.setDefaults(defaults);
+		try {
+			locale.save(file);
+		} catch (IOException e) {
+			getLogger().warning("Could not save locale file '" + fileName + "'.");
+		}
+		
 		for (Message message : Message.values()) {
 			String actualMessage = locale.getString(message.name());
 			if (actualMessage == null) {
 				getLogger().warning("No message specified for '" + 
-						message.name() + "' in '" + fileName + ". Is your version of Powder outdated?");
+						message.name() + "' in '" + fileName + "'." + 
+						" Is your version of Powder outdated?");
+				continue;
 			}
-			messages.put(message, actualMessage);
+			TextComponent textComponent = PowderUtil.format(PowderUtil.color(actualMessage));
+			try {
+				Message hoverMessage = Message.valueOf(message.name() + "_HOVER");
+				messages.put(hoverMessage, textComponent);
+			} catch (IllegalArgumentException e) { }
+			messages.put(message, textComponent);
 		}
 	}
 

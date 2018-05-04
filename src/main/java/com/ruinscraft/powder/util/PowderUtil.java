@@ -82,42 +82,61 @@ public class PowderUtil {
 		return true;
 	}
 	
-	public static String getMessage(Message message) {
-		return color(PowderPlugin.getInstance().getMessages().get(message));
+	public static TextComponent getMessage(Message message) {
+		return PowderPlugin.getInstance().getMessages().get(message);
+	}
+	
+	public static TextComponent replace(TextComponent text, String lookFor, String replace) {
+		TextComponent textComponent = new TextComponent(text);
+		textComponent.setText(textComponent.getText().replaceAll(lookFor, replace));
+		return textComponent;
+	}
+	
+	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
+		TextComponent textComponent = getMessage(message);
+		String actualText = textComponent.getText();
+		TextComponent hoverText = PowderUtil.getMessage(hover);
+		String hoverActualText = hoverText.getText();
+		for (int i = 0; i < message.getPlaceholders().length; i++) {
+			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
+			hoverActualText = 
+					hoverActualText.replace(message.getPlaceholders()[i], replacers[i]);
+		}
+		textComponent.setText(actualText);
+		hoverText.setText(hoverActualText);
+		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder(hoverText).create()));
+		return textComponent;
 	}
 
 	// sends a message with the given prefix in config.yml
 	// label is the base command, i.e. "powder" or "pdr" or "pow"
 	public static void sendPrefixMessage(Player player, String message, String label) {
-		TextComponent textComponent = format((String) message);
+		TextComponent textComponent = format(message);
 		sendPrefixMessage(player, textComponent, label);
 	}
 	
-	public static void sendPrefixMessage(Player player, Message message, String label) {
-		sendPrefixMessage(player, color(PowderUtil.getMessage(message)), label);
+	public static void sendPrefixMessage(Player player, Message message, 
+			String label, String... replacers) {
+		TextComponent text = PowderUtil.getMessage(message);
+		String actualText = text.getText();
+		for (int i = 0; i < message.getPlaceholders().length; i++) {
+			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
+		}
+		text.setText(actualText);
+		sendPrefixMessage(player, text, label);
+	}
+	
+	public static void sendPrefixMessage(Player player, Message message, 
+			Message hover, String label, String... replacers) {
+		TextComponent text = setTextAndHover(message, hover, replacers);
+		sendPrefixMessage(player, text, label);
 	}
 	
 	public static void sendPrefixMessage(Player player, TextComponent message, String label) {
 		BaseComponent fullMessage = new TextComponent();
 		fullMessage.setColor(PowderUtil.INFO);
-		TextComponent prefix = new TextComponent(PowderUtil.getMessage(Message.PREFIX));
-		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder(PowderUtil.getMessage(Message.PREFIX_HOVER))
-				.color(PowderUtil.INFO).create() ) );
-		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
-		fullMessage.addExtra(prefix);
-		fullMessage.addExtra(message);
-		player.spigot().sendMessage(fullMessage);
-	}
-	
-	public static void sendPrefixMessage(Player player, 
-			TextComponent message, TextComponent hover, String label) {
-		BaseComponent fullMessage = new TextComponent();
-		fullMessage.setColor(PowderUtil.INFO);
-		TextComponent prefix = new TextComponent(PowderUtil.PREFIX);
-		prefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder(hover).color(PowderUtil.INFO).create() ) );
-		prefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, "/" + label ) );
+		TextComponent prefix = setTextAndHover(Message.PREFIX, Message.PREFIX_HOVER, label);
 		fullMessage.addExtra(prefix);
 		fullMessage.addExtra(message);
 		player.spigot().sendMessage(fullMessage);

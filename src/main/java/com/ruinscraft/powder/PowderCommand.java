@@ -59,7 +59,7 @@ public class PowderCommand implements CommandExecutor {
 		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {
 			PowderUtil.sendPrefixMessage(player, 
-					Message.MAIN_NO_PERMISSION, label);
+					Message.MAIN_NO_PERMISSION, label, player.getName());
 			return false;
 		}
 

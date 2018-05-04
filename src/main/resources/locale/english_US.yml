@@ -1,0 +1,3 @@
+PREFIX: '&7[&9Powder&7] '
+PREFIX_HOVER: '&7/{command}'
+MAIN_NO_PERMISSION: '&cYou don''t have permission to use /{command}.'
