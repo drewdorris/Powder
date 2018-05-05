@@ -7,7 +7,8 @@ public enum Message {
 	
 	PREFIX("{command}"),
 	PREFIX_HOVER("{command}"),
-	MAIN_NO_PERMISSION("{user}");
+	MAIN_NO_PERMISSION("{user}"),
+	STAR_USE_CANCEL("{command}", "{user}");
 	
 	private String[] placeholders;
 	

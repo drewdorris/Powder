@@ -2,10 +2,8 @@ package com.ruinscraft.powder;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -58,7 +56,6 @@ public class PowderPlugin extends JavaPlugin {
 		PowderPlugin.getInstance().getServer().getScheduler()
 		.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			loadPowdersFromSources();
-
 			// load all saved powders from db if enabled
 			if (useStorage()) {
 				PowderUtil.loadPowdersForOnline();
@@ -118,7 +115,7 @@ public class PowderPlugin extends JavaPlugin {
 	public List<FileConfiguration> getPowderConfigs() {
 		return powderConfigs;
 	}
-	
+
 	public Map<Message, TextComponent> getMessages() {
 		return messages;
 	}
@@ -128,20 +125,12 @@ public class PowderPlugin extends JavaPlugin {
 		String fileName = config.getString("locale", "english_US.yml");
 		File file = new File(getDataFolder() + "/locale", fileName);
 		if (!file.exists()) {
-			saveResource(file.getPath(), false);
+			getLogger().warning("Locale '" + fileName +  "' not found, loading if exists!");
+			saveResource("locale/" + fileName, false);
 		}
 		FileConfiguration locale = YamlConfiguration
 				.loadConfiguration(file);
-		Reader reader = new InputStreamReader(getResource("locale/" + fileName));
-		FileConfiguration defaults = YamlConfiguration
-				.loadConfiguration(reader);
-		locale.setDefaults(defaults);
-		try {
-			locale.save(file);
-		} catch (IOException e) {
-			getLogger().warning("Could not save locale file '" + fileName + "'.");
-		}
-		
+
 		for (Message message : Message.values()) {
 			String actualMessage = locale.getString(message.name());
 			if (actualMessage == null) {
@@ -151,10 +140,6 @@ public class PowderPlugin extends JavaPlugin {
 				continue;
 			}
 			TextComponent textComponent = PowderUtil.format(PowderUtil.color(actualMessage));
-			try {
-				Message hoverMessage = Message.valueOf(message.name() + "_HOVER");
-				messages.put(hoverMessage, textComponent);
-			} catch (IllegalArgumentException e) { }
 			messages.put(message, textComponent);
 		}
 	}

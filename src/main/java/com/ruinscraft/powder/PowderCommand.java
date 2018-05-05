@@ -109,8 +109,8 @@ public class PowderCommand implements CommandExecutor {
 				return true;
 			} else if (args[0].equals("*")) {
 				if (args.length < 2) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO 
-							+ "Use '* cancel' to cancel all current active Powders.", label);
+					PowderUtil.sendPrefixMessage(player, Message.STAR_USE_CANCEL, label,
+							label, player.getName());
 					return false;
 				} else {
 					// cancel all Powders
