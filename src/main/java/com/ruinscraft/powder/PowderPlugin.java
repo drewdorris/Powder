@@ -256,7 +256,7 @@ public class PowderPlugin extends JavaPlugin {
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(player,
-						PowderUtil.INFO + "Loading Powders...", "powder");
+						Message.LOADING_START, "powder", player.getName());
 			}
 		}
 
@@ -275,25 +275,26 @@ public class PowderPlugin extends JavaPlugin {
 		ConfigUtil.reloadCategories();
 
 		String powderAmount = String.valueOf(powderNames.size());
+		String niceTotal = ". " + powderAmount + " total!";
 
 		// alert console of the Powders loaded
 		StringBuilder msg = new StringBuilder();
-		msg.append("Loaded Powders: ");
+		String loaded = "Loaded Powders: ";
 		for (String powderName : powderNames) {
 			if (powderNames.get(powderNames.size() - 1).equals(powderName)) {
-				msg.append(powderName + ". " + powderAmount + " total!");
+				msg.append(powderName);
 			} else {
 				msg.append(powderName + ", ");
 			}
 		}
-		getLogger().info(msg.toString());
+		getLogger().info(loaded + msg.toString() + niceTotal);
 
 		// alert online players with permission of the Powders loaded
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(
-						player, PowderUtil.INFO + 
-						"All Powders loaded! (" + powderAmount + " total)", "powder");
+						player, Message.LOADING_FINISH, Message.LOADING_FINISH_HOVER, 
+						"powder", player.getName(), powderAmount, msg.toString());
 			}
 		}
 	}

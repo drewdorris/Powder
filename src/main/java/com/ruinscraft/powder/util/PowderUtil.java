@@ -91,21 +91,41 @@ public class PowderUtil {
 		textComponent.setText(textComponent.getText().replaceAll(lookFor, replace));
 		return textComponent;
 	}
-
-	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
+	
+	public static TextComponent getReplacedTextFromMessage(Message message, String... replacers) {
 		TextComponent textComponent = getMessage(message);
 		String actualText = textComponent.toLegacyText();
-		TextComponent hoverText = PowderUtil.getMessage(hover);
-		String hoverActualText = hoverText.toLegacyText();
 		for (int i = 0; i < message.getPlaceholders().length; i++) {
 			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
-			hoverActualText = 
-					hoverActualText.replace(hover.getPlaceholders()[i], replacers[i]);
 		}
 		TextComponent newText = new TextComponent(actualText);
-		newText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder(hoverActualText).create()));
 		return newText;
+	}
+	
+	public static String getReplacedStringFromMessage(Message message, String... replacers) {
+		TextComponent textComponent = getMessage(message);
+		String actualText = textComponent.toLegacyText();
+		for (int i = 0; i < message.getPlaceholders().length; i++) {
+			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
+		}
+		return actualText;
+	}
+
+	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
+		TextComponent textComponent = getReplacedTextFromMessage(message);
+		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
+		return textComponent;
+	}
+	
+	public static TextComponent setTextHoverAndClick(Message message, Message hover,
+			Message click, String... replacers) {
+		TextComponent textComponent = getReplacedTextFromMessage(message);
+		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
+		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+				getReplacedStringFromMessage(click, replacers)));
+		return textComponent;
 	}
 
 	// sends a message with the given prefix in config.yml
@@ -118,12 +138,12 @@ public class PowderUtil {
 	public static void sendPrefixMessage(Player player, Message message, 
 			String label, String... replacers) {
 		TextComponent text = PowderUtil.getMessage(message);
-		String actualText = text.getText();
+		String actualText = text.toLegacyText();
 		for (int i = 0; i < message.getPlaceholders().length; i++) {
 			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
 		}
-		text.setText(actualText);
-		sendPrefixMessage(player, text, label);
+		TextComponent newText = new TextComponent(actualText);
+		sendPrefixMessage(player, newText, label);
 	}
 
 	public static void sendPrefixMessage(Player player, Message message, 
