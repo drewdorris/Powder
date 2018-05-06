@@ -59,7 +59,7 @@ public class PowderCommand implements CommandExecutor {
 		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {
 			PowderUtil.sendPrefixMessage(player, 
-					Message.MAIN_NO_PERMISSION, label, player.getName());
+					Message.GENERAL_NO_PERMISSION, label, player.getName());
 			return false;
 		}
 
@@ -97,9 +97,8 @@ public class PowderCommand implements CommandExecutor {
 				return false;
 			} else if (args[0].equals("reload")) {
 				if (!(player.hasPermission("powder.reload"))) {
-					PowderUtil.sendPrefixMessage(
-							player, PowderUtil.WARNING + 
-							"You don't have permission to do this.", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				PowderPlugin.getInstance().getServer().getScheduler()
@@ -280,6 +279,8 @@ public class PowderCommand implements CommandExecutor {
 				return false;
 			} else if (args[0].equals("attach")) {
 				if (!(player.hasPermission("powder.attach"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				String powderName;
@@ -317,6 +318,8 @@ public class PowderCommand implements CommandExecutor {
 				return true;
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				String name;
@@ -347,6 +350,8 @@ public class PowderCommand implements CommandExecutor {
 				return true;
 			} else if (args[0].equals("addto")) {
 				if (!(player.hasPermission("powder.addto"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				String name;
@@ -383,6 +388,8 @@ public class PowderCommand implements CommandExecutor {
 				return true;
 			} else if (args[0].equals("removefrom")) {
 				if (!(player.hasPermission("powder.removefrom"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				String name;
@@ -418,6 +425,8 @@ public class PowderCommand implements CommandExecutor {
 				return true;
 			} else if (args[0].equals("remove")) {
 				if (!(player.hasPermission("powder.remove"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				if (args.length < 2) {
@@ -475,6 +484,8 @@ public class PowderCommand implements CommandExecutor {
 				}
 			} else if (args[0].equals("nearby")) {
 				if (!(player.hasPermission("powder.nearby"))) {
+					PowderUtil.sendPrefixMessage(player, 
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
 				int page;

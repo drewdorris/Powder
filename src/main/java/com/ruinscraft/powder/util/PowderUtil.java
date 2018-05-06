@@ -91,7 +91,7 @@ public class PowderUtil {
 		textComponent.setText(textComponent.getText().replaceAll(lookFor, replace));
 		return textComponent;
 	}
-	
+
 	public static TextComponent getReplacedTextFromMessage(Message message, String... replacers) {
 		TextComponent textComponent = getMessage(message);
 		String actualText = textComponent.toLegacyText();
@@ -101,7 +101,7 @@ public class PowderUtil {
 		TextComponent newText = new TextComponent(actualText);
 		return newText;
 	}
-	
+
 	public static String getReplacedStringFromMessage(Message message, String... replacers) {
 		TextComponent textComponent = getMessage(message);
 		String actualText = textComponent.toLegacyText();
@@ -112,15 +112,15 @@ public class PowderUtil {
 	}
 
 	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
-		TextComponent textComponent = getReplacedTextFromMessage(message);
+		TextComponent textComponent = getReplacedTextFromMessage(message, replacers);
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
 		return textComponent;
 	}
-	
+
 	public static TextComponent setTextHoverAndClick(Message message, Message hover,
 			Message click, String... replacers) {
-		TextComponent textComponent = getReplacedTextFromMessage(message);
+		TextComponent textComponent = getReplacedTextFromMessage(message, replacers);
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
 		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
