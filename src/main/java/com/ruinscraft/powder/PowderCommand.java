@@ -20,7 +20,6 @@ import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -42,14 +41,10 @@ public class PowderCommand implements CommandExecutor {
 						PowderPlugin.getInstance().reload();
 					});
 				} else {
-					PowderPlugin.getInstance().getLogger().info(
-							PowderPlugin.getInstance().getName() + 
-							" | " + PowderPlugin.getInstance().getDescription());
+					PowderUtil.sendMainConsoleMessage();
 				}
 			} catch (Exception e) {
-				PowderPlugin.getInstance().getLogger().info(
-						PowderPlugin.getInstance().getName() + 
-						" | " + PowderPlugin.getInstance().getDescription());
+				PowderUtil.sendMainConsoleMessage();
 			}
 			return true;
 		}
@@ -187,16 +182,10 @@ public class PowderCommand implements CommandExecutor {
 						powderName = taskPowder.getName();
 						break;
 					}
-					TextComponent textComponent = new TextComponent(powderName);
-					textComponent.setColor(PowderUtil.INFO);
-					textComponent.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-							new ComponentBuilder(PowderUtil.INFO + "Powder: " 
-									+ powderName + PowderUtil.HIGHLIGHT_TWO + 
-									"\nClick to cancel this Powder")
-							.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
-					textComponent.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-							"/" + label + " cancel " + powderTask.getName() ) );
-					textComponents.add(textComponent);
+					TextComponent text = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER, 
+							Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK, 
+							player.getName(), label, powderName);
+					textComponents.add(text);
 				}
 				PowderUtil.paginateAndSend(player, textComponents, " active ", page, 7, label);
 				return false;
@@ -204,7 +193,7 @@ public class PowderCommand implements CommandExecutor {
 			} else if (args[0].equals("categories")) {
 				if (!powderHandler.categoriesEnabled()) {
 					PowderUtil.sendPrefixMessage(player, 
-							PowderUtil.WARNING + "Categories are not enabled", label);
+							Message.CATEGORIES_NOT_ENABLED, label, player.getName());
 					PowderUtil.listPowders(player, powderHandler.getPowders(), 
 							" list ", 1, pageLength, label);
 					return false;
@@ -221,8 +210,8 @@ public class PowderCommand implements CommandExecutor {
 				// list Powders by category
 			} else if (args[0].equals("category")) {
 				if (!powderHandler.categoriesEnabled()) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Categories are not enabled", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.CATEGORIES_NOT_ENABLED, label, player.getName());
 					PowderUtil.listPowders(player, powderHandler.getPowders(), 
 							" list ", 1, pageLength, label);
 					return false;
@@ -232,8 +221,8 @@ public class PowderCommand implements CommandExecutor {
 				try {
 					category = args[1];
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + 
-							label + " category <category> [page]", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.CATEGORY_SYNTAX, label, player.getName(), label);
 					return false;
 				}
 				try {
@@ -243,9 +232,8 @@ public class PowderCommand implements CommandExecutor {
 				}
 				// list categories with similar names if given category does not exist
 				if (powderHandler.getCategory(category) == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Unknown category '" + args[0] + 
-							"'. Similar categories:", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.CATEGORY_UNKNOWN, label, player.getName(), category);
 					Map<String, String> similarCategories = 
 							powderHandler.getSimilarCategories(args[0]);
 					PowderUtil.listCategories(player, similarCategories, 
@@ -265,8 +253,8 @@ public class PowderCommand implements CommandExecutor {
 				try {
 					search = args[1];
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"/powder search <term> [page]", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.SEARCH_SYNTAX, label, player.getName(), label);
 					return false;
 				}
 				try {
@@ -289,32 +277,31 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[1];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"/" + label + " attach <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.ATTACH_SYNTAX, label, player.getName(), label);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.ATTACH_UNKNOWN, label, player.getName(), powderName);
 					return false;
 				}
 				Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
 				if (entity == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Entity not found in your line of sight.", label);
+					PowderUtil.sendPrefixMessage(player, 
+							Message.ATTACH_NO_ENTITY, label, player.getName());
 					return false;
 				}
 				if (entity instanceof Player) {
 					newPowder.spawn((Player) entity);
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-							"Successfully assigned '" + newPowder.getName() + 
-							"' to " + entity.getName() + ".", label);
+					PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_PLAYER, 
+							label, player.getName(), powderName, entity.getName());
 					return true;
 				}
 				newPowder.spawn(entity);
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-						"Successfully assigned '" + newPowder.getName() + 
-						"' to '" + PowderUtil.cleanEntityName(entity) + "'.", label);
+				PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_ENTITY, 
+						label, player.getName(), powderName, 
+						PowderUtil.cleanEntityName(entity));
 				return true;
 			} else if (args[0].equals("create")) {
 				if (!(player.hasPermission("powder.create"))) {
@@ -330,23 +317,23 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"/" + label + " create <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, Message.CREATE_SYNTAX, 
+							label, player.getName(), label);
 					return false;
 				}
 				if (!(powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"An active Powder with this name is already active!", label);
+					PowderUtil.sendPrefixMessage(player, Message.CREATE_ALREADY_EXISTS, 
+							label, player.getName(), name, powderName);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.CREATE_UNKNOWN, label,
+							player.getName(), powderName);
 					return false;
 				}
 				newPowder.spawn(name, player.getLocation());
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-						"Successfully created '" + name + "'.", label);
+				PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
+						player.getName(), powderName, name);
 				return true;
 			} else if (args[0].equals("addto")) {
 				if (!(player.hasPermission("powder.addto"))) {
@@ -362,28 +349,28 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"/" + label + " addto <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, Message.ADDTO_SYNTAX, label,
+							player.getName(), label);
 					return false;
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"The active Powder '" + name + "' does not exist.", label);
+					PowderUtil.sendPrefixMessage(player, Message.ADDTO_DOES_NOT_EXIST, 
+							label, player.getName(), name);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.ADDTO_UNKNOWN, 
+							label, player.getName(), powderName);
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
 				if (powderTask.addPowder(newPowder, 
 						new StationaryTracker(player.getLocation()))) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-							"Added Powder '" + powderName + "' to '" + name + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.ADDTO_SUCCESS, 
+							label, player.getName(), powderName, name);
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Could not add Powder '" + powderName + "' to '" + name + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.ADDTO_FAILURE, 
+							label, player.getName(), powderName, name);
 				}
 				return true;
 			} else if (args[0].equals("removefrom")) {
@@ -400,27 +387,27 @@ public class PowderCommand implements CommandExecutor {
 					powderName = args[2];
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"/" + label + " removefrom <name> <Powder>", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_SYNTAX, 
+							label, player.getName());
 					return false;
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"The active Powder '" + name + "' does not exist.", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_DOES_NOT_EXIST,
+							label, player.getName(), name);
 					return false;
 				}
 				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Unknown Powder '" + powderName + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_UNKNOWN,
+							label, player.getName(), powderName);
 					return false;
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
 				if (powderTask.removePowder(newPowder)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-							"Removed Powder '" + powderName + "' from '" + name + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_SUCCESS,
+							label, player.getName(), powderName, name);
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-							"Could not remove this Powder from '" + name + "'.", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_FAILURE,
+							label, player.getName(), powderName, name);
 				}
 				return true;
 			} else if (args[0].equals("remove")) {
@@ -430,9 +417,8 @@ public class PowderCommand implements CommandExecutor {
 					return false;
 				}
 				if (args.length < 2) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + "/" + label + 
-							" remove <name> " + PowderUtil.INFO + "or" + PowderUtil.WARNING + 
-							" /" + label + " remove user <username>", label);
+					PowderUtil.sendPrefixMessage(player, Message.REMOVE_SYNTAX, 
+							label, player.getName(), label);
 					return false;
 				}
 				if (args[1].equals("user")) {
@@ -440,46 +426,42 @@ public class PowderCommand implements CommandExecutor {
 					try {
 						powderUser = Bukkit.getPlayer(args[2]);
 					} catch (Exception e) {
-						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.WARNING + "Invalid player.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_INVALID_PLAYER, 
+								label, player.getName());
 						return false;
 					}
 					if (powderUser == null) {
-						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.WARNING + "Invalid player.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_INVALID_PLAYER,
+								label, player.getName());
 						return false;
 					}
 					if (powderHandler.getPowderTasks()
 							.removeAll(powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
 						if (!(powderUser.equals(player))) {
-							PowderUtil.sendPrefixMessage(powderUser, 
-									PowderUtil.WARNING + 
-									"Your Powders were canceled by another user.", label);
+							PowderUtil.sendPrefixMessage(powderUser, Message.REMOVE_USER_REMOVED_BY, 
+									label, player.getName(), powderUser.getName());
 						}
-						PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-								"Successfully removed " + 
-								powderUser.getName() + "'s Powders.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_USER_REMOVE_SUCCESS, 
+								label, player.getName(), powderUser.getName());
 					} else {
-						PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING + 
-								"Could not remove " + 
-								powderUser.getName() + "'s Powders.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_USER_REMOVE_FAILURE, 
+								label, player.getName(), powderUser.getName());
 					}
 				} else {
 					String name;
 					try {
 						name = args[1];
 					} catch (Exception e) {
-						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.WARNING + "/powder remove <name>", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SYNTAX, 
+								label, player.getName(), label);
 						return false;
 					}
 					if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
-						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.INFO + "Successfully removed '" + name + "'.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SUCCESS, 
+								label, player.getName(), name);
 					} else {
-						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.WARNING + 
-								"Could not find or remove '" + name + "'.", label);
+						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_FAILURE, 
+								label, player.getName(), name);
 					}
 				}
 			} else if (args[0].equals("nearby")) {
@@ -494,17 +476,14 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				PowderUtil.sendPrefixMessage(player, 
-						PowderUtil.INFO + "Nearby active Powders:", label);
+				PowderUtil.sendPrefixMessage(player, Message.NEARBY_PREFIX, label);
 				Map<PowderTask, Integer> nearby = 
 						powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
 				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
 				for (PowderTask powderTask : nearby.keySet()) {
-					TextComponent text = new TextComponent();
-					text.setColor(PowderUtil.INFO);
-					String powderTaskName = powderTask.getName();
-					text.addExtra(PowderUtil.HIGHLIGHT + 
-							powderTaskName + PowderUtil.INFO + " " + nearby.get(powderTask) + "m");
+					TextComponent text = PowderUtil.getReplacedTextFromMessage(
+							Message.NEARBY, powderTask.getName(), 
+							String.valueOf(nearby.get(powderTask)));
 					if (player.hasPermission("powder.remove")) {
 						Set<Powder> taskPowders = powderTask.getPowders().keySet();
 						StringBuilder stringBuilder = new StringBuilder();
@@ -515,14 +494,15 @@ public class PowderCommand implements CommandExecutor {
 								stringBuilder.append(", ");
 							}
 						}
-						text.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(PowderUtil.INFO + 
-										"Powders: " + stringBuilder.toString() + 
-										PowderUtil.HIGHLIGHT_TWO + 
-										"\nClick to cancel this active Powder")
-								.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
-						text.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-								"/" + label + " remove " + powderTaskName ) );
+						text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
+								new ComponentBuilder(
+										PowderUtil.getReplacedStringFromMessage(
+												Message.NEARBY_HOVER, powderTask.getName(), 
+												stringBuilder.toString()))
+								.create()));
+						text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
+								PowderUtil.getReplacedStringFromMessage(
+										Message.NEARBY_CLICK, label, powderTask.getName())));
 					}
 					nearbyText.add(text);
 				}
@@ -537,16 +517,14 @@ public class PowderCommand implements CommandExecutor {
 						return true;
 					} else {
 						PowderUtil.sendPrefixMessage(player, 
-								PowderUtil.WARNING + "Unknown category '" + 
-										args[0] + "'. Similar categories:", label);
+								Message.CATEGORY_UNKNOWN, label, player.getName(), args[0]);
 						PowderUtil.listCategories(player, 
 								powderHandler.getSimilarCategories(args[0]), 
 								" category " + args[0] + " ", 1, pageLength, label);
 					}
 				} else {
 					PowderUtil.sendPrefixMessage(player, 
-							PowderUtil.WARNING + "Unknown Powder '" + args[0] + 
-							"'. Similar Powders:", label);
+							Message.LIST_UNKNOWN_POWDER, label, player.getName(), args[0]);
 					PowderUtil.listPowders(player, powderHandler.getSimilarPowders(args[0]), 
 							" list ", 1, pageLength, label);
 				}
@@ -558,9 +536,8 @@ public class PowderCommand implements CommandExecutor {
 
 		// if no permission for the specific Powder
 		if (!PowderUtil.hasPermission(player, powder)) {
-			PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
-					+ "You don't have permission to use the Powder '" + 
-					powder.getName() + "'.", label);
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_NO_PERMISSION, 
+					label, args[0]);
 			return false;
 		}
 
@@ -571,13 +548,11 @@ public class PowderCommand implements CommandExecutor {
 						powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				// cancel if exists
 				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-							"Powder '" + powder.getName() + "' cancelled! (" + 
-							taskAmount + " total)", label);
+					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SUCCESS, 
+							label, player.getName(), args[0], String.valueOf(taskAmount));
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
-							+ "There are no '" + powder.getName() + 
-							"' Powders currently active.", label);
+					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_FAILURE, 
+							label, player.getName(), args[0]);
 				}
 			}
 			return false;
@@ -589,12 +564,11 @@ public class PowderCommand implements CommandExecutor {
 			if (!(PowderPlugin.getInstance().getConfig()
 					.getBoolean("allowSamePowdersAtOneTime"))) {
 				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
-					PowderUtil.sendPrefixMessage(player, 
-							PowderUtil.INFO + "Powder '" + 
-									powder.getName() + "' cancelled!", label);
+					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SINGLE_SUCCESS, 
+							label, player.getName(), args[0]);
 				} else {
-					PowderUtil.sendPrefixMessage(player, PowderUtil.WARNING 
-							+ "There are no active '" + powder.getName() + "' Powders.", label);
+					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SINGLE_FAILURE, 
+							label, player.getName(), args[0]);
 				}
 				return false;
 			}
@@ -603,24 +577,18 @@ public class PowderCommand implements CommandExecutor {
 		// if player has maxPowdersAtOneTime, don't do it
 		int maxSize = PowderPlugin.getInstance().getConfig().getInt("maxPowdersAtOneTime");
 		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
-			PowderUtil.sendPrefixMessage(player, 
-					PowderUtil.WARNING + "You already have " + 
-							maxSize + " Powders active!", label);
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_MAX_PREFIX, 
+					label, player.getName(), args[0], String.valueOf(maxSize));
 			List<TextComponent> texts = new ArrayList<TextComponent>();
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				String powderName = "null";
 				for (Powder taskPowder : powderTask.getPowders().keySet()) {
 					powderName = taskPowder.getName();
 				}
-				TextComponent runningTaskText = new TextComponent(PowderUtil.INFO + "| " 
-						+ ChatColor.ITALIC + powderName);
-				runningTaskText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powderName + 
-								"' is currently active. Click to cancel")
-						.color(PowderUtil.HIGHLIGHT_THREE).create() ) );
-				runningTaskText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powderName + " cancel" ) );
-				texts.add(runningTaskText);
+				TextComponent text = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER, 
+						Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK, 
+						player.getName(), label, powderName);
+				texts.add(text);
 			}
 			PowderUtil.paginateAndSend(player, texts, "/" + label + " " + 
 					powder.getName(), 1, pageLength, label);
@@ -631,9 +599,8 @@ public class PowderCommand implements CommandExecutor {
 		int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
 		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
-			PowderUtil.sendPrefixMessage(player, 
-					PowderUtil.WARNING + "Please wait " + waitTime + 
-					" seconds between using each Powder.", label);
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT, 
+					label, args[0], String.valueOf(waitTime));
 			return false;
 		}
 		// if there's a wait time between using each Powder
@@ -651,21 +618,16 @@ public class PowderCommand implements CommandExecutor {
 		// if Powder has animation/dusts/sounds
 
 		if (powder.hasMovement()) {
-			TextComponent particleSentText = new TextComponent(PowderUtil.INFO 
-					+ "Powder '" + powder.getName() + "' created! Click to cancel.");
-			particleSentText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-					new ComponentBuilder("Click to cancel '" + powder.getName() + "'.")
-					.color(PowderUtil.HIGHLIGHT_THREE).create() ) );
-			particleSentText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-					"/" + label + " " + powder.getName() + " cancel" ) );
-			PowderUtil.sendPrefixMessage(player, particleSentText, label);
+			PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(Message.POWDER_CREATED, 
+					Message.POWDER_CREATED_HOVER, Message.POWDER_CREATED_CLICK, 
+					player.getName(), label, args[0]), label);
 			if (new Random().nextInt(12) == 1) {
-				PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + 
-						"Tip: Cancel with '/" + label + " <Powder> cancel'.", label);
+				PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_TIP, 
+						label, player.getName(), label);
 			}
 		} else {
-			PowderUtil.sendPrefixMessage(player, PowderUtil.INFO 
-					+ "Powder '" + powder.getName() + "' created!", label);
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_WITHOUT_HOVER, 
+					label, player.getName(), label);
 		}
 
 		return true;

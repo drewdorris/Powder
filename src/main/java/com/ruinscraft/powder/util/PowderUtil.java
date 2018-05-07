@@ -92,7 +92,19 @@ public class PowderUtil {
 		return textComponent;
 	}
 
-	public static TextComponent getReplacedTextFromMessage(Message message, String... replacers) {
+	public static String setString(Message message, String... replacers) {
+		TextComponent textComponent = getMessage(message);
+		String actualText = textComponent.toLegacyText();
+		if (message.name().contains("CLICK")) {
+			actualText = textComponent.toPlainText();
+		}
+		for (int i = 0; i < message.getPlaceholders().length; i++) {
+			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
+		}
+		return actualText;
+	}
+
+	public static TextComponent setText(Message message, String... replacers) {
 		TextComponent textComponent = getMessage(message);
 		String actualText = textComponent.toLegacyText();
 		for (int i = 0; i < message.getPlaceholders().length; i++) {
@@ -102,29 +114,20 @@ public class PowderUtil {
 		return newText;
 	}
 
-	public static String getReplacedStringFromMessage(Message message, String... replacers) {
-		TextComponent textComponent = getMessage(message);
-		String actualText = textComponent.toLegacyText();
-		for (int i = 0; i < message.getPlaceholders().length; i++) {
-			actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
-		}
-		return actualText;
-	}
-
 	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
-		TextComponent textComponent = getReplacedTextFromMessage(message, replacers);
+		TextComponent textComponent = setText(message, replacers);
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
+				new ComponentBuilder(setString(hover, replacers)).create()));
 		return textComponent;
 	}
 
 	public static TextComponent setTextHoverAndClick(Message message, Message hover,
 			Message click, String... replacers) {
-		TextComponent textComponent = getReplacedTextFromMessage(message, replacers);
+		TextComponent textComponent = setText(message, replacers);
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder(getReplacedStringFromMessage(hover, replacers)).create()));
+				new ComponentBuilder(setString(hover, replacers)).create()));
 		textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
-				getReplacedStringFromMessage(click, replacers)));
+				setString(click, replacers)));
 		return textComponent;
 	}
 
@@ -155,7 +158,8 @@ public class PowderUtil {
 	public static void sendPrefixMessage(Player player, TextComponent message, String label) {
 		BaseComponent fullMessage = new TextComponent();
 		fullMessage.setColor(PowderUtil.INFO);
-		TextComponent prefix = setTextAndHover(Message.PREFIX, Message.PREFIX_HOVER, label);
+		TextComponent prefix = setTextHoverAndClick(
+				Message.PREFIX, Message.PREFIX_HOVER, Message.PREFIX_CLICK, label);
 		fullMessage.addExtra(prefix);
 		fullMessage.addExtra(message);
 		player.spigot().sendMessage(fullMessage);
@@ -163,71 +167,51 @@ public class PowderUtil {
 
 	// help message
 	public static void helpMessage(Player player, String label, int page) {
-		PowderUtil.sendPrefixMessage(player, PowderUtil.INFO + "Powder Help", label);
+		PowderUtil.sendPrefixMessage(player, Message.PREFIX, label);
 		List<TextComponent> texts = new ArrayList<TextComponent>();
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder <Powder> " + PowderUtil.INFO + "- Use a Powder"));
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder <Powder> cancel " + PowderUtil.INFO + "- Cancel a Powder"));
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder * cancel " + PowderUtil.INFO + "- Cancel all Powders"));
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder active " + PowderUtil.INFO + "- Show or stop active Powders"));
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder list [page] " + PowderUtil.INFO + "- List Powders by page"));
+		texts.add(getMessage(Message.HELP_POWDER));
+		texts.add(getMessage(Message.HELP_POWDER_CANCEL));
+		texts.add(getMessage(Message.HELP_POWDER_STAR_CANCEL));
+		texts.add(getMessage(Message.HELP_ACTIVE));
+		texts.add(getMessage(Message.HELP_LIST));
 		if (PowderPlugin.getInstance().getPowderHandler().categoriesEnabled()) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder categories [page] " + PowderUtil.INFO + "- List all categories"));
-			texts.add(PowderUtil.format(
-					PowderUtil.HIGHLIGHT + "/powder category <category> [page] " + 
-							PowderUtil.INFO + "- List all Powders in a category"));
+			texts.add(getMessage(Message.HELP_CATEGORIES));
+			texts.add(getMessage(Message.HELP_CATEGORY));
 		}
-		texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-				"/powder search <term> [page] " + PowderUtil.INFO + "- Search for a Powder"));
+		texts.add(getMessage(Message.HELP_SEARCH));
 		if (player.hasPermission("powder.reload")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder reload " + PowderUtil.INFO + "- Reload Powder"));
+			texts.add(getMessage(Message.HELP_RELOAD));
 		}
 		if (player.hasPermission("powder.nearby")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder nearby " + PowderUtil.INFO + "- Show nearby Powders"));
+			texts.add(getMessage(Message.HELP_NEARBY));
 		}
 		if (player.hasPermission("powder.create")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder create <name> <Powder> " + PowderUtil.INFO + 
-					"- Creates a named Powder at your location"));
+			texts.add(getMessage(Message.HELP_CREATE));
 		}
 		if (player.hasPermission("powder.remove")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder remove <name> " + PowderUtil.INFO + "- Removes a named Powder"));
+			texts.add(getMessage(Message.HELP_REMOVE));
 		}
 		if (player.hasPermission("powder.attach")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder attach <Powder> " + PowderUtil.INFO + 
-					"- Attaches a Powder to an entity in front of you"));
+			texts.add(getMessage(Message.HELP_ATTACH));
 		}
 		if (player.hasPermission("powder.addto")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder addto <name> <Powder> " + PowderUtil.INFO + 
-					"- Adds a Powder to an existing named Powder"));
+			texts.add(getMessage(Message.HELP_ADDTO));
 		}
 		if (player.hasPermission("powder.removefrom")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder removefrom <name> <Powder> " + PowderUtil.INFO + 
-					"- Removes a Powder from an existing named Powder"));
+			texts.add(getMessage(Message.HELP_REMOVEFROM));
 		}
 		if (player.hasPermission("powder.cancel")) {
-			texts.add(PowderUtil.format(PowderUtil.HIGHLIGHT + 
-					"/powder cancel <name> " + 
-					PowderUtil.INFO + "- Cancels any currently active Powder"));
+			texts.add(getMessage(Message.HELP_CANCEL));
 		}
-		TextComponent comp1 = PowderUtil.format(PowderUtil.INFO + 
-				"It's also possible to " + PowderUtil.HIGHLIGHT + "click things in /" 
-				+ label + PowderUtil.INFO + " to enable or cancel Powders." + 
-				" Click the prefix in a message to return to the menu.");
-		comp1.setColor(PowderUtil.INFO);
+		TextComponent comp1 = getMessage(Message.HELP_EXTRA);
+		comp1.setColor(comp1.getColor());
 		texts.add(comp1);
 		paginateAndSend(player, texts, " help ", page, 7, label);
+	}
+
+	public static void sendMainConsoleMessage() {
+		PowderPlugin.getInstance().getLogger().info("Powder");
+		PowderPlugin.getInstance().getLogger().info("Use '/powder reload' to reload");
 	}
 
 	// sorts a list of TextComponents (Powders or categories) alphabetically
@@ -322,13 +306,13 @@ public class PowderUtil {
 	// alphabetizes, then paginates
 	public static void listPowders(Player player, List<Powder> powders, 
 			String input, int page, int pageLength, String label) {
-		TextComponent helpPrefix = new TextComponent(PowderUtil.INFO + "Use " +
-				PowderUtil.HIGHLIGHT + "/" + label +  " help" + PowderUtil.INFO + " for help.");
-		helpPrefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+		TextComponent helpPrefix = setTextHoverAndClick(Message.HELP_TIP, 
+				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label);
+		helpPrefix.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder("/" + label + " help")
-				.color(PowderUtil.INFO).create() ) );
-		helpPrefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + " help" ) );
+				.color(PowderUtil.INFO).create()));
+		helpPrefix.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
+				"/" + label + " help"));
 		PowderUtil.sendPrefixMessage(player, helpPrefix, label);
 
 		// all Powders
@@ -346,23 +330,23 @@ public class PowderUtil {
 					continue;
 				}
 				powderMapText.setColor(PowderUtil.NO_PERM);
-				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				powderMapText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("You don't have permission to use '" + 
-								powder.getName() + "'.").color(PowderUtil.WARNING).create() ) );
+								powder.getName() + "'.").color(PowderUtil.WARNING).create()));
 				noPermPowders.add(powderMapText);
 			} else if (!(PowderPlugin.getInstance().getPowderHandler()
 					.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 				powderMapText.setColor(PowderUtil.HIGHLIGHT_TWO);
-				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				powderMapText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("'" + powder.getName() + 
 								"' is currently active. Click to cancel")
-						.color(PowderUtil.HIGHLIGHT_TWO).create() ) );
-				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powder.getName() + " cancel" ) );
+						.color(PowderUtil.HIGHLIGHT_TWO).create()));
+				powderMapText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
+						"/" + label + " " + powder.getName() + " cancel"));
 				activePowders.add(powderMapText);
 			} else {
 				powderMapText.setColor(PowderUtil.INFO);
-				powderMapText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
+				powderMapText.setHoverEvent(new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
 						new ComponentBuilder("Click to use '" + powder.getName() + "'.")
 						.color(PowderUtil.INFO).create() ) );
 				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 

@@ -2,6 +2,10 @@
 PREFIX: '&7[&9Powder&7] '
 ## {command}
 PREFIX_HOVER: '&7/{command}'
+## {command}
+PREFIX_CLICK: '/{command}'
+## {user}
+GENERAL_NO_PERMISSION: 'You don''t have permission to do this.'
 ## {user}
 LOADING_START: '&7Loading Powders...'
 ## {user} {total} {list}
@@ -9,15 +13,11 @@ LOADING_FINISH: '&7All Powders loaded! ({total} total)'
 ## {user} {total} {list}
 LOADING_FINISH_HOVER: '&7Loaded Powders: {list}.'
 ## {user}
-MAIN_NO_PERMISSION: '&cYou don''t have permission to use /{command}.'
-## {user}
 STAR_USE_CANCEL: '&7Use ''* cancel'' to cancel all current active Powders.'
 ## {user}
 STAR_NO_ACTIVE: '&cThere are no Powders currently active.'
 ## {user} {total}
 STAR_CANCEL_SUCCESS: '&7Successfully canceled all Powders! ({total} total)'
-## {user}
-RELOAD_NO_PERMISSION: '&cYou don''t have permission to do this.'
 ## {user}
 CANCEL_SPECIFY: '&cPlease specify a Powder.'
 ## {user} {powder}
@@ -32,10 +32,12 @@ CANCEL_FAILURE: '&cCould not cancel this Powder.'
 LIST_UNKNOWN_POWDER: '&cUnknown Powder ''{powder}''. Similar Powders:'
 ## {user}
 ACTIVE_PREFIX: '&7Active Powders:'
-## {user} {powder}
+## {user} {command} {powder}
 ACTIVE_POWDER: '&7{powder}'
-## {user} {powder}
+## {user} {command} {powder}
 ACTIVE_POWDER_HOVER: '&7Powder: {powder} \n&aClick to cancel this Powder'
+## {user} {command} {powder}
+ACTIVE_POWDER_CLICK: '/{command} {powder} cancel'
 ## {user} 
 CATEGORIES_NOT_ENABLED: '&cCategories are not enabled.'
 ## {user} {command}
@@ -62,7 +64,7 @@ CREATE_ALREADY_EXISTS: '&cAn active Powder with this name is already active!'
 CREATE_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ## {user} {powder} {name}
 CREATE_SUCCESS: '&7Successfully created ''{name}''.'
-## {user}
+## {user} {command}
 ADDTO_SYNTAX: '&c/{command} addto <name> <Powder>'
 ## {user} {name}
 ADDTO_DOES_NOT_EXIST: '&cThe active Powder ''{name}'' does not exist.'
@@ -84,7 +86,7 @@ REMOVEFROM_SUCCESS: '&7Successfully removed Powder ''{powder}'' from ''{name}''.
 REMOVEFROM_FAILURE: '&cCould not remove Powder ''{powder}'' from ''{name}''.'
 ## {user} {command}
 REMOVE_SYNTAX: '&c/{command} remove <name> &7or &c/{command} remove user <username>'
-## {user} {player}
+## {user}
 REMOVE_INVALID_PLAYER: '&cInvalid player.'
 ## {user} {player}
 REMOVE_USER_REMOVE_SUCCESS: '&7Successfully removed {player}''s Powders.'
@@ -95,7 +97,7 @@ REMOVE_USER_REMOVED_BY: '&cYour Powders were canceled by another user.'
 ## {user} {command}
 REMOVE_NO_USER_SYNTAX: '&c/{command} remove <name>'
 ## {user} {name}
-REMOVE_NO_USER_SUCCESS: '&7Successfully removed {name}.'
+REMOVE_NO_USER_SUCCESS: '&7Successfully removed ''{name}''.'
 ## {user} {name}
 REMOVE_NO_USER_FAILURE: '&cCould not find or remove {name}.'
 NEARBY_PREFIX: '&7Nearby active Powders:'
@@ -111,13 +113,17 @@ POWDER_NO_PERMISSION: '&cYou don''t have permission to use the Powder ''{powder}
 POWDER_CANCEL_SUCCESS: '&7Powder ''{powder}'' canceled! ({total} total)'
 ## {user} {powder}
 POWDER_CANCEL_FAILURE: '&cThere are no ''{powder}'' Powders you are running.'
+## {user} {powder}
+POWDER_CANCEL_SINGLE_SUCCESS: '&7Powder ''{powder}'' canceled!'
+## {user} {powder}
+POWDER_CANCEL_SINGLE_FAILURE: '&cThere are no ''{powder}'' Powders you are running.'
 ## {user} {powder} {total}
 POWDER_MAX_PREFIX: '&cYou already have {total} Powders active!'
 ## {user} {powder} {seconds}
 POWDER_WAIT: '&cPlease wait {seconds} seconds between using each Powder.'
-## {user} {powder}
+## {user} {command} {powder}
 POWDER_CREATED: '&7Powder {powder} created! Click to cancel.'
-## {user} {powder}
+## {user} {command} {powder}
 POWDER_CREATED_HOVER: '&eClick to cancel {powder}.'
 ## {user} {command} {powder}
 POWDER_CREATED_CLICK: '/{command} {powder} cancel'
@@ -142,7 +148,7 @@ HELP_ATTACH: '&d/powder attach <Powder> &7- Attaches a powder to an entity in fr
 HELP_ADDTO: '&d/powder addto <name> <Powder> &7- Adds a Powder to an existing named Powder'
 HELP_REMOVEFROM: '&d/powder removefrom <name> <Powder> &7- Removes a Powder from an existing named Powder'
 HELP_CANCEL: '&d/powder cancel <name> &7- Cancels any currently active Powder with this name'
-HELP_EXTRA: '&7''It is also possible to &dclick things in /powder &7to enable or cancel Powders. Click the prefix in a message to return to the menu.'
+HELP_EXTRA: '&7It''s also possible to &dclick things in /powder &7to enable or cancel Powders. Click the prefix in a message to return to the menu.'
 ## {command}
 HELP_TIP: '&7Use &c/{command} help &7for help.'
 ## {command}
@@ -165,23 +171,23 @@ LIST_NO_ELEMENTS: '&cNone found.'
 LIST_POWDER_NO_PERM: '&8{powder}'
 ## {powder}
 LIST_POWDER_NO_PERM_HOVER: '&cYou don''t have permission to use ''{powder}''.'
-## {powder}
+## {command} {powder}
 LIST_POWDER_ACTIVE: '&a{powder}'
-## {powder}
+## {command} {powder}
 LIST_POWDER_ACTIVE_HOVER: '&a''{powder}'' is currently active. Click to cancel'
 ## {command} {powder}
 LIST_POWDER_ACTIVE_CLICK: '/{command} {powder} cancel'
-## {powder}
+## {command} {powder}
 LIST_POWDER_REGULAR: '&7{powder}'
-## {powder}
+## {command} {powder}
 LIST_POWDER_REGULAR_HOVER: '&7Click to use ''{powder}''.'
 ## {command} {powder}
 LIST_POWDER_REGULAR_CLICK: '/{command} {powder}'
-## {category}
+## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM: '&8{category}'
-## {category} {desc}
+## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM_HOVER_EMPTY: '&7{desc} - This category is empty.'
-## {category} {desc}
+## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM_HOVER_PERM: '&7{desc} - You don''t have permission to use any Powders in ''{category}''.'
 ## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM_CLICK: '/{command} {category} 1'
