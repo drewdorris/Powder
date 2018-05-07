@@ -481,9 +481,8 @@ public class PowderCommand implements CommandExecutor {
 						powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
 				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
 				for (PowderTask powderTask : nearby.keySet()) {
-					TextComponent text = PowderUtil.getReplacedTextFromMessage(
-							Message.NEARBY, powderTask.getName(), 
-							String.valueOf(nearby.get(powderTask)));
+					TextComponent text = PowderUtil.setText(Message.NEARBY, 
+							powderTask.getName(), String.valueOf(nearby.get(powderTask)));
 					if (player.hasPermission("powder.remove")) {
 						Set<Powder> taskPowders = powderTask.getPowders().keySet();
 						StringBuilder stringBuilder = new StringBuilder();
@@ -495,14 +494,13 @@ public class PowderCommand implements CommandExecutor {
 							}
 						}
 						text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(
-										PowderUtil.getReplacedStringFromMessage(
-												Message.NEARBY_HOVER, powderTask.getName(), 
-												stringBuilder.toString()))
+								new ComponentBuilder(PowderUtil.setString(
+										Message.NEARBY_HOVER, powderTask.getName(), 
+										stringBuilder.toString()))
 								.create()));
 						text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
-								PowderUtil.getReplacedStringFromMessage(
-										Message.NEARBY_CLICK, label, powderTask.getName())));
+								PowderUtil.setString(Message.NEARBY_CLICK, 
+										label, powderTask.getName())));
 					}
 					nearbyText.add(text);
 				}

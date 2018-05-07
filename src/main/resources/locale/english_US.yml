@@ -157,13 +157,17 @@ HELP_TIP_HOVER: '&7/{command} help'
 HELP_TIP_CLICK: '/{command} help'
 ## {item}
 LIST_GENERAL_ITEM: '&7| {item}'
+## {command} {input} {page}
 LIST_GENERAL_LEFT: '&d<<  '
+## {command} {input} {page}
 LIST_GENERAL_LEFT_HOVER: '&dPrevious Page'
 ## {command} {input} {page}
 LIST_GENERAL_LEFT_CLICK: '/{command} {input} {page}'
 LIST_GENERAL_MIDDLE: '&dPage (click)'
+## {command} {input} {page}
 LIST_GENERAL_RIGHT: '&d  >>'
-LIST_GENERAL_RIGHT_HOVER: '&dPrevious Page'
+## {command} {input} {page}
+LIST_GENERAL_RIGHT_HOVER: '&dNext Page'
 ## {command} {input} {page}
 LIST_GENERAL_RIGHT_CLICK: '/{command} {input} {page}'
 LIST_NO_ELEMENTS: '&cNone found.'
@@ -191,3 +195,15 @@ LIST_CATEGORY_NO_PERM_HOVER_EMPTY: '&7{desc} - This category is empty.'
 LIST_CATEGORY_NO_PERM_HOVER_PERM: '&7{desc} - You don''t have permission to use any Powders in ''{category}''.'
 ## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM_CLICK: '/{command} {category} 1'
+## {command} {category} {desc}
+LIST_CATEGORY_REGULAR: '&7{category}'
+## {command} {category} {desc}
+LIST_CATEGORY_REGULAR_HOVER: '&7{desc}'
+## {command} {category} {desc}
+LIST_CATEGORY_REGULAR_CLICK: '/{command} {category} 1'
+## {command} {category} {desc}
+LIST_CATEGORY_ACTIVE: '&a{category}'
+## {command} {category} {desc}
+LIST_CATEGORY_ACTIVE_HOVER: '&7{desc} - ''{category}'' contains currently active Powders.'
+## {command} {category} {desc}
+LIST_CATEGORY_ACTIVE_CLICK: '/{command} {category} 1'

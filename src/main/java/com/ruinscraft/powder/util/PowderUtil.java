@@ -7,7 +7,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.Collator;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
@@ -215,20 +217,20 @@ public class PowderUtil {
 	}
 
 	// sorts a list of TextComponents (Powders or categories) alphabetically
-	public static List<TextComponent> sortAlphabetically(List<TextComponent> powders) {
-		List<String> names = new ArrayList<String>(powders.size()); 
+	public static List<TextComponent> sortAlphabetically(Collection<TextComponent> texts) {
+		List<String> names = new ArrayList<String>(texts.size()); 
 
-		for (TextComponent powderName : powders) {
-			names.add(powderName.getText());
+		for (TextComponent text : texts) {
+			names.add(text.getText());
 		}
 
 		Collections.sort(names, Collator.getInstance());
-		List<TextComponent> newList = new ArrayList<TextComponent>(powders.size());
+		List<TextComponent> newList = new ArrayList<TextComponent>(texts.size());
 
 		for (String name : names) {
-			for (TextComponent powderName : powders) {
-				if (powderName.getText() == name) {
-					newList.add(powderName);
+			for (TextComponent text : texts) {
+				if (text.getText() == name) {
+					newList.add(text);
 					break;
 				}
 			}
@@ -258,29 +260,22 @@ public class PowderUtil {
 		}
 
 		// create arrows
-		TextComponent leftArrow = new TextComponent("<<  ");
-		leftArrow.setColor(PowderUtil.HIGHLIGHT);
-		leftArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + input + (page - 1) ) );
-		leftArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("Previous Page")
-				.color(PowderUtil.HIGHLIGHT).create() ) );
+		TextComponent leftArrow = setTextHoverAndClick(Message.LIST_GENERAL_LEFT, 
+				Message.LIST_GENERAL_LEFT_HOVER, 
+				Message.LIST_GENERAL_LEFT_CLICK, 
+				label, input, String.valueOf(page - 1));
 
-		TextComponent middle = new TextComponent("Page (click)");
-		middle.setColor(PowderUtil.HIGHLIGHT);
+		TextComponent middle = getMessage(Message.LIST_GENERAL_MIDDLE);
 
-		TextComponent rightArrow = new TextComponent("  >>");
-		rightArrow.setColor(PowderUtil.HIGHLIGHT);
-		rightArrow.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + input + (page + 1) ) );
-		rightArrow.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("Next Page")
-				.color(PowderUtil.HIGHLIGHT).create() ) );
+		TextComponent rightArrow = setTextHoverAndClick(Message.LIST_GENERAL_RIGHT,
+				Message.LIST_GENERAL_RIGHT_HOVER,
+				Message.LIST_GENERAL_RIGHT_CLICK,
+				label, input, String.valueOf(page + 1));
 
 		// adds the arrows to the message depending on where you are in the list
 		TextComponent fullArrows = new TextComponent();
 		if (pageList.isEmpty()) {
-			player.sendMessage(PowderUtil.WARNING + "None found.");
+			sendPrefixMessage(player, Message.LIST_NO_ELEMENTS, label);
 			return;
 		} else if ((!pageList.contains(listOfElements.get(0)) 
 				&& pageList.contains(listOfElements.get(listOfElements.size() - 1)))) {
@@ -306,14 +301,8 @@ public class PowderUtil {
 	// alphabetizes, then paginates
 	public static void listPowders(Player player, List<Powder> powders, 
 			String input, int page, int pageLength, String label) {
-		TextComponent helpPrefix = setTextHoverAndClick(Message.HELP_TIP, 
-				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label);
-		helpPrefix.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("/" + label + " help")
-				.color(PowderUtil.INFO).create()));
-		helpPrefix.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + " help"));
-		PowderUtil.sendPrefixMessage(player, helpPrefix, label);
+		PowderUtil.sendPrefixMessage(player, setTextHoverAndClick(Message.HELP_TIP, 
+				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
 		// all Powders
 		List<TextComponent> listOfPowders = new ArrayList<TextComponent>();
@@ -324,34 +313,21 @@ public class PowderUtil {
 		// Powders the player does not have permission for
 		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
 		for (Powder powder : powders) {
-			TextComponent powderMapText = new TextComponent(powder.getName());
 			if (!PowderUtil.hasPermission(player, powder)) {
 				if (powder.isHidden()) {
 					continue;
 				}
-				powderMapText.setColor(PowderUtil.NO_PERM);
-				powderMapText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("You don't have permission to use '" + 
-								powder.getName() + "'.").color(PowderUtil.WARNING).create()));
-				noPermPowders.add(powderMapText);
+				noPermPowders.add(setTextAndHover(Message.LIST_POWDER_NO_PERM, 
+						Message.LIST_POWDER_NO_PERM_HOVER, powder.getName()));
 			} else if (!(PowderPlugin.getInstance().getPowderHandler()
 					.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
-				powderMapText.setColor(PowderUtil.HIGHLIGHT_TWO);
-				powderMapText.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("'" + powder.getName() + 
-								"' is currently active. Click to cancel")
-						.color(PowderUtil.HIGHLIGHT_TWO).create()));
-				powderMapText.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powder.getName() + " cancel"));
-				activePowders.add(powderMapText);
+				activePowders.add(setTextHoverAndClick(Message.LIST_POWDER_ACTIVE, 
+						Message.LIST_POWDER_ACTIVE_HOVER, Message.LIST_POWDER_ACTIVE_CLICK, 
+						label, powder.getName()));
 			} else {
-				powderMapText.setColor(PowderUtil.INFO);
-				powderMapText.setHoverEvent(new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-						new ComponentBuilder("Click to use '" + powder.getName() + "'.")
-						.color(PowderUtil.INFO).create() ) );
-				powderMapText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-						"/" + label + " " + powder.getName()) );
-				ableToPowders.add(powderMapText);
+				ableToPowders.add(setTextHoverAndClick(Message.LIST_POWDER_REGULAR, 
+						Message.LIST_POWDER_REGULAR_HOVER, Message.LIST_POWDER_REGULAR_CLICK, 
+						label, powder.getName()));
 			}
 		}
 		activePowders = sortAlphabetically(activePowders);
@@ -366,83 +342,68 @@ public class PowderUtil {
 	// similar to listPowders but lists categories instead
 	public static void listCategories(Player player, Map<String, String> categories, 
 			String input, int page, int pageLength, String label) {
-		TextComponent helpPrefix = new TextComponent(PowderUtil.INFO + "Use " +
-				PowderUtil.HIGHLIGHT + "/" + label +  " help" + PowderUtil.INFO + " for help.");
-		helpPrefix.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-				new ComponentBuilder("/" + label + " help")
-				.color(PowderUtil.INFO).create() ) );
-		helpPrefix.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-				"/" + label + " help" ) );
-		PowderUtil.sendPrefixMessage(player, helpPrefix, label);
+		PowderUtil.sendPrefixMessage(player, setTextHoverAndClick(Message.HELP_TIP, 
+				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
 		// all categories
 		List<TextComponent> listOfCategories = new LinkedList<TextComponent>();
 		// categories containing Powders that are currently active
-		List<TextComponent> activeCategories = new LinkedList<TextComponent>();
+		Set<TextComponent> activeCategories = new HashSet<TextComponent>();
 		// categories containing Powders the player has permission for
-		List<TextComponent> ableToCategories = new LinkedList<TextComponent>();
+		Set<TextComponent> ableToCategories = new HashSet<TextComponent>();
 		// categories containing Powders the player has no permission for, or contains no Powders
-		List<TextComponent> noPermCategories = new LinkedList<TextComponent>();
+		Set<TextComponent> noPermCategories = new HashSet<TextComponent>();
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		for (String category : categories.keySet()) {
-			TextComponent categoryText = new TextComponent(category);
 			String desc = categories.get(category);
+			int i = 0;
+			boolean active = false;
+			boolean isAllowed = false;
 			for (Powder powder : powderHandler.getPowdersFromCategory(category)) {
+				i++;
 				if (!(PowderPlugin.getInstance().getPowderHandler()
 						.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
-					categoryText.setColor(PowderUtil.HIGHLIGHT_TWO);
-					categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-							new ComponentBuilder(desc + " - " + "'" + 
-									category + "' contains currently active Powders.")
-							.color(PowderUtil.INFO).create() ) );
-					categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-							"/" + label + " " + category + " 1" ) );
-					if (!activeCategories.contains(categoryText)) {
-						activeCategories.add(categoryText);
-					}
+					active = true;
 					break;
 				} else {
 					if (PowderUtil.hasPermission(player, powder)) {
-						categoryText.setColor(PowderUtil.INFO);
-						categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(desc)
-								.color(PowderUtil.INFO).create() ) );
-						categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-								"/" + label + " " + category + " 1" ) );
-						if (!ableToCategories.contains(categoryText)) {
-							ableToCategories.add(categoryText);
-						}
+						isAllowed = true;
+					} else if (!isAllowed) {
 					}
 				}
 			}
-			if (!activeCategories.contains(categoryText)) {
-				if (!ableToCategories.contains(categoryText)) {
-					if (powderHandler.getPowdersFromCategory(category).isEmpty()) {
-						categoryText.setColor(PowderUtil.NO_PERM);
-						categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(desc + " - This category is empty.")
-								.color(PowderUtil.INFO).create() ) );
-						categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-								"/" + label + " " + category + " 1" ) );
-					} else {
-						categoryText.setColor(PowderUtil.NO_PERM);
-						categoryText.setHoverEvent( new HoverEvent( HoverEvent.Action.SHOW_TEXT, 
-								new ComponentBuilder(desc + " - " 
-										+ "You don't have permission to use any Powders in '" + 
-										category + "'.").color(PowderUtil.INFO).create() ) );
-						categoryText.setClickEvent( new ClickEvent( ClickEvent.Action.RUN_COMMAND, 
-								"/" + label + " " + category + " 1" ) );
-					}
-					noPermCategories.add(categoryText);
-				}
+			if (i == 0) {
+				noPermCategories.add(PowderUtil.setTextHoverAndClick(
+						Message.LIST_CATEGORY_NO_PERM, 
+						Message.LIST_CATEGORY_NO_PERM_HOVER_EMPTY, 
+						Message.LIST_CATEGORY_NO_PERM_CLICK, 
+						label, category, desc));
+			} else if (active) {
+				activeCategories.add(PowderUtil.setTextHoverAndClick(
+						Message.LIST_CATEGORY_ACTIVE, 
+						Message.LIST_CATEGORY_ACTIVE_HOVER, 
+						Message.LIST_CATEGORY_ACTIVE_CLICK, 
+						label, category, desc));
+			} else if (isAllowed) {
+				ableToCategories.add(PowderUtil.setTextHoverAndClick(
+						Message.LIST_CATEGORY_REGULAR, 
+						Message.LIST_CATEGORY_REGULAR_HOVER, 
+						Message.LIST_CATEGORY_REGULAR_CLICK, 
+						label, category, desc));
 			} else {
-				ableToCategories.remove(categoryText);
+				noPermCategories.add(PowderUtil.setTextHoverAndClick(
+						Message.LIST_CATEGORY_NO_PERM, 
+						Message.LIST_CATEGORY_NO_PERM_HOVER_PERM, 
+						Message.LIST_CATEGORY_NO_PERM_CLICK, 
+						label, category, desc));
 			}
-
 		}
-		activeCategories = sortAlphabetically(activeCategories);
-		ableToCategories = sortAlphabetically(ableToCategories);
-		noPermCategories = sortAlphabetically(noPermCategories);
+		activeCategories = sortAlphabetically(activeCategories)
+				.stream().collect(Collectors.toSet());
+		ableToCategories = sortAlphabetically(ableToCategories)
+				.stream().collect(Collectors.toSet());
+		noPermCategories = sortAlphabetically(noPermCategories)
+				.stream().collect(Collectors.toSet());
 		listOfCategories.addAll(activeCategories);
 		listOfCategories.addAll(ableToCategories);
 		listOfCategories.addAll(noPermCategories);
