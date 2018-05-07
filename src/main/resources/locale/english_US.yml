@@ -7,6 +7,8 @@ PREFIX_CLICK: '/{command}'
 ## {user}
 GENERAL_NO_PERMISSION: 'You don''t have permission to do this.'
 ## {user}
+RELOADING_ALREADY: '&cYou can''t reload while reloading!'
+## {user}
 LOADING_START: '&7Loading Powders...'
 ## {user} {total} {list}
 LOADING_FINISH: '&7All Powders loaded! ({total} total)'

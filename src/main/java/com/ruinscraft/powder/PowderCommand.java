@@ -36,10 +36,15 @@ public class PowderCommand implements CommandExecutor {
 			try {
 				if (args[0].equals("reload")) {
 					// reload
-					PowderPlugin.getInstance().getServer().getScheduler()
-					.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-						PowderPlugin.getInstance().reload();
-					});
+					if (!PowderPlugin.isReloading()) {
+						PowderPlugin.getInstance().getServer().getScheduler()
+						.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+							PowderPlugin.getInstance().reload();
+						});
+					} else {
+						PowderPlugin.getInstance().getLogger().info(
+								"Can't reload while " + "already reloading!");
+					}
 				} else {
 					PowderUtil.sendMainConsoleMessage();
 				}
@@ -96,10 +101,15 @@ public class PowderCommand implements CommandExecutor {
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
-				PowderPlugin.getInstance().getServer().getScheduler()
-				.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-					PowderPlugin.getInstance().reload();
-				});
+				if (PowderPlugin.isReloading()) {
+					PowderUtil.sendPrefixMessage(player, Message.RELOADING_ALREADY, 
+							label, player.getName());
+				} else {
+					PowderPlugin.getInstance().getServer().getScheduler()
+					.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+						PowderPlugin.getInstance().reload();
+					});
+				}
 				return true;
 			} else if (args[0].equals("*")) {
 				if (args.length < 2) {

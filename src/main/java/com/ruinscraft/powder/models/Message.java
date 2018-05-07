@@ -1,14 +1,15 @@
 package com.ruinscraft.powder.models;
 
 public enum Message {
-	
+
 	// COMMAND_ MESSAGE_DESCRIPTION (_HOVER)
 	// placeholders are the optional placeholders for locale
-	
+
 	PREFIX("{command}"),
 	PREFIX_HOVER("{command}"),
 	PREFIX_CLICK("{command}"),
 	GENERAL_NO_PERMISSION("{user}"),
+	RELOADING_ALREADY("{user}"),
 	LOADING_START("{user}"),
 	LOADING_FINISH("{user}", "{total}", "{list}"),
 	LOADING_FINISH_HOVER("{user}", "{total}", "{list}"),
@@ -120,13 +121,13 @@ public enum Message {
 	LIST_CATEGORY_REGULAR("{command}", "{category}", "{desc}"),
 	LIST_CATEGORY_REGULAR_HOVER("{command}", "{category}", "{desc}"),
 	LIST_CATEGORY_REGULAR_CLICK("{command}", "{category}", "{desc}");
-	
+
 	private String[] placeholders;
-	
+
 	public String[] getPlaceholders() {
 		return placeholders;
 	}
-	
+
 	private Message(String... placeholders) {
 		this.placeholders = placeholders;
 	}

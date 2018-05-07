@@ -39,12 +39,16 @@ public class PowderPlugin extends JavaPlugin {
 
 	private Storage storage;
 
+	private static boolean isReloading;
+
 	public static PowderPlugin getInstance() {
 		return instance;
 	}
 
 	public void onEnable() {
 		instance = this;
+
+		isReloading = true;
 
 		config = ConfigUtil.loadConfig();
 
@@ -64,6 +68,7 @@ public class PowderPlugin extends JavaPlugin {
 
 		getCommand("powder").setExecutor(new PowderCommand());
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		isReloading = false;
 	}
 
 	public void onDisable() {
@@ -79,10 +84,17 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void reload() {
+		isReloading = true;
 		config = ConfigUtil.loadConfig();
 
 		if (useStorage()) {
 			PowderUtil.savePowdersForOnline();
+		} else {
+			for (UUID uuid : PowderPlugin
+					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
+						+ "Your Powders were cancelled due to a reload.", "powder");
+			}
 		}
 
 		loadMessages();
@@ -91,13 +103,12 @@ public class PowderPlugin extends JavaPlugin {
 
 		if (useStorage()) {
 			PowderUtil.loadPowdersForOnline();
-		} else {
-			for (UUID uuid : PowderPlugin
-					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
-				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
-						+ "Your Powders were cancelled due to a reload.", "powder");
-			}
 		}
+		isReloading = false;
+	}
+
+	public static boolean isReloading() {
+		return isReloading;
 	}
 
 	// end all current tasks & reinitialize powderHandler
