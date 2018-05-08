@@ -7,6 +7,8 @@ PREFIX_CLICK: '/{command}'
 ## {user}
 GENERAL_NO_PERMISSION: 'You don''t have permission to do this.'
 ## {user}
+LOADING_ALERT: '&7Your Powders were canceled due to a reload.'
+## {user}
 LOADING_ALREADY: '&cYou can''t reload while reloading!'
 ## {user}
 LOADING_START: '&7Loading Powders...'
@@ -30,14 +32,12 @@ CANCEL_UNKNOWN_SPECIFY: '&cUnknown Powder specified.'
 CANCEL_SUCCESS: '&7Successfully canceled {powder}.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cCould not cancel this Powder.'
-## {user} {powder}
-LIST_UNKNOWN_POWDER: '&cUnknown Powder ''{powder}''. Similar Powders:'
 ## {user}
 ACTIVE_PREFIX: '&7Active Powders:'
 ## {user} {command} {powder}
 ACTIVE_POWDER: '&7{powder}'
 ## {user} {command} {powder}
-ACTIVE_POWDER_HOVER: '&7Powder: {powder} \n&aClick to cancel this Powder'
+ACTIVE_POWDER_HOVER: '&7Powder: {powder} || &aClick to cancel this Powder'
 ## {user} {command} {powder}
 ACTIVE_POWDER_CLICK: '/{command} {powder} cancel'
 ## {user} 
@@ -106,7 +106,7 @@ NEARBY_PREFIX: '&7Nearby active Powders:'
 ## {name} {distance}
 NEARBY: '&d{name} &7{distance}m'
 ## {name} {powders}
-NEARBY_HOVER: '&7Powders: {powders} \n&aClick to cancel this active Powder'
+NEARBY_HOVER: '&7Powders: {powders} || &aClick to cancel this active Powder'
 ## {command} {name}
 NEARBY_CLICK: '/{command} remove {name}'
 ## {powder}
@@ -157,8 +157,7 @@ HELP_TIP: '&7Use &c/{command} help &7for help.'
 HELP_TIP_HOVER: '&7/{command} help'
 ## {command}
 HELP_TIP_CLICK: '/{command} help'
-## {item}
-LIST_GENERAL_ITEM: '&7| {item}'
+LIST_GENERAL_ITEM: '&7| '
 ## {command} {input} {page}
 LIST_GENERAL_LEFT: '&d<<  '
 ## {command} {input} {page}
@@ -173,6 +172,8 @@ LIST_GENERAL_RIGHT_HOVER: '&dNext Page'
 ## {command} {input} {page}
 LIST_GENERAL_RIGHT_CLICK: '/{command} {input} {page}'
 LIST_NO_ELEMENTS: '&cNone found.'
+## {user} {powder}
+LIST_UNKNOWN_POWDER: '&cUnknown Powder ''{powder}''. Similar Powders:'
 ## {powder}
 LIST_POWDER_NO_PERM: '&8{powder}'
 ## {powder}

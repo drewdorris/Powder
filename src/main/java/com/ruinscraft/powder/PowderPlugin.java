@@ -24,7 +24,6 @@ import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderPlugin extends JavaPlugin {
@@ -95,8 +94,9 @@ public class PowderPlugin extends JavaPlugin {
 		} else {
 			for (UUID uuid : PowderPlugin
 					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
-				PowderUtil.sendPrefixMessage(Bukkit.getPlayer(uuid), PowderUtil.INFO 
-						+ "Your Powders were cancelled due to a reload.", "powder");
+				Player player = Bukkit.getPlayer(uuid);
+				PowderUtil.sendPrefixMessage(player, 
+						Message.LOADING_ALERT, "powder", player.getName());
 			}
 		}
 
@@ -242,23 +242,6 @@ public class PowderPlugin extends JavaPlugin {
 
 		// remove all existing tasks/Powders
 		cleanHandlers();
-
-		// prefix for all messages with prefixes
-		PowderUtil.PREFIX = PowderUtil.color(config.getString("prefix", "&7[&9Powder&7] "));
-
-		String c = "colors.";
-		PowderUtil.INFO = 
-				ChatColor.valueOf(config.getString(c + "info", "GRAY"));
-		PowderUtil.HIGHLIGHT = 
-				ChatColor.valueOf(config.getString(c + "highlight", "RED"));
-		PowderUtil.HIGHLIGHT_TWO = 
-				ChatColor.valueOf(config.getString(c + "highlight_two", "GREEN"));
-		PowderUtil.HIGHLIGHT_THREE = 
-				ChatColor.valueOf(config.getString(c + "highlight_three", "YELLOW"));
-		PowderUtil.NO_PERM = 
-				ChatColor.valueOf(config.getString(c + "no_perm", "DARK_GRAY"));
-		PowderUtil.WARNING = 
-				ChatColor.valueOf(config.getString(c + "warning", "RED"));
 
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));

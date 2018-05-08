@@ -45,14 +45,6 @@ public class PowderUtil {
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
 	public static Random random = new Random();
 
-	public static String PREFIX;
-	public static ChatColor WARNING;
-	public static ChatColor HIGHLIGHT;
-	public static ChatColor HIGHLIGHT_TWO;
-	public static ChatColor HIGHLIGHT_THREE;
-	public static ChatColor INFO;
-	public static ChatColor NO_PERM;
-
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
@@ -159,17 +151,15 @@ public class PowderUtil {
 
 	public static void sendPrefixMessage(Player player, TextComponent message, String label) {
 		BaseComponent fullMessage = new TextComponent();
-		fullMessage.setColor(PowderUtil.INFO);
-		TextComponent prefix = setTextHoverAndClick(
-				Message.PREFIX, Message.PREFIX_HOVER, Message.PREFIX_CLICK, label);
-		fullMessage.addExtra(prefix);
+		fullMessage.addExtra(setTextHoverAndClick(
+				Message.PREFIX, Message.PREFIX_HOVER, Message.PREFIX_CLICK, label));
 		fullMessage.addExtra(message);
 		player.spigot().sendMessage(fullMessage);
 	}
 
 	// help message
 	public static void helpMessage(Player player, String label, int page) {
-		PowderUtil.sendPrefixMessage(player, Message.PREFIX, label);
+		PowderUtil.sendPrefixMessage(player, Message.HELP_PREFIX, label);
 		List<TextComponent> texts = new ArrayList<TextComponent>();
 		texts.add(getMessage(Message.HELP_POWDER));
 		texts.add(getMessage(Message.HELP_POWDER_CANCEL));
@@ -252,10 +242,8 @@ public class PowderUtil {
 				break;
 			}
 			pageList.add(current);
-			TextComponent combinedMessage = new TextComponent(PowderUtil.INFO + 
-					"| " + ChatColor.RESET);
+			TextComponent combinedMessage = getMessage(Message.LIST_GENERAL_ITEM);
 			combinedMessage.addExtra(current);
-			combinedMessage.setColor(PowderUtil.INFO);
 			player.spigot().sendMessage(combinedMessage);
 		}
 
