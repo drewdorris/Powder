@@ -263,7 +263,7 @@ public class PowderUtil {
 		// adds the arrows to the message depending on where you are in the list
 		TextComponent fullArrows = new TextComponent();
 		if (pageList.isEmpty()) {
-			sendPrefixMessage(player, Message.LIST_NO_ELEMENTS, label);
+			player.spigot().sendMessage(getMessage(Message.LIST_NO_ELEMENTS));
 			return;
 		} else if ((!pageList.contains(listOfElements.get(0)) 
 				&& pageList.contains(listOfElements.get(listOfElements.size() - 1)))) {
