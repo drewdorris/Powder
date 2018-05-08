@@ -36,14 +36,14 @@ public class PowderCommand implements CommandExecutor {
 			try {
 				if (args[0].equals("reload")) {
 					// reload
-					if (!PowderPlugin.isReloading()) {
+					if (!PowderPlugin.isLoading()) {
 						PowderPlugin.getInstance().getServer().getScheduler()
 						.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 							PowderPlugin.getInstance().reload();
 						});
 					} else {
 						PowderPlugin.getInstance().getLogger().info(
-								"Can't reload while " + "already reloading!");
+								"Can't reload while " + "already loading!");
 					}
 				} else {
 					PowderUtil.sendMainConsoleMessage();
@@ -101,8 +101,8 @@ public class PowderCommand implements CommandExecutor {
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
-				if (PowderPlugin.isReloading()) {
-					PowderUtil.sendPrefixMessage(player, Message.RELOADING_ALREADY, 
+				if (PowderPlugin.isLoading()) {
+					PowderUtil.sendPrefixMessage(player, Message.LOADING_ALREADY, 
 							label, player.getName());
 				} else {
 					PowderPlugin.getInstance().getServer().getScheduler()

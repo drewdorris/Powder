@@ -39,7 +39,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	private Storage storage;
 
-	private static boolean isReloading;
+	private static boolean isLoading;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -48,8 +48,23 @@ public class PowderPlugin extends JavaPlugin {
 	public void onEnable() {
 		instance = this;
 
-		isReloading = true;
+		load();
+	}
 
+	public void onDisable() {
+		if (useStorage()) {
+			// save all current users' powders before disabling
+			PowderUtil.savePowdersForOnline();
+		}
+
+		// delete all tasks & powders
+		powderHandler.clearEverything();
+
+		instance = null;
+	}
+
+	public synchronized void load() {
+		isLoading = true;
 		config = ConfigUtil.loadConfig();
 
 		loadMessages();
@@ -68,23 +83,11 @@ public class PowderPlugin extends JavaPlugin {
 
 		getCommand("powder").setExecutor(new PowderCommand());
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		isReloading = false;
+		isLoading = false;
 	}
 
-	public void onDisable() {
-		if (useStorage()) {
-			// save all current users' powders before disabling
-			PowderUtil.savePowdersForOnline();
-		}
-
-		// delete all tasks & powders
-		powderHandler.clearEverything();
-
-		instance = null;
-	}
-
-	public void reload() {
-		isReloading = true;
+	public synchronized void reload() {
+		isLoading = true;
 		config = ConfigUtil.loadConfig();
 
 		if (useStorage()) {
@@ -104,11 +107,11 @@ public class PowderPlugin extends JavaPlugin {
 		if (useStorage()) {
 			PowderUtil.loadPowdersForOnline();
 		}
-		isReloading = false;
+		isLoading = false;
 	}
 
-	public static boolean isReloading() {
-		return isReloading;
+	public static boolean isLoading() {
+		return isLoading;
 	}
 
 	// end all current tasks & reinitialize powderHandler
@@ -233,7 +236,7 @@ public class PowderPlugin extends JavaPlugin {
 		}
 	}
 
-	public void loadPowdersFromSources() {
+	public synchronized void loadPowdersFromSources() {
 		// load source yaml files
 		powderConfigs = ConfigUtil.loadPowderConfigs();
 

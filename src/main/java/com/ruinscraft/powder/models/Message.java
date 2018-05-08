@@ -9,7 +9,7 @@ public enum Message {
 	PREFIX_HOVER("{command}"),
 	PREFIX_CLICK("{command}"),
 	GENERAL_NO_PERMISSION("{user}"),
-	RELOADING_ALREADY("{user}"),
+	LOADING_ALREADY("{user}"),
 	LOADING_START("{user}"),
 	LOADING_FINISH("{user}", "{total}", "{list}"),
 	LOADING_FINISH_HOVER("{user}", "{total}", "{list}"),
