@@ -31,7 +31,7 @@ CANCEL_NO_ACTIVE: '&cHay nada de esto Powder activo ahora mismo.'
 ## {user} {powder}
 CANCEL_UNKNOWN_SPECIFY: '&cPowder desconocido específica.'
 ## {user} {powder}
-CANCEL_SUCCESS: '&7Cancelado {powder} con éxito.'
+CANCEL_SUCCESS: '&7Cancelado ''{powder}'' con éxito.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cNo es posible cancelar esto Powder.'
 ## {user}
@@ -103,7 +103,7 @@ REMOVE_NO_USER_SYNTAX: '&c/{command} remove <name>'
 ## {user} {name}
 REMOVE_NO_USER_SUCCESS: '&7Quitó ''{name}'' con éxito.'
 ## {user} {name}
-REMOVE_NO_USER_FAILURE: '&cNo puede encontrar o quitar {name}.'
+REMOVE_NO_USER_FAILURE: '&cNo puede encontrar o quitar ''{name}''.'
 NEARBY_PREFIX: '&7Nearby active Powders:'
 ## {name} {distance}
 NEARBY: '&d{name} &7{distance}m'
@@ -126,15 +126,15 @@ POWDER_MAX_PREFIX: '&cTu ya tienes {total} Powders activan ahora mismo!'
 ## {user} {powder} {seconds}
 POWDER_WAIT: '&cPor favor espere {seconds} segundos antes de usar un Powder.'
 ## {user} {command} {powder}
-POWDER_CREATED: '&7Powder {powder} creado! Haga clic a cancelar.'
+POWDER_CREATED: '&7Powder ''{powder}'' creado! Haga clic a cancelar.'
 ## {user} {command} {powder}
-POWDER_CREATED_HOVER: '&eHaga clic a cancelar {powder}.'
+POWDER_CREATED_HOVER: '&eHaga clic a cancelar ''{powder}''.'
 ## {user} {command} {powder}
 POWDER_CREATED_CLICK: '/{command} {powder} cancel'
 ## {user} {command}
 POWDER_CREATED_TIP: '&7Consejo: Cancele con ''/{command} <Powder> cancel''.'
 ## {user} {command}
-POWDER_CREATED_WITHOUT_HOVER: '&7Powder {powder} creado!'
+POWDER_CREATED_WITHOUT_HOVER: '&7Powder ''{powder}'' creado!'
 HELP_PREFIX: '&7Powder Ayuda'
 HELP_POWDER: '&d/powder <Powder> &7- Use un Powder'
 HELP_POWDER_CANCEL: '&d/powder <Powder> cancel &7- Cancele un Powder'
