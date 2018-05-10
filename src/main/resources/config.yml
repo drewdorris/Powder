@@ -50,7 +50,7 @@ categories:
     desc: '{total} Random Particles / Effects'
   Crowns:
     desc: '{total} Particles Around your Head'
-	
+
 ## Locale to use (from locale source folder)
 locale: 'en-us.yml'
 
