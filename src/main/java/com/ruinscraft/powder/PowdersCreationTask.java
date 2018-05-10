@@ -53,8 +53,10 @@ public class PowdersCreationTask extends BukkitRunnable {
 						activeElementsInPowder.remove(dueElement);
 						continue;
 					}
-					dueElement.create(tracker.getCurrentLocation());
-					dueElement.iterate();
+					if (dueElement.getNextTick() <= tick) {
+						dueElement.create(tracker.getCurrentLocation());
+						dueElement.iterate();
+					}
 				}
 			}
 		}
