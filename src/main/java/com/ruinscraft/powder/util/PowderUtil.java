@@ -55,25 +55,17 @@ public class PowderUtil {
 
 	// check permission for the Powder or for a category that contains the Powder
 	public static boolean hasPermission(Player player, Powder powder) {
-		if (player.hasPermission("powder.powder.*")) {
+		if (player.hasPermission("powder.powder.*") || 
+				player.hasPermission("powder.powder." + 
+						powder.getName().toLowerCase(Locale.US))) {
 			return true;
 		}
-		boolean success = false;
 		for (String category : powder.getCategories()) {
 			if (player.hasPermission("powder.category." + category.toLowerCase(Locale.US))) {
-				success = true;
-				break;
-			}
-		}
-		if (success == false) {
-			if (!(player.hasPermission("powder.powder." + 
-					powder.getName().toLowerCase(Locale.US)))) {
-				return false;
-			} else {
 				return true;
 			}
 		}
-		return true;
+		return false;
 	}
 
 	public static TextComponent getMessage(Message message) {
@@ -108,7 +100,8 @@ public class PowderUtil {
 		return newText;
 	}
 
-	public static TextComponent setTextAndHover(Message message, Message hover, String... replacers) {
+	public static TextComponent setTextAndHover(Message message, 
+			Message hover, String... replacers) {
 		TextComponent textComponent = setText(message, replacers);
 		textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, 
 				new ComponentBuilder(setString(hover, replacers)).create()));
@@ -339,7 +332,8 @@ public class PowderUtil {
 		Set<TextComponent> activeCategories = new HashSet<TextComponent>();
 		// categories containing Powders the player has permission for
 		Set<TextComponent> ableToCategories = new HashSet<TextComponent>();
-		// categories containing Powders the player has no permission for, or contains no Powders
+		// categories containing Powders the player has no permission for
+		// or contains no Powders
 		Set<TextComponent> noPermCategories = new HashSet<TextComponent>();
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		for (String category : categories.keySet()) {
@@ -401,7 +395,8 @@ public class PowderUtil {
 
 	public static Entity getNearestEntityInSight(Player player, int range) {
 		List<Entity> entities = player.getNearbyEntities(range, range, range);
-		List<Location> locations = player.getLineOfSight(Stream.of(Material.AIR, Material.WATER)
+		List<Location> locations = player.getLineOfSight(
+				Stream.of(Material.AIR, Material.WATER)
 				.collect(Collectors.toSet()), 7).stream()
 				.map(Block::getLocation).collect(Collectors.toList());
 		Entity nearestEntity = null;

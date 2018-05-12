@@ -285,7 +285,7 @@ public class Powder implements Cloneable {
 	}
 
 	// cancels a given Powder for the given player
-	public boolean cancelPowder(UUID uuid) {
+	public boolean cancel(UUID uuid) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 
 		boolean success = false;

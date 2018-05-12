@@ -37,7 +37,7 @@ public class ParticleMatrix implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
-	
+
 	private int nextTick;
 
 	// iterations so far
@@ -66,7 +66,7 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getTick() + startTime;
+		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -180,7 +180,7 @@ public class ParticleMatrix implements PowderElement {
 
 	public void iterate() {
 		iterations++;
-		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getRepeatTime();
 	}
 
 	public int getNextTick() {

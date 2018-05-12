@@ -2,8 +2,11 @@ package com.ruinscraft.powder.models;
 
 public enum Message {
 
-	// COMMAND_ MESSAGE_DESCRIPTION (_HOVER)
-	// placeholders are the optional placeholders for locale
+	/*/
+	 * Format:
+	 * (COMMAND)_(DESCRIPTION)_(IS A HOVER MESSAGE OR CLICKED COMMAND)
+	 * Placeholders are listed for each message; usable in locale
+	 */
 
 	PREFIX("{command}"),
 	PREFIX_HOVER("{command}"),

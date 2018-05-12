@@ -36,7 +36,7 @@ public class Dust implements PowderElement {
 		this.startTime = dust.getStartTime();
 		this.repeatTime = dust.getRepeatTime();
 		this.lockedIterations = dust.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getTick() + startTime;
+		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -90,7 +90,7 @@ public class Dust implements PowderElement {
 
 	public void iterate() {
 		iterations++;
-		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getRepeatTime();
 	}
 
 	public int getNextTick() {

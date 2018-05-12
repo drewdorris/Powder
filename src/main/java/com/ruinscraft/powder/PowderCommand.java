@@ -626,9 +626,10 @@ public class PowderCommand implements CommandExecutor {
 		// if Powder has animation/dusts/sounds
 
 		if (powder.hasMovement()) {
-			PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(Message.POWDER_CREATED, 
-					Message.POWDER_CREATED_HOVER, Message.POWDER_CREATED_CLICK, 
-					player.getName(), label, args[0]), label);
+			PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(
+					Message.POWDER_CREATED, Message.POWDER_CREATED_HOVER, 
+					Message.POWDER_CREATED_CLICK, player.getName(), 
+					label, args[0]), label);
 			if (new Random().nextInt(12) == 1) {
 				PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_TIP, 
 						label, player.getName(), label);

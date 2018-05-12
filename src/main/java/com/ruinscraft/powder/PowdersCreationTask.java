@@ -63,7 +63,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 		powderHandler.getPowderTasks().removeIf(t -> t.getPowders().isEmpty());
 	}
 
-	public static int getTick() {
+	public static int getCurrentTick() {
 		return tick;
 	}
 

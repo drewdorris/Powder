@@ -37,7 +37,7 @@ public class SoundEffect implements PowderElement {
 		this.startTime = soundEffect.getStartTime();
 		this.repeatTime = soundEffect.getRepeatTime();
 		this.lockedIterations = soundEffect.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getTick() + startTime;
+		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -86,7 +86,7 @@ public class SoundEffect implements PowderElement {
 
 	public void iterate() {
 		iterations++;
-		this.nextTick = PowdersCreationTask.getTick() + getRepeatTime();
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getRepeatTime();
 	}
 
 	public int getNextTick() {
