@@ -534,13 +534,24 @@ public class PowderUtil {
 			success = true;
 		}
 
-		if (success && plugin.useStorage()) {
+		if (success) {
 			savePowdersForPlayer(uuid);
 		}
 
 		return success;
 	}
 
+	// cancels a given Powder for the given player and saves that to database
+	public static boolean cancelPowderAndSave(UUID uuid, Powder powder) {
+		if (cancelPowder(uuid, powder)) {
+			savePowdersForPlayer(uuid);
+			return true;
+		} else {
+			return false;
+		}
+	}
+
+	// cancels all Powders for the given player
 	public static int cancelAllPowders(UUID uuid) {
 		int amt = 0;
 
@@ -551,9 +562,14 @@ public class PowderUtil {
 			amt++;
 		}
 
-		if (plugin.useStorage()) {
-			savePowdersForPlayer(uuid);
-		}
+		return amt;
+	}
+
+	// cancels all Powders for the given player and saves that to database
+	public static int cancelAllPowdersAndSave(UUID uuid) {
+		int amt = cancelAllPowders(uuid);
+
+		savePowdersForPlayer(uuid);
 
 		return amt;
 	}

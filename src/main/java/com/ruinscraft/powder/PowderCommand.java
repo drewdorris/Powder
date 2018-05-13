@@ -123,7 +123,7 @@ public class PowderCommand implements CommandExecutor {
 								Message.STAR_NO_ACTIVE, label, player.getName());
 						return false;
 					}
-					int amount = PowderUtil.cancelAllPowders(player.getUniqueId());
+					int amount = PowderUtil.cancelAllPowdersAndSave(player.getUniqueId());
 					PowderUtil.sendPrefixMessage(player, Message.STAR_CANCEL_SUCCESS, 
 							label, player.getName(), String.valueOf(amount));
 					return true;
@@ -562,7 +562,7 @@ public class PowderCommand implements CommandExecutor {
 				int taskAmount = 
 						powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				// cancel if exists
-				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
+				if (PowderUtil.cancelPowderAndSave(player.getUniqueId(), powder)) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SUCCESS, 
 							label, player.getName(), args[0], String.valueOf(taskAmount));
 				} else {
@@ -578,7 +578,7 @@ public class PowderCommand implements CommandExecutor {
 			// if multiple uses of one Powder are not allowed, cancel it
 			if (!(PowderPlugin.getInstance().getConfig()
 					.getBoolean("allowSamePowdersAtOneTime"))) {
-				if (PowderUtil.cancelPowder(player.getUniqueId(), powder)) {
+				if (PowderUtil.cancelPowderAndSave(player.getUniqueId(), powder)) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SINGLE_SUCCESS, 
 							label, player.getName(), args[0]);
 				} else {
@@ -628,10 +628,9 @@ public class PowderCommand implements CommandExecutor {
 			recentCommandSenders.add(player);
 		}
 
-		// spawn a Powder with a PowderTask
+		// spawn the Powder
 		powder.spawn(player);
 		// if Powder has animation/dusts/sounds
-
 		if (powder.hasMovement()) {
 			PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(
 					Message.POWDER_CREATED, Message.POWDER_CREATED_HOVER, 
