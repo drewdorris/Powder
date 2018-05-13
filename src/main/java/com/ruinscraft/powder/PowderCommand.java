@@ -381,6 +381,7 @@ public class PowderCommand implements CommandExecutor {
 				} else {
 					PowderUtil.sendPrefixMessage(player, Message.ADDTO_FAILURE, 
 							label, player.getName(), powderName, name);
+					return false;
 				}
 				return true;
 			} else if (args[0].equals("removefrom")) {
@@ -418,6 +419,7 @@ public class PowderCommand implements CommandExecutor {
 				} else {
 					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_FAILURE,
 							label, player.getName(), powderName, name);
+					return false;
 				}
 				return true;
 			} else if (args[0].equals("remove")) {
@@ -456,7 +458,9 @@ public class PowderCommand implements CommandExecutor {
 					} else {
 						PowderUtil.sendPrefixMessage(player, Message.REMOVE_USER_REMOVE_FAILURE, 
 								label, player.getName(), powderUser.getName());
+						return false;
 					}
+					return true;
 				} else {
 					String name;
 					try {
@@ -472,7 +476,9 @@ public class PowderCommand implements CommandExecutor {
 					} else {
 						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_FAILURE, 
 								label, player.getName(), name);
+						return false;
 					}
+					return true;
 				}
 			} else if (args[0].equals("nearby")) {
 				if (!(player.hasPermission("powder.nearby"))) {
@@ -535,8 +541,9 @@ public class PowderCommand implements CommandExecutor {
 							Message.LIST_UNKNOWN_POWDER, label, player.getName(), args[0]);
 					PowderUtil.listPowders(player, powderHandler.getSimilarPowders(args[0]), 
 							" list ", 1, pageLength, label);
+					return false;
 				}
-				return false;
+				return true;
 			}
 		}
 

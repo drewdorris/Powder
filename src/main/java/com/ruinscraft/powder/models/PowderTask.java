@@ -60,6 +60,13 @@ public class PowderTask {
 	}
 
 	public boolean addPowder(Powder powder, Tracker tracker) {
+		if (!getPowders().isEmpty()) {
+			for (Tracker existingTracker : getPowders().values()) {
+				if (existingTracker.getType() != tracker.getType()) {
+					return false;
+				}
+			}
+		}
 		this.powders.put(powder.clone(), tracker);
 		return true;
 	}
