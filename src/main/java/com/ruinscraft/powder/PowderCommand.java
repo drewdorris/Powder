@@ -11,6 +11,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Iterables;
@@ -307,8 +308,13 @@ public class PowderCommand implements CommandExecutor {
 					PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_PLAYER, 
 							label, player.getName(), powderName, entity.getName());
 					return true;
+				} else if (entity instanceof LivingEntity) {
+					LivingEntity livingEntity = (LivingEntity) entity;
+					livingEntity.setRemoveWhenFarAway(false);
+					newPowder.spawn(livingEntity);
+				} else { 
+					newPowder.spawn(entity);
 				}
-				newPowder.spawn(entity);
 				PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_ENTITY, 
 						label, player.getName(), powderName, 
 						PowderUtil.cleanEntityName(entity));

@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -424,9 +425,18 @@ public class PowderUtil {
 		return name;
 	}
 
-	public static Set<UUID> getOnlineUUIDs() {
+	public static Set<UUID> getOnlinePlayerUUIDs() {
 		return Bukkit.getOnlinePlayers().stream()
 				.map(Player::getUniqueId).collect(Collectors.toSet());
+	}
+
+	public static Set<UUID> getOnlineUUIDs() {
+		Set<UUID> uuids = getOnlinePlayerUUIDs();
+		for (World world : Bukkit.getWorlds()) {
+			uuids.addAll(world.getEntities().stream()
+					.map(Entity::getUniqueId).collect(Collectors.toSet()));
+		}
+		return uuids;
 	}
 
 	public static Random getRandom() {
@@ -514,13 +524,13 @@ public class PowderUtil {
 	}
 
 	// cancels powders for logout
-	public static void unloadPlayer(Player player) {
-		cancelAllPowders(player.getUniqueId());
+	public static void unloadUUID(UUID uuid) {
+		cancelAllPowders(uuid);
 	}
 
 	// loads player from database
-	public static void loadPlayer(Player player) {
-		loadPowdersForPlayer(player.getUniqueId());
+	public static void loadUUID(UUID uuid) {
+		loadPowdersForUUID(uuid);
 	}
 
 	// cancels a given Powder for the given player
@@ -535,7 +545,7 @@ public class PowderUtil {
 		}
 
 		if (success) {
-			savePowdersForPlayer(uuid);
+			savePowdersForUUID(uuid);
 		}
 
 		return success;
@@ -544,7 +554,7 @@ public class PowderUtil {
 	// cancels a given Powder for the given player and saves that to database
 	public static boolean cancelPowderAndSave(UUID uuid, Powder powder) {
 		if (cancelPowder(uuid, powder)) {
-			savePowdersForPlayer(uuid);
+			savePowdersForUUID(uuid);
 			return true;
 		} else {
 			return false;
@@ -569,7 +579,7 @@ public class PowderUtil {
 	public static int cancelAllPowdersAndSave(UUID uuid) {
 		int amt = cancelAllPowders(uuid);
 
-		savePowdersForPlayer(uuid);
+		savePowdersForUUID(uuid);
 
 		return amt;
 	}
@@ -592,7 +602,7 @@ public class PowderUtil {
 	}
 
 	// loads and creates a Powder (used for storage loading)
-	public static void createPowderFromName(Player player, String powderName) {
+	public static void createPowderFromName(UUID uuid, String powderName) {
 		PowderHandler handler = plugin.getPowderHandler();
 
 		Powder powder = handler.getPowder(powderName);
@@ -601,14 +611,19 @@ public class PowderUtil {
 			return;
 		}
 
-		if (!PowderUtil.hasPermission(player, powder)) {
-			return;
+		Player player = Bukkit.getPlayer(uuid);
+		Entity entity = Bukkit.getEntity(uuid);
+		if (player != null) {
+			if (!PowderUtil.hasPermission(player, powder)) {
+				return;
+			}
+			powder.spawn(player);
+		} else if (entity != null) {
+			powder.spawn(entity);
 		}
-
-		powder.spawn(player);
 	}
 
-	public static void savePowdersForPlayer(UUID uuid) {
+	public static void savePowdersForUUID(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
@@ -616,13 +631,13 @@ public class PowderUtil {
 		}
 	}
 
-	public static void loadPowdersForPlayer(UUID uuid) {
+	public static void loadPowdersForUUID(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				List<String> powders = plugin.getStorage().get(uuid);
 
 				for (String powder : powders) {
-					createPowderFromName(Bukkit.getPlayer(uuid), powder);
+					createPowderFromName(uuid, powder);
 				}
 			});
 		}
@@ -631,7 +646,8 @@ public class PowderUtil {
 	public static void savePowdersForOnline() {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getStorage().saveBatch(PowderUtil.getOnlineUUIDs());
+				plugin.getStorage().saveBatch(
+						plugin.getPowderHandler().getAllPowderTaskUUIDs());
 			});
 		}
 	}
@@ -644,7 +660,7 @@ public class PowderUtil {
 
 				for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
 					for (String powder : entry.getValue()) {
-						createPowderFromName(Bukkit.getPlayer(entry.getKey()), powder);
+						createPowderFromName(entry.getKey(), powder);
 					}
 				}
 			});

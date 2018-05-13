@@ -16,15 +16,22 @@ public class PlayerListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 
-		PowderUtil.unloadPlayer(player);
+		PowderUtil.savePowdersForUUID(player.getUniqueId());
+		PowderUtil.unloadUUID(player.getUniqueId());
 	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 
-		Bukkit.getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			PowderUtil.loadPlayer(player);
+		if (PowderPlugin.isLoading()) {
+			player.sendMessage("t");
+			return;
+		}
+
+		Bukkit.getServer().getScheduler().runTaskAsynchronously(
+				PowderPlugin.getInstance(), () -> {
+			PowderUtil.loadUUID(player.getUniqueId());
 		});
 	}
 

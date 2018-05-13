@@ -1,8 +1,10 @@
 package com.ruinscraft.powder;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -11,6 +13,7 @@ import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.EntityTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
 import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.util.PowderUtil;
 import com.ruinscraft.powder.models.Powder;
 
 public class PowdersCreationTask extends BukkitRunnable {
@@ -30,6 +33,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 			cancel();
 		}
 		tick++;
+		Set<UUID> uuidsToRemove = new HashSet<UUID>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			Set<Entry<Powder, Tracker>> activePowdersInTask = powderTask.getPowders().entrySet();
 			for (Entry<Powder, Tracker> activePowder : activePowdersInTask) {
@@ -40,6 +44,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 					if (entityTracker.getEntity() == null 
 							|| entityTracker.getEntity().isDead()) {
 						activePowdersInTask.remove(activePowder);
+						uuidsToRemove.add(entityTracker.getEntityUUID());
 						continue;
 					}
 				}
@@ -59,6 +64,9 @@ public class PowdersCreationTask extends BukkitRunnable {
 					}
 				}
 			}
+		}
+		for (UUID uuid : uuidsToRemove) {
+			PowderUtil.cancelAllPowdersAndSave(uuid);
 		}
 		powderHandler.getPowderTasks().removeIf(t -> t.getPowders().isEmpty());
 	}

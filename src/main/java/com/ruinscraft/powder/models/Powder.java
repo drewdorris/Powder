@@ -251,6 +251,7 @@ public class Powder implements Cloneable {
 		PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
 				PowderUtil.generateID(8), this, new EntityTracker(entity));
 		spawn(powderTask);
+		PowderUtil.savePowdersForUUID(entity.getUniqueId());
 	}
 
 	public void spawn(String name, Location location) {
@@ -263,14 +264,14 @@ public class Powder implements Cloneable {
 		PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6), 
 				this, new PlayerTracker(player.getUniqueId()));
 		spawn(powderTask);
-		PowderUtil.savePowdersForPlayer(player.getUniqueId());
+		PowderUtil.savePowdersForUUID(player.getUniqueId());
 	}
 
 	// spawns a given Powder for the given user
 	public void spawn(String name, Player player) {
 		PowderTask powderTask = new PowderTask(name, this, new PlayerTracker(player.getUniqueId()));
 		spawn(powderTask);
-		PowderUtil.savePowdersForPlayer(player.getUniqueId());
+		PowderUtil.savePowdersForUUID(player.getUniqueId());
 	}
 
 	public void spawn(PowderTask powderTask) {
@@ -296,7 +297,7 @@ public class Powder implements Cloneable {
 		}
 
 		if (success && PowderPlugin.getInstance().useStorage()) {
-			PowderUtil.savePowdersForPlayer(uuid);
+			PowderUtil.savePowdersForUUID(uuid);
 		}
 
 		return success;

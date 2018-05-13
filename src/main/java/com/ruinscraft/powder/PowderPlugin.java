@@ -51,11 +51,6 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		if (useStorage()) {
-			// save all current users' powders before disabling
-			PowderUtil.savePowdersForOnline();
-		}
-
 		// delete all tasks & powders
 		powderHandler.clearEverything();
 
@@ -78,20 +73,18 @@ public class PowderPlugin extends JavaPlugin {
 			if (useStorage()) {
 				PowderUtil.loadPowdersForOnline();
 			}
+			isLoading = false;
 		});
 
 		getCommand("powder").setExecutor(new PowderCommand());
 		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
-		isLoading = false;
 	}
 
 	public synchronized void reload() {
 		isLoading = true;
 		config = ConfigUtil.loadConfig();
 
-		if (useStorage()) {
-			PowderUtil.savePowdersForOnline();
-		} else {
+		if (!useStorage()) {
 			for (UUID uuid : PowderPlugin
 					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
 				Player player = Bukkit.getPlayer(uuid);

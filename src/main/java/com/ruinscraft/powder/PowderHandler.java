@@ -126,6 +126,16 @@ public class PowderHandler {
 				.map(PlayerTracker::getUUID).collect(Collectors.toSet()));
 		return players;
 	}
+	
+	// gets all users who have a running PowderTask
+	public Set<UUID> getAllPowderTaskUUIDs() {
+		Set<UUID> uuids = new HashSet<>();
+		uuids.addAll(getCurrentPlayerTracks().values().stream()
+				.map(PlayerTracker::getUUID).collect(Collectors.toSet()));
+		uuids.addAll(getCurrentEntityTracks().values().stream()
+				.map(EntityTracker::getEntityUUID).collect(Collectors.toSet()));
+		return uuids;
+	}
 
 	public PowderTask getPowderTask(String name) {
 		for (PowderTask powderTask : powderTasks) {
