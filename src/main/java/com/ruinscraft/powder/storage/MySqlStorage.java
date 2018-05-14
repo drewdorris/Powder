@@ -121,7 +121,7 @@ public class MySqlStorage implements SqlStorage {
 	}
 
 	@Override
-	public Map<UUID, List<String>> getBatch (Collection<UUID> uuids) {
+	public Map<UUID, List<String>> getBatch(Collection<UUID> uuids) {
 		Map<UUID, List<String>> batch = new HashMap<>();
 
 		try (Connection c = getConnection();

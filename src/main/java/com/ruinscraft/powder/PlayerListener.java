@@ -16,7 +16,6 @@ public class PlayerListener implements Listener {
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
 
-		PowderUtil.savePowdersForUUID(player.getUniqueId());
 		PowderUtil.unloadUUID(player.getUniqueId());
 	}
 

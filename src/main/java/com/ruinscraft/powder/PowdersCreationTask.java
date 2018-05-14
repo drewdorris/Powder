@@ -6,11 +6,13 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.ruinscraft.powder.models.PowderElement;
 import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.EntityTracker;
+import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
 import com.ruinscraft.powder.models.trackers.TrackerType;
 import com.ruinscraft.powder.util.PowderUtil;
@@ -45,6 +47,13 @@ public class PowdersCreationTask extends BukkitRunnable {
 							|| entityTracker.getEntity().isDead()) {
 						activePowdersInTask.remove(activePowder);
 						uuidsToRemove.add(entityTracker.getEntityUUID());
+						continue;
+					}
+				}
+				if (tracker.getType() == TrackerType.PLAYER) {
+					PlayerTracker playerTracker = (PlayerTracker) tracker;
+					if (Bukkit.getPlayer(playerTracker.getUUID()) == null) {
+						activePowdersInTask.remove(activePowder);
 						continue;
 					}
 				}

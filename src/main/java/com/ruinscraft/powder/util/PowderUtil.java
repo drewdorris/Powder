@@ -525,40 +525,12 @@ public class PowderUtil {
 
 	// cancels powders for logout
 	public static void unloadUUID(UUID uuid) {
-		cancelAllPowders(uuid);
+		savePowdersForUUID(uuid);
 	}
 
 	// loads player from database
 	public static void loadUUID(UUID uuid) {
 		loadPowdersForUUID(uuid);
-	}
-
-	// cancels a given Powder for the given player
-	public static boolean cancelPowder(UUID uuid, Powder powder) {
-		PowderHandler powderHandler = plugin.getPowderHandler();
-
-		boolean success = false;
-
-		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid, powder)) {
-			powderHandler.removePowderTask(powderTask);
-			success = true;
-		}
-
-		if (success) {
-			savePowdersForUUID(uuid);
-		}
-
-		return success;
-	}
-
-	// cancels a given Powder for the given player and saves that to database
-	public static boolean cancelPowderAndSave(UUID uuid, Powder powder) {
-		if (cancelPowder(uuid, powder)) {
-			savePowdersForUUID(uuid);
-			return true;
-		} else {
-			return false;
-		}
 	}
 
 	// cancels all Powders for the given player
@@ -594,6 +566,8 @@ public class PowderUtil {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				if (powder.hasMovement()) {
 					enabledPowders.add(powder.getName());
+					plugin.getLogger().info("++" + powder.getName());
+					plugin.getLogger().info("++" + powderTask.getName());
 				}
 			}
 		}
@@ -604,6 +578,7 @@ public class PowderUtil {
 	// loads and creates a Powder (used for storage loading)
 	public static void createPowderFromName(UUID uuid, String powderName) {
 		PowderHandler handler = plugin.getPowderHandler();
+		plugin.getLogger().info("createpowdowopdrop");
 
 		Powder powder = handler.getPowder(powderName);
 
@@ -614,11 +589,13 @@ public class PowderUtil {
 		Player player = Bukkit.getPlayer(uuid);
 		Entity entity = Bukkit.getEntity(uuid);
 		if (player != null) {
+			plugin.getLogger().info("|| " + player.getName());
 			if (!PowderUtil.hasPermission(player, powder)) {
 				return;
 			}
 			powder.spawn(player);
 		} else if (entity != null) {
+			plugin.getLogger().info("|| " + entity.getName());
 			powder.spawn(entity);
 		}
 	}
@@ -626,6 +603,7 @@ public class PowderUtil {
 	public static void savePowdersForUUID(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				plugin.getLogger().info("++" + uuid.toString());
 				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
 			});
 		}
@@ -637,6 +615,7 @@ public class PowderUtil {
 				List<String> powders = plugin.getStorage().get(uuid);
 
 				for (String powder : powders) {
+					plugin.getLogger().info("|||| " + uuid);
 					createPowderFromName(uuid, powder);
 				}
 			});

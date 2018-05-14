@@ -568,7 +568,7 @@ public class PowderCommand implements CommandExecutor {
 				int taskAmount = 
 						powderHandler.getPowderTasks(player.getUniqueId(), powder).size();
 				// cancel if exists
-				if (PowderUtil.cancelPowderAndSave(player.getUniqueId(), powder)) {
+				if (powder.cancel(player.getUniqueId())) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SUCCESS, 
 							label, player.getName(), args[0], String.valueOf(taskAmount));
 				} else {
@@ -584,7 +584,7 @@ public class PowderCommand implements CommandExecutor {
 			// if multiple uses of one Powder are not allowed, cancel it
 			if (!(PowderPlugin.getInstance().getConfig()
 					.getBoolean("allowSamePowdersAtOneTime"))) {
-				if (PowderUtil.cancelPowderAndSave(player.getUniqueId(), powder)) {
+				if (powder.cancel(player.getUniqueId())) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SINGLE_SUCCESS, 
 							label, player.getName(), args[0]);
 				} else {

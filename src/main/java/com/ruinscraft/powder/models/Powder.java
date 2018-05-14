@@ -292,11 +292,11 @@ public class Powder implements Cloneable {
 		boolean success = false;
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid, this)) {
-			powderHandler.removePowderTask(powderTask);
+			powderTask.removePowder(this);
 			success = true;
 		}
 
-		if (success && PowderPlugin.getInstance().useStorage()) {
+		if (success) {
 			PowderUtil.savePowdersForUUID(uuid);
 		}
 
