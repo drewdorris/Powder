@@ -87,7 +87,7 @@ public class MySqlStorage implements SqlStorage {
 			delete.setString(1, uuid.toString());
 			delete.execute();
 
-			for (String powder : PowderUtil.getEnabledPowderNames(uuid)) {
+			for (String powder : powders) {
 				insert.setString(1, uuid.toString());
 				insert.setString(2, powder);
 				insert.addBatch();

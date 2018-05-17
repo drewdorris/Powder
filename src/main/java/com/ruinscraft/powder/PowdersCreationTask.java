@@ -53,8 +53,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 				if (tracker.getType() == TrackerType.PLAYER) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					if (Bukkit.getPlayer(playerTracker.getUUID()) == null) {
-						activePowdersInTask.remove(activePowder);
-						continue;
+						PowderUtil.unloadUUID(playerTracker.getUUID());
+						break;
 					}
 				}
 				List<PowderElement> activeElementsInPowder = powder.getPowderElements();

@@ -525,7 +525,7 @@ public class PowderUtil {
 
 	// cancels powders for logout
 	public static void unloadUUID(UUID uuid) {
-		savePowdersForUUID(uuid);
+		savePowdersForUUIDAndCancel(uuid);
 	}
 
 	// loads player from database
@@ -561,9 +561,11 @@ public class PowderUtil {
 		PowderHandler powderHandler = plugin.getPowderHandler();
 
 		List<String> enabledPowders = new ArrayList<>();
+		plugin.getLogger().info("ttt " + String.valueOf(powderHandler.getPowderTasks(uuid).size()));
 
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
+				plugin.getLogger().info("ppp " + String.valueOf(powderTask.getPowders().keySet().size()));
 				if (powder.hasMovement()) {
 					enabledPowders.add(powder.getName());
 					plugin.getLogger().info("++" + powder.getName());
@@ -577,10 +579,10 @@ public class PowderUtil {
 
 	// loads and creates a Powder (used for storage loading)
 	public static void createPowderFromName(UUID uuid, String powderName) {
-		PowderHandler handler = plugin.getPowderHandler();
+		PowderHandler powderHandler = plugin.getPowderHandler();
 		plugin.getLogger().info("createpowdowopdrop");
 
-		Powder powder = handler.getPowder(powderName);
+		Powder powder = powderHandler.getPowder(powderName);
 
 		if (powder == null) {
 			return;
@@ -609,10 +611,21 @@ public class PowderUtil {
 		}
 	}
 
+	public static void savePowdersForUUIDAndCancel(UUID uuid) {
+		if (plugin.useStorage()) {
+			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
+				plugin.getLogger().info("++" + uuid.toString());
+				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
+				PowderUtil.cancelAllPowders(uuid);
+			});
+		}
+	}
+
 	public static void loadPowdersForUUID(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				List<String> powders = plugin.getStorage().get(uuid);
+				plugin.getLogger().info("|||| " + powders.size());
 
 				for (String powder : powders) {
 					plugin.getLogger().info("|||| " + uuid);
@@ -638,7 +651,9 @@ public class PowderUtil {
 						.getBatch(PowderUtil.getOnlineUUIDs());
 
 				for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
+					plugin.getLogger().info("entry!!");
 					for (String powder : entry.getValue()) {
+						plugin.getLogger().info("entr");
 						createPowderFromName(entry.getKey(), powder);
 					}
 				}

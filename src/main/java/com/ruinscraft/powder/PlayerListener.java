@@ -15,6 +15,10 @@ public class PlayerListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerQuit(PlayerQuitEvent event) {
 		Player player = event.getPlayer();
+		
+		if (PowderPlugin.isLoading()) {
+			return;
+		}
 
 		PowderUtil.unloadUUID(player.getUniqueId());
 	}
