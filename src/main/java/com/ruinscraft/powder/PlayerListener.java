@@ -6,22 +6,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PlayerListener implements Listener {
-
-	@EventHandler(priority = EventPriority.LOW)
-	public void onPlayerQuit(PlayerQuitEvent event) {
-		Player player = event.getPlayer();
-		
-		if (PowderPlugin.isLoading()) {
-			return;
-		}
-
-		PowderUtil.unloadUUID(player.getUniqueId());
-	}
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onPlayerJoin(PlayerJoinEvent event) {
@@ -34,7 +22,7 @@ public class PlayerListener implements Listener {
 
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(
 				PowderPlugin.getInstance(), () -> {
-			PowderUtil.loadUUID(player.getUniqueId());
+					PowderUtil.loadUUID(player.getUniqueId());
 		});
 	}
 

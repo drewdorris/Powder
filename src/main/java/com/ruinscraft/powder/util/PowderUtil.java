@@ -536,23 +536,18 @@ public class PowderUtil {
 	// cancels all Powders for the given player
 	public static int cancelAllPowders(UUID uuid) {
 		int amt = 0;
-
 		PowderHandler powderHandler = plugin.getPowderHandler();
-
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			powderHandler.removePowderTask(powderTask);
 			amt++;
 		}
-
 		return amt;
 	}
 
 	// cancels all Powders for the given player and saves that to database
 	public static int cancelAllPowdersAndSave(UUID uuid) {
 		int amt = cancelAllPowders(uuid);
-
 		savePowdersForUUID(uuid);
-
 		return amt;
 	}
 
