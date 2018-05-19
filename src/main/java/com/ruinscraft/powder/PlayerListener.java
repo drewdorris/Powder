@@ -16,7 +16,6 @@ public class PlayerListener implements Listener {
 		Player player = event.getPlayer();
 
 		if (PowderPlugin.isLoading()) {
-			player.sendMessage("t");
 			return;
 		}
 

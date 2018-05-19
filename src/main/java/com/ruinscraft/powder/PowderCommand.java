@@ -21,6 +21,7 @@ import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -96,6 +97,13 @@ public class PowderCommand implements CommandExecutor {
 				}
 				PowderUtil.helpMessage(player, label, page);
 				return false;
+			} else if (args[0].equals("test")) {
+			    try {
+			    	player.sendMessage(ChatColor.RED + 
+				    		PowderUtil.getNearestEntityInSight(player, 7)
+				    		.getUniqueId().toString());
+			    } catch (Exception e) { }
+			    return true;
 			} else if (args[0].equals("reload")) {
 				if (!(player.hasPermission("powder.reload"))) {
 					PowderUtil.sendPrefixMessage(player, 
