@@ -11,15 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 
-import javax.sql.DataSource;
-
 import com.ruinscraft.powder.util.PowderUtil;
-import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 
 public class MySqlStorage implements SqlStorage {
 
-	private DataSource dataSource;
+	private HikariDataSource dataSource;
 
 	private String create_table;
 	private String query_powders;
@@ -34,17 +31,15 @@ public class MySqlStorage implements SqlStorage {
 		insert_powder = "INSERT INTO " + powdersTable + " (uuid, powder) VALUES (?, ?);";
 		delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
 
-		HikariConfig hikariConfig = new HikariConfig();
-
-		hikariConfig.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
-		hikariConfig.setUsername(username);
-		hikariConfig.setPassword(password);
-		hikariConfig.setPoolName("powder-pool");
-		hikariConfig.setMaximumPoolSize(3);
-		hikariConfig.setConnectionTimeout(3000);
-		hikariConfig.setLeakDetectionThreshold(3000);
-
-		dataSource = new HikariDataSource(hikariConfig);
+		dataSource = new HikariDataSource();
+		
+		dataSource.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
+		dataSource.setUsername(username);
+		dataSource.setPassword(password);
+		dataSource.setPoolName("powder-pool");
+		dataSource.setMaximumPoolSize(3);
+		dataSource.setConnectionTimeout(3000);
+		dataSource.setLeakDetectionThreshold(3000);
 
 		createTable();
 	}
