@@ -98,12 +98,12 @@ public class PowderCommand implements CommandExecutor {
 				PowderUtil.helpMessage(player, label, page);
 				return false;
 			} else if (args[0].equals("test")) {
-			    try {
-			    	player.sendMessage(ChatColor.RED + 
-				    		PowderUtil.getNearestEntityInSight(player, 7)
-				    		.getUniqueId().toString());
-			    } catch (Exception e) { }
-			    return true;
+				try {
+					player.sendMessage(ChatColor.RED + 
+							PowderUtil.getNearestEntityInSight(player, 7)
+					.getUniqueId().toString());
+				} catch (Exception e) { }
+				return true;
 			} else if (args[0].equals("reload")) {
 				if (!(player.hasPermission("powder.reload"))) {
 					PowderUtil.sendPrefixMessage(player, 
@@ -132,7 +132,7 @@ public class PowderCommand implements CommandExecutor {
 								Message.STAR_NO_ACTIVE, label, player.getName());
 						return false;
 					}
-					int amount = PowderUtil.cancelAllPowdersAndSave(player.getUniqueId());
+					int amount = PowderUtil.cancelAllPowders(player.getUniqueId());
 					PowderUtil.sendPrefixMessage(player, Message.STAR_CANCEL_SUCCESS, 
 							label, player.getName(), String.valueOf(amount));
 					return true;
@@ -176,7 +176,7 @@ public class PowderCommand implements CommandExecutor {
 							label, player.getName(), powderTaskName);
 					return false;
 				}
-				if (powderHandler.removePowderTask(powderTask)) {
+				if (powderHandler.cancelPowderTask(powderTask)) {
 					PowderUtil.sendPrefixMessage(player, Message.CANCEL_SUCCESS, 
 							label, player.getName(), powderTaskName);
 				} else {
@@ -484,7 +484,7 @@ public class PowderCommand implements CommandExecutor {
 								label, player.getName(), label);
 						return false;
 					}
-					if (powderHandler.removePowderTask(powderHandler.getPowderTask(name))) {
+					if (powderHandler.cancelPowderTask(powderHandler.getPowderTask(name))) {
 						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SUCCESS, 
 								label, player.getName(), name);
 					} else {

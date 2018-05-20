@@ -11,7 +11,7 @@ import com.ruinscraft.powder.util.PowderUtil;
 
 public class PlayerListener implements Listener {
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 

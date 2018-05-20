@@ -46,6 +46,8 @@ public class PowderUtil {
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
 	public static Random random = new Random();
 
+	private static Set<UUID> recentlyLoadedUUIDs = new HashSet<UUID>();
+
 	public static String color(String msg) {
 		return ChatColor.translateAlternateColorCodes('&', msg);
 	}
@@ -433,6 +435,7 @@ public class PowderUtil {
 	public static Set<UUID> getOnlineUUIDs() {
 		Set<UUID> uuids = getOnlinePlayerUUIDs();
 		for (World world : Bukkit.getWorlds()) {
+			Bukkit.getLogger().info("getting online UUIDs");
 			uuids.addAll(world.getEntities().stream()
 					.map(Entity::getUniqueId).collect(Collectors.toSet()));
 		}
@@ -523,14 +526,33 @@ public class PowderUtil {
 		return stream;
 	}
 
-	// cancels powders for logout
-	public static void unloadUUID(UUID uuid) {
-		savePowdersForUUIDAndCancel(uuid);
+	public static boolean recentlyLoaded(UUID uuid) {
+		return recentlyLoadedUUIDs.contains(uuid);
 	}
 
 	// loads player from database
 	public static void loadUUID(UUID uuid) {
 		loadPowdersForUUID(uuid);
+		plugin.getServer().getScheduler()
+		.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+			recentlyLoadedUUIDs.remove(uuid);
+		}, 20L);
+		recentlyLoadedUUIDs.add(uuid);
+	}
+
+	// loads player from database
+	public static void loadUUIDs(Collection<UUID> uuids) {
+		loadPowdersForUUIDs(uuids);
+		plugin.getServer().getScheduler()
+		.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+			recentlyLoadedUUIDs.removeAll(uuids);
+		}, 20L);
+		recentlyLoadedUUIDs.addAll(uuids);
+	}
+
+	// loads player from database
+	public static void loadAllUUIDs() {
+		loadUUIDs(PowderUtil.getOnlineUUIDs());
 	}
 
 	// cancels all Powders for the given player
@@ -538,7 +560,7 @@ public class PowderUtil {
 		int amt = 0;
 		PowderHandler powderHandler = plugin.getPowderHandler();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
-			powderHandler.removePowderTask(powderTask);
+			powderHandler.cancelPowderTask(powderTask);
 			amt++;
 		}
 		return amt;
@@ -554,28 +576,21 @@ public class PowderUtil {
 	// get names of enabled Powders for a user
 	public static List<String> getEnabledPowderNames(UUID uuid) {
 		PowderHandler powderHandler = plugin.getPowderHandler();
-
-		List<String> enabledPowders = new ArrayList<>();
-		plugin.getLogger().info("ttt " + String.valueOf(powderHandler.getPowderTasks(uuid).size()));
-
+		List<String> enabledPowders = new ArrayList<String>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				plugin.getLogger().info("ppp " + String.valueOf(powderTask.getPowders().keySet().size()));
 				if (powder.hasMovement()) {
 					enabledPowders.add(powder.getName());
-					plugin.getLogger().info("++" + powder.getName());
-					plugin.getLogger().info("++" + powderTask.getName());
 				}
 			}
 		}
-
 		return enabledPowders;
 	}
 
 	// loads and creates a Powder (used for storage loading)
 	public static void createPowderFromName(UUID uuid, String powderName) {
 		PowderHandler powderHandler = plugin.getPowderHandler();
-		plugin.getLogger().info("createpowdowopdrop");
 
 		Powder powder = powderHandler.getPowder(powderName);
 
@@ -583,22 +598,26 @@ public class PowderUtil {
 			return;
 		}
 
+		Bukkit.getLogger().info("creating " + uuid.toString());
 		Player player = Bukkit.getPlayer(uuid);
 		Entity entity = Bukkit.getEntity(uuid);
 		if (player != null) {
-			plugin.getLogger().info("|| " + player.getName());
+			plugin.getLogger().info("|>| " + player.getName());
 			if (!PowderUtil.hasPermission(player, powder)) {
 				return;
 			}
 			powder.spawn(player);
 		} else if (entity != null) {
-			plugin.getLogger().info("|| " + entity.getName());
+			plugin.getLogger().info("|>| " + entity.getName());
 			powder.spawn(entity);
 		}
 	}
 
 	public static void savePowdersForUUID(UUID uuid) {
 		if (plugin.useStorage()) {
+			if (recentlyLoaded(uuid)) {
+				return;
+			}
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				plugin.getLogger().info("++" + uuid.toString());
 				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
@@ -623,32 +642,31 @@ public class PowderUtil {
 				plugin.getLogger().info("|||| " + powders.size());
 
 				for (String powder : powders) {
-					plugin.getLogger().info("|||| " + uuid);
+					plugin.getLogger().info("|||| " + powder);
 					createPowderFromName(uuid, powder);
 				}
 			});
 		}
 	}
 
-	public static void savePowdersForOnline() {
+	public static void savePowdersForUUIDs(Collection<UUID> uuids) {
+		Set<UUID> filteredUUIDs = uuids.stream()
+				.filter(u -> !PowderUtil.recentlyLoaded(u)).collect(Collectors.toSet());
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getStorage().saveBatch(
-						plugin.getPowderHandler().getAllPowderTaskUUIDs());
+				plugin.getStorage().saveBatch(filteredUUIDs);
 			});
 		}
 	}
 
-	public static void loadPowdersForOnline() {
+	public static void loadPowdersForUUIDs(Collection<UUID> uuids) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				Map<UUID, List<String>> enabledPowders = plugin.getStorage()
-						.getBatch(PowderUtil.getOnlineUUIDs());
+						.getBatch(uuids);
 
 				for (Map.Entry<UUID, List<String>> entry : enabledPowders.entrySet()) {
-					plugin.getLogger().info("entry!!");
 					for (String powder : entry.getValue()) {
-						plugin.getLogger().info("entr");
 						createPowderFromName(entry.getKey(), powder);
 					}
 				}

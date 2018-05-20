@@ -71,7 +71,7 @@ public class PowderPlugin extends JavaPlugin {
 			loadPowdersFromSources();
 			// load all saved powders from db if enabled
 			if (useStorage()) {
-				PowderUtil.loadPowdersForOnline();
+				PowderUtil.loadAllUUIDs();
 			}
 			isLoading = false;
 		});
@@ -98,7 +98,7 @@ public class PowderPlugin extends JavaPlugin {
 		loadPowdersFromSources();
 
 		if (useStorage()) {
-			PowderUtil.loadPowdersForOnline();
+			PowderUtil.loadAllUUIDs();
 		}
 		isLoading = false;
 	}

@@ -32,7 +32,7 @@ public class MySqlStorage implements SqlStorage {
 		delete_powders = "DELETE FROM " + powdersTable + " WHERE uuid = ?";
 
 		dataSource = new HikariDataSource();
-		
+
 		dataSource.setJdbcUrl("jdbc:mysql://" + host + ":" + port + "/" + database);
 		dataSource.setUsername(username);
 		dataSource.setPassword(password);

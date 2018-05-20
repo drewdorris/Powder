@@ -251,7 +251,6 @@ public class Powder implements Cloneable {
 		PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
 				PowderUtil.generateID(8), this, new EntityTracker(entity));
 		spawn(powderTask);
-		PowderUtil.savePowdersForUUID(entity.getUniqueId());
 	}
 
 	public void spawn(String name, Location location) {
@@ -270,28 +269,21 @@ public class Powder implements Cloneable {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		// create a PowderTask, add taskIDs to it
 		if (powderHandler.getPowderTasks().isEmpty()) {
-			powderHandler.addPowderTask(powderTask);
+			powderHandler.runPowderTask(powderTask);
 			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
 		} else {
-			powderHandler.addPowderTask(powderTask);
+			powderHandler.runPowderTask(powderTask);
 		}
 	}
 
 	// cancels a given Powder for the given player
 	public boolean cancel(UUID uuid) {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-
 		boolean success = false;
-
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid, this)) {
 			powderTask.removePowder(this);
 			success = true;
 		}
-
-		if (success) {
-			PowderUtil.savePowdersForUUID(uuid);
-		}
-
 		return success;
 	}
 
