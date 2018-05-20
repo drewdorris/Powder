@@ -88,11 +88,16 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Powder powder : powderTask.getPowders().keySet()) {
-				Tracker tracker = powderTask.getPowders().get(powder);
+			for (Tracker tracker : powderTask.getPowders().values()) {
 				if (tracker.getType() == TrackerType.PLAYER) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					if (playerTracker.getUUID().equals(uuid)) {
+						playerPowderTasks.add(powderTask);
+						break;
+					}
+				} else if (tracker.getType() == TrackerType.ENTITY) {
+					EntityTracker entityTracker = (EntityTracker) tracker;
+					if (entityTracker.getEntityUUID().equals(uuid)) {
 						playerPowderTasks.add(powderTask);
 						break;
 					}
@@ -106,14 +111,21 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Powder otherPowder : powderTask.getPowders().keySet()) {
-				Tracker tracker = powderTask.getPowders().get(otherPowder);
-				if (tracker.getType() == TrackerType.PLAYER && 
-						powder.getName().equals(otherPowder.getName())) {
-					PlayerTracker playerTracker = (PlayerTracker) tracker;
-					if (playerTracker.getUUID().equals(uuid)) {
-						playerPowderTasks.add(powderTask);
-						break;
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Tracker tracker = entry.getValue();
+				if (powder.getName().equals(entry.getKey().getName())) {
+					if (tracker.getType() == TrackerType.PLAYER) {
+						PlayerTracker playerTracker = (PlayerTracker) tracker;
+						if (playerTracker.getUUID().equals(uuid)) {
+							playerPowderTasks.add(powderTask);
+							break;
+						}
+					} else if (tracker.getType() == TrackerType.ENTITY) {
+						EntityTracker entityTracker = (EntityTracker) tracker;
+						if (entityTracker.getEntityUUID().equals(uuid)) {
+							playerPowderTasks.add(powderTask);
+							break;
+						}
 					}
 				}
 			}

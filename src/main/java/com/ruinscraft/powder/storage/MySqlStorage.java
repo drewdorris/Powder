@@ -95,6 +95,9 @@ public class MySqlStorage implements SqlStorage {
 
 	@Override
 	public void saveBatch(Collection<UUID> uuids) {
+		if (uuids.isEmpty()) {
+			return;
+		}
 		try (Connection c = getConnection();
 				PreparedStatement delete = c.prepareStatement(delete_powders);
 				PreparedStatement insert = c.prepareStatement(insert_powder)) {
@@ -118,6 +121,9 @@ public class MySqlStorage implements SqlStorage {
 	@Override
 	public Map<UUID, List<String>> getBatch(Collection<UUID> uuids) {
 		Map<UUID, List<String>> batch = new HashMap<>();
+		if (uuids.isEmpty()) {
+			return batch;
+		}
 
 		try (Connection c = getConnection();
 				PreparedStatement ps = c.prepareStatement(query_powders)) {

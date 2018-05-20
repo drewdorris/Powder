@@ -436,6 +436,7 @@ public class PowderUtil {
 		Set<UUID> uuids = getOnlinePlayerUUIDs();
 		for (World world : Bukkit.getWorlds()) {
 			Bukkit.getLogger().info("getting online UUIDs");
+			Bukkit.getLogger().info("entities: " + world.getEntities().size());
 			uuids.addAll(world.getEntities().stream()
 					.map(Entity::getUniqueId).collect(Collectors.toSet()));
 		}
