@@ -34,11 +34,26 @@ public class PowderHandler {
 	// are categories enabled?
 	private boolean categoriesEnabled;
 
+	// every 5 seconds, all entities loaded with chunk loading are
+	// checked to see if they have powders attached to them;
+	// they are created if so
+	private Set<UUID> entitiesToLoad;
+
 	// initialize
 	public PowderHandler() {
 		powders = new ArrayList<Powder>();
 		powderTasks = new HashSet<PowderTask>();
 		categories = new HashMap<String, String>();
+		entitiesToLoad = new HashSet<UUID>();
+
+		PowderPlugin.getInstance().getServer()
+		.getScheduler().runTaskTimer(PowderPlugin.getInstance(), () -> {
+			if (PowderPlugin.isLoading()) {
+				return;
+			}
+			PowderUtil.loadPowdersForUUIDs(new HashSet<UUID>(this.entitiesToLoad));
+			this.entitiesToLoad.clear();
+		}, 80L, 80L);
 	}
 
 	// clear all Powders and end all PowderTasks
@@ -370,6 +385,16 @@ public class PowderHandler {
 
 	public void setIfCategoriesEnabled(boolean categoriesEnabled) {
 		this.categoriesEnabled = categoriesEnabled;
+	}
+
+	// entities to be checked in database
+	public Set<UUID> getEntitiesToLoad() {
+		return this.entitiesToLoad;
+	}
+
+	// adds entity to be checked in database
+	public void addEntityToLoad(UUID uuid) {
+		this.entitiesToLoad.add(uuid);
 	}
 
 }

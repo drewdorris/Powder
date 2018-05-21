@@ -651,6 +651,9 @@ public class PowderUtil {
 	}
 
 	public static void savePowdersForUUIDs(Collection<UUID> uuids) {
+		if (uuids.isEmpty()) {
+			return;
+		}
 		Set<UUID> filteredUUIDs = uuids.stream()
 				.filter(u -> !PowderUtil.recentlyLoaded(u)).collect(Collectors.toSet());
 		if (plugin.useStorage()) {
@@ -661,6 +664,9 @@ public class PowderUtil {
 	}
 
 	public static void loadPowdersForUUIDs(Collection<UUID> uuids) {
+		if (uuids.isEmpty()) {
+			return;
+		}
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				Map<UUID, List<String>> enabledPowders = plugin.getStorage()
