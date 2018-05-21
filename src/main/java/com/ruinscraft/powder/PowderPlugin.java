@@ -44,12 +44,14 @@ public class PowderPlugin extends JavaPlugin {
 		return instance;
 	}
 
+	@Override
 	public void onEnable() {
 		instance = this;
 
 		load();
 	}
 
+	@Override
 	public void onDisable() {
 		// delete all tasks & powders
 		powderHandler.clearEverything();

@@ -1,7 +1,6 @@
 package com.ruinscraft.powder;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,8 +15,7 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onChunkLoad(ChunkLoadEvent event) {
-		Chunk chunk = event.getChunk();
-		for (Entity entity : chunk.getEntities()) {
+		for (Entity entity : event.getChunk().getEntities()) {
 			PowderPlugin.getInstance().getPowderHandler()
 			.addEntityToLoad(entity.getUniqueId());
 		}

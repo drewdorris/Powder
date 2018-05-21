@@ -435,8 +435,6 @@ public class PowderUtil {
 	public static Set<UUID> getOnlineUUIDs() {
 		Set<UUID> uuids = getOnlinePlayerUUIDs();
 		for (World world : Bukkit.getWorlds()) {
-			Bukkit.getLogger().info("getting online UUIDs");
-			Bukkit.getLogger().info("entities: " + world.getEntities().size());
 			uuids.addAll(world.getEntities().stream()
 					.map(Entity::getUniqueId).collect(Collectors.toSet()));
 		}
@@ -580,7 +578,6 @@ public class PowderUtil {
 		List<String> enabledPowders = new ArrayList<String>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
-				plugin.getLogger().info("ppp " + String.valueOf(powderTask.getPowders().keySet().size()));
 				if (powder.hasMovement()) {
 					enabledPowders.add(powder.getName());
 				}
@@ -599,17 +596,14 @@ public class PowderUtil {
 			return;
 		}
 
-		Bukkit.getLogger().info("creating " + uuid.toString());
 		Player player = Bukkit.getPlayer(uuid);
 		Entity entity = Bukkit.getEntity(uuid);
 		if (player != null) {
-			plugin.getLogger().info("|>| " + player.getName());
 			if (!PowderUtil.hasPermission(player, powder)) {
 				return;
 			}
 			powder.spawn(player);
 		} else if (entity != null) {
-			plugin.getLogger().info("|>| " + entity.getName());
 			powder.spawn(entity);
 		}
 	}
@@ -620,7 +614,6 @@ public class PowderUtil {
 				return;
 			}
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getLogger().info("++" + uuid.toString());
 				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
 			});
 		}
@@ -629,7 +622,6 @@ public class PowderUtil {
 	public static void savePowdersForUUIDAndCancel(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getLogger().info("++" + uuid.toString());
 				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
 				PowderUtil.cancelAllPowders(uuid);
 			});
@@ -655,7 +647,7 @@ public class PowderUtil {
 			return;
 		}
 		Set<UUID> filteredUUIDs = uuids.stream()
-				.filter(u -> !PowderUtil.recentlyLoaded(u)).collect(Collectors.toSet());
+				.filter(uuid -> !PowderUtil.recentlyLoaded(uuid)).collect(Collectors.toSet());
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				plugin.getStorage().saveBatch(filteredUUIDs);
