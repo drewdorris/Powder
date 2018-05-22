@@ -21,6 +21,7 @@ import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
 import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowderHandler {
@@ -269,12 +270,17 @@ public class PowderHandler {
 		if (!powderTask.getUUIDsIfExist().isEmpty()) {
 			PowderUtil.savePowdersForUUIDs(powderTask.getUUIDsIfExist());
 		}
+		if (!ConfigUtil.containsTask(powderTask)) {
+			ConfigUtil.saveStationaryPowder(
+					PowderPlugin.getInstance().getCreatedPowdersFile(), powderTask);
+		}
 	}
 
 	// removes/ends a PowderTask
 	public boolean cancelPowderTask(PowderTask powderTask) {
 		boolean removal = this.powderTasks.remove(powderTask);
 		PowderUtil.savePowdersForUUIDs(powderTask.cancel());
+		ConfigUtil.removeStationaryPowder(powderTask);
 		return removal;
 	}
 

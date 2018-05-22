@@ -525,6 +525,10 @@ public class PowderUtil {
 		return stream;
 	}
 
+	public static String cleanPowderTaskName(PowderTask powderTask) {
+		return powderTask.getName().replace(".", "-");
+	}
+
 	public static boolean recentlyLoaded(UUID uuid) {
 		return recentlyLoadedUUIDs.contains(uuid);
 	}
@@ -632,10 +636,8 @@ public class PowderUtil {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
 				List<String> powders = plugin.getStorage().get(uuid);
-				plugin.getLogger().info("|||| " + powders.size());
 
 				for (String powder : powders) {
-					plugin.getLogger().info("|||| " + powder);
 					createPowderFromName(uuid, powder);
 				}
 			});

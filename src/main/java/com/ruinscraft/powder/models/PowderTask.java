@@ -10,10 +10,12 @@ import java.util.UUID;
 
 import org.bukkit.Location;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.models.trackers.EntityTracker;
 import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
 import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.util.ConfigUtil;
 
 public class PowderTask {
 
@@ -23,6 +25,11 @@ public class PowderTask {
 	private TrackerType trackerType;
 	// Powder associated with this PowderTask
 	private Map<Powder, Tracker> powders;
+
+	public PowderTask(String name) {
+		this.name = name;
+		this.powders = new HashMap<Powder, Tracker>();
+	}
 
 	public PowderTask(String name, Powder powder, Tracker tracker) {
 		this.name = name;
@@ -62,6 +69,8 @@ public class PowderTask {
 	public Set<UUID> cancel() {
 		Set<UUID> uuidsToSave = getUUIDsIfExist();
 		this.powders.clear();
+		ConfigUtil.saveStationaryPowder(
+				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
 		return uuidsToSave;
 	}
 
@@ -71,6 +80,12 @@ public class PowderTask {
 
 	public void setName(String name) {
 		this.name = name;
+		ConfigUtil.saveStationaryPowder(
+				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+	}
+
+	public TrackerType getTrackerType() {
+		return trackerType;
 	}
 
 	public Location getFirstLocation() {
@@ -93,17 +108,25 @@ public class PowderTask {
 	}
 
 	public boolean addPowder(Powder powder, Tracker tracker) {
+		if (this.powders.isEmpty()) {
+			this.trackerType = tracker.getType();
+		}
 		if (!tracker.getType().equals(trackerType)) {
 			return false;
 		}
 		this.powders.put(powder.clone(), tracker);
-		return false;
+		ConfigUtil.saveStationaryPowder(
+				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+		return true;
 	}
 
 	public boolean removePowder(Powder powder) {
 		for (Powder otherPowder : getPowders().keySet()) {
 			if (powder.getName().equals(otherPowder.getName())) {
-				return powders.remove(otherPowder) != null;
+				boolean removed = powders.remove(otherPowder) != null;
+				ConfigUtil.saveStationaryPowder(
+						PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+				return removed;
 			}
 		}
 		return false;

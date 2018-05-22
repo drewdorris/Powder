@@ -33,6 +33,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	private FileConfiguration config;
 	private List<FileConfiguration> powderConfigs;
+	private FileConfiguration createdPowders;
 
 	private static Map<Message, TextComponent> messages;
 
@@ -75,6 +76,7 @@ public class PowderPlugin extends JavaPlugin {
 			if (useStorage()) {
 				PowderUtil.loadAllUUIDs();
 			}
+			this.createdPowders = ConfigUtil.loadCreatedPowders();
 			isLoading = false;
 		});
 
@@ -102,6 +104,7 @@ public class PowderPlugin extends JavaPlugin {
 		if (useStorage()) {
 			PowderUtil.loadAllUUIDs();
 		}
+		this.createdPowders = ConfigUtil.loadCreatedPowders();
 		isLoading = false;
 	}
 
@@ -125,6 +128,14 @@ public class PowderPlugin extends JavaPlugin {
 		return powderConfigs;
 	}
 
+	public FileConfiguration getCreatedPowdersFile() {
+		return createdPowders;
+	}
+
+	public void setCreatedPowdersFile(FileConfiguration fileConfig) {
+		this.createdPowders = fileConfig;
+	}
+
 	public Map<Message, TextComponent> getMessages() {
 		return messages;
 	}
@@ -145,7 +156,7 @@ public class PowderPlugin extends JavaPlugin {
 			if (actualMessage == null) {
 				getLogger().warning("No message specified for '" + 
 						message.name() + "' in '" + fileName + "'." + 
-						" Is your version of Powder outdated?");
+						" Is your locale or version of Powder outdated?");
 				continue;
 			}
 			TextComponent textComponent = PowderUtil.format(PowderUtil.color(actualMessage));

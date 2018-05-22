@@ -15,6 +15,9 @@ public class PlayerListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onChunkLoad(ChunkLoadEvent event) {
+		if (PowderPlugin.getInstance().getPowderHandler() == null) {
+			return;
+		}
 		for (Entity entity : event.getChunk().getEntities()) {
 			PowderPlugin.getInstance().getPowderHandler()
 			.addEntityToLoad(entity.getUniqueId());
