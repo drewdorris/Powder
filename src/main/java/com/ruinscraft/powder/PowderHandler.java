@@ -266,6 +266,9 @@ public class PowderHandler {
 				}
 			}
 		}
+		if (getPowderTasks().isEmpty()) {
+			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
+		}
 		this.powderTasks.add(powderTask);
 		if (!powderTask.getUUIDsIfExist().isEmpty()) {
 			PowderUtil.savePowdersForUUIDs(powderTask.getUUIDsIfExist());
@@ -286,6 +289,7 @@ public class PowderHandler {
 
 	// removes/ends a PowderTask
 	public boolean cancelPowderTaskWithoutSaving(PowderTask powderTask) {
+		ConfigUtil.removeStationaryPowder(powderTask);
 		return this.powderTasks.remove(powderTask);
 	}
 
@@ -294,6 +298,7 @@ public class PowderHandler {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
 		Set<UUID> uuids = new HashSet<UUID>();
 		for (PowderTask powderTask : powderTasks) {
+			ConfigUtil.removeStationaryPowder(powderTask);
 			uuids.addAll(powderTask.cancel());
 		}
 		PowderUtil.savePowdersForUUIDs(uuids);
@@ -305,6 +310,7 @@ public class PowderHandler {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
 		Set<UUID> uuids = new HashSet<UUID>();
 		for (PowderTask powderTask : powderTasks) {
+			ConfigUtil.removeStationaryPowder(powderTask);
 			uuids.addAll(powderTask.cancel());
 		}
 		return removal;

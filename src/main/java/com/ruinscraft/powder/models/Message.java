@@ -58,6 +58,7 @@ public enum Message {
 	REMOVE_USER_REMOVE_FAILURE("{user}", "{player}"),
 	REMOVE_USER_REMOVED_BY("{user}", "{player}"),
 	REMOVE_NO_USER_SYNTAX("{user}", "{command}"),
+	REMOVE_NO_USER_DOES_NOT_EXIST("{user}", "{name}"),
 	REMOVE_NO_USER_SUCCESS("{user}", "{name}"),
 	REMOVE_NO_USER_FAILURE("{user}", "{name}"),
 	NEARBY_PREFIX(),

@@ -99,6 +99,8 @@ REMOVE_USER_REMOVED_BY: '&cYour Powders were canceled by another user.'
 ## {user} {command}
 REMOVE_NO_USER_SYNTAX: '&c/{command} remove <name>'
 ## {user} {name}
+REMOVE_NO_USER_DOES_NOT_EXIST: '&cThe active Powder ''{name}'' does not exist.'
+## {user} {name}
 REMOVE_NO_USER_SUCCESS: '&7Successfully removed ''{name}''.'
 ## {user} {name}
 REMOVE_NO_USER_FAILURE: '&cCould not find or remove ''{name}''.'

@@ -461,8 +461,8 @@ public class PowderCommand implements CommandExecutor {
 								label, player.getName());
 						return false;
 					}
-					if (powderHandler.getPowderTasks()
-							.removeAll(powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
+					if (powderHandler.cancelPowderTasks(
+							powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
 						if (!(powderUser.equals(player))) {
 							PowderUtil.sendPrefixMessage(powderUser, Message.REMOVE_USER_REMOVED_BY, 
 									label, player.getName(), powderUser.getName());
@@ -482,6 +482,12 @@ public class PowderCommand implements CommandExecutor {
 					} catch (Exception e) {
 						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SYNTAX, 
 								label, player.getName(), label);
+						return false;
+					}
+					if (powderHandler.getPowderTask(name) == null) {
+						PowderUtil.sendPrefixMessage(player, 
+								Message.REMOVE_NO_USER_DOES_NOT_EXIST, 
+								label, player.getName(), name);
 						return false;
 					}
 					if (powderHandler.cancelPowderTask(powderHandler.getPowderTask(name))) {

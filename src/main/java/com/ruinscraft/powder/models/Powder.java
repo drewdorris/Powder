@@ -10,7 +10,6 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.models.trackers.EntityTracker;
 import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
@@ -266,14 +265,8 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(PowderTask powderTask) {
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		// create a PowderTask, add taskIDs to it
-		if (powderHandler.getPowderTasks().isEmpty()) {
-			powderHandler.runPowderTask(powderTask);
-			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
-		} else {
-			powderHandler.runPowderTask(powderTask);
-		}
+		PowderPlugin.getInstance().getPowderHandler().runPowderTask(powderTask);
 	}
 
 	// cancels a given Powder for the given player

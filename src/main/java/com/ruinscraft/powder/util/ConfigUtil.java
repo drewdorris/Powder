@@ -421,6 +421,7 @@ public class ConfigUtil {
 			return null;
 		}
 		if (config == null) {
+			return null;
 		}
 		PowderPlugin.getInstance().setCreatedPowdersFile(config);
 		Set<PowderTask> powderTasks = loadStationaryPowders();
@@ -477,7 +478,11 @@ public class ConfigUtil {
 			return powderTasks;
 		}
 		for (String task : createdPowders.getConfigurationSection("created").getKeys(false)) {
-			powderTasks.add(loadStationaryPowder(createdPowders, "created." + task));
+			PowderTask powderTask = loadStationaryPowder(createdPowders, "created." + task);
+			if (powderTask == null) {
+				continue;
+			}
+			powderTasks.add(powderTask);
 		}
 		return powderTasks;
 	}
@@ -510,16 +515,17 @@ public class ConfigUtil {
 			float yaw = (float) config.getDouble(newSection + ".yaw");
 			float pitch = (float) config.getDouble(newSection + ".pitch");
 			Location location = new Location(world, x, y, z, yaw, pitch);
-			StationaryTracker tracker = new StationaryTracker(location);
-			powderTask.addPowder(powder, tracker);
+			powderTask.addPowder(powder, new StationaryTracker(location));
 		}
 		return powderTask;
 	}
 
 	public static void removeStationaryPowder(PowderTask powderTask) {
 		if (powderTask.getTrackerType() == TrackerType.STATIONARY) {
+			FileConfiguration createdPowders = PowderPlugin.getInstance().getCreatedPowdersFile();
 			PowderPlugin.getInstance().getCreatedPowdersFile()
 			.set("created." + PowderUtil.cleanPowderTaskName(powderTask), null);
+			saveFile(createdPowders, "createdpowders.yml");
 		}
 	}
 
