@@ -76,7 +76,7 @@ ADDTO_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ADDTO_SUCCESS: '&7Successfully added Powder ''{powder}'' to ''{name}''.'
 ## {user} {powder} {name}
 ADDTO_FAILURE: '&cCould not add Powder ''{powder}'' to ''{name}''.'
-## {user}
+## {user} {command}
 REMOVEFROM_SYNTAX: '&c/{command} removefrom <name> <Powder>'
 ## {user} {name}
 REMOVEFROM_DOES_NOT_EXIST: '&cThe active Powder ''{name}'' does not exist.'

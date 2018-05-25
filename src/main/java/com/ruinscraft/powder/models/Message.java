@@ -47,7 +47,7 @@ public enum Message {
 	ADDTO_UNKNOWN("{user}", "{powder}"),
 	ADDTO_SUCCESS("{user}", "{powder}", "{name}"),
 	ADDTO_FAILURE("{user}", "{powder}", "{name}"),
-	REMOVEFROM_SYNTAX("{user}"),
+	REMOVEFROM_SYNTAX("{user}", "{command}"),
 	REMOVEFROM_DOES_NOT_EXIST("{user}", "{name}"),
 	REMOVEFROM_UNKNOWN("{user}", "{powder}"),
 	REMOVEFROM_SUCCESS("{user}", "{powder}", "{name}"),

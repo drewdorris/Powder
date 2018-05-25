@@ -253,9 +253,7 @@ public class PowderCommand implements CommandExecutor {
 				if (powderHandler.getCategory(category) == null) {
 					PowderUtil.sendPrefixMessage(player, 
 							Message.CATEGORY_UNKNOWN, label, player.getName(), category);
-					Map<String, String> similarCategories = 
-							powderHandler.getSimilarCategories(args[0]);
-					PowderUtil.listCategories(player, similarCategories, 
+					PowderUtil.listCategories(player, powderHandler.getSimilarCategories(category), 
 							" category " + category + " ", page, pageLength, label);
 					// else, list Powders by category
 				} else {
@@ -413,7 +411,7 @@ public class PowderCommand implements CommandExecutor {
 					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
 					PowderUtil.sendPrefixMessage(player, Message.REMOVEFROM_SYNTAX, 
-							label, player.getName());
+							label, player.getName(), label);
 					return false;
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
