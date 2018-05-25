@@ -1,6 +1,6 @@
-main: com.ruinscraft.powder.PowderPlugin
+main: ${mainClass}
 name: ${name}
-version: ${project.version}
+version: ${version}
 commands: 
   powder:
     aliases: [pow, pdr, powders]

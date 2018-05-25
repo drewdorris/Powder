@@ -2,27 +2,6 @@
 ##  Powder  ##
 ## # #  # # ##
 
-prefix: '&7[&9Powder&7] '
-
-colors:
-  info: 'GRAY'
-  highlight: 'LIGHT_PURPLE'
-  highlight_two: 'GREEN'
-  highlight_three: 'YELLOW'
-  no_perm: 'DARK_GRAY'
-  warning: 'RED'
-
-## Use storage to continue Powders between each server
-storage:
-  mysql:
-    use: false
-    host: localhost
-    port: 3306
-    database: minecraft
-    table: powders
-    username: root
-    password: password
-
 ## Maximum amount of Powders that a user can be using at one time
 maxPowdersAtOneTime: 3
 
@@ -32,10 +11,11 @@ allowSamePowdersAtOneTime: true
 ## Minimum time allowed between usage of Powders
 secondsBetweenPowderUsage: 5
 
-## Powders per page in the list of Powders
+## Powders per page in any formatted list
+## (/powder help, /powder list, etc)
 pageLength: 7
 
-## Divide Powders into categories
+## If true, Powders are divided into categories
 categoriesEnabled: true
 
 ## List of categories
@@ -51,9 +31,21 @@ categories:
   Crowns:
     desc: '{total} Particles Around your Head'
 
+## Use storage to continue Powders between each server or after logout
+## If disabled, Powders attached to entities will unload alongside chunk unloading
+storage:
+  mysql:
+    use: false
+    host: localhost
+    port: 3306
+    database: minecraft
+    table: powders
+    username: root
+    password: password
+
 ## Locale to use (from locale source folder)
 locale: 'en-us.yml'
 
-## Where to source Powder configuration files from
+## Files/URLs to source Powder configuration files from
 powderSources:
   - 'powders.yml'
