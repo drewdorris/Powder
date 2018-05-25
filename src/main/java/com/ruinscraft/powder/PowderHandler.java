@@ -54,7 +54,7 @@ public class PowderHandler {
 			}
 			PowderUtil.loadPowdersForUUIDs(new HashSet<UUID>(this.entitiesToLoad));
 			this.entitiesToLoad.clear();
-		}, 80L, 80L);
+		}, 0L, 20L);
 	}
 
 	// clear all Powders and end all PowderTasks
