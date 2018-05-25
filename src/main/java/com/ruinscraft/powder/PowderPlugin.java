@@ -56,6 +56,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void onDisable() {
 		// delete all tasks & powders
 		powderHandler.clearEverything();
+		disableStorage();
 
 		instance = null;
 	}
@@ -173,6 +174,7 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void enableStorage() {
+		disableStorage();
 		// enable storage if enabled in configuration
 		if (config.getBoolean("storage.mysql.use")) {
 			String host = config.getString("storage.mysql.host");
@@ -185,6 +187,12 @@ public class PowderPlugin extends JavaPlugin {
 			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
 
 			getLogger().info("Using MySQL storage");
+		}
+	}
+
+	public void disableStorage() {
+		if (storage != null) {
+			storage.close();
 		}
 	}
 
@@ -252,8 +260,6 @@ public class PowderPlugin extends JavaPlugin {
 		// handle categories if enabled
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
 
-		ConfigUtil.reloadCategories();
-
 		// alert online players of the reload
 		getLogger().info("Loading Powders...");
 		for (Player player : Bukkit.getOnlinePlayers()) {
@@ -262,6 +268,8 @@ public class PowderPlugin extends JavaPlugin {
 						Message.LOADING_START, "powder", player.getName());
 			}
 		}
+
+		ConfigUtil.reloadCategories();
 
 		List<String> powderNames = new ArrayList<>();
 		for (FileConfiguration powderConfig : powderConfigs) {

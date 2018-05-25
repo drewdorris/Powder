@@ -148,6 +148,11 @@ public class MySqlStorage implements SqlStorage {
 	}
 
 	@Override
+	public void close() {
+		dataSource.close();
+	}
+
+	@Override
 	public Connection getConnection() throws SQLException {
 		return dataSource.getConnection();
 	}

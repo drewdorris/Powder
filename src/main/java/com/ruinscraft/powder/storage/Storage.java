@@ -11,8 +11,10 @@ public interface Storage {
 
 	void save(UUID uuid, List<String> powders);
 
-	Map<UUID, List<String>> getBatch (Collection<UUID> uuids);
+	Map<UUID, List<String>> getBatch(Collection<UUID> uuids);
 
 	void saveBatch(Collection<UUID> uuids);
+
+	void close();
 
 }
