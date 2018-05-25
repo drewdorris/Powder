@@ -82,7 +82,9 @@ public class PowderPlugin extends JavaPlugin {
 		});
 
 		getCommand("powder").setExecutor(new PowderCommand());
-		getServer().getPluginManager().registerEvents(new PlayerListener(), this);
+		if (useStorage()) {
+			getServer().getPluginManager().registerEvents(new EnvironmentListener(), this);
+		}
 	}
 
 	public synchronized void reload() {
@@ -193,6 +195,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void disableStorage() {
 		if (storage != null) {
 			storage.close();
+			storage = null;
 		}
 	}
 

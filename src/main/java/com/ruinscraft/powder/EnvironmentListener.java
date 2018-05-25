@@ -11,27 +11,27 @@ import org.bukkit.event.world.ChunkLoadEvent;
 
 import com.ruinscraft.powder.util.PowderUtil;
 
-public class PlayerListener implements Listener {
+public class EnvironmentListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onChunkLoad(ChunkLoadEvent event) {
-		if (PowderPlugin.getInstance().getPowderHandler() == null) {
+		PowderPlugin instance = PowderPlugin.getInstance();
+		if (instance.getPowderHandler() == null || !instance.useStorage()) {
 			return;
 		}
+
 		for (Entity entity : event.getChunk().getEntities()) {
-			PowderPlugin.getInstance().getPowderHandler()
-			.addEntityToLoad(entity.getUniqueId());
+			instance.getPowderHandler().addEntityToLoad(entity.getUniqueId());
 		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-
-		if (PowderPlugin.isLoading()) {
+		if (PowderPlugin.isLoading() || !PowderPlugin.getInstance().useStorage()) {
 			return;
 		}
 
+		Player player = event.getPlayer();
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(
 				PowderPlugin.getInstance(), () -> {
 					PowderUtil.loadUUID(player.getUniqueId());

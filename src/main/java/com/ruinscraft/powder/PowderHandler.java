@@ -45,16 +45,18 @@ public class PowderHandler {
 		powders = new ArrayList<Powder>();
 		powderTasks = new HashSet<PowderTask>();
 		categories = new HashMap<String, String>();
-		entitiesToLoad = new HashSet<UUID>();
 
-		PowderPlugin.getInstance().getServer()
-		.getScheduler().runTaskTimer(PowderPlugin.getInstance(), () -> {
-			if (PowderPlugin.isLoading()) {
-				return;
-			}
-			PowderUtil.loadPowdersForUUIDs(new HashSet<UUID>(this.entitiesToLoad));
-			this.entitiesToLoad.clear();
-		}, 0L, 20L);
+		if (PowderPlugin.getInstance().useStorage()) {
+			entitiesToLoad = new HashSet<UUID>();
+			PowderPlugin.getInstance().getServer()
+			.getScheduler().runTaskTimer(PowderPlugin.getInstance(), () -> {
+				if (PowderPlugin.isLoading()) {
+					return;
+				}
+				PowderUtil.loadPowdersForUUIDs(new HashSet<UUID>(this.entitiesToLoad));
+				this.entitiesToLoad.clear();
+			}, 0L, 20L);
+		}
 	}
 
 	// clear all Powders and end all PowderTasks
