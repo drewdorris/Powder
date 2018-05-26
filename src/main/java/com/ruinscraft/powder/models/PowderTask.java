@@ -107,6 +107,15 @@ public class PowderTask {
 		return powders;
 	}
 
+	public boolean hasAnyElements() {
+		for (Powder powder : powders.keySet()) {
+			if (powder.getPowderElements().size() > 0) {
+				return true;
+			}
+		}
+		return false;
+	}
+
 	public boolean addPowder(Powder powder, Tracker tracker) {
 		if (this.powders.isEmpty()) {
 			this.trackerType = tracker.getType();

@@ -220,7 +220,6 @@ public class PowderHandler {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
 				if (tracker.getType() == TrackerType.ENTITY) {
-					PowderPlugin.getInstance().getLogger().info("entity entry !!!");
 					entityTracks.put(entry.getKey(), (EntityTracker) tracker);
 					break;
 				}
@@ -310,10 +309,8 @@ public class PowderHandler {
 	// removes/ends a PowderTask
 	public boolean cancelPowderTasksWithoutSaving(Collection<PowderTask> powderTasks) {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
-		Set<UUID> uuids = new HashSet<UUID>();
 		for (PowderTask powderTask : powderTasks) {
 			ConfigUtil.removeStationaryPowder(powderTask);
-			uuids.addAll(powderTask.cancel());
 		}
 		return removal;
 	}

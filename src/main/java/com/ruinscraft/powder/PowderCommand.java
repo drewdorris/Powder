@@ -633,7 +633,7 @@ public class PowderCommand implements CommandExecutor {
 		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
 			PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT, 
-					label, args[0], String.valueOf(waitTime));
+					label, player.getName(), args[0], String.valueOf(waitTime));
 			return false;
 		}
 		// if there's a wait time between using each Powder

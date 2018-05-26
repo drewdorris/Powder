@@ -45,7 +45,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 				if (tracker.getType() == TrackerType.ENTITY) {
 					EntityTracker entityTracker = (EntityTracker) tracker;
 					if (entityTracker.getEntity() == null) {
-						activePowdersInTask.remove(activePowder);
+						powder.getPowderElements().clear();
 						continue;
 					}
 					if (entityTracker.getEntity().isDead()) {
@@ -56,13 +56,13 @@ public class PowdersCreationTask extends BukkitRunnable {
 				if (tracker.getType() == TrackerType.PLAYER) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					if (Bukkit.getPlayer(playerTracker.getUUID()) == null) {
-						activePowdersInTask.remove(activePowder);
+						powder.getPowderElements().clear();
 						continue;
 					}
 				}
 				List<PowderElement> activeElementsInPowder = powder.getPowderElements();
 				if (activeElementsInPowder.isEmpty()) {
-					activePowdersInTask.remove(activePowder);
+					powder.getPowderElements().clear();
 					continue;
 				}
 				for (PowderElement dueElement : powder.getDuePowderElements(tick)) {
@@ -76,14 +76,14 @@ public class PowdersCreationTask extends BukkitRunnable {
 					}
 				}
 			}
-			if (powderTask.getPowders().isEmpty()) {
+			if (!powderTask.hasAnyElements()) {
 				powderTasksToRemove.add(powderTask);
 			}
 		}
 		for (UUID uuid : uuidsToRemove) {
 			PowderUtil.cancelAllPowdersAndSave(uuid);
 		}
-		powderHandler.cancelPowderTasksWithoutSaving(powderTasksToRemove);
+		powderHandler.cancelPowderTasks(powderTasksToRemove);
 	}
 
 	public static int getCurrentTick() {
