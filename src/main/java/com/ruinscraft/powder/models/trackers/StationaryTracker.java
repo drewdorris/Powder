@@ -4,7 +4,7 @@ import org.bukkit.Location;
 
 public class StationaryTracker implements Tracker {
 
-	Location location;
+	private Location location;
 
 	public StationaryTracker(Location location) {
 		this.location = location;

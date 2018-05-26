@@ -1,5 +1,6 @@
 package com.ruinscraft.powder.util;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
@@ -205,14 +206,13 @@ public class PowderUtil {
 	// sorts a list of TextComponents (Powders or categories) alphabetically
 	public static List<TextComponent> sortAlphabetically(Collection<TextComponent> texts) {
 		List<String> names = new ArrayList<String>(texts.size()); 
-
 		for (TextComponent text : texts) {
 			names.add(text.getText());
 		}
 
 		Collections.sort(names, Collator.getInstance());
-		List<TextComponent> newList = new ArrayList<TextComponent>(texts.size());
 
+		List<TextComponent> newList = new ArrayList<TextComponent>(texts.size());
 		for (String name : names) {
 			for (TextComponent text : texts) {
 				if (text.getText() == name) {
@@ -248,9 +248,7 @@ public class PowderUtil {
 				Message.LIST_GENERAL_LEFT_HOVER, 
 				Message.LIST_GENERAL_LEFT_CLICK, 
 				label, input, String.valueOf(page - 1));
-
 		TextComponent middle = getMessage(Message.LIST_GENERAL_MIDDLE);
-
 		TextComponent rightArrow = setTextHoverAndClick(Message.LIST_GENERAL_RIGHT,
 				Message.LIST_GENERAL_RIGHT_HOVER,
 				Message.LIST_GENERAL_RIGHT_CLICK,
@@ -452,6 +450,10 @@ public class PowderUtil {
 			id.append(Character.toString((char) randomValue));
 		}
 		return id.toString();
+	}
+
+	public static boolean fileExists(String folder, String fileName) {
+		return new File(plugin.getDataFolder() + folder, fileName).exists();
 	}
 
 	public static String getFileNameFromURL(String url) {

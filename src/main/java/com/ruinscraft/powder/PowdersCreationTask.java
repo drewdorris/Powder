@@ -28,6 +28,10 @@ public class PowdersCreationTask extends BukkitRunnable {
 		tick = 0;
 	}
 
+	public static int getCurrentTick() {
+		return tick;
+	}
+
 	@Override
 	public void run() {
 		if (powderHandler.getPowderTasks().isEmpty()) {
@@ -84,10 +88,6 @@ public class PowdersCreationTask extends BukkitRunnable {
 			PowderUtil.cancelAllPowdersAndSave(uuid);
 		}
 		powderHandler.cancelPowderTasks(powderTasksToRemove);
-	}
-
-	public static int getCurrentTick() {
-		return tick;
 	}
 
 }

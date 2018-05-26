@@ -11,9 +11,6 @@ import com.ruinscraft.powder.PowdersCreationTask;
 
 public class ParticleMatrix implements PowderElement {
 
-	// [.1;true;2;12;10]
-	// [spacing;pitch;startTime;repeatTime;iterations]
-
 	// list of individual Layers associated with this ParticleMatrix
 	private List<Layer> layers;
 	// how far left the ParticleMatrix should be started
@@ -37,7 +34,7 @@ public class ParticleMatrix implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
-
+	// the next tick to iterate
 	private int nextTick;
 
 	// iterations so far

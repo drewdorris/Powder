@@ -30,7 +30,7 @@ public class ImageUtil {
 	}
 
 	public static boolean imageExists(String fileName) {
-		return new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName).exists();
+		return PowderUtil.fileExists("/images", fileName);
 	}
 
 	// gets rows of a Layer from an image from a URL

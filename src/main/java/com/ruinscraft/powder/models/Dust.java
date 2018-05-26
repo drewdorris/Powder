@@ -6,9 +6,6 @@ import com.ruinscraft.powder.PowdersCreationTask;
 
 public class Dust implements PowderElement {
 
-	// 'A;2;1;3;3;0'
-	// 'PowderParticle;radius;height&depth;startTime;repeatTime;iterations'
-
 	// the PowderParticle associated with this Dust
 	private PowderParticle powderParticle;
 	// the limit radius that this Dust can be spawned in in
@@ -23,6 +20,7 @@ public class Dust implements PowderElement {
 	private int repeatTime;
 	// set maximum iterations (0 if infinite)
 	private int lockedIterations;
+	// the next tick to iterate
 	private int nextTick;
 
 	// iterations so far
