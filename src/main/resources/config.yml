@@ -28,6 +28,8 @@ categories:
     desc: '{total} Flags of Countries'
   Effects:
     desc: '{total} Random Particles / Effects'
+  Songs:
+    desc: '{total} Songs with Effects'
   Crowns:
     desc: '{total} Particles Around your Head'
 

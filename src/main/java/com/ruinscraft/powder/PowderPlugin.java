@@ -1,10 +1,6 @@
 package com.ruinscraft.powder;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -196,60 +192,6 @@ public class PowderPlugin extends JavaPlugin {
 		if (storage != null) {
 			storage.close();
 			storage = null;
-		}
-	}
-
-	public void loadPowderConfigs() {
-		// list of configuration files that contain Powders
-		powderConfigs = new ArrayList<FileConfiguration>();
-
-		BufferedReader reader;
-
-		for (String urlName : config.getStringList("powderSources")) {
-
-			FileConfiguration powderConfig;
-			URL url = PowderUtil.readURL(urlName);
-			File file;
-			// if a file is from a path, load from within data folder
-			if (!urlName.contains("/")) {
-
-				file = new File(getDataFolder(), urlName);
-				if (!file.exists()) {
-					getLogger().warning("Failed to load config file '" + urlName + "'.");
-					continue;
-				}
-				powderConfig = YamlConfiguration.loadConfiguration(file);
-
-				// else, load from URL
-			} else if (url != null) {
-
-				InputStream stream = PowderUtil.getInputStreamFromURL(url);
-
-				if (stream == null) {
-					continue;
-				}
-
-				reader = new BufferedReader(new InputStreamReader(stream));
-				powderConfig = YamlConfiguration.loadConfiguration(reader);
-
-			} else {
-				getLogger().warning("Failed to load config file '" + urlName + "'.");
-				continue;
-			}
-
-			powderConfigs.add(powderConfig);
-
-		}
-
-		// if powders.yml is listed as a source but doesn't exist, create it
-		File defaultPowderConfig = new File(getDataFolder(), "powders.yml");
-		if (!defaultPowderConfig.exists() && 
-				config.getStringList("powderSources").contains("powders.yml")) {
-			getLogger().info("powders.yml not found but listed as a source, creating!");
-			saveResource("powders.yml", false);
-			FileConfiguration powderConfig = 
-					YamlConfiguration.loadConfiguration(defaultPowderConfig);
-			powderConfigs.add(powderConfig);
 		}
 	}
 

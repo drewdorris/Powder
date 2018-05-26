@@ -30,12 +30,7 @@ public class ImageUtil {
 	}
 
 	public static boolean imageExists(String fileName) {
-		if (new File(PowderPlugin.getInstance().getDataFolder() + 
-				"/images", fileName).exists()) {
-			return true;
-		} else {
-			return false;
-		}
+		return new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName).exists();
 	}
 
 	// gets rows of a Layer from an image from a URL
@@ -64,6 +59,9 @@ public class ImageUtil {
 			String fileName, int resizedWidth, int resizedHeight) throws IOException {
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
+			if (!file.exists()) {
+				PowderPlugin.getInstance().saveResource("images/" + fileName, false);
+			}
 			BufferedImage bufferedImage;
 			bufferedImage = ImageIO.read(file);
 			if (bufferedImage == null) {

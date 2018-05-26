@@ -88,73 +88,60 @@
 ## # #  #  
 
 powders:
-  flagusa:
-    name: 'FlagUSA'
-    categories:
-      - 'Flags'
-    matrices:
-      matrix1:
-        spacing: .12
-        hasPitch: true
-        startTime: 0
-        addedPitch: 0
-        addedRotation: 0
-        repeatTime: 30
-        iterations: 0
-        layers:
-          layer1:
-            position: 0
-            layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f1fa-1f1f8.png;39;39'
-              - '...................?'
-  flaggb:
-    name: 'FlagGB'
-    categories:
-      - 'Flags'
-    matrices:
-      matrix1:
-        spacing: .12
-        hasPitch: true
-        startTime: 0
-        addedPitch: 0
-        addedRotation: 0
-        repeatTime: 30
-        iterations: 0
-        layers:
-          layer1:
-            position: 0
-            layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f1ec-1f1e7.png;39;39'
-              - '...................?'
-  flagcanada:
-    name: 'FlagCanada'
-    categories:
-      - 'Flags'
-    matrices:
-      matrix1:
-        spacing: .12
-        hasPitch: true
-        startTime: 0
-        addedPitch: 0
-        addedRotation: 0
-        repeatTime: 30
-        iterations: 0
-        layers:
-          layer1:
-            position: 0
-            layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f1e8-1f1e6.png;39;39'
-              - '...................?'
   firewithin:
     name: 'FireWithin'
+    categories:
+      - 'Effects'
     changes:
-      - 'A;REDSTONE;244;0;0'
-      - 'B;REDSTONE;244;100;0'
-      - 'C;REDSTONE;244;244;0'
+      change1:
+        particleChar: 'A'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 244
+        yOffset: 0
+        zOffset: 0
+        data: 1
+      change2:
+        particleChar: 'B'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 244
+        yOffset: 100
+        zOffset: 0
+        data: 1
+      change3:
+        particleChar: 'C'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 244
+        yOffset: 244
+        zOffset: 0
+        data: 1
     dusts:
-      - 'A;1;1.5;300'
-      - 'B;.7;1.4;300'
-      - 'C;.3;.9;300'
+      dust1:
+        particleChar: 'A'
+        radius: 1
+        height: 0
+        span: 2.8
+        startTime: 0
+        repeatTime: 3
+        iterations: 0
+      dust2:
+        particleChar: 'B'
+        radius: .7
+        height: 0
+        span: 2.2
+        startTime: 0
+        repeatTime: 3
+        iterations: 0
+      dust3:
+        particleChar: 'C'
+        radius: .3
+        height: 0
+        span: 1.6
+        startTime: 0
+        repeatTime: 3
+        iterations: 0
   flames:
     name: 'Flames'
     categories:
@@ -230,6 +217,104 @@ powders:
         startTime: 0
         repeatTime: 15
         iterations: 0
+  flagusa:
+    name: 'FlagUSA'
+    categories:
+      - 'Flags'
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: true
+        startTime: 0
+        addedPitch: 0
+        addedRotation: 0
+        repeatTime: 30
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:flag-us.png;39;39'
+              - '...................?'
+  flaggb:
+    name: 'FlagGB'
+    categories:
+      - 'Flags'
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: true
+        startTime: 0
+        addedPitch: 0
+        addedRotation: 0
+        repeatTime: 30
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:flag-gb.png;39;39'
+              - '...................?'
+  flagcanada:
+    name: 'FlagCanada'
+    categories:
+      - 'Flags'
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: true
+        startTime: 0
+        addedPitch: 0
+        addedRotation: 0
+        repeatTime: 30
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+            layerMatrix:
+              - 'img:flag-ca.png;39;39'
+              - '...................?'
+  flageurope:
+    name: 'FlagEurope'
+    categories:
+      - 'Flags'
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: true
+        startTime: 0
+        addedPitch: 0
+        addedRotation: 0
+        repeatTime: 30
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+            layerMatrix:
+              - 'img:flag-eu.png;39;39'
+              - '...................?'
+  flagchina:
+    name: 'FlagChina'
+    categories:
+      - 'Flags'
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: true
+        startTime: 0
+        addedPitch: 0
+        addedRotation: 0
+        repeatTime: 30
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+            layerMatrix:
+              - 'img:flag-cn.png;39;39'
+              - '...................?'
   laughingemoji:
     name: 'LaughingEmoji'
     categories:
@@ -303,7 +388,7 @@ powders:
           layer1:
             position: 0
             layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f602.png;39;39'
+              - 'img:emojijoy.png;39;39'
               - '.'
               - '.'
               - '...................?' 
@@ -331,18 +416,18 @@ powders:
           layer1:
             position: 0
             layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f4af.png;39;39'
+              - 'img:emoji100.png;39;39'
               - '.'
               - '.'
               - '...................?'
-  okhandemoji:
-    name: 'OKHandEmoji'
+  agreeemoji:
+    name: 'AgreeEmoji'
     categories:
       - 'Emojis'
     sounds:
       sound1:
-        soundEnum: 'UI_TOAST_IN'
-        volume: 1
+        soundEnum: 'ENTITY_VILLAGER_YES'
+        volume: .3
         note: 12
         startTime: 0
         repeatTime: 20
@@ -359,10 +444,101 @@ powders:
           layer1:
             position: 0
             layerMatrix:
-              - 'img:abs.twimg.com/emoji/v2/72x72/1f44c.png;39;39'
+              - 'img:emojiagree.png;39;39'
               - '.'
               - '.'
-              - '...................?'
+              - '...................?.................'
+  disagreeemoji:
+    name: 'DisagreeEmoji'
+    categories:
+      - 'Emojis'
+    sounds:
+      sound1:
+        soundEnum: 'ENTITY_VILLAGER_NO'
+        volume: .3
+        note: 12
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+    matrices:
+      matrix1:
+        spacing: .08
+        hasPitch: true
+        startTime: 0
+        repeatTime: 20
+        addedTilt: 0
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:emojidisagree.png;39;39'
+              - '.'
+              - '.'
+              - '...................?.................'
+  fireemoji:
+    name: 'FireEmoji'
+    categories:
+      - 'Emojis'
+    sounds:
+      sound1:
+        soundEnum: 'ENTITY_GENERIC_BURN'
+        volume: .15
+        note: 12
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+    matrices:
+      matrix1:
+        spacing: .08
+        hasPitch: true
+        startTime: 0
+        repeatTime: 20
+        addedTilt: 0
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:emojifire.png;39;39'
+              - '.'
+              - '.'
+              - '...................?.................'
+  questionmarkemoji:
+    name: 'QuestionMarkEmoji'
+    categories:
+      - 'Emojis'
+    sounds:
+      sound1:
+        soundEnum: 'BLOCK_NOTE_XYLOPHONE'
+        volume: .2
+        note: 19
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+      sound2:
+        soundEnum: 'BLOCK_NOTE_XYLOPHONE'
+        volume: .2
+        note: 20
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+    matrices:
+      matrix1:
+        spacing: .08
+        hasPitch: true
+        startTime: 0
+        repeatTime: 20
+        addedTilt: 0
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:emojiquestionmark.png;39;39'
+              - '.'
+              - '.'
+              - '...................?.................'
   alert:
     name: 'Alert'
     categories:
@@ -623,6 +799,293 @@ powders:
               - '............................................................'
               - '............................................................'
               - '............................?...............................'
+  shrek:
+    name: 'Shrek'
+    categories:
+      - 'Songs'
+    changes:
+      change1:
+        particleChar: 'H'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 233.75
+        yOffset: 0
+        zOffset: 0
+        data: 1
+      change2:
+        particleChar: 'B'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 21.25
+        yOffset: 0
+        zOffset: 0
+        data: 1
+    dusts:
+      dust1:
+        particleChar: H
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_HARP'
+      dust2:
+        particleChar: B
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_SNARE'
+    songs:
+      song1:
+        fileName: 'All Star.nbs'
+        volume: .5
+        multiplier: 2.5
+        startTime: 12
+        repeatTime: 0
+        iterations: 1
+    matrices:
+      matrix1:
+        spacing: .12
+        hasPitch: false
+        startTime: 0
+        iterations: 1
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'img:shrek.png;49;49'
+              - '........................?'
+  dontstopmenow:
+    name: 'DontStopMeNow'
+    categories:
+      - 'Songs'
+    spacing: .12
+    songs:
+      song1:
+        fileName: 'Dont Stop Me Now.nbs'
+        volume: .5
+        multiplier: 2
+        startTime: 0
+        repeatTime: 0
+        iterations: 1
+    changes:
+      change1:
+        particleChar: 'H'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 212.5
+        yOffset: 0
+        zOffset: 0
+        data: 1
+      change2:
+        particleChar: 'B'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 74.375
+        yOffset: 0
+        zOffset: 0
+        data: 1
+    dusts:
+      dust1:
+        particleChar: H
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_HARP'
+      dust2:
+        particleChar: B
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_SNARE'
+  getreadyforthis:
+    name: 'GetReadyForThis'
+    categories:
+      - 'Songs'
+    spacing: .12
+    songs:
+      song1:
+        fileName: 'Get Ready For This.nbs'
+        volume: .5
+        multiplier: 2
+        startTime: 0
+        repeatTime: 0
+        iterations: 1
+    changes:
+      change1:
+        particleChar: 'H'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 180.625
+        yOffset: 0
+        zOffset: 0
+        data: 1
+      change2:
+        particleChar: 'B'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 74.375
+        yOffset: 0
+        zOffset: 0
+        data: 1
+    dusts:
+      dust1:
+        particleChar: H
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_HARP'
+      dust2:
+        particleChar: B
+        radius: .5
+        height: 0
+        span: .8
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_SNARE'
+  nyancat:
+    name: 'NyanCat'
+    categories:
+      - 'Songs'
+    spacing: .12
+    songs:
+      song1:
+        fileName: 'Nyan Cat.nbs'
+        volume: .5
+        multiplier: 2
+        startTime: 0
+        repeatTime: 4200
+        iterations: 0
+    changes:
+      change1:
+        particleChar: 'A'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 250
+        yOffset: 1
+        zOffset: 40
+        data: 1
+      change2:
+        particleChar: 'B'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 250
+        yOffset: 50
+        zOffset: 1
+        data: 1
+      change3:
+        particleChar: 'C'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 250
+        yOffset: 250
+        zOffset: 50
+        data: 1
+      change4:
+        particleChar: 'D'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 51
+        yOffset: 250
+        zOffset: 51
+        data: 1
+      change5:
+        particleChar: 'E'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 51
+        yOffset: 51
+        zOffset: 244
+        data: 1
+      change6:
+        particleChar: 'F'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 102
+        yOffset: 51
+        zOffset: 204
+        data: 1
+      change100:
+        particleChar: 'a'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 63.75
+        yOffset: 0
+        zOffset: 0
+        data: 1
+      change101:
+        particleChar: 'b'
+        particleEnum: 'NOTE'
+        amount: 0
+        xOffset: 74.375
+        yOffset: 0
+        zOffset: 0
+        data: 1
+    dusts:
+      dust1:
+        particleChar: A
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 0
+        repeatTime: 3
+        iterations: 0
+      dust2:
+        particleChar: B
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 1
+        repeatTime: 3
+        iterations: 0
+      dust3:
+        particleChar: C
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 2
+        repeatTime: 3
+        iterations: 0
+      dust4:
+        particleChar: D
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 3
+        repeatTime: 3
+        iterations: 0
+      dust5:
+        particleChar: E
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 4
+        repeatTime: 3
+        iterations: 0
+      dust6:
+        particleChar: F
+        radius: .7
+        height: 0
+        span: 2
+        startTime: 5
+        repeatTime: 3
+        iterations: 0
+      dust100:
+        particleChar: a
+        radius: .5
+        height: 0
+        span: 2
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_HARP'
+      dust101:
+        particleChar: b
+        radius: .5
+        height: 0
+        span: 2
+        attachToNote: true
+        attachedToNote: 'BLOCK_NOTE_BASS'
   rainbowcrown:
     name: 'RainbowCrown'
     categories:
@@ -635,6 +1098,554 @@ powders:
         xOffset: 5
         yOffset: 0
         zOffset: 0
+        data: 1
+    matrices:
+      matrix1:
+        spacing: .15
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'A........'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix2:
+        spacing: .15
+        startTime: 1
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 1
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix3:
+        spacing: .15
+        startTime: 2
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 2
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix4:
+        spacing: .15
+        startTime: 3
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '..A......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix5:
+        spacing: .15
+        startTime: 4
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '...A.....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix6:
+        spacing: .15
+        startTime: 5
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 4
+            layerMatrix:
+              - '....A....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix7:
+        spacing: .15
+        startTime: 6
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '.....A...'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix8:
+        spacing: .15
+        startTime: 7
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '......A..'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix9:
+        spacing: .15
+        startTime: 8
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 2
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix10:
+        spacing: .15
+        startTime: 9
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 1
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix11:
+        spacing: .15
+        startTime: 10
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - '........A'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix12:
+        spacing: .15
+        startTime: 11
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -1
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix13:
+        spacing: .15
+        startTime: 12
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -2
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix14:
+        spacing: .15
+        startTime: 13
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '......A..'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix15:
+        spacing: .15
+        startTime: 14
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '.....A...'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix16:
+        spacing: .15
+        startTime: 15
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -4
+            layerMatrix:
+              - '....A....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix17:
+        spacing: .15
+        startTime: 16
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '...A.....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix18:
+        spacing: .15
+        startTime: 17
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '..A......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix19:
+        spacing: .15
+        startTime: 18
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -2
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix20:
+        spacing: .15
+        startTime: 19
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -1
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+  redcrown:
+    name: 'RedCrown'
+    categories:
+      - 'Crowns'
+    changes:
+      change1:
+        particleChar: 'A'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 255
+        yOffset: 0
+        zOffset: 0
+        data: 1
+    matrices:
+      matrix1:
+        spacing: .15
+        startTime: 0
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - 'A........'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix2:
+        spacing: .15
+        startTime: 1
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 1
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix3:
+        spacing: .15
+        startTime: 2
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 2
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix4:
+        spacing: .15
+        startTime: 3
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '..A......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix5:
+        spacing: .15
+        startTime: 4
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '...A.....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix6:
+        spacing: .15
+        startTime: 5
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 4
+            layerMatrix:
+              - '....A....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix7:
+        spacing: .15
+        startTime: 6
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '.....A...'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix8:
+        spacing: .15
+        startTime: 7
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 3
+            layerMatrix:
+              - '......A..'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix9:
+        spacing: .15
+        startTime: 8
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 2
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix10:
+        spacing: .15
+        startTime: 9
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 1
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix11:
+        spacing: .15
+        startTime: 10
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: 0
+            layerMatrix:
+              - '........A'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix12:
+        spacing: .15
+        startTime: 11
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -1
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix13:
+        spacing: .15
+        startTime: 12
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -2
+            layerMatrix:
+              - '.......A.'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix14:
+        spacing: .15
+        startTime: 13
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '......A..'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix15:
+        spacing: .15
+        startTime: 14
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '.....A...'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix16:
+        spacing: .15
+        startTime: 15
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -4
+            layerMatrix:
+              - '....A....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix17:
+        spacing: .15
+        startTime: 16
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '...A.....'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix18:
+        spacing: .15
+        startTime: 17
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -3
+            layerMatrix:
+              - '..A......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix19:
+        spacing: .15
+        startTime: 18
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -2
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+      matrix20:
+        spacing: .15
+        startTime: 19
+        repeatTime: 20
+        iterations: 0
+        layers:
+          layer1:
+            position: -1
+            layerMatrix:
+              - '.A.......'
+              - '.........'
+              - '.........'
+              - '....?....'
+  bluecrown:
+    name: 'BlueCrown'
+    categories:
+      - 'Crowns'
+    changes:
+      change1:
+        particleChar: 'A'
+        particleEnum: 'REDSTONE'
+        amount: 0
+        xOffset: 1
+        yOffset: 0
+        zOffset: 255
         data: 1
     matrices:
       matrix1:

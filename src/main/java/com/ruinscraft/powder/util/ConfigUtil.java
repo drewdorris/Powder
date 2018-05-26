@@ -60,23 +60,22 @@ public class ConfigUtil {
 		File dataFolder = PowderPlugin.getInstance().getDataFolder();
 
 		for (String urlName : config.getStringList("powderSources")) {
-
 			FileConfiguration powderConfig;
 			URL url = PowderUtil.readURL(urlName);
 			File file;
 			// if a file is from a path, load from within data folder
 			if (!urlName.contains("/")) {
-
 				file = new File(dataFolder, urlName);
 				if (!file.exists()) {
+					if (urlName.equals("powders.yml")) {
+						continue;
+					}
 					logger.warning("Failed to load config file '" + urlName + "'.");
 					continue;
 				}
 				powderConfig = YamlConfiguration.loadConfiguration(file);
-
 				// else, load from URL
 			} else if (url != null) {
-
 				InputStream stream = PowderUtil.getInputStreamFromURL(url);
 
 				if (stream == null) {
@@ -92,14 +91,13 @@ public class ConfigUtil {
 			}
 
 			powderConfigs.add(powderConfig);
-
 		}
 
 		// if powders.yml is listed as a source but doesn't exist, create it
 		File defaultPowderConfig = new File(dataFolder, "powders.yml");
-		if (!defaultPowderConfig.exists() 
-				&& config.getStringList("powderSources").contains("powders.yml")) {
-			logger.info("powders.yml not found but listed as a source, creating!");
+		if (!defaultPowderConfig.exists() && 
+				config.getStringList("powderSources").contains("powders.yml")) {
+			logger.info("powders.yml not found and listed as a source, creating!");
 			PowderPlugin.getInstance().saveResource("powders.yml", false);
 			FileConfiguration powderConfig = 
 					YamlConfiguration.loadConfiguration(defaultPowderConfig);
@@ -364,7 +362,7 @@ public class ConfigUtil {
 		}
 		if (powder.getPowderElements().isEmpty()) {
 			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
-					powder.getName() + "' appears empty and was not loaded.");
+					powder.getName() + "' appears empty and/or incorrectly formatted.");
 			return null;
 		}
 		return powder;
