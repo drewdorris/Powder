@@ -41,6 +41,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 		tick++;
 		Set<UUID> uuidsToRemove = new HashSet<UUID>();
 		Set<PowderTask> powderTasksToRemove = new HashSet<PowderTask>();
+		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<PowderTask>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			Set<Entry<Powder, Tracker>> activePowdersInTask = powderTask.getPowders().entrySet();
 			for (Entry<Powder, Tracker> activePowder : activePowdersInTask) {
@@ -60,8 +61,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 				if (tracker.getType() == TrackerType.PLAYER) {
 					PlayerTracker playerTracker = (PlayerTracker) tracker;
 					if (Bukkit.getPlayer(playerTracker.getUUID()) == null) {
-						powder.getPowderElements().clear();
-						continue;
+						powderTasksToRemoveWithoutSaving.add(powderTask);
+						break;
 					}
 				}
 				List<PowderElement> activeElementsInPowder = powder.getPowderElements();
@@ -88,6 +89,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 			PowderUtil.cancelAllPowdersAndSave(uuid);
 		}
 		powderHandler.cancelPowderTasks(powderTasksToRemove);
+		powderHandler.cancelPowderTasksWithoutSaving(powderTasksToRemoveWithoutSaving);
 	}
 
 }
