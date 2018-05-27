@@ -448,7 +448,6 @@ powders:
           layer1:
             position: 0
             layerMatrix:
-            layerMatrix:
               - 'img:flag-ca.png;39;39'
               - '...................?'
   flageurope:
@@ -468,7 +467,6 @@ powders:
           layer1:
             position: 0
             layerMatrix:
-            layerMatrix:
               - 'img:flag-eu.png;39;39'
               - '...................?'
   flagchina:
@@ -487,7 +485,6 @@ powders:
         layers:
           layer1:
             position: 0
-            layerMatrix:
             layerMatrix:
               - 'img:flag-cn.png;39;39'
               - '...................?'

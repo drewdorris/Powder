@@ -288,19 +288,19 @@ public class ConfigUtil {
 					String eachEachSection = eachSection + ".layers." + sss;
 					Layer layer = new Layer();
 					layer.setPosition(powderConfig.getDouble(eachEachSection + ".position", 0));
-					for (String t : (List<String>) powderConfig
+					for (String ssss : (List<String>) powderConfig
 							.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
-						if (t.contains(":")) {
-							if (t.contains("img:")) {
+						if (ssss.contains(":")) {
+							if (ssss.contains("img:")) {
 								String urlName;
 								int width;
 								int height;
-								t = t.replace("img:", "");
-								urlName = t.substring(0, t.indexOf(";"));
-								t = t.substring(t.indexOf(";") + 1, t.length());
-								width = Integer.valueOf(t.substring(0, t.indexOf(";")));
-								t = t.substring(t.indexOf(";") + 1, t.length());
-								height = Integer.valueOf(t);
+								ssss = ssss.replace("img:", "");
+								urlName = ssss.substring(0, ssss.indexOf(";"));
+								ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
+								width = Integer.valueOf(ssss.substring(0, ssss.indexOf(";")));
+								ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
+								height = Integer.valueOf(ssss);
 								try {
 									ImageUtil.getRows(layer.getRows(), urlName, width, height);
 								} catch (IOException io) {
@@ -317,11 +317,11 @@ public class ConfigUtil {
 						if (layer.getPosition() == 0) {
 							up++;
 							// if the string contains location/player
-							if (t.contains("?")) {
+							if (ssss.contains("?")) {
 								containsPlayer = true;
 								// set the left & up of the Layer
 								// so that createPowders() knows where to start
-								left = (t.indexOf("?")) + 1;
+								left = (ssss.indexOf("?")) + 1;
 								// set default if it's the matrix spawned immediately 
 								if (particleMatrix.getStartTime() == 0) {
 									powder.setDefaultLeft(left - 1);
@@ -334,7 +334,7 @@ public class ConfigUtil {
 						// add a row to the Layer if it has gone through everything
 						// rows contain PowderParticles
 						List<PowderParticle> row = new ArrayList<PowderParticle>();
-						for (char character : t.toCharArray()) {
+						for (char character : ssss.toCharArray()) {
 							PowderParticle powderParticle;
 							powderParticle = powder.getPowderParticle(character);
 							if (powderParticle == null) {
