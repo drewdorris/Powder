@@ -1,20 +1,35 @@
-###
-# How to use this file to create Powders:
+#####
+##########
+# More detailed information on how to use this file to create Powders:
 # https://github.com/Ruinscraft/Powder/wiki/Configuring-config.yml-and-powders.yml
-###
+##########
+#####
 
 powders:
+  ## This is the path to the Powder; the name doesn't matter but must be unique
   alert:
+    ## The display name for the Powder in-game
     name: 'Alert'
+    ## The list of categories which this Powder will appear in
+    ## Categories are specified in the config.yml
     categories:
       - 'Effects'
+    ## Sounds which the Powder will play
     sounds:
+      ## The name of the sound doesn't matter but must be unique
       sound1:
+        ## The sound enum (the sound to play)
+        ## Listed here: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Sound.html
         soundEnum: 'BLOCK_NOTE_PLING'
+        ## The volume to play the sound (0 to 1, above 1 increases the area the sound is heard)
         volume: 1
+        ## The note to play (0 to 24, the same as noteblock notes)
         note: 18.4
+        ## The starting tick to play the sound (20 ticks per second)
         startTime: 0
+        ## The amount of ticks after the first tick to play the sound again
         repeatTime: 50
+        ## How many times the sound should play (0 = unlimited)
         iterations: 0
       sound2:
         soundEnum: 'BLOCK_NOTE_PLING'
@@ -37,25 +52,52 @@ powders:
         startTime: 0
         repeatTime: 50
         iterations: 0
+    ## Changes to the characters used in Dusts and matrices
+    ## Read the wiki for more info
     changes:
+      ## The name of the change doesn't matter but must be unique
       change1:
         particleChar: 'A'
+        ## The particle to change the character to
+        ## List of particle enums: https://hub.spigotmc.org/javadocs/spigot/org/bukkit/Particle.html
         particleEnum: 'REDSTONE'
+        ## These parameters vary in their need depending on the particle you use; more info in the wiki
+        ## The amount of particles played at once (0 is 1 for the REDSTONE particle)
         amount: 0
+        ## xOffset, yOffset, and zOffset vary in usage; in this case, it adjusts the color of the particle
+        ## The color from these offsets makes the REDSTONE particle reddish
         xOffset: 255
         yOffset: 0
         zOffset: 50
+        ## Extra data that may be needed
         data: 1
+    ## The matrices are the particles displayed as a map
     matrices:
+      ## A matrix is a 3D map of particles
+      ## The name of the matrix doesn't matter but must be unique
       matrix1:
+        ## The amount of space (in blocks) between each particle in the matrix
         spacing: .11
+        ## The first time (in ticks; 20 ticks in 1 second) when the matrix is displayed
         startTime: 0
+        ## How many ticks to wait before the matrix repeats after startTime
         repeatTime: 50
+        ## How many times to repeat (0 = unlimited)
         iterations: 0
+        ## The layers make up the 3D matrix
         layers:
+          ## A layer is a 2D map of particles
+          ## The name of the layer doesn't matter but must be unique
           layer1:
+            ## The position is how much spacing the layer is in front of or behind the main location
+            ## For example, a position of 4 and a spacing of .6 would make the layer be 2.4 blocks in front of the main location
             position: 0
+            ## The place where the particles are defined
+            ## We're creating exclamation points out of red particles above the player/entity/location
+            ## This is the main layer since the position is 0, so we have to specify where the player/entity/location is
             layerMatrix:
+              ## 'A' is the changed particle specified; a reddish REDSTONE particle
+              ## '.' is empty space
               - '.AAA....AAA....AAA.'
               - '.AAA....AAA....AAA.'
               - '.AAA....AAA....AAA.'
@@ -83,7 +125,13 @@ powders:
               - '...................'
               - '...................'
               - '...................'
+              ## '?' is the player/entity/location
+              ## The '?' character is needed wherever the position = 0
+              ## so that the matrix knows where to display itself in relation to the player
               - '.........?.........'
+          ## These layers are created at position -1 and 1 so that the exclamations points have thickness
+          ## Position -1 would mean that the layer is .11 blocks behind the main layer
+          ## You don't need to specify the location/etc for this layer, because it's defined in the layer with position of 0
           layer2:
             position: -1
             layerMatrix:
@@ -149,6 +197,8 @@ powders:
   loser:
     name: 'LOSER'
     changes:
+      ## 3 characters changed to red/orange/yellow
+      ## to be used for the matrices below
       change1:
         particleChar: 'A'
         particleEnum: 'REDSTONE'
@@ -174,6 +224,7 @@ powders:
         zOffset: 0
         data: 1
     matrices:
+      ## This matrix is displayed right when the Powder is created, and repeats every 15 ticks afterwards
       matrix1:
         spacing: .1
         startTime: 0
@@ -182,6 +233,9 @@ powders:
         layers:
           layer1:
             position: 0
+            ## This layer is created using the changed particles above
+            ## 'B' and 'C' are orange and yellow, defined above
+            ## Since the position is 0, we have to define the player
             layerMatrix:
               - 'BBB..........BBBB..........BBBB......BBBBBBBBB...BBBBBBB....'
               - 'BCB........BBBCCBBB......BBBCCCBB...BCCCCCCCCB...BCCCCCCCB..'
@@ -218,9 +272,13 @@ powders:
               - '............................................................'
               - '............................................................'
               - '............................................................'
+              ## Since the spacing is quite small, the player location is defined pretty far away
               - '............................?...............................'
+      ## This matrix is the arrow that points to the player
+      ## Since it's displayed at a different time, it has to be defined as its own matrix
       matrix2:
         spacing: .1
+        ## This matrix starts 7 ticks after the Powder is created, and repeats 15 ticks afterwards
         startTime: 7
         repeatTime: 15
         iterations: 0
@@ -245,6 +303,7 @@ powders:
               - '............................................................'
               - '............................................................'
               - '............................................................'
+              ## 'A' is the red particle defined in the 'changes' section
               - '...........................AAAA.............................'
               - '...........................AAAA.............................'
               - '...........................AAAA.............................'
@@ -293,15 +352,27 @@ powders:
         yOffset: 244
         zOffset: 0
         data: 1
+    ## Dusts are randomly spawned particles which are created within a specified area
     dusts:
+      ## The Dust name doesn't matter but must be unique
       dust1:
+        ## This Dust uses the 'A' character, which was changed to a red REDSTONE particle in the 'changes' section
         particleChar: 'A'
+        ## The radius around the main location where the particle can spawn
         radius: 1
+        ## The center point above/below the main location, used for span
+        ## If you want the center point to be 2 blocks below the player, use -2
         height: 0
+        ## The amount of space above/below the 'height' location where the particle can spawn
+        ## 2.8 would mean 1.4 blocks above and 1.4 blocks below the height location
         span: 2.8
+        ## The start time for when this Dust can appear
         startTime: 0
+        ## How many ticks after the start time to repeat this Dust
         repeatTime: 3
+        ## How many times to repeat this Dust (0 = unlimited)
         iterations: 0
+      ## This one uses the 'B' character (orange), and fits a slightly smaller radius/span
       dust2:
         particleChar: 'B'
         radius: .7
@@ -310,6 +381,7 @@ powders:
         startTime: 0
         repeatTime: 3
         iterations: 0
+      ## 'C' character (yellow), fits an even smaller radius/span
       dust3:
         particleChar: 'C'
         radius: .3
@@ -341,6 +413,8 @@ powders:
         repeatTime: 10
         iterations: 0
       dust2:
+        ## 'S' is the FLAME particle
+        ## Specified here: https://github.com/Ruinscraft/Powder/wiki/Particles-&-characters-configuration
         particleChar: 'S'
         radius: .5
         height: 0
@@ -400,6 +474,8 @@ powders:
     matrices:
       matrix1:
         spacing: .12
+        ## hasPitch means that this matrix will follow the player's eyes when they move
+        ## If disabled or unspecified, the matrix always stays above the player's head
         hasPitch: true
         startTime: 0
         addedPitch: 0
@@ -410,7 +486,12 @@ powders:
           layer1:
             position: 0
             layerMatrix:
+              ## This layer uses an image
+              ## Images are sourced from the "images/" folder in the plugin folder
+              ## Images can also be sourced from URLs, example 'imgur.com/blablalbla.png'
+              ## This is formatted as 'img:(url/file name);(width);(height)'
               - 'img:flag-us.png;39;39'
+              ## Dots can be omitted from the general layer, as long as the matrix knows how far down/over the player is
               - '...................?'
   flaggb:
     name: 'FlagGB'
@@ -562,6 +643,7 @@ powders:
             position: 0
             layerMatrix:
               - 'img:emojijoy.png;39;39'
+              ## Dots can be omitted, as long as it can tell how far down/over the player is from the rest of the layer
               - '.'
               - '.'
               - '...................?' 
@@ -720,6 +802,8 @@ powders:
       change1:
         particleChar: 'H'
         particleEnum: 'NOTE'
+        ## 'NOTE' particles treat these parameters oddly/differently
+        ## using only xOffset to specify the note color
         amount: 0
         xOffset: 233.75
         yOffset: 0
@@ -733,12 +817,33 @@ powders:
         yOffset: 0
         zOffset: 0
         data: 1
+    ## Songs are .nbs files, sourced from URLs or the 'songs/' folder
+    songs:
+      ## The name doesn't matter but must be unique
+      song1:
+        ## The file name (sourced from 'songs/')
+        fileName: 'All Star.nbs'
+        ## The volume of the song (0 to 1)
+        volume: .5
+        ## Adjust the speed of the song
+        ## Most songs are created at 10 ticks/sec instead of 20 ticks/sec,
+        ## so putting 2 or 2.5 is usually the best
+        multiplier: 2.5
+        ## How many ticks to wait before starting this song after the Powder is created
+        startTime: 12
+        ## When to repeat this song (doesn't matter if it only plays once)
+        repeatTime: 0
+        ## How many times to play this song (0 = unlimited)
+        iterations: 1
     dusts:
       dust1:
         particleChar: H
         radius: .5
         height: 0
         span: .8
+        ## These dusts are attached to notes played in the song
+        ## In this case, whenever a 'BLOCK_NOTE_HARP' is played in the song,
+        ## this dust will create the 'H' particle (changed in 'changes')
         attachToNote: true
         attachedToNote: 'BLOCK_NOTE_HARP'
       dust2:
@@ -748,14 +853,6 @@ powders:
         span: .8
         attachToNote: true
         attachedToNote: 'BLOCK_NOTE_SNARE'
-    songs:
-      song1:
-        fileName: 'All Star.nbs'
-        volume: .5
-        multiplier: 2.5
-        startTime: 12
-        repeatTime: 0
-        iterations: 1
     matrices:
       matrix1:
         spacing: .12
@@ -869,9 +966,12 @@ powders:
         volume: .5
         multiplier: 2
         startTime: 0
+        ## This repeatTime was guessed on; the song ends after 4200 ticks and then plays again
         repeatTime: 4200
+        ## This song goes on forever
         iterations: 0
     changes:
+      ## Lots of rainbow colors
       change1:
         particleChar: 'A'
         particleEnum: 'REDSTONE'
@@ -999,6 +1099,8 @@ powders:
         span: 2
         attachToNote: true
         attachedToNote: 'BLOCK_NOTE_BASS'
+  ## These crowns take up a ton of space and are a bit confusing
+  ## but they look cool and and easily copy/pasted and changed a bit
   rainbowcrown:
     name: 'RainbowCrown'
     categories:
@@ -1273,6 +1375,8 @@ powders:
               - '.........'
               - '.........'
               - '....?....'
+  ## This one is pretty much the same as RainbowCrown
+  ## just that the 'A' particle is changed differently in 'changes'
   redcrown:
     name: 'RedCrown'
     categories:
