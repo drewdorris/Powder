@@ -21,7 +21,6 @@ import com.ruinscraft.powder.models.PowderTask;
 import com.ruinscraft.powder.models.trackers.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
@@ -97,13 +96,6 @@ public class PowderCommand implements CommandExecutor {
 				}
 				PowderUtil.helpMessage(player, label, page);
 				return false;
-			} else if (args[0].equals("test")) {
-				try {
-					player.sendMessage(ChatColor.RED + 
-							PowderUtil.getNearestEntityInSight(player, 7)
-					.getUniqueId().toString());
-				} catch (Exception e) { }
-				return true;
 			} else if (args[0].equals("reload")) {
 				if (!(player.hasPermission("powder.reload"))) {
 					PowderUtil.sendPrefixMessage(player, 
@@ -164,13 +156,20 @@ public class PowderCommand implements CommandExecutor {
 							powderHandler.getPowder(powderTaskName));
 					if (powderTasks.isEmpty()) {
 						PowderUtil.sendPrefixMessage(player, 
-								Message.CANCEL_NO_ACTIVE, label, player.getName());
+								Message.CANCEL_NO_ACTIVE, label, player.getName(), 
+								powderTaskName);
 						return false;
 					} else {
 						powderTaskName = Iterables.get(powderTasks, 0).getName();
 					}
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(powderTaskName);
+				if (!player.hasPermission("powder.cancel") && 
+						!powderTask.getUUIDsIfExist().contains(player.getUniqueId())) {
+					PowderUtil.sendPrefixMessage(player, Message.CANCEL_FAILURE, 
+							label, player.getName(), powderTaskName);
+					return false;
+				}
 				if (powderTask == null) {
 					PowderUtil.sendPrefixMessage(player, Message.CANCEL_UNKNOWN_SPECIFY, 
 							label, player.getName(), powderTaskName);
