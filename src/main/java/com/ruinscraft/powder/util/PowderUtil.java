@@ -49,8 +49,34 @@ public class PowderUtil {
 
 	private static Set<UUID> recentlyLoadedUUIDs = new HashSet<UUID>();
 
-	public static String color(String msg) {
-		return ChatColor.translateAlternateColorCodes('&', msg);
+	public static String color(String string) {
+		String newString = "";
+		String newestColor = "";
+		while (string.indexOf(" ") != -1 || string.length() >= 1) {
+			if (string.indexOf(" ") == 0) {
+				string = string.substring(string.indexOf(" ") + 1);
+				continue;
+			}
+			String oneWordString;
+			if (string.indexOf(" ") != -1) {
+				oneWordString = string.substring(0, string.indexOf(" ") + 1);
+				string = string.substring(string.indexOf(" ") + 1);
+			} else {
+				oneWordString = string.substring(0, string.length());
+				string = "";
+			}
+			if (oneWordString.contains("&")) {
+				String colorChar = String.valueOf(oneWordString.charAt(
+						oneWordString.indexOf("&") + 1));
+				if (colorChar != null) {
+					newestColor = "&" + colorChar;
+				}
+			} else {
+				oneWordString = newestColor + oneWordString;
+			}
+			newString = newString + oneWordString;
+		}
+		return ChatColor.translateAlternateColorCodes('&', newString);
 	}
 
 	public static TextComponent format(String string) {
