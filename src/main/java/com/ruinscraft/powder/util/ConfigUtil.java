@@ -172,9 +172,12 @@ public class ConfigUtil {
 						.getDouble(eachSection + ".volume", 1);
 				double multiplier = powderConfig
 						.getDouble(eachSection + ".multiplier", 1);
+				boolean surroundSound = powderConfig
+						.getBoolean(eachSection + ".surroundSound", true);
 				List<SoundEffect> songSoundEffects = 
 						SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-								multiplier, getStart(powderConfig, powder, eachSection), 
+								multiplier, surroundSound,
+								getStart(powderConfig, powder, eachSection), 
 								getRepeat(powderConfig, powder, eachSection), 
 								getIterations(powderConfig, powder, eachSection));
 				for (SoundEffect soundEffect : songSoundEffects) {
@@ -192,7 +195,9 @@ public class ConfigUtil {
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
 				soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
-				powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, 
+				boolean surroundSound = powderConfig.getBoolean(
+						eachSection + ".surroundSound", true);
+				powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, surroundSound,
 						getStart(powderConfig, powder, eachSection), 
 						getRepeat(powderConfig, powder, eachSection), 
 						getIterations(powderConfig, powder, eachSection)));

@@ -13,6 +13,9 @@ public class SoundEffect implements PowderElement {
 	private double volume;
 	// pitch for this SoundEffect (noteblock values)
 	private double pitch;
+	// is there surround sound?
+	// surroundSound fixes how sound tends to sound louder different directions
+	private boolean surroundSound;
 	// when to start displaying this SoundEffect
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -29,6 +32,7 @@ public class SoundEffect implements PowderElement {
 		this.sound = soundEffect.getSound();
 		this.volume = soundEffect.getVolume();
 		this.pitch = soundEffect.getPitch();
+		this.surroundSound = soundEffect.surroundSound();
 		this.startTime = soundEffect.getStartTime();
 		this.repeatTime = soundEffect.getRepeatTime();
 		this.lockedIterations = soundEffect.getLockedIterations();
@@ -36,11 +40,12 @@ public class SoundEffect implements PowderElement {
 		this.iterations = 0;
 	}
 
-	public SoundEffect(Sound sound, double volume, double pitch, 
+	public SoundEffect(Sound sound, double volume, double pitch, boolean surroundSound,
 			int startTime, int repeatTime, int lockedIterations) {
 		this.sound = sound;
 		this.volume = volume;
 		this.pitch = pitch;
+		this.surroundSound = surroundSound;
 		this.startTime = startTime;
 		this.repeatTime = repeatTime;
 		this.lockedIterations = lockedIterations;
@@ -57,6 +62,10 @@ public class SoundEffect implements PowderElement {
 
 	public double getPitch() {
 		return pitch;
+	}
+
+	public boolean surroundSound() {
+		return surroundSound;
 	}
 
 	public int getStartTime() {
@@ -94,7 +103,28 @@ public class SoundEffect implements PowderElement {
 
 	// creates this SoundEffect at the designated location
 	public void create(Location location) {
-		location.getWorld().playSound(location, sound, (float) volume, (float) pitch);
+		if (surroundSound) {
+			location.getWorld().playSound(
+					location.add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 
+					sound, (float) volume, (float) pitch);
+		} else {
+			location.getWorld().playSound(location, sound, (float) volume, (float) pitch);
+		}
+		/*/
+		 * other method for surroundSound, sounds a little blocky
+		 * location.getWorld().playSound(
+					location.add(.5, 0, 0), 
+					sound, (float) volume / 8, (float) pitch);
+			location.getWorld().playSound(
+					location.add(-.5, 0, 0), 
+					sound, (float) volume / 8, (float) pitch);
+			location.getWorld().playSound(
+					location.add(0, 0, .5), 
+					sound, (float) volume / 8, (float) pitch);
+			location.getWorld().playSound(
+					location.add(0, 0, -.5), 
+					sound, (float) volume / 8, (float) pitch);
+		 */
 	}
 
 }

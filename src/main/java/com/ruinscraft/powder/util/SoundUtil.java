@@ -19,7 +19,8 @@ import com.xxmicloxx.NoteBlockAPI.Song;
 public class SoundUtil {
 
 	public static List<SoundEffect> getSoundEffectsFromNBS(String fileName, double volume, 
-			double multiplier, int startTime, int repeatTime, int lockedIterations) {
+			double multiplier, boolean surroundSound, int startTime, 
+			int repeatTime, int lockedIterations) {
 		if (fileName.contains("/")) {
 			URL url = PowderUtil.readURL(fileName);
 			Song song;
@@ -31,7 +32,7 @@ public class SoundUtil {
 				return null;
 			}
 
-			return getSoundEffectsFromSong(song, volume, multiplier, 
+			return getSoundEffectsFromSong(song, volume, multiplier, surroundSound,
 					startTime, repeatTime, lockedIterations);
 		} else {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/songs", fileName);
@@ -40,13 +41,14 @@ public class SoundUtil {
 			}
 			Song song = NBSDecoder.parse(file);
 
-			return getSoundEffectsFromSong(song, volume, multiplier, 
+			return getSoundEffectsFromSong(song, volume, multiplier, surroundSound,
 					startTime, repeatTime, lockedIterations);
 		}
 	}
 
 	public static List<SoundEffect> getSoundEffectsFromSong(Song song, double volume, 
-			double multiplier, int startTime, int repeatTime, int lockedIterations) {
+			double multiplier, boolean surroundSound, int startTime, 
+			int repeatTime, int lockedIterations) {
 		List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
 		for (Integer integer : song.getLayerHashMap().keySet()) {
 			Layer layer = song.getLayerHashMap().get(integer);
@@ -57,7 +59,7 @@ public class SoundUtil {
 				float pitch = note.getKey() - 33;
 				pitch = (float) Math.pow(2.0, (pitch - 12.0) / 12.0);
 				SoundEffect soundEffect = new SoundEffect(sound, newVolume, 
-						pitch, ((int) (tick * multiplier)) + startTime, 
+						pitch, surroundSound, ((int) (tick * multiplier)) + startTime, 
 						repeatTime, lockedIterations);
 				soundEffects.add(soundEffect);
 			}
