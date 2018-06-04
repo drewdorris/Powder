@@ -1,6 +1,7 @@
 main: ${mainClass}
 name: ${name}
 version: ${version}
+authors: [StupidDrew9, royalkingkb]
 commands: 
   powder:
     aliases: [pow, pdr, powders]
