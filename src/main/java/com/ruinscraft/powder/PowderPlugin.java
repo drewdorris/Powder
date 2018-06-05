@@ -219,7 +219,15 @@ public class PowderPlugin extends JavaPlugin {
 		List<String> powderNames = new ArrayList<>();
 		for (FileConfiguration powderConfig : powderConfigs) {
 			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-				Powder powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
+				Powder powder = null;
+				try {
+					powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
+				} catch (Exception e) {
+					getLogger().warning("Powder '" + s + 
+							"' encountered an error and was not loaded:");
+					e.printStackTrace();
+					continue;
+				}
 				if (powder != null) {
 					getPowderHandler().addPowder(powder);
 					powderNames.add(powder.getName());
