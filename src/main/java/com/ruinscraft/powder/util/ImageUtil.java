@@ -45,8 +45,6 @@ public class ImageUtil {
 			}
 			BufferedImage bufferedImage = ImageIO.read(stream);
 			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
-		} catch (IOException io) {
-			io.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -103,7 +101,7 @@ public class ImageUtil {
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
 		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
-			List<PowderParticle> row = new ArrayList<PowderParticle>();
+			List<PowderParticle> row = new ArrayList<>();
 			for (int x = 0; x <= newImage.getWidth() - 1; x++) {
 				int pixel;
 				try {

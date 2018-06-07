@@ -35,16 +35,16 @@ public class PowderHandler {
 	// are categories enabled?
 	private boolean categoriesEnabled;
 
-	// every 5 seconds, all entities loaded with chunk loading are
+	// every second, all entities loaded with chunk loading are
 	// checked to see if they have powders attached to them;
 	// they are created if so
 	private Set<UUID> entitiesToLoad;
 
 	// initialize
 	public PowderHandler() {
-		powders = new ArrayList<Powder>();
-		powderTasks = new HashSet<PowderTask>();
-		categories = new HashMap<String, String>();
+		powders = new ArrayList<>();
+		powderTasks = new HashSet<>();
+		categories = new HashMap<>();
 
 		if (PowderPlugin.getInstance().useStorage()) {
 			entitiesToLoad = new HashSet<UUID>();
@@ -53,7 +53,7 @@ public class PowderHandler {
 				if (PowderPlugin.isLoading()) {
 					return;
 				}
-				PowderUtil.loadPowdersForUUIDs(new HashSet<UUID>(this.entitiesToLoad));
+				PowderUtil.loadPowdersForUUIDs(new HashSet<>(this.entitiesToLoad));
 				this.entitiesToLoad.clear();
 			}, 0L, 20L);
 		}
@@ -71,7 +71,7 @@ public class PowderHandler {
 
 	// return Powders that contain the string in their name
 	public List<Powder> getSimilarPowders(String string) {
-		List<Powder> similarPowders = new ArrayList<Powder>();
+		List<Powder> similarPowders = new ArrayList<>();
 		for (Powder powder : this.powders) {
 			if (powder.getName().toLowerCase().contains(string.toLowerCase())) {
 				similarPowders.add(powder);
@@ -183,7 +183,7 @@ public class PowderHandler {
 	}
 
 	public Map<PowderTask, Integer> getNearbyPowderTasks(Location location, int range) {
-		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<PowderTask, Integer>();
+		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
 			for (Powder powder : powderTask.getPowders().keySet()) {
@@ -201,7 +201,7 @@ public class PowderHandler {
 	}
 
 	public Map<Powder, PlayerTracker> getCurrentPlayerTracks() {
-		Map<Powder, PlayerTracker> playerTracks = new HashMap<Powder, PlayerTracker>();
+		Map<Powder, PlayerTracker> playerTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
@@ -215,7 +215,7 @@ public class PowderHandler {
 	}
 
 	public Map<Powder, EntityTracker> getCurrentEntityTracks() {
-		Map<Powder, EntityTracker> entityTracks = new HashMap<Powder, EntityTracker>();
+		Map<Powder, EntityTracker> entityTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
@@ -229,8 +229,7 @@ public class PowderHandler {
 	}
 
 	public Map<Powder, StationaryTracker> getCurrentStationaryTracks() {
-		Map<Powder, StationaryTracker> stationaryTracks = 
-				new HashMap<Powder, StationaryTracker>();
+		Map<Powder, StationaryTracker> stationaryTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
@@ -297,7 +296,7 @@ public class PowderHandler {
 	// removes/ends a PowderTask
 	public boolean cancelPowderTasks(Collection<PowderTask> powderTasks) {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
-		Set<UUID> uuids = new HashSet<UUID>();
+		Set<UUID> uuids = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
 			ConfigUtil.removeStationaryPowder(powderTask);
 			uuids.addAll(powderTask.cancel());
@@ -331,7 +330,7 @@ public class PowderHandler {
 
 	// gets categories which contain the given string
 	public Map<String, String> getSimilarCategories(String string) {
-		Map<String, String> similarPowders = new HashMap<String, String>();
+		Map<String, String> similarPowders = new HashMap<>();
 		for (String category : this.categories.keySet()) {
 			if (category.toLowerCase().contains(string.toLowerCase())) {
 				similarPowders.put(category, this.categories.get(category));
@@ -348,7 +347,7 @@ public class PowderHandler {
 				break;
 			}
 		}
-		List<Powder> addedPowders = new ArrayList<Powder>();
+		List<Powder> addedPowders = new ArrayList<>();
 		for (Powder powder : this.powders) {
 			if (powder.getCategories().contains(category)) {
 				addedPowders.add(powder);
@@ -365,7 +364,7 @@ public class PowderHandler {
 				break;
 			}
 		}
-		List<Powder> addedPowders = new ArrayList<Powder>();
+		List<Powder> addedPowders = new ArrayList<>();
 		for (Powder powder : this.powders) {
 			if (powder.getCategories().contains(category)) {
 				if (!(powder.isHidden())) {

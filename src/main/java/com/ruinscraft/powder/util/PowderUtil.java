@@ -47,7 +47,7 @@ public class PowderUtil {
 	private static PowderPlugin plugin = PowderPlugin.getInstance();
 	public static Random random = new Random();
 
-	private static Set<UUID> recentlyLoadedUUIDs = new HashSet<UUID>();
+	private static Set<UUID> recentlyLoadedUUIDs = new HashSet<>();
 
 	public static String color(String string) {
 		String newString = "";
@@ -183,7 +183,7 @@ public class PowderUtil {
 	// help message
 	public static void helpMessage(Player player, String label, int page) {
 		PowderUtil.sendPrefixMessage(player, Message.HELP_PREFIX, label);
-		List<TextComponent> texts = new ArrayList<TextComponent>();
+		List<TextComponent> texts = new ArrayList<>();
 		texts.add(getMessage(Message.HELP_POWDER));
 		texts.add(getMessage(Message.HELP_POWDER_CANCEL));
 		texts.add(getMessage(Message.HELP_POWDER_STAR_CANCEL));
@@ -231,14 +231,14 @@ public class PowderUtil {
 
 	// sorts a list of TextComponents (Powders or categories) alphabetically
 	public static List<TextComponent> sortAlphabetically(Collection<TextComponent> texts) {
-		List<String> names = new ArrayList<String>(texts.size()); 
+		List<String> names = new ArrayList<>(texts.size()); 
 		for (TextComponent text : texts) {
 			names.add(text.getText());
 		}
 
 		Collections.sort(names, Collator.getInstance());
 
-		List<TextComponent> newList = new ArrayList<TextComponent>(texts.size());
+		List<TextComponent> newList = new ArrayList<>(texts.size());
 		for (String name : names) {
 			for (TextComponent text : texts) {
 				if (text.getText() == name) {
@@ -313,13 +313,13 @@ public class PowderUtil {
 				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
 		// all Powders
-		List<TextComponent> listOfPowders = new ArrayList<TextComponent>();
+		List<TextComponent> listOfPowders = new ArrayList<>();
 		// Powders currently in use by the player
-		List<TextComponent> activePowders = new ArrayList<TextComponent>();
+		List<TextComponent> activePowders = new ArrayList<>();
 		// Powders the player has permission for
-		List<TextComponent> ableToPowders = new ArrayList<TextComponent>();
+		List<TextComponent> ableToPowders = new ArrayList<>();
 		// Powders the player does not have permission for
-		List<TextComponent> noPermPowders = new ArrayList<TextComponent>();
+		List<TextComponent> noPermPowders = new ArrayList<>();
 		for (Powder powder : powders) {
 			if (!PowderUtil.hasPermission(player, powder)) {
 				if (powder.isHidden()) {
@@ -354,14 +354,14 @@ public class PowderUtil {
 				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
 		// all categories
-		List<TextComponent> listOfCategories = new LinkedList<TextComponent>();
+		List<TextComponent> listOfCategories = new LinkedList<>();
 		// categories containing Powders that are currently active
-		Set<TextComponent> activeCategories = new HashSet<TextComponent>();
+		Set<TextComponent> activeCategories = new HashSet<>();
 		// categories containing Powders the player has permission for
-		Set<TextComponent> ableToCategories = new HashSet<TextComponent>();
+		Set<TextComponent> ableToCategories = new HashSet<>();
 		// categories containing Powders the player has no permission for
 		// or contains no Powders
-		Set<TextComponent> noPermCategories = new HashSet<TextComponent>();
+		Set<TextComponent> noPermCategories = new HashSet<>();
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		for (String category : categories.keySet()) {
 			String desc = categories.get(category);
@@ -607,7 +607,7 @@ public class PowderUtil {
 	// get names of enabled Powders for a user
 	public static List<String> getEnabledPowderNames(UUID uuid) {
 		PowderHandler powderHandler = plugin.getPowderHandler();
-		List<String> enabledPowders = new ArrayList<String>();
+		List<String> enabledPowders = new ArrayList<>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
 			for (Powder powder : powderTask.getPowders().keySet()) {
 				if (powder.hasMovement()) {

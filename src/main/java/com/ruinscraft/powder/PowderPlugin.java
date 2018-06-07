@@ -140,7 +140,7 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public void loadMessages() {
-		messages = new HashMap<Message, TextComponent>();
+		messages = new HashMap<>();
 		String fileName = config.getString("locale", "english_US.yml");
 		File file = new File(getDataFolder() + "/locale", fileName);
 		if (!file.exists()) {

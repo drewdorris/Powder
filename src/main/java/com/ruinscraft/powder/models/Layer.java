@@ -11,7 +11,7 @@ public class Layer {
 	private double position;
 
 	public Layer() {
-		this.rows = new ArrayList<List<PowderParticle>>();
+		this.rows = new ArrayList<>();
 		position = 0;
 	}
 

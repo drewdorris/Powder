@@ -53,7 +53,7 @@ public class ConfigUtil {
 
 	public static List<FileConfiguration> loadPowderConfigs() {
 		// list of configuration files that contain Powders
-		List<FileConfiguration> powderConfigs = new ArrayList<FileConfiguration>();
+		List<FileConfiguration> powderConfigs = new ArrayList<>();
 
 		Logger logger = PowderPlugin.getInstance().getLogger();
 		FileConfiguration config = PowderPlugin.getInstance().getConfig();
@@ -241,7 +241,7 @@ public class ConfigUtil {
 				double radius = powderConfig.getDouble(eachSection + ".radius", 1);
 				double height = powderConfig.getDouble(eachSection + ".height", 1);
 				double span = powderConfig.getDouble(eachSection + ".span", 1);
-				List<PowderElement> addedPowderElements = new ArrayList<PowderElement>();
+				List<PowderElement> addedPowderElements = new ArrayList<>();
 				if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
 					String noteName = powderConfig.getString(eachSection + ".attachedToNote", 
 							"BLOCK_NOTE_HARP");
@@ -338,7 +338,7 @@ public class ConfigUtil {
 						}
 						// add a row to the Layer if it has gone through everything
 						// rows contain PowderParticles
-						List<PowderParticle> row = new ArrayList<PowderParticle>();
+						List<PowderParticle> row = new ArrayList<>();
 						for (char character : ssss.toCharArray()) {
 							PowderParticle powderParticle;
 							powderParticle = powder.getPowderParticle(character);
@@ -475,7 +475,7 @@ public class ConfigUtil {
 	}
 
 	public static Set<PowderTask> loadStationaryPowders() {
-		Set<PowderTask> powderTasks = new HashSet<PowderTask>();
+		Set<PowderTask> powderTasks = new HashSet<>();
 		FileConfiguration createdPowders = PowderPlugin.getInstance().getCreatedPowdersFile();
 		if (createdPowders == null) {
 			return powderTasks;

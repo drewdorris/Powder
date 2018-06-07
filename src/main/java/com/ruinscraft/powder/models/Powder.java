@@ -51,9 +51,9 @@ public class Powder implements Cloneable {
 
 	// initialize lists
 	public Powder() {
-		this.categories = new ArrayList<String>();
-		this.powderElements = new ArrayList<PowderElement>();
-		this.powderParticles = new ArrayList<PowderParticle>();
+		this.categories = new ArrayList<>();
+		this.powderElements = new ArrayList<>();
+		this.powderParticles = new ArrayList<>();
 	}
 
 	public Powder(Powder powder) {
@@ -150,23 +150,23 @@ public class Powder implements Cloneable {
 	}
 
 	public List<PowderElement> getDuePowderElements(int tick) {
-		if (duePowderElements == null || (tick % 100) == 0) {
+		if (duePowderElements == null || (tick % 200) == 0) {
 			updateDuePowderElements(tick);
 		}
 		return duePowderElements;
 	}
 
 	public void updateDuePowderElements(int tick) {
-		duePowderElements = new ArrayList<PowderElement>();
+		duePowderElements = new ArrayList<>();
 		for (PowderElement powderElement : powderElements) {
-			if (powderElement.getNextTick() - 100 <= tick) {
+			if (powderElement.getNextTick() - 200 <= tick) {
 				duePowderElements.add(powderElement);
 			}
 		}
 	}
 
 	public List<PowderElement> getClonedPowderElements() {
-		List<PowderElement> powderElements = new ArrayList<PowderElement>();
+		List<PowderElement> powderElements = new ArrayList<>();
 		for (PowderElement powderElement : this.powderElements) {
 			PowderElement newPowderElement = powderElement.clone();
 			powderElements.add(newPowderElement);

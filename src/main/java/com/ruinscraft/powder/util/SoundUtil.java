@@ -49,7 +49,7 @@ public class SoundUtil {
 	public static List<SoundEffect> getSoundEffectsFromSong(Song song, double volume, 
 			double multiplier, boolean surroundSound, int startTime, 
 			int repeatTime, int lockedIterations) {
-		List<SoundEffect> soundEffects = new ArrayList<SoundEffect>();
+		List<SoundEffect> soundEffects = new ArrayList<>();
 		for (Integer integer : song.getLayerHashMap().keySet()) {
 			Layer layer = song.getLayerHashMap().get(integer);
 			for (Integer tick : layer.getHashMap().keySet()) {

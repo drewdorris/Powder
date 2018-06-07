@@ -41,7 +41,7 @@ public class ParticleMatrix implements PowderElement {
 	private int iterations;
 
 	public ParticleMatrix() {
-		this.layers = new ArrayList<Layer>();
+		this.layers = new ArrayList<>();
 		this.playerLeft = 0;
 		this.playerUp = 0;
 		this.spacing = 0;

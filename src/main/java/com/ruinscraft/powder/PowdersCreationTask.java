@@ -39,8 +39,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 			cancel();
 		}
 		tick++;
-		Set<UUID> uuidsToRemove = new HashSet<UUID>();
-		Set<PowderTask> powderTasksToRemove = new HashSet<PowderTask>();
+		Set<UUID> uuidsToRemove = new HashSet<>();
+		Set<PowderTask> powderTasksToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<PowderTask>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			Set<Entry<Powder, Tracker>> activePowdersInTask = powderTask.getPowders().entrySet();

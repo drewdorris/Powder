@@ -28,25 +28,25 @@ public class PowderTask {
 
 	public PowderTask(String name) {
 		this.name = name;
-		this.powders = new HashMap<Powder, Tracker>();
+		this.powders = new HashMap<>();
 	}
 
 	public PowderTask(String name, Powder powder, Tracker tracker) {
 		this.name = name;
-		this.powders = new HashMap<Powder, Tracker>();
+		this.powders = new HashMap<>();
 		this.powders.put(powder.clone(), tracker);
 		trackerType = tracker.getType();
 	}
 
 	public PowderTask(Powder powder, Tracker tracker) {
 		this.name = null;
-		this.powders = new HashMap<Powder, Tracker>();
+		this.powders = new HashMap<>();
 		this.powders.put(powder.clone(), tracker);
 		trackerType = tracker.getType();
 	}
 
 	public Set<UUID> getUUIDsIfExist() {
-		Set<UUID> uuids = new HashSet<UUID>();
+		Set<UUID> uuids = new HashSet<>();
 		for (Tracker tracker : this.powders.values()) {
 			if (getUUIDIfExist(tracker) != null) {
 				uuids.add(getUUIDIfExist(tracker));
@@ -96,7 +96,7 @@ public class PowderTask {
 	}
 
 	public List<Location> getLocations() {
-		List<Location> locations = new ArrayList<Location>();
+		List<Location> locations = new ArrayList<>();
 		for (Tracker tracker : powders.values()) {
 			locations.add(tracker.getCurrentLocation());
 		}

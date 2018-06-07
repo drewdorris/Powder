@@ -28,7 +28,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 
 public class PowderCommand implements CommandExecutor {
 
-	private List<Player> recentCommandSenders = new ArrayList<Player>();
+	private List<Player> recentCommandSenders = new ArrayList<>();
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -193,7 +193,7 @@ public class PowderCommand implements CommandExecutor {
 				} catch (Exception e) {
 					page = 1;
 				}
-				List<TextComponent> textComponents = new ArrayList<TextComponent>();
+				List<TextComponent> textComponents = new ArrayList<>();
 				for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 					String powderName = "null";
 					for (Powder taskPowder : powderTask.getPowders().keySet()) {
@@ -512,7 +512,7 @@ public class PowderCommand implements CommandExecutor {
 				PowderUtil.sendPrefixMessage(player, Message.NEARBY_PREFIX, label);
 				Map<PowderTask, Integer> nearby = 
 						powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
-				List<TextComponent> nearbyText = new ArrayList<TextComponent>();
+				List<TextComponent> nearbyText = new ArrayList<>();
 				for (PowderTask powderTask : nearby.keySet()) {
 					TextComponent text = PowderUtil.setText(Message.NEARBY, 
 							powderTask.getName(), String.valueOf(nearby.get(powderTask)));
@@ -611,7 +611,7 @@ public class PowderCommand implements CommandExecutor {
 		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
 			PowderUtil.sendPrefixMessage(player, Message.POWDER_MAX_PREFIX, 
 					label, player.getName(), args[0], String.valueOf(maxSize));
-			List<TextComponent> texts = new ArrayList<TextComponent>();
+			List<TextComponent> texts = new ArrayList<>();
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
 				String powderName = "null";
 				for (Powder taskPowder : powderTask.getPowders().keySet()) {
