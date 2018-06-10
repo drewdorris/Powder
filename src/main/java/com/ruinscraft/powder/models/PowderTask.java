@@ -130,15 +130,17 @@ public class PowderTask {
 	}
 
 	public boolean removePowder(Powder powder) {
+		Powder toRemove = powder;
 		for (Powder otherPowder : getPowders().keySet()) {
 			if (powder.getName().equals(otherPowder.getName())) {
-				boolean removed = powders.remove(otherPowder) != null;
-				ConfigUtil.saveStationaryPowder(
-						PowderPlugin.getInstance().getCreatedPowdersFile(), this);
-				return removed;
+				toRemove = otherPowder;
+				break;
 			}
 		}
-		return false;
+		boolean removed = powders.remove(toRemove) != null;
+		ConfigUtil.saveStationaryPowder(
+				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+		return removed;
 	}
 
 }

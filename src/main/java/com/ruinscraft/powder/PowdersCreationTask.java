@@ -1,7 +1,6 @@
 package com.ruinscraft.powder;
 
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
@@ -41,7 +40,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 		tick++;
 		Set<UUID> uuidsToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemove = new HashSet<>();
-		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<PowderTask>();
+		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks()) {
 			Set<Entry<Powder, Tracker>> activePowdersInTask = powderTask.getPowders().entrySet();
 			for (Entry<Powder, Tracker> activePowder : activePowdersInTask) {
@@ -65,19 +64,16 @@ public class PowdersCreationTask extends BukkitRunnable {
 						break;
 					}
 				}
-				List<PowderElement> activeElementsInPowder = powder.getPowderElements();
-				if (activeElementsInPowder.isEmpty()) {
-					powder.getPowderElements().clear();
-					continue;
-				}
-				for (PowderElement dueElement : powder.getDuePowderElements(tick)) {
-					if (dueElement.getIterations() >= dueElement.getLockedIterations()) {
-						activeElementsInPowder.remove(dueElement);
+				for (int i = 0; i < powder.powderElements.size(); i++) {
+					PowderElement element = powder.powderElements.get(i);
+					if (element.getIterations() >= element.getLockedIterations()) {
+						powder.powderElements.remove(element);
+						i--;
 						continue;
 					}
-					if (dueElement.getNextTick() <= tick) {
-						dueElement.create(tracker.getCurrentLocation());
-						dueElement.iterate();
+					if (element.getNextTick() <= tick) {
+						element.create(tracker.getCurrentLocation());
+						element.iterate();
 					}
 				}
 			}

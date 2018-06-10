@@ -36,9 +36,7 @@ public class Powder implements Cloneable {
 	// the added tilt for ParticleMatrices in the Powder if not specified
 	private double defaultAddedTilt;
 	// list of PowderElements (Dusts, SoundEffects, ParticleMatrices)
-	private List<PowderElement> powderElements;
-	// list of PowderElements used while iterating
-	private List<PowderElement> duePowderElements;
+	public List<PowderElement> powderElements;
 	// list of changed ParticleNames for Dusts/ParticleMatrices
 	private List<PowderParticle> powderParticles;
 	// is the Powder hidden from lists if you don't have permission for it?
@@ -149,22 +147,6 @@ public class Powder implements Cloneable {
 		return powderElements;
 	}
 
-	public List<PowderElement> getDuePowderElements(int tick) {
-		if (duePowderElements == null || (tick % 200) == 0) {
-			updateDuePowderElements(tick);
-		}
-		return duePowderElements;
-	}
-
-	public void updateDuePowderElements(int tick) {
-		duePowderElements = new ArrayList<>();
-		for (PowderElement powderElement : powderElements) {
-			if (powderElement.getNextTick() - 200 <= tick) {
-				duePowderElements.add(powderElement);
-			}
-		}
-	}
-
 	public List<PowderElement> getClonedPowderElements() {
 		List<PowderElement> powderElements = new ArrayList<>();
 		for (PowderElement powderElement : this.powderElements) {
@@ -188,7 +170,11 @@ public class Powder implements Cloneable {
 	}
 
 	public void removePowderElement(PowderElement powderElement) {
-		powderElements.remove(powderElement);
+		for (PowderElement otherElement : this.powderElements) {
+			if (otherElement == powderElement) {
+				otherElement = null;
+			}
+		}
 	}
 
 	public List<PowderParticle> getPowderParticles() {
