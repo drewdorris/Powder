@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -233,7 +232,7 @@ public class PowderUtil {
 	public static List<TextComponent> sortAlphabetically(Collection<TextComponent> texts) {
 		List<String> names = new ArrayList<>(texts.size()); 
 		for (TextComponent text : texts) {
-			names.add(text.getText());
+			names.add(text.toLegacyText());
 		}
 
 		Collections.sort(names, Collator.getInstance());
@@ -241,7 +240,7 @@ public class PowderUtil {
 		List<TextComponent> newList = new ArrayList<>(texts.size());
 		for (String name : names) {
 			for (TextComponent text : texts) {
-				if (text.getText() == name) {
+				if (text.toLegacyText().equals(name)) {
 					newList.add(text);
 					break;
 				}
@@ -354,14 +353,14 @@ public class PowderUtil {
 				Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
 		// all categories
-		List<TextComponent> listOfCategories = new LinkedList<>();
+		List<TextComponent> listOfCategories = new ArrayList<>();
 		// categories containing Powders that are currently active
-		Set<TextComponent> activeCategories = new HashSet<>();
+		List<TextComponent> activeCategories = new ArrayList<>();
 		// categories containing Powders the player has permission for
-		Set<TextComponent> ableToCategories = new HashSet<>();
+		List<TextComponent> ableToCategories = new ArrayList<>();
 		// categories containing Powders the player has no permission for
 		// or contains no Powders
-		Set<TextComponent> noPermCategories = new HashSet<>();
+		List<TextComponent> noPermCategories = new ArrayList<>();
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		for (String category : categories.keySet()) {
 			String desc = categories.get(category);
@@ -407,12 +406,9 @@ public class PowderUtil {
 						label, category, desc));
 			}
 		}
-		activeCategories = sortAlphabetically(activeCategories)
-				.stream().collect(Collectors.toSet());
-		ableToCategories = sortAlphabetically(ableToCategories)
-				.stream().collect(Collectors.toSet());
-		noPermCategories = sortAlphabetically(noPermCategories)
-				.stream().collect(Collectors.toSet());
+		activeCategories = sortAlphabetically(activeCategories);
+		ableToCategories = sortAlphabetically(ableToCategories);
+		noPermCategories = sortAlphabetically(noPermCategories);
 		listOfCategories.addAll(activeCategories);
 		listOfCategories.addAll(ableToCategories);
 		listOfCategories.addAll(noPermCategories);
