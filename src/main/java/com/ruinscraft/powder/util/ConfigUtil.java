@@ -56,13 +56,19 @@ public class ConfigUtil {
 	public static boolean checkConfigVersion() {
 		int configVersion = PowderPlugin.getInstance().getConfigVersion();
 		int currentConfigVersion = 1;
-		if (configVersion < currentConfigVersion) {
+		int versionsBehind = currentConfigVersion - configVersion;
+		if (versionsBehind == 1) {
 			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
-					(currentConfigVersion - configVersion) + 
-					" versions behind. Please update to get the latest functionality.");
+					"1 version behind. Please update to get the latest functionality.");
 			return false;
+		} else if (versionsBehind > 1) {
+			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
+					versionsBehind + " versions behind. Please " + 
+					"update to get the latest functionality.");
+			return false;
+		} else {
+			return true;
 		}
-		return true;
 	}
 
 	public static List<FileConfiguration> loadPowderConfigs() {
