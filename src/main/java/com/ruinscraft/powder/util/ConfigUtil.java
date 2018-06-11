@@ -48,7 +48,21 @@ public class ConfigUtil {
 		}
 		instance.reloadConfig();
 		config = instance.getConfig();
+		PowderPlugin.getInstance().setConfigVersion(config.getInt("configVersion", 0));
+		checkConfigVersion();
 		return config;
+	}
+
+	public static boolean checkConfigVersion() {
+		int configVersion = PowderPlugin.getInstance().getConfigVersion();
+		int currentConfigVersion = 1;
+		if (configVersion < currentConfigVersion) {
+			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
+					(currentConfigVersion - configVersion) + 
+					" versions behind. Please update to get the latest functionality.");
+			return false;
+		}
+		return true;
 	}
 
 	public static List<FileConfiguration> loadPowderConfigs() {

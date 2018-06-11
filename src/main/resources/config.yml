@@ -2,6 +2,9 @@
 ##  Powder  ##
 ## # #  # # ##
 
+## Current version of this config.yml. Should not be edited.
+configVersion: 1
+
 ## Maximum amount of Powders that a user can be using at one time
 maxPowdersAtOneTime: 3
 
@@ -14,6 +17,9 @@ secondsBetweenPowderUsage: 5
 ## Powders per page in any formatted list
 ## (/powder help, /powder list, etc)
 pageLength: 7
+
+## If true, the console will send a list of all Powders loaded on startup/reload
+listOfLoadedPowders: true
 
 ## If true, Powders are divided into categories
 categoriesEnabled: true

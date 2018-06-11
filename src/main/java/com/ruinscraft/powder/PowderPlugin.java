@@ -28,6 +28,7 @@ public class PowderPlugin extends JavaPlugin {
 	private static PowderHandler powderHandler;
 
 	private FileConfiguration config;
+	private int configVersion;
 	private List<FileConfiguration> powderConfigs;
 	private FileConfiguration createdPowders;
 
@@ -78,9 +79,7 @@ public class PowderPlugin extends JavaPlugin {
 		});
 
 		getCommand("powder").setExecutor(new PowderCommand());
-		if (useStorage()) {
-			getServer().getPluginManager().registerEvents(new EnvironmentListener(), this);
-		}
+		getServer().getPluginManager().registerEvents(new EnvironmentListener(), this);
 	}
 
 	public synchronized void reload() {
@@ -100,9 +99,7 @@ public class PowderPlugin extends JavaPlugin {
 		enableStorage();
 		loadPowdersFromSources();
 
-		if (useStorage()) {
-			PowderUtil.loadAllUUIDs();
-		}
+		PowderUtil.loadAllUUIDs();
 		this.createdPowders = ConfigUtil.loadCreatedPowders();
 		isLoading = false;
 	}
@@ -121,6 +118,14 @@ public class PowderPlugin extends JavaPlugin {
 
 	public PowderHandler getPowderHandler() {
 		return powderHandler;
+	}
+
+	public int getConfigVersion() {
+		return configVersion;
+	}
+
+	public void setConfigVersion(int configVersion) {
+		this.configVersion = configVersion;
 	}
 
 	public List<FileConfiguration> getPowderConfigs() {
@@ -239,7 +244,7 @@ public class PowderPlugin extends JavaPlugin {
 		ConfigUtil.reloadCategories();
 
 		String powderAmount = String.valueOf(powderNames.size());
-		String niceTotal = ". " + powderAmount + " total!";
+		String niceTotal = powderAmount + " total!";
 
 		// alert console of the Powders loaded
 		StringBuilder msg = new StringBuilder();
@@ -251,7 +256,11 @@ public class PowderPlugin extends JavaPlugin {
 				msg.append(powderName + ", ");
 			}
 		}
-		getLogger().info(loaded + msg.toString() + niceTotal);
+		if (config.getBoolean("listOfLoadedPowders", true)) {
+			getLogger().info(loaded + msg.toString() + ". " + niceTotal);
+		} else {
+			getLogger().info("Loaded all Powders. " + niceTotal);
+		}
 
 		// alert online players with permission of the Powders loaded
 		for (Player player : Bukkit.getOnlinePlayers()) {
