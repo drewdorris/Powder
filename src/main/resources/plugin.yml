@@ -5,13 +5,50 @@ authors: [StupidDrew9, royalkingkb]
 commands: 
   powder:
     aliases: [pow, pdr, powders]
+    permission: powder.command
 permissions:
+  powder.*:
+    default: op
+    description: Enables access to all commands and subcommands
+    children:
+      powder.powder.*: true
+      powder.reload: true
+      powder.attach: true
+      powder.cancel: true
+      powder.create: true
+      powder.addto: true
+      powder.removefrom: true
+      powder.remove: true
+  powder.powder.*:
+    default: op
+    description: Allows usage of all Powders
+  powder.command:
+    default: true
+    description: Enables access to the '/powder' command. Note that this does not permit access to Powders, just the main command
+  powder.help:
+    default: true
+    description: Enables access to the '/powder help' help page
+  powder.nearby:
+    default: true
+    description: Enables access to '/powder nearby', allowing users to see the Powders near to them
   powder.reload:
     default: op
-    description: Allow usage of /powder reload
-  powder.command:
-    default: false
-    description: Allow usage of /powder
-  powder.powder.*:
-    default: false
-    description: Allows usage of all available Powders
+    description: Enables access to the '/powder reload' command, allowing a user to reload Powders/locale/storage/etc.
+  powder.attach:
+    default: op
+    description: Enables access to attaching Powders to an entity or player you're looking at
+  powder.cancel:
+    default: op
+    description: Allows a user to cancel Powders which they did not create themselves
+  powder.create:
+    default: op
+    description: Creates a stationary Powder at your location
+  powder.addto:
+    default: op
+    description: Adds a Powder to a created Powder
+  powder.removefrom:
+    default: op
+    description: Removes a Powder from a created Powder
+  powder.remove:
+    default: op
+    description: Removes any Powder
