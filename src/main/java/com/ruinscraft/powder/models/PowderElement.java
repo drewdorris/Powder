@@ -12,7 +12,7 @@ public interface PowderElement extends Cloneable {
 
 	int getLockedIterations(); // how many times to iterate; 0 if unlimited
 
-	void setLockedIterations(int iteration); // set how many times iterated so far
+	void setLockedIterations(int lockedIterations); // set how many times iterated so far
 
 	int getIterations(); // how many iterations so far
 

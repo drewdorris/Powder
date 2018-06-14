@@ -68,40 +68,49 @@ public class SoundEffect implements PowderElement {
 		return surroundSound;
 	}
 
+	@Override
 	public int getStartTime() {
 		return startTime;
 	}
 
+	@Override
 	public int getRepeatTime() {
 		return repeatTime;
 	}
 
+	@Override
 	public int getLockedIterations() {
 		return lockedIterations;
 	}
 
+	@Override
 	public void setLockedIterations(int lockedIterations) {
 		this.lockedIterations = lockedIterations;
 	}
 
+	@Override
 	public int getIterations() {
 		return iterations;
 	}
 
+	@Override
 	public void iterate() {
 		iterations++;
 		this.nextTick = PowdersCreationTask.getCurrentTick() + getRepeatTime();
 	}
 
+	@Override
 	public int getNextTick() {
 		return nextTick;
 	}
 
+	@Override
 	public SoundEffect clone() {
 		return new SoundEffect(this);
 	}
 
 	// creates this SoundEffect at the designated location
+	@Override
 	public void create(Location location) {
 		if (surroundSound) {
 			location.getWorld().playSound(

@@ -147,6 +147,7 @@ public class ParticleMatrix implements PowderElement {
 		this.addedTilt = addedTilt;
 	}
 
+	@Override
 	public int getStartTime() {
 		return startTime;
 	}
@@ -155,6 +156,7 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = startTime;
 	}
 
+	@Override
 	public int getRepeatTime() {
 		return repeatTime;
 	}
@@ -163,32 +165,39 @@ public class ParticleMatrix implements PowderElement {
 		this.repeatTime = repeatTime;
 	}
 
+	@Override
 	public int getLockedIterations() {
 		return lockedIterations;
 	}
 
+	@Override
 	public void setLockedIterations(int lockedIterations) {
 		this.lockedIterations = lockedIterations;
 	}
 
+	@Override
 	public int getIterations() {
 		return iterations;
 	}
 
+	@Override
 	public void iterate() {
 		iterations++;
 		this.nextTick = PowdersCreationTask.getCurrentTick() + getRepeatTime();
 	}
 
+	@Override
 	public int getNextTick() {
 		return nextTick;
 	}
 
+	@Override
 	public ParticleMatrix clone() {
 		return new ParticleMatrix(this);
 	}
 
 	// creates this ParticleMatrix at the designated location
+	@Override
 	public void create(final Location location) {
 		double forwardPitch = 
 				((location.clone().getPitch() + getAddedPitch() - 180) * Math.PI) / 180;
