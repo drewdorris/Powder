@@ -2,6 +2,9 @@ package com.ruinscraft.powder.models;
 
 import org.bukkit.Color;
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import com.ruinscraft.powder.PowdersCreationTask;
@@ -18,10 +21,8 @@ public class Glow implements PowderElement {
 	private boolean ambient;
 	// whether to show particles (default false)
 	private boolean particles;
-	// initial color to show
-	private Color firstColor;
-	// color to gradientize to
-	private Color secondColor;
+	// color to show
+	private Color color;
 	// when to start displaying this Glow
 	private int startTime;
 	// after how many ticks should it repeat?
@@ -40,8 +41,7 @@ public class Glow implements PowderElement {
 		this.amplifier = glow.getAmplification();
 		this.ambient = glow.getAmbiency();
 		this.particles = glow.getIfParticles();
-		this.firstColor = glow.getFirstColor();
-		this.secondColor = glow.getSecondColor();
+		this.color = glow.getColor();
 		this.startTime = glow.getStartTime();
 		this.repeatTime = glow.getRepeatTime();
 		this.lockedIterations = glow.getLockedIterations();
@@ -50,15 +50,13 @@ public class Glow implements PowderElement {
 	}
 
 	public Glow(PotionEffectType type, int duration, int amplifier, boolean ambient, 
-			boolean particles, Color firstColor, Color secondColor, int startTime, 
-			int repeatTime, int lockedIterations) {
+			boolean particles, Color color, int startTime, int repeatTime, int lockedIterations) {
 		this.type = type;
 		this.duration = duration;
 		this.amplifier = amplifier;
 		this.ambient = ambient;
 		this.particles = particles;
-		this.firstColor = firstColor;
-		this.secondColor = secondColor;
+		this.color = color;
 		this.startTime = startTime;
 		this.repeatTime = repeatTime;
 		this.lockedIterations = lockedIterations;
@@ -85,12 +83,8 @@ public class Glow implements PowderElement {
 		return particles;
 	}
 
-	public Color getFirstColor() {
-		return firstColor;
-	}
-
-	public Color getSecondColor() {
-		return secondColor;
+	public Color getColor() {
+		return color;
 	}
 
 	@Override
@@ -136,7 +130,27 @@ public class Glow implements PowderElement {
 
 	@Override
 	public void create(Location location) {
-		// TODO
+		double bestDistance = 100;
+		Entity bestEntity = null;
+		for (Entity entity : location.getWorld().getNearbyEntities(location, 2, 2, 2)) {
+			double distance = location.distanceSquared(entity.getLocation());
+			if (bestEntity == null) {
+				bestEntity = entity;
+				bestDistance = distance;
+				continue;
+			}
+			if (bestDistance > distance) {
+				bestEntity = entity;
+				bestDistance = distance;
+			}
+		}
+		if (bestEntity == null || !(bestEntity instanceof LivingEntity)) {
+			return;
+		}
+		LivingEntity livingEntity = (LivingEntity) bestEntity;
+
+		new PotionEffect(type, duration, amplifier, ambient, particles, color)
+		.apply(livingEntity);
 	}
 
 }
