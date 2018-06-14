@@ -14,16 +14,19 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.potion.PotionEffectType;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.models.Dust;
+import com.ruinscraft.powder.models.Glow;
 import com.ruinscraft.powder.models.Layer;
 import com.ruinscraft.powder.models.ParticleMatrix;
 import com.ruinscraft.powder.models.ParticleName;
@@ -221,6 +224,50 @@ public class ConfigUtil {
 						getStart(powderConfig, powder, eachSection), 
 						getRepeat(powderConfig, powder, eachSection), 
 						getIterations(powderConfig, powder, eachSection)));
+			}
+		}
+		if (!(powderConfig.getConfigurationSection(section + ".glows") == null)) {
+			for (String ss : powderConfig
+					.getConfigurationSection(section + ".glows").getKeys(false)) {
+				String eachSection = section + ".glows." + ss;
+				String potionEnum = powderConfig.getString(eachSection + ".potionType", "GLOWING");
+				PotionEffectType type = PotionEffectType.getByName(potionEnum);
+				int duration = powderConfig.getInt(eachSection + ".duration", 100);
+				int amplifier = powderConfig.getInt(eachSection + ".amplifier", 1);
+				boolean ambient = powderConfig.getBoolean(eachSection + ".ambient", false);
+				boolean particles = powderConfig.getBoolean(eachSection + ".particles", false);
+				int r = powderConfig.getInt(eachSection + ".r", 255);
+				int g = powderConfig.getInt(eachSection + ".g", 255);
+				int b = powderConfig.getInt(eachSection + ".b", 255);
+				int r2 = powderConfig.getInt(eachSection + ".r2", r);
+				int g2 = powderConfig.getInt(eachSection + ".g2", g);
+				int b2 = powderConfig.getInt(eachSection + ".b2", b);
+				int startTime = getStart(powderConfig, powder, eachSection);
+				int repeatTime = getRepeat(powderConfig, powder, eachSection);
+				int iterations = getIterations(powderConfig, powder, eachSection);
+				double rDiff = (r2 - r) / duration;
+				double gDiff = (g2 - g) / duration;
+				double bDiff = (b2 - b) / duration;
+				Glow glow = new Glow(type, 1, amplifier, 
+						ambient, particles, Color.fromRGB(r, g, b),
+						startTime, repeatTime, iterations);
+				for (int i = 1; i < duration; i++) {
+					int newr = r + (int) rDiff;
+					int newg = g + (int) gDiff;
+					int newb = b + (int) bDiff;
+					if (r != newr || g != newg || b != newb) {
+						powder.addPowderElement(glow);
+						glow = new Glow(type, 1, amplifier, 
+								ambient, particles, Color.fromRGB(newr, newg, newb),
+								startTime + i, repeatTime + i, iterations);
+					} else {
+						glow.incrementDuration();
+					}
+					r = newr;
+					g = newg;
+					b = newb;
+				}
+				powder.addPowderElement(glow);
 			}
 		}
 		if (!(powderConfig.getConfigurationSection(section + ".changes") == null)) {

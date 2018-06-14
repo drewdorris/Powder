@@ -71,6 +71,10 @@ public class Glow implements PowderElement {
 		return duration;
 	}
 
+	public void incrementDuration() {
+		duration++;
+	}
+
 	public int getAmplification() {
 		return amplifier;
 	}
