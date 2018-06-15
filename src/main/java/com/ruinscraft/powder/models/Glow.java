@@ -153,8 +153,8 @@ public class Glow implements PowderElement {
 		}
 		LivingEntity livingEntity = (LivingEntity) bestEntity;
 
-		new PotionEffect(type, duration, amplifier, ambient, particles, color)
-		.apply(livingEntity);
+		livingEntity.addPotionEffect(
+				new PotionEffect(type, duration, amplifier, ambient, particles, color), true);
 	}
 
 }
