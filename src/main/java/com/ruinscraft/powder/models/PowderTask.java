@@ -5,16 +5,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.entity.LivingEntity;
 
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.models.trackers.EntityTracker;
 import com.ruinscraft.powder.models.trackers.PlayerTracker;
 import com.ruinscraft.powder.models.trackers.Tracker;
@@ -72,7 +68,6 @@ public class PowderTask {
 
 	public Set<UUID> cancel() {
 		Set<UUID> uuidsToSave = getUUIDsIfExist();
-		cancelEffectsIfExist();
 		this.powders.clear();
 		ConfigUtil.saveStationaryPowder(
 				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
@@ -146,34 +141,6 @@ public class PowderTask {
 		ConfigUtil.saveStationaryPowder(
 				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
 		return removed;
-	}
-
-	public void cancelEffectsIfExist() {
-		for (Entry<Powder, Tracker> entry : this.powders.entrySet()) {
-			Tracker tracker = entry.getValue();
-			if (tracker.getType() == TrackerType.STATIONARY) {
-				continue;
-			}
-			UUID uuid = null;
-			if (tracker.getType() == TrackerType.ENTITY) {
-				EntityTracker entityTracker = (EntityTracker) tracker;
-				uuid = entityTracker.getEntityUUID();
-			}
-			if (tracker.getType() == TrackerType.PLAYER) {
-				PlayerTracker entityTracker = (PlayerTracker) tracker;
-				uuid = entityTracker.getUUID();
-			}
-			for (PowderElement element : entry.getKey().getPowderElements()) {
-				if (element instanceof Glow) {
-					Glow glow = (Glow) element;
-					if ((glow.getStartTime() * glow.getIterations()) + glow.getDuration() > 
-					PowdersCreationTask.getCurrentTick()) {
-						LivingEntity livingEntity = (LivingEntity) Bukkit.getEntity(uuid);
-						livingEntity.removePotionEffect(glow.getType());
-					}
-				}
-			}
-		}
 	}
 
 }
