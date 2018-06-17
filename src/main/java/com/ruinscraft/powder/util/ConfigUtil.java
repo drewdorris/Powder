@@ -196,9 +196,10 @@ public class ConfigUtil {
 						.getBoolean(eachSection + ".surroundSound", true);
 				int transpose = powderConfig.getInt(eachSection + ".transpose", 0);
 				boolean limitNotes = powderConfig.getBoolean(eachSection + ".limitNotes", true);
+				int volumeMultiplier = powderConfig.getInt(eachSection + ".volumeMultiplier", 1);
 				List<SoundEffect> songSoundEffects = 
 						SoundUtil.getSoundEffectsFromNBS(fileName, volume, 
-								multiplier, surroundSound, transpose, limitNotes,
+								multiplier, surroundSound, transpose, limitNotes, volumeMultiplier,
 								getStart(powderConfig, powder, eachSection), 
 								getRepeat(powderConfig, powder, eachSection), 
 								getIterations(powderConfig, powder, eachSection));

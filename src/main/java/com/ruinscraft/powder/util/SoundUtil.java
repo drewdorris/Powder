@@ -20,7 +20,7 @@ public class SoundUtil {
 
 	public static List<SoundEffect> getSoundEffectsFromNBS(String fileName, double volume, 
 			double multiplier, boolean surroundSound, int transpose, boolean limitNotes, 
-			int startTime, int repeatTime, int lockedIterations) {
+			int volumeMultiplier, int startTime, int repeatTime, int lockedIterations) {
 		if (fileName.contains("/")) {
 			URL url = PowderUtil.readURL(fileName);
 			Song song;
@@ -33,7 +33,7 @@ public class SoundUtil {
 			}
 
 			return getSoundEffectsFromSong(song, volume, multiplier, surroundSound,
-					transpose, limitNotes, startTime, repeatTime, lockedIterations);
+					transpose, limitNotes, volumeMultiplier, startTime, repeatTime, lockedIterations);
 		} else {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/songs", fileName);
 			if (!file.exists()) {
@@ -42,31 +42,33 @@ public class SoundUtil {
 			Song song = NBSDecoder.parse(file);
 
 			return getSoundEffectsFromSong(song, volume, multiplier, surroundSound,
-					transpose, limitNotes, startTime, repeatTime, lockedIterations);
+					transpose, limitNotes, volumeMultiplier, startTime, repeatTime, lockedIterations);
 		}
 	}
 
 	public static List<SoundEffect> getSoundEffectsFromSong(Song song, double volume, 
 			double multiplier, boolean surroundSound, int transpose, boolean limitNotes, 
-			int startTime, int repeatTime, int lockedIterations) {
+			int volumeMultiplier, int startTime, int repeatTime, int lockedIterations) {
 		List<SoundEffect> soundEffects = new ArrayList<>();
 		for (Integer integer : song.getLayerHashMap().keySet()) {
 			Layer layer = song.getLayerHashMap().get(integer);
-			for (Integer tick : layer.getHashMap().keySet()) {
-				Note note = layer.getHashMap().get(tick);
-				Sound sound = Instrument.getInstrument(note.getInstrument());
-				float newVolume = (layer.getVolume() / 100F) * ((float) volume);
-				float pitch = note.getKey() - 33;
-				if (limitNotes) {
-					pitch = transpose((int) pitch + transpose);
-				} else {
-					pitch = pitch + transpose;
+			for (int i = 0; i < volumeMultiplier; i++) {
+				for (Integer tick : layer.getHashMap().keySet()) {
+					Note note = layer.getHashMap().get(tick);
+					Sound sound = Instrument.getInstrument(note.getInstrument());
+					float newVolume = (layer.getVolume() / 100F) * ((float) volume);
+					float pitch = note.getKey() - 33;
+					if (limitNotes) {
+						pitch = transpose((int) pitch + transpose);
+					} else {
+						pitch = pitch + transpose;
+					}
+					pitch = (float) Math.pow(2.0, (pitch - 12.0) / 12.0);
+					SoundEffect soundEffect = new SoundEffect(sound, newVolume, 
+							pitch, surroundSound, ((int) (tick * multiplier)) + startTime, 
+							repeatTime, lockedIterations);
+					soundEffects.add(soundEffect);
 				}
-				pitch = (float) Math.pow(2.0, (pitch - 12.0) / 12.0);
-				SoundEffect soundEffect = new SoundEffect(sound, newVolume, 
-						pitch, surroundSound, ((int) (tick * multiplier)) + startTime, 
-						repeatTime, lockedIterations);
-				soundEffects.add(soundEffect);
 			}
 		}
 		return soundEffects;
