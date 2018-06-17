@@ -79,6 +79,20 @@ public class ParticleMatrix implements PowderElement {
 		this.iterations = 0;
 	}
 
+	public PowderParticle getPowderParticleAtLocation(int x, int y, int z) {
+		for (Layer layer : this.layers) {
+			if ((int) (layer.getPosition() / spacing) != z) {
+				continue;
+			}
+			try {
+				return layer.getRows().get(y).get(z);
+			} catch (Exception e) {
+				continue;
+			}
+		}
+		return null;
+	}
+
 	public List<Layer> getLayers() {
 		return layers;
 	}

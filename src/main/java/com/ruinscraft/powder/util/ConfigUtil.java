@@ -385,7 +385,14 @@ public class ConfigUtil {
 					particleMatrix.setPlayerLeft(powder.getDefaultLeft());
 					particleMatrix.setPlayerUp(powder.getDefaultUp());
 				}
-				powder.addPowderElement(particleMatrix);
+				if (powderConfig.getInt(eachSection + ".settings.gradient.type", 0) > 0) {
+					int gradient = powderConfig.getInt(eachSection + ".settings.gradient.type");
+					int tickSpeed = powderConfig.getInt(eachSection + ".settings.gradient.speed", 1);
+					int length = powderConfig.getInt(eachSection + ".settings.gradient.length", 1);
+					powder.addPowderElements(setGradients(particleMatrix, gradient, tickSpeed, length));
+				} else {
+					powder.addPowderElement(particleMatrix);
+				}
 			}
 		}
 		if (powder.getPowderElements().isEmpty()) {
@@ -406,6 +413,61 @@ public class ConfigUtil {
 
 	public static int getIterations(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".iterations", powder.getDefaultLockedIterations());
+	}
+
+	public static List<ParticleMatrix> setGradients(ParticleMatrix matrix, 
+			int gradient, int tickSpeed, int length) {
+		List<ParticleMatrix> newMatrices = new ArrayList<>();
+		switch (gradient) {
+			// diagram https://i.imgur.com/0uL5i3a.png
+			case 1:
+				// 26 25
+			case 2:
+				// 25 26
+			case 3:
+				// 24 22
+			case 4:
+				// 22 24
+			case 5:
+				// 21 23
+			case 6:
+				// 23 21
+			case 7:
+				// 2 12
+			case 8:
+				// 1 11
+			case 9:
+				// 11 1
+			case 10:
+				// 12 2
+			case 11:
+				// 10 3
+			case 12:
+				// 9 4
+			case 13:
+				// 4 9
+			case 14:
+				// 3 10
+			case 15:
+				// 13 7
+			case 16:
+				// 5 15
+			case 17:
+				// 7 13
+			case 18:
+				// 15 5
+			case 19:
+				// 16 6
+			case 20:
+				// 8 14
+			case 21:
+				// 6 16
+			case 22:
+				// 14 8
+			default:
+				newMatrices.add(matrix);
+		}
+		return newMatrices;
 	}
 
 	public static void saveFile(FileConfiguration config, String fileName) {

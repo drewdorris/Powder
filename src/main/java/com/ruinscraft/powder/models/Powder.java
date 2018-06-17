@@ -163,7 +163,7 @@ public class Powder implements Cloneable {
 		powderElements.add(powderElement);
 	}
 
-	public void addPowderElements(List<PowderElement> powderElements) {
+	public void addPowderElements(List<? extends PowderElement> powderElements) {
 		for (PowderElement element : powderElements) {
 			addPowderElement(element);
 		}
