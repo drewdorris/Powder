@@ -525,9 +525,111 @@ public class ConfigUtil {
 			}
 			case 3: {
 				// 24 22
+				int highest = -1;
+				for (Layer layer : matrix.getLayers()) {
+					for (List<PowderParticle> list : layer.getRows()) {
+						int rows = list.size();
+						if (rows > highest) {
+							highest = rows;
+						}
+					}
+				}
+				if (length > highest) {
+					newMatrices.add(matrix);
+					break;
+				}
+				int newStartTime = 0;
+				for (int i = 0; i <= highest + length; i = i + length) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (Layer layer : matrix.getLayers()) {
+						Layer newLayer = new Layer();
+						newLayer.setPosition(layer.getPosition());
+						for (List<PowderParticle> list : layer.getRows()) {
+							List<PowderParticle> row = new ArrayList<>();
+							for (int l = 0; l < highest; l++) {
+								row.add(new PowderParticle());
+							}
+							for (int k = i; k < i + length; k++) {
+								try {
+									row.add(k, list.get(k));
+								} catch (Exception e) {
+									row.add(new PowderParticle());
+								}
+							}
+							newLayer.addRow(row);
+						}
+						newMatrix.addLayer(newLayer);
+					}
+
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(matrix.getPlayerUp());
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newStartTime = newStartTime + tickSpeed;
+				}
+				break;
 			}
 			case 4: {
 				// 22 24
+				int highest = -1;
+				for (Layer layer : matrix.getLayers()) {
+					for (List<PowderParticle> list : layer.getRows()) {
+						int rows = list.size();
+						if (rows > highest) {
+							highest = rows;
+						}
+					}
+				}
+				if (length > highest) {
+					newMatrices.add(matrix);
+					break;
+				}
+				int newStartTime = 0;
+				for (int i = highest + length; i >= 0; i = i - length) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (Layer layer : matrix.getLayers()) {
+						Layer newLayer = new Layer();
+						newLayer.setPosition(layer.getPosition());
+						for (List<PowderParticle> list : layer.getRows()) {
+							List<PowderParticle> row = new ArrayList<>();
+							for (int l = 0; l < highest; l++) {
+								row.add(new PowderParticle());
+							}
+							for (int k = i; k > i - length; k--) {
+								try {
+									row.add(k, list.get(k));
+								} catch (Exception e) {
+									row.add(new PowderParticle());
+								}
+							}
+							newLayer.addRow(row);
+						}
+						newMatrix.addLayer(newLayer);
+					}
+
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(matrix.getPlayerUp());
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newStartTime = newStartTime + tickSpeed;
+				}
+				break;
 			}
 			case 5: {
 				// 21 23
