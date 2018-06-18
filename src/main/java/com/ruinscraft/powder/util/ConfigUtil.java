@@ -435,7 +435,7 @@ public class ConfigUtil {
 					break;
 				}
 				int newStartTime = 0;
-				int newPlayerUp = matrix.getPlayerUp() + length;
+				int newPlayerUp = matrix.getPlayerUp() + length + 1;
 				for (int i = highest + length; i >= 0; i = i - length) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int j = 0; j < matrix.getLayers().size(); j++) {
@@ -523,48 +523,69 @@ public class ConfigUtil {
 				}
 				break;
 			}
-			case 3:
+			case 3: {
 				// 24 22
-			case 4:
+			}
+			case 4: {
 				// 22 24
-			case 5:
+			}
+			case 5: {
 				// 21 23
-			case 6:
+			}
+			case 6: {
 				// 23 21
-			case 7:
+			}
+			case 7: {
 				// 2 12
-			case 8:
+			}
+			case 8: {
 				// 1 11
-			case 9:
+			}
+			case 9: {
 				// 11 1
-			case 10:
+			}
+			case 10: {
 				// 12 2
-			case 11:
+			}
+			case 11: {
 				// 10 3
-			case 12:
+			}
+			case 12: {
 				// 9 4
-			case 13:
+			}
+			case 13: {
 				// 4 9
-			case 14:
+			}
+			case 14: {
 				// 3 10
-			case 15:
+			}
+			case 15: {
 				// 13 7
-			case 16:
+			}
+			case 16: {
 				// 5 15
-			case 17:
+			}
+			case 17: {
 				// 7 13
-			case 18:
+			}
+			case 18: {
 				// 15 5
-			case 19:
+			}
+			case 19: {
 				// 16 6
-			case 20:
+			}
+			case 20: {
 				// 8 14
-			case 21:
+			}
+			case 21: {
 				// 6 16
-			case 22:
+			}
+			case 22: {
 				// 14 8
-			default:
+			}
+			default: {
 				newMatrices.add(matrix);
+			}
 		}
 		return newMatrices;
 	}
