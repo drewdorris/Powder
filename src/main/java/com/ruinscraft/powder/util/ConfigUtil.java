@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
@@ -429,21 +430,36 @@ public class ConfigUtil {
 						highest = rows;
 					}
 				}
+				if (length > highest) {
+					newMatrices.add(matrix);
+					break;
+				}
 				int newStartTime = 0;
 				int newPlayerUp = 0;
-				for (int i = highest - 1; i >= 0; i = i - length) {
+				for (int i = length; i <= highest + length; i = i + length) {
+					Bukkit.getLogger().info("i done");
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int j = 0; j < matrix.getLayers().size(); j++) {
+						Bukkit.getLogger().info("j done");
 						Layer layer = new Layer();
 						Layer otherLayer = matrix.getLayers().get(j);
 						layer.setPosition(otherLayer.getPosition());
-						for (int k = i; k > i - length && k > 0; k--) {
+						List<List<PowderParticle>> reversedList = 
+								new ArrayList<>(otherLayer.getRows());
+						Collections.reverse(reversedList);
+						for (int k = i; k > i - length; k--) {
+							Bukkit.getLogger().info("k done " + k);
 							try {
-								layer.addRow(otherLayer.getRows().get(k));
-							} catch (Exception e) { }
+								layer.addRow(reversedList.get(k));
+							} catch (Exception e) {
+								layer.addRow(new ArrayList<PowderParticle>());
+							}
 						}
 						newMatrix.addLayer(layer);
 					}
+
+					newPlayerUp = newPlayerUp + length;
+
 					newMatrix.setSpacing(matrix.getSpacing());
 					newMatrix.setAddedPitch(matrix.getAddedPitch());
 					newMatrix.setAddedRotation(matrix.getAddedRotation());
@@ -456,7 +472,6 @@ public class ConfigUtil {
 					newMatrix.setLockedIterations(matrix.getLockedIterations());
 					newMatrices.add(newMatrix);
 
-					newPlayerUp = newPlayerUp + length;
 					newStartTime = newStartTime + tickSpeed;
 				}
 				break;
