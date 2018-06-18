@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -85,7 +86,9 @@ public class ParticleMatrix implements PowderElement {
 				continue;
 			}
 			try {
-				return layer.getRows().get(y).get(z);
+				List<List<PowderParticle>> newList = new ArrayList<>(layer.getRows());
+				Collections.reverse(newList);
+				return newList.get(y).get(z);
 			} catch (Exception e) {
 				continue;
 			}

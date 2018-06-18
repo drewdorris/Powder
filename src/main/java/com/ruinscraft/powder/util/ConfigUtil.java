@@ -422,6 +422,44 @@ public class ConfigUtil {
 			// diagram https://i.imgur.com/0uL5i3a.png
 			case 1:
 				// 26 25
+				int highest = -1;
+				for (Layer layer : matrix.getLayers()) {
+					int rows = layer.getRows().size();
+					if (rows > highest) {
+						highest = rows;
+					}
+				}
+				int newStartTime = 0;
+				int newPlayerUp = 0;
+				for (int i = highest - 1; i >= 0; i = i - length) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int j = 0; j < matrix.getLayers().size(); j++) {
+						Layer layer = new Layer();
+						Layer otherLayer = matrix.getLayers().get(j);
+						layer.setPosition(otherLayer.getPosition());
+						for (int k = i; k > i - length && k > 0; k--) {
+							try {
+								layer.addRow(otherLayer.getRows().get(k));
+							} catch (Exception e) { }
+						}
+						newMatrix.addLayer(layer);
+					}
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(newPlayerUp);
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newPlayerUp = newPlayerUp + length;
+					newStartTime = newStartTime + tickSpeed;
+				}
+				break;
 			case 2:
 				// 25 26
 			case 3:
