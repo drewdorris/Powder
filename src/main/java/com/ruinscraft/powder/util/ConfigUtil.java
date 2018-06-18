@@ -633,9 +633,109 @@ public class ConfigUtil {
 			}
 			case 5: {
 				// 21 23
+				int farthestPos = 0;
+				int farthestNeg = 0;
+				for (Layer layer : matrix.getLayers()) {
+					int position = (int) layer.getPosition();
+					if (position > farthestPos) {
+						farthestPos = position;
+					}
+					if (position < farthestNeg) {
+						farthestNeg = position;
+					}
+				}
+				int distance = farthestPos - farthestNeg;
+				if (length > distance) {
+					newMatrices.add(matrix);
+					break;
+				}
+				int newStartTime = 0;
+				for (int i = farthestPos; i > farthestNeg - length; i = i - length) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int j = i; j > i - length; j--) {
+						boolean done = false;
+						for (Layer layer : matrix.getLayers()) {
+							if (layer.getPosition() == j) {
+								newMatrix.addLayer(layer);
+								done = true;
+							}
+						}
+						if (!done) {
+							newMatrix.addLayer(new Layer());
+						}
+					}
+					if (newMatrix.getLayers().isEmpty()) {
+						continue;
+					}
+
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(matrix.getPlayerUp());
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newStartTime = newStartTime + tickSpeed;
+				}
+				break;
 			}
 			case 6: {
 				// 23 21
+				int farthestPos = 0;
+				int farthestNeg = 0;
+				for (Layer layer : matrix.getLayers()) {
+					int position = (int) layer.getPosition();
+					if (position > farthestPos) {
+						farthestPos = position;
+					}
+					if (position < farthestNeg) {
+						farthestNeg = position;
+					}
+				}
+				int distance = farthestPos - farthestNeg;
+				if (length > distance) {
+					newMatrices.add(matrix);
+					break;
+				}
+				int newStartTime = 0;
+				for (int i = farthestNeg; i < farthestPos + length; i = i + length) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int j = i; j < i + length; j++) {
+						boolean done = false;
+						for (Layer layer : matrix.getLayers()) {
+							if (layer.getPosition() == j) {
+								newMatrix.addLayer(layer);
+								done = true;
+							}
+						}
+						if (!done) {
+							newMatrix.addLayer(new Layer());
+						}
+					}
+					if (newMatrix.getLayers().isEmpty()) {
+						continue;
+					}
+
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(matrix.getPlayerUp());
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newStartTime = newStartTime + tickSpeed;
+				}
+				break;
 			}
 			case 7: {
 				// 2 12
