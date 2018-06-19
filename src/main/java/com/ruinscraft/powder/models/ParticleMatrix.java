@@ -82,18 +82,62 @@ public class ParticleMatrix implements PowderElement {
 
 	public PowderParticle getPowderParticleAtLocation(int x, int y, int z) {
 		for (Layer layer : this.layers) {
-			if ((int) (layer.getPosition() / spacing) != z) {
+			if (layer.getPosition() != z) {
 				continue;
 			}
 			try {
 				List<List<PowderParticle>> newList = new ArrayList<>(layer.getRows());
 				Collections.reverse(newList);
-				return newList.get(y).get(z);
+				return newList.get(y).get(x);
 			} catch (Exception e) {
 				continue;
 			}
 		}
 		return null;
+	}
+
+	public int getLowestPosition() {
+		int lowest = 0;
+		for (Layer layer : this.layers) {
+			if (layer.getPosition() < lowest) {
+				lowest = (int) layer.getPosition();
+			}
+		}
+		return lowest;
+	}
+
+	public int getHighestPosition() {
+		int highest = 0;
+		for (Layer layer : this.layers) {
+			if (layer.getPosition() > highest) {
+				highest = (int) layer.getPosition();
+			}
+		}
+		return highest;
+	}
+
+	public int getLongestRowLength() {
+		int longest = 0;
+		for (Layer layer : this.layers) {
+			for (List<PowderParticle> list : layer.getRows()) {
+				int rows = list.size();
+				if (rows > longest) {
+					longest = rows;
+				}
+			}
+		}
+		return longest;
+	}
+
+	public int getTallestLayerHeight() {
+		int longest = 0;
+		for (Layer layer : this.layers) {
+			int rows = layer.getRows().size();
+			if (rows > longest) {
+				longest = rows;
+			}
+		}
+		return longest;
 	}
 
 	public List<Layer> getLayers() {

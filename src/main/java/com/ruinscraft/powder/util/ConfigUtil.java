@@ -7,6 +7,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -423,13 +424,7 @@ public class ConfigUtil {
 			// diagram https://i.imgur.com/0uL5i3a.png
 			case 1: {
 				// 25 26
-				int highest = -1;
-				for (Layer layer : matrix.getLayers()) {
-					int rows = layer.getRows().size();
-					if (rows > highest) {
-						highest = rows;
-					}
-				}
+				int highest = matrix.getTallestLayerHeight();
 				if (length > highest) {
 					newMatrices.add(matrix);
 					break;
@@ -473,13 +468,7 @@ public class ConfigUtil {
 			}
 			case 2: {
 				// 26 25
-				int highest = -1;
-				for (Layer layer : matrix.getLayers()) {
-					int rows = layer.getRows().size();
-					if (rows > highest) {
-						highest = rows;
-					}
-				}
+				int highest = matrix.getTallestLayerHeight();
 				if (length > highest) {
 					newMatrices.add(matrix);
 					break;
@@ -525,15 +514,7 @@ public class ConfigUtil {
 			}
 			case 3: {
 				// 24 22
-				int highest = -1;
-				for (Layer layer : matrix.getLayers()) {
-					for (List<PowderParticle> list : layer.getRows()) {
-						int rows = list.size();
-						if (rows > highest) {
-							highest = rows;
-						}
-					}
-				}
+				int highest = matrix.getLongestRowLength();
 				if (length > highest) {
 					newMatrices.add(matrix);
 					break;
@@ -579,15 +560,7 @@ public class ConfigUtil {
 			}
 			case 4: {
 				// 22 24
-				int highest = -1;
-				for (Layer layer : matrix.getLayers()) {
-					for (List<PowderParticle> list : layer.getRows()) {
-						int rows = list.size();
-						if (rows > highest) {
-							highest = rows;
-						}
-					}
-				}
+				int highest = matrix.getLongestRowLength();
 				if (length > highest) {
 					newMatrices.add(matrix);
 					break;
@@ -633,17 +606,8 @@ public class ConfigUtil {
 			}
 			case 5: {
 				// 21 23
-				int farthestPos = 0;
-				int farthestNeg = 0;
-				for (Layer layer : matrix.getLayers()) {
-					int position = (int) layer.getPosition();
-					if (position > farthestPos) {
-						farthestPos = position;
-					}
-					if (position < farthestNeg) {
-						farthestNeg = position;
-					}
-				}
+				int farthestPos = matrix.getHighestPosition();
+				int farthestNeg = matrix.getLowestPosition();
 				int distance = farthestPos - farthestNeg;
 				if (length > distance) {
 					newMatrices.add(matrix);
@@ -686,17 +650,8 @@ public class ConfigUtil {
 			}
 			case 6: {
 				// 23 21
-				int farthestPos = 0;
-				int farthestNeg = 0;
-				for (Layer layer : matrix.getLayers()) {
-					int position = (int) layer.getPosition();
-					if (position > farthestPos) {
-						farthestPos = position;
-					}
-					if (position < farthestNeg) {
-						farthestNeg = position;
-					}
-				}
+				int farthestPos = matrix.getHighestPosition();
+				int farthestNeg = matrix.getLowestPosition();
 				int distance = farthestPos - farthestNeg;
 				if (length > distance) {
 					newMatrices.add(matrix);
@@ -739,6 +694,7 @@ public class ConfigUtil {
 			}
 			case 7: {
 				// 2 12
+				
 			}
 			case 8: {
 				// 1 11
@@ -760,6 +716,77 @@ public class ConfigUtil {
 			}
 			case 14: {
 				// 3 10
+				int lowest = matrix.getLowestPosition();
+				int highest = matrix.getHighestPosition();
+				int longest = matrix.getLongestRowLength();
+				int x = 0;
+				int y = 0;
+				int z = lowest;
+				int newStartTime = 0;
+				ParticleMatrix newMatrix = new ParticleMatrix();
+				PowderParticle powderParticle = matrix.getPowderParticleAtLocation(x, y, z);
+				if (powderParticle == null) {
+					powderParticle = new PowderParticle();
+				}
+				Layer layer = new Layer();
+				layer.setPosition(z);
+				layer.addRow(Arrays.asList(powderParticle));
+				newMatrix.addLayer(layer);
+				for (int i = 0; i <= highest && i <= longest; i++) {
+					for (Layer otherLayer : newMatrix.getLayers()) {
+						List<List<PowderParticle>> rows = otherLayer.getRows();
+						int otherz = (int) otherLayer.getPosition();
+						for (int othery = 0; othery < rows.size(); y++) {
+							for (int otherx = 0; otherx < rows.get(othery).size(); otherx++) {
+								int otherotherx = otherx + 1;
+								int otherothery = othery + 1;
+								int otherotherz = otherz + 1;
+								Layer layerxy = new Layer();
+								layerxy.setPosition(otherz);
+								Layer layerz = new Layer();
+								layerz.setPosition(otherotherz);
+								for (int t = 0; t < othery - 1; t++) {
+									layerxy.addRow(new ArrayList<>());
+									layerz.addRow(new ArrayList<>());
+								}
+								List<PowderParticle> ppx = new ArrayList<>();
+								List<PowderParticle> ppz = new ArrayList<>();
+								for (int u = 0; u < otherx - 1; u++) {
+									ppx.add(new PowderParticle());
+									ppz.add(new PowderParticle());
+								}
+								ppx.add(new PowderParticle());
+								List<PowderParticle> ppy = new ArrayList<>(ppz);
+								ppz.add(matrix.getPowderParticleAtLocation(otherx, othery, otherotherz));
+								layerz.addRow(ppz);
+								newMatrix.addLayer(layerz);
+								ppx.add(matrix.getPowderParticleAtLocation(otherotherx, othery, otherz));
+								layerxy.addRow(ppx);
+								ppy.add(matrix.getPowderParticleAtLocation(otherx, otherothery, otherz));
+								layerxy.addRow(ppy);
+								newMatrix.addLayer(layerxy);
+							}
+						}
+					}
+					if (newMatrix.getLayers().isEmpty()) {
+						continue;
+					}
+
+					newMatrix.setSpacing(matrix.getSpacing());
+					newMatrix.setAddedPitch(matrix.getAddedPitch());
+					newMatrix.setAddedRotation(matrix.getAddedRotation());
+					newMatrix.setAddedTilt(matrix.getAddedTilt());
+					newMatrix.setIfPitch(matrix.hasPitch());
+					newMatrix.setPlayerLeft(matrix.getPlayerLeft());
+					newMatrix.setPlayerUp(matrix.getPlayerUp());
+					newMatrix.setStartTime(newStartTime);
+					newMatrix.setRepeatTime(matrix.getRepeatTime());
+					newMatrix.setLockedIterations(matrix.getLockedIterations());
+					newMatrices.add(newMatrix);
+
+					newStartTime = newStartTime + tickSpeed;
+					newMatrix = new ParticleMatrix();
+				}
 			}
 			case 15: {
 				// 13 7
