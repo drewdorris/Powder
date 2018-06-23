@@ -81,10 +81,7 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public PowderParticle getPowderParticleAtLocation(int x, int y, int z) {
-		for (Layer layer : this.layers) {
-			if (layer.getPosition() != z) {
-				continue;
-			}
+		for (Layer layer : this.getLayersAtPosition(z)) {
 			try {
 				List<List<PowderParticle>> newList = new ArrayList<>(layer.getRows());
 				Collections.reverse(newList);
@@ -94,6 +91,36 @@ public class ParticleMatrix implements PowderElement {
 			}
 		}
 		return null;
+	}
+
+	public void putPowderParticle(PowderParticle powderParticle, int x, int y, int z) {
+		List<Layer> layers = this.getLayersAtPosition(z);
+		Layer layer;
+		if (layers.isEmpty()) {
+			layer = new Layer();
+			layer.setPosition(z);
+		} else {
+			layer = layers.get(0);
+		}
+		List<PowderParticle> row = null;
+		try {
+			row = new ArrayList<>(layer.getRows().get(y));
+		} catch (Exception e) {
+			for (int i = layer.getRows().size(); i <= y; i++) {
+				layer.addRow(new ArrayList<>());
+			}
+			row = new ArrayList<>(layer.getRows().get(y));
+		}
+		try {
+			row.add(x, powderParticle);
+		} catch (Exception e) {
+			for (int i = row.size(); i < x; i++) {
+				row.add(i, new PowderParticle());
+			}
+			row.add(x, powderParticle);
+		}
+		layer.putRow(y, row);
+		this.addLayer(layer);
 	}
 
 	public int getLowestPosition() {
@@ -114,6 +141,16 @@ public class ParticleMatrix implements PowderElement {
 			}
 		}
 		return highest;
+	}
+
+	public List<Layer> getLayersAtPosition(int position) {
+		List<Layer> layers = new ArrayList<>();
+		for (Layer layer : this.layers) {
+			if (layer.getPosition() == position) {
+				layers.add(layer);
+			}
+		}
+		return layers;
 	}
 
 	public int getLongestRowLength() {

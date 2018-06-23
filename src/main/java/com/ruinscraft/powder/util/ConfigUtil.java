@@ -7,7 +7,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
@@ -719,59 +718,30 @@ public class ConfigUtil {
 				int lowest = matrix.getLowestPosition();
 				int highest = matrix.getHighestPosition();
 				int longest = matrix.getLongestRowLength();
-				int x = 0;
-				int y = 0;
-				int z = lowest;
+				int tallest = matrix.getTallestLayerHeight();
 				int newStartTime = 0;
-				ParticleMatrix newMatrix = new ParticleMatrix();
-				PowderParticle powderParticle = matrix.getPowderParticleAtLocation(x, y, z);
-				if (powderParticle == null) {
-					powderParticle = new PowderParticle();
-				}
-				Layer layer = new Layer();
-				layer.setPosition(z);
-				layer.addRow(Arrays.asList(powderParticle));
-				newMatrix.addLayer(layer);
-				for (int i = 0; i <= highest && i <= longest; i++) {
-					for (Layer otherLayer : newMatrix.getLayers()) {
-						List<List<PowderParticle>> rows = otherLayer.getRows();
-						int otherz = (int) otherLayer.getPosition();
-						for (int othery = 0; othery < rows.size(); y++) {
-							for (int otherx = 0; otherx < rows.get(othery).size(); otherx++) {
-								int otherotherx = otherx + 1;
-								int otherothery = othery + 1;
-								int otherotherz = otherz + 1;
-								Layer layerxy = new Layer();
-								layerxy.setPosition(otherz);
-								Layer layerz = new Layer();
-								layerz.setPosition(otherotherz);
-								for (int t = 0; t < othery - 1; t++) {
-									layerxy.addRow(new ArrayList<>());
-									layerz.addRow(new ArrayList<>());
-								}
-								List<PowderParticle> ppx = new ArrayList<>();
-								List<PowderParticle> ppz = new ArrayList<>();
-								for (int u = 0; u < otherx - 1; u++) {
-									ppx.add(new PowderParticle());
-									ppz.add(new PowderParticle());
-								}
-								ppx.add(new PowderParticle());
-								List<PowderParticle> ppy = new ArrayList<>(ppz);
-								ppz.add(matrix.getPowderParticleAtLocation(otherx, othery, otherotherz));
-								layerz.addRow(ppz);
-								newMatrix.addLayer(layerz);
-								ppx.add(matrix.getPowderParticleAtLocation(otherotherx, othery, otherz));
-								layerxy.addRow(ppx);
-								ppy.add(matrix.getPowderParticleAtLocation(otherx, otherothery, otherz));
-								layerxy.addRow(ppy);
-								newMatrix.addLayer(layerxy);
-							}
-						}
-					}
-					if (newMatrix.getLayers().isEmpty()) {
+				int matricesSoFar = 0;
+				for (int z = lowest; z <= highest && z <= longest && z <= tallest; z++) {
+					matricesSoFar++;
+					if (matrix.getLayersAtPosition(z).isEmpty()) {
 						continue;
 					}
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int y = 0; y <= matricesSoFar; y++) {
+						int x = matricesSoFar - y;
+						PowderParticle powderParticle = 
+								matrix.getPowderParticleAtLocation(x, y, z);
+						if (powderParticle == null || powderParticle.getParticle() == null) {
+							Bukkit.getLogger().info("null " + x + " " + y + " " + z);
+							continue;
+						}
+						if (powderParticle.getParticle() == Particle.REDSTONE) {
+							Bukkit.getLogger().info("rs " + x + " " + y + " " + z);
+						}
+						newMatrix.putPowderParticle(powderParticle, x, y, z);
+					}
 
+					Bukkit.getLogger().info("adding matrix");
 					newMatrix.setSpacing(matrix.getSpacing());
 					newMatrix.setAddedPitch(matrix.getAddedPitch());
 					newMatrix.setAddedRotation(matrix.getAddedRotation());
@@ -787,6 +757,7 @@ public class ConfigUtil {
 					newStartTime = newStartTime + tickSpeed;
 					newMatrix = new ParticleMatrix();
 				}
+				break;
 			}
 			case 15: {
 				// 13 7

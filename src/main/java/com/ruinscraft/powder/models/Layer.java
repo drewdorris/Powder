@@ -36,6 +36,15 @@ public class Layer {
 		rows.add(row);
 	}
 
+	public void addRow(int index, List<PowderParticle> row) {
+		rows.add(index, row);
+	}
+
+	public void putRow(int index, List<PowderParticle> row) {
+		rows.add(index, row);
+		rows.remove(index + 1);
+	}
+
 	public double getPosition() {
 		return position;
 	}
