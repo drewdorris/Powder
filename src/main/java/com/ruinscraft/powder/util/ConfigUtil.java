@@ -709,36 +709,20 @@ public class ConfigUtil {
 			}
 			case 12: {
 				// 9 4
-			}
-			case 13: {
-				// 4 9
-			}
-			case 14: {
-				// 3 10
 				int lowest = matrix.getLowestPosition();
-				int highest = matrix.getHighestPosition();
-				int longest = matrix.getLongestRowLength();
-				int tallest = matrix.getTallestLayerHeight();
 				int newStartTime = 0;
-				int matricesSoFar = 0;
-				for (int z = lowest; z <= highest && z <= longest && z <= tallest; z++) {
-					matricesSoFar++;
-					if (matrix.getLayersAtPosition(z).isEmpty()) {
-						continue;
-					}
+				for (int z = lowest; z <= matrix.getFarthestDistance(); z++) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
-					for (int y = 0; y <= matricesSoFar; y++) {
-						int x = matricesSoFar - y;
-						PowderParticle powderParticle = 
-								matrix.getPowderParticleAtLocation(x, y, z);
-						if (powderParticle == null || powderParticle.getParticle() == null) {
-							Bukkit.getLogger().info("null " + x + " " + y + " " + z);
-							continue;
+					for (int realz = lowest; realz <= z; realz++) {
+						for (int y = 0; y <= z - lowest; y++) {
+							int x = z - y - realz;
+							PowderParticle powderParticle = 
+									matrix.getPowderParticleAtLocation(x, y, realz);
+							if (powderParticle == null || powderParticle.getParticle() == null) {
+								continue;
+							}
+							newMatrix.putPowderParticle(powderParticle, x, y, realz);
 						}
-						if (powderParticle.getParticle() == Particle.REDSTONE) {
-							Bukkit.getLogger().info("rs " + x + " " + y + " " + z);
-						}
-						newMatrix.putPowderParticle(powderParticle, x, y, z);
 					}
 
 					Bukkit.getLogger().info("adding matrix");
@@ -758,6 +742,12 @@ public class ConfigUtil {
 					newMatrix = new ParticleMatrix();
 				}
 				break;
+			}
+			case 13: {
+				// 4 9
+			}
+			case 14: {
+				// 3 10
 			}
 			case 15: {
 				// 13 7

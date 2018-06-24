@@ -1,7 +1,6 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import org.bukkit.Location;
@@ -83,9 +82,7 @@ public class ParticleMatrix implements PowderElement {
 	public PowderParticle getPowderParticleAtLocation(int x, int y, int z) {
 		for (Layer layer : this.getLayersAtPosition(z)) {
 			try {
-				List<List<PowderParticle>> newList = new ArrayList<>(layer.getRows());
-				Collections.reverse(newList);
-				return newList.get(y).get(x);
+				return layer.getRows().get(y).get(x);
 			} catch (Exception e) {
 				continue;
 			}
@@ -121,6 +118,10 @@ public class ParticleMatrix implements PowderElement {
 		}
 		layer.putRow(y, row);
 		this.addLayer(layer);
+	}
+
+	public int getFarthestDistance() {
+		return getHighestPosition() + getLongestRowLength() + getTallestLayerHeight();
 	}
 
 	public int getLowestPosition() {
