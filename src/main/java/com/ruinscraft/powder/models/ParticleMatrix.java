@@ -122,13 +122,6 @@ public class ParticleMatrix implements PowderElement {
 		this.addLayer(layer);
 	}
 
-	public void putPowderParticlePassively(PowderParticle powderParticle, int x, int y, int z) {
-		PowderParticle otherPowderParticle = this.getPowderParticleAtLocation(x, y, z);
-		if (otherPowderParticle == null || otherPowderParticle.getParticle() == null) {
-			putPowderParticle(powderParticle, x, y, z);
-		}
-	}
-
 	public int getFarthestDistance() {
 		return getHighestPosition() + getLongestRowLength() + getTallestLayerHeight();
 	}
@@ -185,6 +178,19 @@ public class ParticleMatrix implements PowderElement {
 			}
 		}
 		return longest;
+	}
+
+	public boolean hasParticles() {
+		for (Layer layer : this.layers) {
+			for (List<PowderParticle> row : layer.getRows()) {
+				for (PowderParticle powderParticle : row) {
+					if (powderParticle != null && powderParticle.getParticle() != null) {
+						return true;
+					}
+				}
+			}
+		}
+		return false;
 	}
 
 	public Set<Layer> getLayers() {
