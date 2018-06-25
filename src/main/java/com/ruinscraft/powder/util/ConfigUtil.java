@@ -434,7 +434,11 @@ public class ConfigUtil {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int j = 0; j < matrix.getLayers().size(); j++) {
 						Layer layer = new Layer();
-						Layer otherLayer = matrix.getLayers().get(j);
+						Layer otherLayer = null;
+						for (Layer otherOtherLayer : matrix.getLayers()) {
+							otherLayer = otherOtherLayer;
+							break;
+						}
 						layer.setPosition(otherLayer.getPosition());
 						List<List<PowderParticle>> reversedList = 
 								new ArrayList<>(otherLayer.getRows());
@@ -478,7 +482,11 @@ public class ConfigUtil {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int j = 0; j < matrix.getLayers().size(); j++) {
 						Layer layer = new Layer();
-						Layer otherLayer = matrix.getLayers().get(j);
+						Layer otherLayer = null;
+						for (Layer otherOtherLayer : matrix.getLayers()) {
+							otherLayer = otherOtherLayer;
+							break;
+						}
 						layer.setPosition(otherLayer.getPosition());
 						List<List<PowderParticle>> reversedList = 
 								new ArrayList<>(otherLayer.getRows());
@@ -711,21 +719,32 @@ public class ConfigUtil {
 				// 9 4
 				int lowest = matrix.getLowestPosition();
 				int newStartTime = 0;
-				for (int z = lowest; z <= matrix.getFarthestDistance(); z++) {
+				int soFar = lowest;
+				while (soFar <= matrix.getFarthestDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
-					for (int realz = lowest; realz <= z; realz++) {
-						for (int y = 0; y <= z - lowest; y++) {
-							int x = z - y - realz;
-							PowderParticle powderParticle = 
-									matrix.getPowderParticleAtLocation(x, y, realz);
-							if (powderParticle == null || powderParticle.getParticle() == null) {
-								continue;
+					int particlesAdded = 0;
+					for (int t = 0; t < length; t++) {
+						soFar++;
+						for (int z = lowest; z <= soFar; z++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int x = soFar - y - z;
+								if (x < 0) {
+									continue;
+								}
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								particlesAdded++;
+								newMatrix.putPowderParticlePassively(powderParticle, x, y, z);
 							}
-							newMatrix.putPowderParticle(powderParticle, x, y, realz);
 						}
 					}
+					if (particlesAdded == 0) {
+						continue;
+					}
 
-					Bukkit.getLogger().info("adding matrix");
 					newMatrix.setSpacing(matrix.getSpacing());
 					newMatrix.setAddedPitch(matrix.getAddedPitch());
 					newMatrix.setAddedRotation(matrix.getAddedRotation());
@@ -739,7 +758,6 @@ public class ConfigUtil {
 					newMatrices.add(newMatrix);
 
 					newStartTime = newStartTime + tickSpeed;
-					newMatrix = new ParticleMatrix();
 				}
 				break;
 			}
