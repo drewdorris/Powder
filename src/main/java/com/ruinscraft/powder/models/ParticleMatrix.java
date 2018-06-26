@@ -123,7 +123,8 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public int getFarthestDistance() {
-		return getHighestPosition() + getLongestRowLength() + getTallestLayerHeight();
+		return getHighestPosition() - getLowestPosition() 
+				+ getLongestRowLength() + getTallestLayerHeight();
 	}
 
 	public int getLowestPosition() {

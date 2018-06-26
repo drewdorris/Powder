@@ -439,6 +439,7 @@ public class ConfigUtil {
 				// 26 25
 				int newStartTime = 0;
 				int y = 0;
+				boolean started = false;
 				while (y <= matrix.getTallestLayerHeight()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -457,8 +458,11 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
@@ -466,6 +470,7 @@ public class ConfigUtil {
 				// 25 26
 				int newStartTime = 0;
 				int y = matrix.getTallestLayerHeight();
+				boolean started = false;
 				while (y >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -484,8 +489,11 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
@@ -493,6 +501,7 @@ public class ConfigUtil {
 				// 24 22
 				int newStartTime = 0;
 				int x = 0;
+				boolean started = false;
 				while (x <= matrix.getLongestRowLength()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -511,8 +520,11 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
@@ -520,6 +532,7 @@ public class ConfigUtil {
 				// 22 24
 				int newStartTime = 0;
 				int x = matrix.getLongestRowLength();
+				boolean started = false;
 				while (x >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -538,8 +551,11 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
@@ -547,6 +563,7 @@ public class ConfigUtil {
 				// 21 23
 				int newStartTime = 0;
 				int z = matrix.getLowestPosition();
+				boolean started = false;
 				while (z <= matrix.getHighestPosition()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -565,8 +582,11 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
@@ -574,6 +594,7 @@ public class ConfigUtil {
 				// 23 21
 				int newStartTime = 0;
 				int z = matrix.getHighestPosition();
+				boolean started = false;
 				while (z >= matrix.getLowestPosition()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
@@ -592,42 +613,27 @@ public class ConfigUtil {
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
 			case 7: {
 				// 2 12
-				
-			}
-			case 8: {
-				// 1 11
-			}
-			case 9: {
-				// 11 1
-			}
-			case 10: {
-				// 12 2
-			}
-			case 11: {
-				// 10 3
-			}
-			case 12: {
-				// 9 4
 				int lowest = matrix.getLowestPosition();
+				int longest = matrix.getLongestRowLength();
 				int newStartTime = 0;
-				int soFar = lowest;
-				while (soFar <= matrix.getFarthestDistance()) {
+				int soFar = matrix.getFarthestDistance();
+				boolean started = false;
+				while (soFar >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						soFar++;
-						for (int z = lowest; z <= soFar; z++) {
+						for (int x = longest; x >= longest - matrix.getFarthestDistance() + soFar; x--) {
 							for (int y = 0; y <= soFar - lowest; y++) {
-								if (y + z > soFar) {
-									break;
-								}
-								int x = soFar - y - z;
+								int z = matrix.getHighestPosition() - (soFar - y - x);
 								PowderParticle powderParticle = 
 										matrix.getPowderParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -636,20 +642,264 @@ public class ConfigUtil {
 								newMatrix.putPowderParticle(powderParticle, x, y, z);
 							}
 						}
+						soFar--;
 					}
 
 					if (newMatrix.hasParticles()) {
 						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
 					}
-					newStartTime = newStartTime + tickSpeed;
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
+			}
+			case 8: {
+				// 1 11
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = matrix.getFarthestDistance();
+				boolean started = false;
+				while (soFar >= 0) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int x = 0; x <= matrix.getFarthestDistance() - soFar; x++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
+										soFar + y - x;
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar--;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
+			}
+			case 9: {
+				// 11 1
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = 0;
+				boolean started = false;
+				while (soFar <= matrix.getFarthestDistance()) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int x = 0; x <= matrix.getFarthestDistance() - soFar; x++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
+										soFar + y - x;
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar++;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
+			}
+			case 10: {
+				// 12 2
+				int lowest = matrix.getLowestPosition();
+				int longest = matrix.getLongestRowLength();
+				int newStartTime = 0;
+				int soFar = 0;
+				boolean started = false;
+				while (soFar <= matrix.getFarthestDistance()) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int x = longest; x >= longest - matrix.getFarthestDistance() + soFar; x--) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int z = matrix.getHighestPosition() - (soFar - y - x);
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar++;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
+			}
+			case 11: {
+				// 10 3
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = lowest;
+				boolean started = false;
+				while (soFar <= matrix.getFarthestDistance()) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int z = lowest; z <= soFar; z++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								if (y + z > soFar) {
+									break;
+								}
+								int x = matrix.getLongestRowLength() - (soFar - y - z);
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar++;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
+			}
+			case 12: {
+				// 9 4
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = lowest;
+				boolean started = false;
+				while (soFar <= matrix.getFarthestDistance()) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int z = lowest; z <= soFar; z++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int x = soFar - y - z;
+								if (x < 0) {
+									break;
+								}
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar++;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
 				}
 				break;
 			}
 			case 13: {
 				// 4 9
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = matrix.getFarthestDistance();
+				boolean started = false;
+				while (soFar >= lowest) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int z = lowest; z <= soFar; z++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								int x = soFar - y - z;
+								if (x < 0) {
+									break;
+								}
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar--;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
 			}
 			case 14: {
 				// 3 10
+				int lowest = matrix.getLowestPosition();
+				int newStartTime = 0;
+				int soFar = matrix.getFarthestDistance();
+				boolean started = false;
+				while (soFar >= lowest) {
+					ParticleMatrix newMatrix = new ParticleMatrix();
+					for (int t = 0; t < length; t++) {
+						for (int z = lowest; z <= soFar; z++) {
+							for (int y = 0; y <= soFar - lowest; y++) {
+								if (y + z > soFar) {
+									break;
+								}
+								int x = matrix.getLongestRowLength() - (soFar - y - z);
+								PowderParticle powderParticle = 
+										matrix.getPowderParticleAtLocation(x, y, z);
+								if (powderParticle == null || powderParticle.getParticle() == null) {
+									continue;
+								}
+								newMatrix.putPowderParticle(powderParticle, x, y, z);
+							}
+						}
+						soFar--;
+					}
+
+					if (newMatrix.hasParticles()) {
+						newMatrices.add(setDefaults(matrix, newMatrix, newStartTime));
+						started = true;
+					}
+					if (started) {
+						newStartTime = newStartTime + tickSpeed;
+					}
+				}
+				break;
 			}
 			case 15: {
 				// 13 7
