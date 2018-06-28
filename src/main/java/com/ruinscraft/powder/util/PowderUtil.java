@@ -23,6 +23,7 @@ import java.util.stream.Stream;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
+import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Entity;
@@ -1635,6 +1636,30 @@ public class PowderUtil {
 		    }
 		}
 		return newMatrices;
+	}
+
+	public static ParticleMatrix setFlash(ParticleMatrix matrix, int r, int g, int b, int flash) {
+		ParticleMatrix newMatrix = new ParticleMatrix();
+		for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
+			for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
+				for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+					PowderParticle powderParticle = 
+							matrix.getPowderParticleAtLocation(x, y, z);
+					if (powderParticle == null || 
+							powderParticle.getParticle() != Particle.REDSTONE) {
+						continue;
+					}
+					PowderParticle newParticle = powderParticle.clone();
+					newParticle.setXOff((newParticle.getXOff() + r) % 255);
+					newParticle.setYOff((newParticle.getYOff() + g) % 255);
+					newParticle.setZOff((newParticle.getZOff() + b) % 255);
+					newMatrix.putPowderParticle(newParticle, x, y, z);
+				}
+			}
+		}
+		setDefaults(matrix, newMatrix, matrix.getStartTime());
+		matrix.setStartTime(matrix.getStartTime() + flash);
+		return newMatrix;
 	}
 
 }

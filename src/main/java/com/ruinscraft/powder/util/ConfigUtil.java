@@ -385,11 +385,12 @@ public class ConfigUtil {
 					particleMatrix.setPlayerLeft(powder.getDefaultLeft());
 					particleMatrix.setPlayerUp(powder.getDefaultUp());
 				}
+				List<ParticleMatrix> matrices = new ArrayList<>();
 				if (powderConfig.getInt(eachSection + ".settings.gradient.type", 0) > 0) {
 					int gradient = powderConfig.getInt(eachSection + ".settings.gradient.type");
 					int tickSpeed = powderConfig.getInt(eachSection + ".settings.gradient.speed", 1);
 					int length = powderConfig.getInt(eachSection + ".settings.gradient.length", 1);
-					powder.addPowderElements(
+					matrices.addAll(
 							PowderUtil.setGradients(particleMatrix, gradient, tickSpeed, length));
 				} else if (powderConfig.getInt(eachSection + ".settings.twist.type", 0) > 0) {
 					int type = powderConfig.getInt(eachSection + ".settings.twist.type", 0);
@@ -397,12 +398,24 @@ public class ConfigUtil {
 					int length = powderConfig.getInt(eachSection + ".settings.twist.length", 1);
 					int startingPoint = powderConfig.getInt(
 							eachSection + ".settings.twist.startingPoint", 0);
-					powder.addPowderElements(
+					matrices.addAll(
 							PowderUtil.setTwist(particleMatrix, 
 									type, magnitude, length, startingPoint));
 				} else {
-					powder.addPowderElement(particleMatrix);
+					matrices.add(particleMatrix);
 				}
+				if (powderConfig.getInt(eachSection + ".settings.flash.flash", 0) > 0) {
+					int r = powderConfig.getInt(eachSection + ".settings.flash.r", 0);
+					int g = powderConfig.getInt(eachSection + ".settings.flash.g", 0);
+					int b = powderConfig.getInt(eachSection + ".settings.flash.b", 0);
+					int flash = powderConfig.getInt(eachSection + ".settings.flash.flash", 1);
+					int size = matrices.size();
+					for (int i = 0; i < size; i++) {
+						ParticleMatrix matrix = matrices.get(i);
+						matrices.add(size + i, PowderUtil.setFlash(matrix, r, g, b, flash));
+					}
+				}
+				powder.addPowderElements(matrices);
 			}
 		}
 		if (powder.getPowderElements().isEmpty()) {
