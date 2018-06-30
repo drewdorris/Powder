@@ -329,11 +329,11 @@ public class PowderHandler {
 	}
 
 	// gets categories which contain the given string
-	public Map<String, String> getSimilarCategories(String string) {
+	public Map<String, String> getSimilarCategories(String category) {
 		Map<String, String> similarPowders = new HashMap<>();
-		for (String category : this.categories.keySet()) {
-			if (category.toLowerCase().contains(string.toLowerCase())) {
-				similarPowders.put(category, this.categories.get(category));
+		for (String otherCategory : this.categories.keySet()) {
+			if (otherCategory.toLowerCase().contains(category.toLowerCase())) {
+				similarPowders.put(otherCategory, this.categories.get(otherCategory));
 			}
 		}
 		return similarPowders;

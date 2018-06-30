@@ -76,7 +76,7 @@ public enum Message {
 	POWDER_CREATED_HOVER("{user}", "{command}", "{powder}"),
 	POWDER_CREATED_CLICK("{user}", "{command}", "{powder}"),
 	POWDER_CREATED_TIP("{user}", "{command}"),
-	POWDER_CREATED_WITHOUT_HOVER("{user}", "{command}"),
+	POWDER_CREATED_WITHOUT_HOVER("{user}", "{command}", "{powder}"),
 	HELP_PREFIX(),
 	HELP_POWDER(),
 	HELP_POWDER_CANCEL(),

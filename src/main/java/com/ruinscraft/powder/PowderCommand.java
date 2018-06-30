@@ -581,10 +581,10 @@ public class PowderCommand implements CommandExecutor {
 				// cancel if exists
 				if (powder.cancel(player.getUniqueId())) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SUCCESS, 
-							label, player.getName(), args[0], String.valueOf(taskAmount));
+							label, player.getName(), powder.getName(), String.valueOf(taskAmount));
 				} else {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_FAILURE, 
-							label, player.getName(), args[0]);
+							label, player.getName(), powder.getName());
 				}
 			}
 			return false;
@@ -647,21 +647,15 @@ public class PowderCommand implements CommandExecutor {
 
 		// spawn the Powder
 		powder.spawn(player);
-		// if Powder has animation/dusts/sounds
-		if (powder.hasMovement()) {
-			PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(
-					Message.POWDER_CREATED, Message.POWDER_CREATED_HOVER, 
-					Message.POWDER_CREATED_CLICK, player.getName(), 
-					label, powder.getName()), label);
-			if (new Random().nextInt(12) == 1) {
-				PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_TIP, 
-						label, player.getName(), label);
-			}
-		} else {
-			PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_WITHOUT_HOVER, 
+
+		PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(
+				Message.POWDER_CREATED, Message.POWDER_CREATED_HOVER, 
+				Message.POWDER_CREATED_CLICK, player.getName(), 
+				label, powder.getName()), label);
+		if (new Random().nextInt(12) == 1) {
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_TIP, 
 					label, player.getName(), label);
 		}
-
 		return true;
 	}
 

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
@@ -19,6 +20,8 @@ public class Powder implements Cloneable {
 
 	// name of the Powder
 	private String name;
+	// path to the Powder in configuration
+	private String path;
 	// list of categories the Powder is in
 	private List<String> categories;
 	// the spacing for ParticleMatrices in the Powder if not specified
@@ -54,8 +57,16 @@ public class Powder implements Cloneable {
 		this.powderParticles = new ArrayList<>();
 	}
 
+	public Powder(String path) {
+		this.categories = new ArrayList<>();
+		this.powderElements = new ArrayList<>();
+		this.powderParticles = new ArrayList<>();
+		this.path = path;
+	}
+
 	public Powder(Powder powder) {
 		name = powder.getName();
+		path = powder.getPath();
 		categories = powder.getCategories();
 		defaultLeft = powder.getDefaultLeft();
 		defaultUp = powder.getDefaultUp();
@@ -77,6 +88,10 @@ public class Powder implements Cloneable {
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public String getPath() {
+		return path;
 	}
 
 	public List<String> getCategories() {
@@ -233,9 +248,11 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(Entity entity) {
-		PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
-				PowderUtil.generateID(8), this, new EntityTracker(entity));
-		spawn(powderTask);
+		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
+					PowderUtil.generateID(8), this, new EntityTracker(entity));
+			spawn(powderTask);
+		});
 	}
 
 	public void spawn(String name, Location location) {
@@ -245,9 +262,11 @@ public class Powder implements Cloneable {
 
 	// spawns a given Powder for the given user
 	public void spawn(Player player) {
-		PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6), 
-				this, new PlayerTracker(player.getUniqueId()));
-		spawn(powderTask);
+		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6), 
+					this, new PlayerTracker(player.getUniqueId()));
+			spawn(powderTask);
+		});
 	}
 
 	public void spawn(PowderTask powderTask) {

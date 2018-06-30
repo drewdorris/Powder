@@ -724,7 +724,7 @@ public class PowderUtil {
 			// diagram https://i.imgur.com/0uL5i3a.png
 			case 1: {
 				// 26 25
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int y = 0;
 				boolean started = false;
 				while (y <= matrix.getTallestLayerHeight()) {
@@ -755,7 +755,7 @@ public class PowderUtil {
 			}
 			case 2: {
 				// 25 26
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int y = matrix.getTallestLayerHeight();
 				boolean started = false;
 				while (y >= 0) {
@@ -786,7 +786,7 @@ public class PowderUtil {
 			}
 			case 3: {
 				// 24 22
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int x = 0;
 				boolean started = false;
 				while (x <= matrix.getLongestRowLength()) {
@@ -817,7 +817,7 @@ public class PowderUtil {
 			}
 			case 4: {
 				// 22 24
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int x = matrix.getLongestRowLength();
 				boolean started = false;
 				while (x >= 0) {
@@ -848,7 +848,7 @@ public class PowderUtil {
 			}
 			case 5: {
 				// 21 23
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int z = matrix.getLowestPosition();
 				boolean started = false;
 				while (z <= matrix.getHighestPosition()) {
@@ -879,7 +879,7 @@ public class PowderUtil {
 			}
 			case 6: {
 				// 23 21
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int z = matrix.getHighestPosition();
 				boolean started = false;
 				while (z >= matrix.getLowestPosition()) {
@@ -912,7 +912,7 @@ public class PowderUtil {
 				// 2 12
 				int lowest = matrix.getLowestPosition();
 				int longest = matrix.getLongestRowLength();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= 0) {
@@ -945,7 +945,7 @@ public class PowderUtil {
 			case 8: {
 				// 1 11
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= 0) {
@@ -979,7 +979,7 @@ public class PowderUtil {
 			case 9: {
 				// 11 1
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = 0;
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1014,7 +1014,7 @@ public class PowderUtil {
 				// 12 2
 				int lowest = matrix.getLowestPosition();
 				int longest = matrix.getLongestRowLength();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = 0;
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1047,7 +1047,7 @@ public class PowderUtil {
 			case 11: {
 				// 10 3
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = lowest;
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1083,7 +1083,7 @@ public class PowderUtil {
 			case 12: {
 				// 9 4
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = lowest;
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1119,7 +1119,7 @@ public class PowderUtil {
 			case 13: {
 				// 4 9
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= lowest) {
@@ -1155,7 +1155,7 @@ public class PowderUtil {
 			case 14: {
 				// 3 10
 				int lowest = matrix.getLowestPosition();
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= lowest) {
@@ -1190,7 +1190,7 @@ public class PowderUtil {
 			}
 			case 15: {
 				// 13 7
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= matrix.getLowestPosition()) {
@@ -1224,7 +1224,7 @@ public class PowderUtil {
 			}
 			case 16: {
 				// 5 15
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= matrix.getLowestPosition()) {
@@ -1257,7 +1257,7 @@ public class PowderUtil {
 			}
 			case 17: {
 				// 7 13
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getLowestPosition();
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1291,7 +1291,7 @@ public class PowderUtil {
 			}
 			case 18: {
 				// 15 5
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getLowestPosition();
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1324,7 +1324,7 @@ public class PowderUtil {
 			}
 			case 19: {
 				// 16 6
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getLowestPosition();
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1358,7 +1358,7 @@ public class PowderUtil {
 			}
 			case 20: {
 				// 8 14
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getLowestPosition();
 				boolean started = false;
 				while (soFar <= matrix.getFarthestDistance()) {
@@ -1392,7 +1392,7 @@ public class PowderUtil {
 			}
 			case 21: {
 				// 6 16
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= matrix.getLowestPosition()) {
@@ -1426,7 +1426,7 @@ public class PowderUtil {
 			}
 			case 22: {
 				// 14 8
-				int newStartTime = 0;
+				int newStartTime = matrix.getStartTime();
 				int soFar = matrix.getFarthestDistance();
 				boolean started = false;
 				while (soFar >= matrix.getLowestPosition()) {

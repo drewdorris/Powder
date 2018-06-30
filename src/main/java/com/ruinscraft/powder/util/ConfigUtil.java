@@ -48,7 +48,8 @@ public class ConfigUtil {
 		}
 		instance.reloadConfig();
 		config = instance.getConfig();
-		PowderPlugin.getInstance().setConfigVersion(config.getInt("configVersion", 0));
+		instance.setConfigVersion(config.getInt("configVersion", 0));
+		instance.setFastMode(config.getBoolean("fastMode", true));
 		checkConfigVersion();
 		return config;
 	}
@@ -139,14 +140,65 @@ public class ConfigUtil {
 		}
 	}
 
+	public static boolean configContainsPowder(FileConfiguration config, String path) {
+		if (config.getString("powders." + path + ".name") != null) {
+			return true;
+		}
+		return false;
+	}
+
+	public static Powder loadPowderFromConfig(String path) {
+		for (FileConfiguration config : PowderPlugin.getInstance().getPowderConfigs()) {
+			if (configContainsPowder(config, path)) {
+				return loadPowderFromConfig(config, path);
+			}
+		}
+		return null;
+	}
+
 	@SuppressWarnings("unchecked")
-	public static Powder loadPowderFromConfig(FileConfiguration powderConfig, String s) {
-		Powder powder = new Powder();
+	public static Powder loadPowderShellFromConfig(FileConfiguration powderConfig, String path) {
+		Powder powder = new Powder(path);
 
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		Logger logger = PowderPlugin.getInstance().getLogger();
 
-		String section = "powders." + s;
+		logger.info("not in the hood");
+		String section = "powders." + path;
+
+		// set some given values if they exist, default value if they don't
+		powder.setName(powderConfig.getString(section + ".name", null));
+		powder.setHidden(
+				powderConfig.getBoolean(section + ".hidden", false));
+
+		// add categories if enabled
+		if (powderHandler.categoriesEnabled()) {
+			for (String t : (List<String>) powderConfig
+					.getList(section + ".categories", new ArrayList<String>())) {
+				if (!(powderHandler.getCategories().keySet().contains(t))) {
+					logger.warning("Invalid category '" + t + 
+							"' for '" + powder.getName() + "' in " + powderConfig.getName());
+					continue;
+				}
+				powder.addCategory(t);
+			}
+			if (powder.getCategories().isEmpty()) {
+				powder.addCategory("Other");
+			}
+		}
+
+		return powder;
+	}
+
+	@SuppressWarnings("unchecked")
+	public static Powder loadPowderFromConfig(FileConfiguration powderConfig, String path) {
+		Powder powder = new Powder(path);
+
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		Logger logger = PowderPlugin.getInstance().getLogger();
+
+		logger.info("in the hood");
+		String section = "powders." + path;
 
 		// set some given values if they exist, default value if they don't
 		powder.setName(powderConfig.getString(section + ".name", null));
@@ -426,15 +478,15 @@ public class ConfigUtil {
 		return powder;
 	}
 
-	public static int getStart(FileConfiguration powderConfig, Powder powder, String section) {
+	private static int getStart(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".startTime", powder.getDefaultStartTime());
 	}
 
-	public static int getRepeat(FileConfiguration powderConfig, Powder powder, String section) {
+	private static int getRepeat(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".repeatTime", powder.getDefaultRepeatTime());
 	}
 
-	public static int getIterations(FileConfiguration powderConfig, Powder powder, String section) {
+	private static int getIterations(FileConfiguration powderConfig, Powder powder, String section) {
 		return powderConfig.getInt(section + ".iterations", powder.getDefaultLockedIterations());
 	}
 

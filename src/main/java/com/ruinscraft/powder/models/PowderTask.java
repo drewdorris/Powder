@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
@@ -34,15 +35,15 @@ public class PowderTask {
 	public PowderTask(String name, Powder powder, Tracker tracker) {
 		this.name = name;
 		this.powders = new HashMap<>();
-		this.powders.put(powder.clone(), tracker);
-		trackerType = tracker.getType();
+		this.trackerType = tracker.getType();
+		addPowder(powder, tracker);
 	}
 
 	public PowderTask(Powder powder, Tracker tracker) {
 		this.name = null;
 		this.powders = new HashMap<>();
-		this.powders.put(powder.clone(), tracker);
-		trackerType = tracker.getType();
+		this.trackerType = tracker.getType();
+		addPowder(powder, tracker);
 	}
 
 	public Set<UUID> getUUIDsIfExist() {
@@ -103,6 +104,16 @@ public class PowderTask {
 		return locations;
 	}
 
+	public Powder getPowderIfNotStationary() {
+		for (Entry<Powder, Tracker> entry : getPowders().entrySet()) {
+			if (entry.getValue().getType() == TrackerType.STATIONARY) {
+				continue;
+			}
+			return entry.getKey();
+		}
+		return null;
+	}
+
 	public Map<Powder, Tracker> getPowders() {
 		return powders;
 	}
@@ -123,7 +134,14 @@ public class PowderTask {
 		if (!tracker.getType().equals(trackerType)) {
 			return false;
 		}
-		this.powders.put(powder.clone(), tracker);
+		if (PowderPlugin.getInstance().fastMode()) {
+			Powder actualPowder = ConfigUtil.loadPowderFromConfig(powder.getPath());
+			if (actualPowder != null) {
+				this.powders.put(actualPowder, tracker);
+			}
+		} else {
+			this.powders.put(powder.clone(), tracker);
+		}
 		ConfigUtil.saveStationaryPowder(
 				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
 		return true;
