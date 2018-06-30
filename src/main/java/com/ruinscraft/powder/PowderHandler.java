@@ -264,6 +264,7 @@ public class PowderHandler {
 				if (powderElement.getLockedIterations() == 0) {
 					powderElement.setLockedIterations(Integer.MAX_VALUE);
 				}
+				powderElement.setStartingTick();
 			}
 		}
 		if (getPowderTasks().isEmpty()) {

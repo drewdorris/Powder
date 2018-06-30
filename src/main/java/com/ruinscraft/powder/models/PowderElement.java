@@ -20,6 +20,8 @@ public interface PowderElement extends Cloneable {
 
 	int getNextTick(); // the tick for the PowderElement to play
 
+	void setStartingTick(); // sets the starting tick, right before the element starts
+
 	PowderElement clone();
 
 }

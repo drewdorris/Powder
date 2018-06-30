@@ -1,8 +1,11 @@
 package com.ruinscraft.powder.models;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 
 public class SoundEffect implements PowderElement {
@@ -36,7 +39,6 @@ public class SoundEffect implements PowderElement {
 		this.startTime = soundEffect.getStartTime();
 		this.repeatTime = soundEffect.getRepeatTime();
 		this.lockedIterations = soundEffect.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -105,6 +107,11 @@ public class SoundEffect implements PowderElement {
 	}
 
 	@Override
+	public void setStartingTick() {
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getStartTime();
+	}
+
+	@Override
 	public SoundEffect clone() {
 		return new SoundEffect(this);
 	}
@@ -112,13 +119,16 @@ public class SoundEffect implements PowderElement {
 	// creates this SoundEffect at the designated location
 	@Override
 	public void create(Location location) {
-		if (surroundSound) {
-			location.getWorld().playSound(
-					location.add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 
-					sound, (float) volume, (float) pitch);
-		} else {
-			location.getWorld().playSound(location, sound, (float) volume, (float) pitch);
-		}
+		World world = location.getWorld();
+		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			if (surroundSound) {
+				world.playSound(
+						location.add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 
+						sound, (float) volume, (float) pitch);
+			} else {
+				world.playSound(location, sound, (float) volume, (float) pitch);
+			}
+		});
 		/*/
 		 * other method for surroundSound, sounds a little blocky
 		 * location.getWorld().playSound(

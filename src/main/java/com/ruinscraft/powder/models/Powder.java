@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.models;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.UUID;
 
@@ -178,9 +179,9 @@ public class Powder implements Cloneable {
 		powderElements.add(powderElement);
 	}
 
-	public void addPowderElements(List<? extends PowderElement> powderElements) {
-		for (PowderElement element : powderElements) {
-			addPowderElement(element);
+	public void addPowderElements(Collection<? extends PowderElement> powderElements) {
+		for (PowderElement powderElement : powderElements) {
+			addPowderElement(powderElement);
 		}
 	}
 

@@ -5,10 +5,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.World;
 import org.bukkit.util.Vector;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 
 public class ParticleMatrix implements PowderElement {
@@ -65,7 +68,6 @@ public class ParticleMatrix implements PowderElement {
 		this.startTime = particleMatrix.getStartTime();
 		this.repeatTime = particleMatrix.getRepeatTime();
 		this.lockedIterations = particleMatrix.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -269,6 +271,7 @@ public class ParticleMatrix implements PowderElement {
 
 	public void setStartTime(int startTime) {
 		this.startTime = startTime;
+		this.nextTick = startTime;
 	}
 
 	@Override
@@ -304,6 +307,11 @@ public class ParticleMatrix implements PowderElement {
 	@Override
 	public int getNextTick() {
 		return nextTick;
+	}
+
+	@Override
+	public void setStartingTick() {
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getStartTime();
 	}
 
 	@Override
@@ -362,11 +370,18 @@ public class ParticleMatrix implements PowderElement {
 						continue;
 					}
 					// spawn the particle
-					location.getWorld().spawnParticle(
-							powderParticle.getParticle(), 
-							startingLocation.clone(), powderParticle.getAmount(), 
-							powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-							powderParticle.getZOff() / 255, powderParticle.getData());
+					Location newLocation = startingLocation.clone();
+					double x = newLocation.getX();
+					double y = newLocation.getY();
+					double z = newLocation.getZ();
+					World world = location.getWorld();
+					Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+						world.spawnParticle(
+								powderParticle.getParticle(), 
+								x, y, z, powderParticle.getAmount(), 
+								powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+								powderParticle.getZOff() / 255, powderParticle.getData());
+					});
 					startingLocation = startingLocation.clone().add(sideToSideVector.clone());
 				}
 				startingLocation = startingLocation.clone()

@@ -437,6 +437,7 @@ public class ConfigUtil {
 					particleMatrix.setPlayerLeft(powder.getDefaultLeft());
 					particleMatrix.setPlayerUp(powder.getDefaultUp());
 				}
+
 				List<ParticleMatrix> matrices = new ArrayList<>();
 				if (powderConfig.getInt(eachSection + ".settings.gradient.type", 0) > 0) {
 					int gradient = powderConfig.getInt(eachSection + ".settings.gradient.type");

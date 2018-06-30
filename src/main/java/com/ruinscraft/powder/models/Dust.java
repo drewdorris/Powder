@@ -1,7 +1,10 @@
 package com.ruinscraft.powder.models;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 
 public class Dust implements PowderElement {
@@ -34,7 +37,6 @@ public class Dust implements PowderElement {
 		this.startTime = dust.getStartTime();
 		this.repeatTime = dust.getRepeatTime();
 		this.lockedIterations = dust.getLockedIterations();
-		this.nextTick = PowdersCreationTask.getCurrentTick() + startTime;
 		this.iterations = 0;
 	}
 
@@ -103,6 +105,11 @@ public class Dust implements PowderElement {
 	}
 
 	@Override
+	public void setStartingTick() {
+		this.nextTick = PowdersCreationTask.getCurrentTick() + getStartTime();
+	}
+
+	@Override
 	public Dust clone() {
 		return new Dust(this);
 	}
@@ -111,14 +118,20 @@ public class Dust implements PowderElement {
 	@Override
 	public void create(Location location) {
 		PowderParticle powderParticle = getPowderParticle();
-		location.getWorld().spawnParticle(
-				powderParticle.getParticle(), location.clone().add(
-						(Math.random() - .5) * (2 * getRadius()), 
-						((Math.random() - .5) * getYSpan()) + getHeight() - .625,
-						(Math.random() - .5) * (2 * getRadius())), 
-				powderParticle.getAmount(), 
-				powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-				powderParticle.getZOff() / 255, (double) powderParticle.getData());
+		World world = location.getWorld();
+		double x = location.getX();
+		double y = location.getY();
+		double z = location.getZ();
+		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			world.spawnParticle(
+					powderParticle.getParticle(), 
+					x + (Math.random() - .5) * (2 * getRadius()), 
+					y + ((Math.random() - .5) * getYSpan()) + getHeight() - .625, 
+					z + (Math.random() - .5) * (2 * getRadius()), 
+					powderParticle.getAmount(), 
+					powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+					powderParticle.getZOff() / 255, (double) powderParticle.getData());
+		});
 	}
 
 }
