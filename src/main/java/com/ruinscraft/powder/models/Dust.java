@@ -117,17 +117,12 @@ public class Dust implements PowderElement {
 	// creates this Dust at the designated location
 	@Override
 	public void create(Location location) {
-		PowderParticle powderParticle = getPowderParticle();
-		World world = location.getWorld();
-		double x = location.getX();
-		double y = location.getY();
-		double z = location.getZ();
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			world.spawnParticle(
-					powderParticle.getParticle(), 
-					x + (Math.random() - .5) * (2 * getRadius()), 
-					y + ((Math.random() - .5) * getYSpan()) + getHeight() - .625, 
-					z + (Math.random() - .5) * (2 * getRadius()), 
+			location.getWorld().spawnParticle(
+					powderParticle.getParticle(), location.clone().add(
+							(Math.random() - .5) * (2 * getRadius()), 
+							((Math.random() - .5) * getYSpan()) + getHeight() - .625,
+							(Math.random() - .5) * (2 * getRadius())), 
 					powderParticle.getAmount(), 
 					powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
 					powderParticle.getZOff() / 255, (double) powderParticle.getData());

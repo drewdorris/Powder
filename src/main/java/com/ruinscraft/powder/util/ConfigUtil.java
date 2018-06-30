@@ -163,7 +163,6 @@ public class ConfigUtil {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		Logger logger = PowderPlugin.getInstance().getLogger();
 
-		logger.info("not in the hood");
 		String section = "powders." + path;
 
 		// set some given values if they exist, default value if they don't
@@ -197,7 +196,6 @@ public class ConfigUtil {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		Logger logger = PowderPlugin.getInstance().getLogger();
 
-		logger.info("in the hood");
 		String section = "powders." + path;
 
 		// set some given values if they exist, default value if they don't
