@@ -1,11 +1,11 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.World;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.model.particle.PowderParticle;
 
 public class Dust implements PowderElement {
 

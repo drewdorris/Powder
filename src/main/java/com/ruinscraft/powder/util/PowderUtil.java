@@ -31,11 +31,11 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.Message;
-import com.ruinscraft.powder.models.ParticleMatrix;
-import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderParticle;
-import com.ruinscraft.powder.models.PowderTask;
+import com.ruinscraft.powder.model.Message;
+import com.ruinscraft.powder.model.ParticleMatrix;
+import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.particle.PowderParticle;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;

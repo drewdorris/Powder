@@ -15,10 +15,10 @@ import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.google.common.collect.Iterables;
-import com.ruinscraft.powder.models.Message;
-import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderTask;
-import com.ruinscraft.powder.models.trackers.StationaryTracker;
+import com.ruinscraft.powder.model.Message;
+import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 import net.md_5.bungee.api.chat.ClickEvent;

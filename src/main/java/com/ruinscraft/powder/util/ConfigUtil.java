@@ -23,18 +23,17 @@ import org.bukkit.configuration.file.YamlConfiguration;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.Dust;
-import com.ruinscraft.powder.models.Layer;
-import com.ruinscraft.powder.models.ParticleMatrix;
-import com.ruinscraft.powder.models.ParticleName;
-import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.PowderParticle;
-import com.ruinscraft.powder.models.PowderTask;
-import com.ruinscraft.powder.models.SoundEffect;
-import com.ruinscraft.powder.models.trackers.StationaryTracker;
-import com.ruinscraft.powder.models.trackers.Tracker;
-import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.model.Dust;
+import com.ruinscraft.powder.model.Layer;
+import com.ruinscraft.powder.model.ParticleMatrix;
+import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderElement;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.SoundEffect;
+import com.ruinscraft.powder.model.particle.ParticleName;
+import com.ruinscraft.powder.model.particle.PowderParticle;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 
 public class ConfigUtil {
 
@@ -540,7 +539,7 @@ public class ConfigUtil {
 
 	public static void saveStationaryPowder(
 			FileConfiguration createdPowders, PowderTask powderTask) {
-		if (powderTask.getTrackerType() == TrackerType.STATIONARY) {
+		if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
 			PowderPlugin instance = PowderPlugin.getInstance();
 			if (createdPowders == null) {
 				File file = new File(instance.getDataFolder(), "createdpowders.yml");
@@ -559,7 +558,7 @@ public class ConfigUtil {
 				i++;
 				Powder powder = entry.getKey();
 				Tracker tracker = entry.getValue();
-				if (tracker.getType() != TrackerType.STATIONARY) {
+				if (tracker.getType() != Tracker.Type.STATIONARY) {
 					continue;
 				}
 				StationaryTracker stationaryTracker = (StationaryTracker) tracker;
@@ -628,7 +627,7 @@ public class ConfigUtil {
 	}
 
 	public static void removeStationaryPowder(PowderTask powderTask) {
-		if (powderTask.getTrackerType() == TrackerType.STATIONARY) {
+		if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
 			FileConfiguration createdPowders = PowderPlugin.getInstance().getCreatedPowdersFile();
 			PowderPlugin.getInstance().getCreatedPowdersFile()
 			.set("created." + PowderUtil.cleanPowderTaskName(powderTask), null);

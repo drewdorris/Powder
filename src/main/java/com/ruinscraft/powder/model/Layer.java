@@ -1,7 +1,9 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import com.ruinscraft.powder.model.particle.PowderParticle;
 
 public class Layer {
 

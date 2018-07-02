@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -8,13 +8,14 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.trackers.EntityTracker;
-import com.ruinscraft.powder.models.trackers.PlayerTracker;
-import com.ruinscraft.powder.models.trackers.StationaryTracker;
+import com.ruinscraft.powder.model.particle.PowderParticle;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class Powder implements Cloneable {
@@ -251,7 +252,9 @@ public class Powder implements Cloneable {
 	public void spawn(Entity entity) {
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
-					PowderUtil.generateID(8), this, new EntityTracker(entity));
+					PowderUtil.generateID(8), this, new EntityTracker(
+							entity, Bukkit.getPlayer(entity.getUniqueId()) != null, 
+							entity instanceof LivingEntity));
 			spawn(powderTask);
 		});
 	}
@@ -265,7 +268,7 @@ public class Powder implements Cloneable {
 	public void spawn(Player player) {
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6), 
-					this, new PlayerTracker(player.getUniqueId()));
+					this, new EntityTracker(player.getUniqueId(), true, true));
 			spawn(powderTask);
 		});
 	}

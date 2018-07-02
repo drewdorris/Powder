@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model.particle;
 
 public enum ParticleName {
 

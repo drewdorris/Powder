@@ -16,7 +16,7 @@ import javax.imageio.ImageIO;
 import org.bukkit.Particle;
 
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.PowderParticle;
+import com.ruinscraft.powder.model.particle.PowderParticle;
 
 public class ImageUtil {
 

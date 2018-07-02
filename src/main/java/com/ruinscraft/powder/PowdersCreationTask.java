@@ -5,17 +5,15 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
+import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.PowderTask;
-import com.ruinscraft.powder.models.trackers.EntityTracker;
-import com.ruinscraft.powder.models.trackers.PlayerTracker;
-import com.ruinscraft.powder.models.trackers.Tracker;
-import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderElement;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
-import com.ruinscraft.powder.models.Powder;
 
 public class PowdersCreationTask extends BukkitRunnable {
 
@@ -45,21 +43,19 @@ public class PowdersCreationTask extends BukkitRunnable {
 			for (Entry<Powder, Tracker> activePowder : powderTask.getPowders().entrySet()) {
 				Powder powder = activePowder.getKey();
 				Tracker tracker = activePowder.getValue();
-				if (tracker.getType() == TrackerType.ENTITY) {
+				if (tracker.getType() == Tracker.Type.ENTITY) {
 					EntityTracker entityTracker = (EntityTracker) tracker;
-					if (entityTracker.getEntity() == null) {
+					Entity entity = entityTracker.getEntity();
+					if (entity == null) {
+						if (entityTracker.isPlayer()) {
+							powderTasksToRemoveWithoutSaving.add(powderTask);
+							break;
+						}
 						powder.getPowderElements().clear();
 						continue;
 					}
-					if (entityTracker.getEntity().isDead()) {
-						uuidsToRemove.add(entityTracker.getEntityUUID());
-						break;
-					}
-				}
-				if (tracker.getType() == TrackerType.PLAYER) {
-					PlayerTracker playerTracker = (PlayerTracker) tracker;
-					if (Bukkit.getPlayer(playerTracker.getUUID()) == null) {
-						powderTasksToRemoveWithoutSaving.add(powderTask);
+					if (entity.isDead()) {
+						uuidsToRemove.add(entityTracker.getUUID());
 						break;
 					}
 				}

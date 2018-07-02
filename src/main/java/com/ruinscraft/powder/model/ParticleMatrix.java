@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -13,6 +13,7 @@ import org.bukkit.util.Vector;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.model.particle.PowderParticle;
 
 public class ParticleMatrix implements PowderElement {
 

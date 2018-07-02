@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -12,10 +12,8 @@ import java.util.UUID;
 import org.bukkit.Location;
 
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.trackers.EntityTracker;
-import com.ruinscraft.powder.models.trackers.PlayerTracker;
-import com.ruinscraft.powder.models.trackers.Tracker;
-import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.ConfigUtil;
 
 public class PowderTask {
@@ -23,7 +21,7 @@ public class PowderTask {
 	// name associated with this PowderTask (null if no player)
 	private String name;
 	// TrackerType associated with the Powders in this PowderTask
-	private TrackerType trackerType;
+	private Tracker.Type trackerType;
 	// Powder associated with this PowderTask
 	private Map<Powder, Tracker> powders;
 
@@ -57,11 +55,8 @@ public class PowderTask {
 	}
 
 	public UUID getUUIDIfExist(Tracker unknownTracker) {
-		if (trackerType == TrackerType.ENTITY) {
+		if (trackerType == Tracker.Type.ENTITY) {
 			EntityTracker tracker = (EntityTracker) unknownTracker;
-			return tracker.getEntityUUID();
-		} else if (trackerType == TrackerType.PLAYER) {
-			PlayerTracker tracker = (PlayerTracker) unknownTracker;
 			return tracker.getUUID();
 		}
 		return null;
@@ -85,7 +80,7 @@ public class PowderTask {
 				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
 	}
 
-	public TrackerType getTrackerType() {
+	public Tracker.Type getTrackerType() {
 		return trackerType;
 	}
 
@@ -106,7 +101,7 @@ public class PowderTask {
 
 	public Powder getPowderIfNotStationary() {
 		for (Entry<Powder, Tracker> entry : getPowders().entrySet()) {
-			if (entry.getValue().getType() == TrackerType.STATIONARY) {
+			if (entry.getValue().getType() == Tracker.Type.STATIONARY) {
 				continue;
 			}
 			return entry.getKey();

@@ -1,4 +1,4 @@
-package com.ruinscraft.powder.models.trackers;
+package com.ruinscraft.powder.model.tracker;
 
 import org.bukkit.Location;
 
@@ -11,8 +11,8 @@ public class StationaryTracker implements Tracker {
 	}
 
 	@Override
-	public TrackerType getType() {
-		return TrackerType.STATIONARY;
+	public Tracker.Type getType() {
+		return Tracker.Type.STATIONARY;
 	}
 
 	@Override

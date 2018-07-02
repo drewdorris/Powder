@@ -9,7 +9,7 @@ import java.util.List;
 import org.bukkit.Sound;
 
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.models.SoundEffect;
+import com.ruinscraft.powder.model.SoundEffect;
 import com.xxmicloxx.NoteBlockAPI.Instrument;
 import com.xxmicloxx.NoteBlockAPI.Layer;
 import com.xxmicloxx.NoteBlockAPI.NBSDecoder;

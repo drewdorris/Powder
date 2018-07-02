@@ -12,15 +12,15 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 
-import com.ruinscraft.powder.models.Powder;
-import com.ruinscraft.powder.models.PowderElement;
-import com.ruinscraft.powder.models.PowderTask;
-import com.ruinscraft.powder.models.trackers.EntityTracker;
-import com.ruinscraft.powder.models.trackers.PlayerTracker;
-import com.ruinscraft.powder.models.trackers.StationaryTracker;
-import com.ruinscraft.powder.models.trackers.Tracker;
-import com.ruinscraft.powder.models.trackers.TrackerType;
+import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderElement;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 
@@ -102,20 +102,14 @@ public class PowderHandler {
 		return this.powderTasks;
 	}
 
-	// gets all current PowderTasks under a player
+	// gets all current PowderTasks under a uuid
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Tracker tracker : powderTask.getPowders().values()) {
-				if (tracker.getType() == TrackerType.PLAYER) {
-					PlayerTracker playerTracker = (PlayerTracker) tracker;
-					if (playerTracker.getUUID().equals(uuid)) {
-						playerPowderTasks.add(powderTask);
-						break;
-					}
-				} else if (tracker.getType() == TrackerType.ENTITY) {
+				if (tracker.getType() == Tracker.Type.ENTITY) {
 					EntityTracker entityTracker = (EntityTracker) tracker;
-					if (entityTracker.getEntityUUID().equals(uuid)) {
+					if (entityTracker.getUUID().equals(uuid)) {
 						playerPowderTasks.add(powderTask);
 						break;
 					}
@@ -125,22 +119,16 @@ public class PowderHandler {
 		return playerPowderTasks;
 	}
 
-	// gets all current PowderTasks under a player & Powder
+	// gets all current PowderTasks under a uuid & Powder
 	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
 				if (powder.getName().equals(entry.getKey().getName())) {
-					if (tracker.getType() == TrackerType.PLAYER) {
-						PlayerTracker playerTracker = (PlayerTracker) tracker;
-						if (playerTracker.getUUID().equals(uuid)) {
-							playerPowderTasks.add(powderTask);
-							break;
-						}
-					} else if (tracker.getType() == TrackerType.ENTITY) {
+					if (tracker.getType() == Tracker.Type.ENTITY) {
 						EntityTracker entityTracker = (EntityTracker) tracker;
-						if (entityTracker.getEntityUUID().equals(uuid)) {
+						if (entityTracker.getUUID().equals(uuid)) {
 							playerPowderTasks.add(powderTask);
 							break;
 						}
@@ -154,18 +142,21 @@ public class PowderHandler {
 	// gets all users who have a running PowderTask
 	public Set<UUID> getAllPowderTaskUsers() {
 		Set<UUID> players = new HashSet<>();
-		players.addAll(getCurrentPlayerTracks().values().stream()
-				.map(PlayerTracker::getUUID).collect(Collectors.toSet()));
+		for (Entry<Powder, EntityTracker> entry : getCurrentEntityTracks().entrySet()) {
+			EntityTracker tracker = entry.getValue();
+			Entity entity = tracker.getEntity();
+			if (entity instanceof Player) {
+				players.add(entity.getUniqueId());
+			}
+		}
 		return players;
 	}
 
 	// gets all users who have a running PowderTask
 	public Set<UUID> getAllPowderTaskUUIDs() {
 		Set<UUID> uuids = new HashSet<>();
-		uuids.addAll(getCurrentPlayerTracks().values().stream()
-				.map(PlayerTracker::getUUID).collect(Collectors.toSet()));
 		uuids.addAll(getCurrentEntityTracks().values().stream()
-				.map(EntityTracker::getEntityUUID).collect(Collectors.toSet()));
+				.map(EntityTracker::getUUID).collect(Collectors.toSet()));
 		return uuids;
 	}
 
@@ -200,26 +191,12 @@ public class PowderHandler {
 		return nearbyPowderTasks;
 	}
 
-	public Map<Powder, PlayerTracker> getCurrentPlayerTracks() {
-		Map<Powder, PlayerTracker> playerTracks = new HashMap<>();
-		for (PowderTask powderTask : this.powderTasks) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-				if (tracker.getType() == TrackerType.PLAYER) {
-					playerTracks.put(entry.getKey(), (PlayerTracker) tracker);
-					break;
-				}
-			}
-		}
-		return playerTracks;
-	}
-
 	public Map<Powder, EntityTracker> getCurrentEntityTracks() {
 		Map<Powder, EntityTracker> entityTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
-				if (tracker.getType() == TrackerType.ENTITY) {
+				if (tracker.getType() == Tracker.Type.ENTITY) {
 					entityTracks.put(entry.getKey(), (EntityTracker) tracker);
 					break;
 				}
@@ -233,7 +210,7 @@ public class PowderHandler {
 		for (PowderTask powderTask : this.powderTasks) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
-				if (tracker.getType() == TrackerType.ENTITY) {
+				if (tracker.getType() == Tracker.Type.STATIONARY) {
 					stationaryTracks.put(entry.getKey(), (StationaryTracker) tracker);
 					break;
 				}

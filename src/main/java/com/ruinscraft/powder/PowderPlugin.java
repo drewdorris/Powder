@@ -13,8 +13,8 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import com.ruinscraft.powder.models.Message;
-import com.ruinscraft.powder.models.Powder;
+import com.ruinscraft.powder.model.Message;
+import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.storage.MySqlStorage;
 import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ConfigUtil;

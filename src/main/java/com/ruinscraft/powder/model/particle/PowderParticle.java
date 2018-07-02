@@ -1,8 +1,8 @@
-package com.ruinscraft.powder.models;
+package com.ruinscraft.powder.model.particle;
 
 import org.bukkit.Particle;
 
-public class PowderParticle implements Cloneable {
+public abstract class PowderParticle implements Cloneable {
 
 	// enum name for the PowderParticle; one single character (name does not have to exist)
 	private char particleChar;
@@ -19,6 +19,7 @@ public class PowderParticle implements Cloneable {
 	// extra data 
 	private double data;
 
+	@Deprecated
 	public PowderParticle() {
 		particleChar = 0;
 		particle = null;
@@ -115,11 +116,6 @@ public class PowderParticle implements Cloneable {
 
 	public void setData(double data) {
 		this.data = data;
-	}
-
-	@Override
-	public PowderParticle clone() {
-		return new PowderParticle(this);
 	}
 
 }
