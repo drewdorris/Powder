@@ -420,9 +420,8 @@ public class ConfigUtil {
 							}
 						}
 						for (int x = 0; x < ssss.toCharArray().length; x++) {
-							char character = sss.toCharArray()[x];
-							PositionedPowderParticle powderParticle = new PositionedPowderParticle(
-									powder.getPowderParticle(character), x, index, z);
+							char character = ssss.toCharArray()[x];
+							PositionedPowderParticle powderParticle;
 							if (powder.getPowderParticle(character) == null) {
 								try {
 									String string = String.valueOf(character);
@@ -433,6 +432,9 @@ public class ConfigUtil {
 								} catch (Exception e) {
 									continue;
 								}
+							} else {
+								powderParticle = new PositionedPowderParticle(
+										powder.getPowderParticle(character), x, index, z);
 							}
 							particleMatrix.addParticle(powderParticle);
 						}
