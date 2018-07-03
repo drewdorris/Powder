@@ -1,14 +1,11 @@
 package com.ruinscraft.powder.model;
 
-import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
-import org.bukkit.Particle;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
@@ -92,12 +89,12 @@ public class ParticleMatrix implements PowderElement {
 		addParticle(newParticle);
 	}
 
-	public int getFarthestDistance() {
-		return getHighestPosition() - getLowestPosition() 
-				+ getLongestRowLength() + getTallestLayerHeight();
+	public int getMaxDistance() {
+		return getMaxZ() - getMinZ() 
+				+ getMaxX() + getMaxY();
 	}
 
-	public int getLowestPosition() {
+	public int getMinZ() {
 		int z = 0;
 		for (PositionedPowderParticle particle : particles) {
 			if (particle.getZ() < z) {
@@ -107,7 +104,7 @@ public class ParticleMatrix implements PowderElement {
 		return z;
 	}
 
-	public int getHighestPosition() {
+	public int getMaxZ() {
 		int z = 0;
 		for (PositionedPowderParticle particle : particles) {
 			if (particle.getZ() > z) {
@@ -117,7 +114,7 @@ public class ParticleMatrix implements PowderElement {
 		return z;
 	}
 
-	public int getLongestRowLength() {
+	public int getMaxX() {
 		int x = 0;
 		for (PositionedPowderParticle particle : particles) {
 			if (particle.getX() > x) {
@@ -127,7 +124,7 @@ public class ParticleMatrix implements PowderElement {
 		return x;
 	}
 
-	public int getTallestLayerHeight() {
+	public int getMaxY() {
 		int y = 0;
 		for (PositionedPowderParticle particle : particles) {
 			if (particle.getY() > y) {
@@ -316,6 +313,19 @@ public class ParticleMatrix implements PowderElement {
 							Math.sin(forwardPitch + sidewaysTilt) * Math.sin(forwardYaw))
 					.normalize().multiply(spacing);
 
+			Location start = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
+					.subtract(sideToSideVector.clone().multiply(getPlayerLeft()));
+			for (PositionedPowderParticle particle : particles) {
+				Location position = start.clone()
+						.add(sideToSideVector.clone().multiply(particle.getX()))
+						.add(upAndDownVector.clone().multiply(particle.getY()))
+						.add(forwardVector.clone().multiply(particle.getZ()));
+				world.spawnParticle(
+						particle.getParticle(), position, particle.getAmount(), 
+						particle.getXOff() / 255, particle.getYOff() / 255,
+						particle.getZOff() / 255, particle.getData());
+			}
+			/*/
 			for (Layer layer : getLayers()) {
 				Location startingLocation = 
 						location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
@@ -346,6 +356,7 @@ public class ParticleMatrix implements PowderElement {
 							.add(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());
 				}
 			}
+			 */
 		});
 	}
 

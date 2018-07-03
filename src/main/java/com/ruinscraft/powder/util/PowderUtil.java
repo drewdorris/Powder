@@ -727,11 +727,11 @@ public class PowderUtil {
 				int newStartTime = matrix.getStartTime();
 				int y = 0;
 				boolean started = false;
-				while (y <= matrix.getTallestLayerHeight()) {
+				while (y <= matrix.getMaxY()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
-							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -756,13 +756,13 @@ public class PowderUtil {
 			case 2: {
 				// 25 26
 				int newStartTime = matrix.getStartTime();
-				int y = matrix.getTallestLayerHeight();
+				int y = matrix.getMaxY();
 				boolean started = false;
 				while (y >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
-							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -789,11 +789,11 @@ public class PowderUtil {
 				int newStartTime = matrix.getStartTime();
 				int x = 0;
 				boolean started = false;
-				while (x <= matrix.getLongestRowLength()) {
+				while (x <= matrix.getMaxX()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
-							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
+						for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
+							for (int y = 0; y <= matrix.getMaxY(); y++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -818,13 +818,13 @@ public class PowderUtil {
 			case 4: {
 				// 22 24
 				int newStartTime = matrix.getStartTime();
-				int x = matrix.getLongestRowLength();
+				int x = matrix.getMaxX();
 				boolean started = false;
 				while (x >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
-							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
+						for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
+							for (int y = 0; y <= matrix.getMaxY(); y++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -849,13 +849,13 @@ public class PowderUtil {
 			case 5: {
 				// 21 23
 				int newStartTime = matrix.getStartTime();
-				int z = matrix.getLowestPosition();
+				int z = matrix.getMinZ();
 				boolean started = false;
-				while (z <= matrix.getHighestPosition()) {
+				while (z <= matrix.getMaxZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
-							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
+						for (int x = 0; x <= matrix.getMaxX(); x++) {
+							for (int y = 0; y <= matrix.getMaxY(); y++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -880,13 +880,13 @@ public class PowderUtil {
 			case 6: {
 				// 23 21
 				int newStartTime = matrix.getStartTime();
-				int z = matrix.getHighestPosition();
+				int z = matrix.getMaxZ();
 				boolean started = false;
-				while (z >= matrix.getLowestPosition()) {
+				while (z >= matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
-							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
+						for (int x = 0; x <= matrix.getMaxX(); x++) {
+							for (int y = 0; y <= matrix.getMaxY(); y++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -910,17 +910,17 @@ public class PowderUtil {
 			}
 			case 7: {
 				// 2 12
-				int lowest = matrix.getLowestPosition();
-				int longest = matrix.getLongestRowLength();
+				int lowest = matrix.getMinZ();
+				int longest = matrix.getMaxX();
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
 				while (soFar >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = longest; x >= longest - matrix.getFarthestDistance() + soFar; x--) {
+						for (int x = longest; x >= longest - matrix.getMaxDistance() + soFar; x--) {
 							for (int y = 0; y <= soFar - lowest; y++) {
-								int z = matrix.getHighestPosition() - (soFar - y - x);
+								int z = matrix.getMaxZ() - (soFar - y - x);
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -944,16 +944,16 @@ public class PowderUtil {
 			}
 			case 8: {
 				// 1 11
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
 				while (soFar >= 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = 0; x <= matrix.getFarthestDistance() - soFar; x++) {
+						for (int x = 0; x <= matrix.getMaxDistance() - soFar; x++) {
 							for (int y = 0; y <= soFar - lowest; y++) {
-								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
+								int z = matrix.getMaxZ() + matrix.getMaxX() - 
 										soFar + y - x;
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
@@ -978,16 +978,16 @@ public class PowderUtil {
 			}
 			case 9: {
 				// 11 1
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
 				int soFar = 0;
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = 0; x <= matrix.getFarthestDistance() - soFar; x++) {
+						for (int x = 0; x <= matrix.getMaxDistance() - soFar; x++) {
 							for (int y = 0; y <= soFar - lowest; y++) {
-								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
+								int z = matrix.getMaxZ() + matrix.getMaxX() - 
 										soFar + y - x;
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
@@ -1012,17 +1012,17 @@ public class PowderUtil {
 			}
 			case 10: {
 				// 12 2
-				int lowest = matrix.getLowestPosition();
-				int longest = matrix.getLongestRowLength();
+				int lowest = matrix.getMinZ();
+				int longest = matrix.getMaxX();
 				int newStartTime = matrix.getStartTime();
 				int soFar = 0;
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int x = longest; x >= longest - matrix.getFarthestDistance() + soFar; x--) {
+						for (int x = longest; x >= longest - matrix.getMaxDistance() + soFar; x--) {
 							for (int y = 0; y <= soFar - lowest; y++) {
-								int z = matrix.getHighestPosition() - (soFar - y - x);
+								int z = matrix.getMaxZ() - (soFar - y - x);
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1046,11 +1046,11 @@ public class PowderUtil {
 			}
 			case 11: {
 				// 10 3
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
 				int soFar = lowest;
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int z = lowest; z <= soFar; z++) {
@@ -1058,7 +1058,7 @@ public class PowderUtil {
 								if (y + z > soFar) {
 									break;
 								}
-								int x = matrix.getLongestRowLength() - (soFar - y - z);
+								int x = matrix.getMaxX() - (soFar - y - z);
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1082,11 +1082,11 @@ public class PowderUtil {
 			}
 			case 12: {
 				// 9 4
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
 				int soFar = lowest;
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int z = lowest; z <= soFar; z++) {
@@ -1118,9 +1118,9 @@ public class PowderUtil {
 			}
 			case 13: {
 				// 4 9
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
 				while (soFar >= lowest) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
@@ -1154,9 +1154,9 @@ public class PowderUtil {
 			}
 			case 14: {
 				// 3 10
-				int lowest = matrix.getLowestPosition();
+				int lowest = matrix.getMinZ();
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
 				while (soFar >= lowest) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
@@ -1166,7 +1166,7 @@ public class PowderUtil {
 								if (y + z > soFar) {
 									break;
 								}
-								int x = matrix.getLongestRowLength() - (soFar - y - z);
+								int x = matrix.getMaxX() - (soFar - y - z);
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1191,16 +1191,16 @@ public class PowderUtil {
 			case 15: {
 				// 13 7
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
-				while (soFar >= matrix.getLowestPosition()) {
+				while (soFar >= matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getHighestPosition(); 
-								z >= matrix.getHighestPosition() - soFar; z--) {
-							int y = matrix.getTallestLayerHeight() - 
-									(soFar - (matrix.getHighestPosition() - z));
-							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMaxZ(); 
+								z >= matrix.getMaxZ() - soFar; z--) {
+							int y = matrix.getMaxY() - 
+									(soFar - (matrix.getMaxZ() - z));
+							for (int x = 0; x < matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1225,15 +1225,15 @@ public class PowderUtil {
 			case 16: {
 				// 5 15
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
-				while (soFar >= matrix.getLowestPosition()) {
+				while (soFar >= matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getHighestPosition(); 
-								z >= matrix.getHighestPosition() - soFar; z--) {
-							int y = soFar - (matrix.getHighestPosition() - z);
-							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMaxZ(); 
+								z >= matrix.getMaxZ() - soFar; z--) {
+							int y = soFar - (matrix.getMaxZ() - z);
+							for (int x = 0; x < matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1258,16 +1258,16 @@ public class PowderUtil {
 			case 17: {
 				// 7 13
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getLowestPosition();
+				int soFar = matrix.getMinZ();
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getHighestPosition(); 
-								z >= matrix.getHighestPosition() - soFar; z--) {
-							int y = matrix.getTallestLayerHeight() - 
-									(soFar - (matrix.getHighestPosition() - z));
-							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMaxZ(); 
+								z >= matrix.getMaxZ() - soFar; z--) {
+							int y = matrix.getMaxY() - 
+									(soFar - (matrix.getMaxZ() - z));
+							for (int x = 0; x < matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1292,15 +1292,15 @@ public class PowderUtil {
 			case 18: {
 				// 15 5
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getLowestPosition();
+				int soFar = matrix.getMinZ();
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
-						for (int z = matrix.getHighestPosition(); 
-								z >= matrix.getHighestPosition() - soFar; z--) {
-							int y = soFar - (matrix.getHighestPosition() - z);
-							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
+						for (int z = matrix.getMaxZ(); 
+								z >= matrix.getMaxZ() - soFar; z--) {
+							int y = soFar - (matrix.getMaxZ() - z);
+							for (int x = 0; x < matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1325,16 +1325,16 @@ public class PowderUtil {
 			case 19: {
 				// 16 6
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getLowestPosition();
+				int soFar = matrix.getMinZ();
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int x = 0; 
 								x <= soFar; x++) {
 							int y = soFar - x;
-							for (int z = matrix.getLowestPosition(); 
-									z <= matrix.getHighestPosition(); z++) {
+							for (int z = matrix.getMinZ(); 
+									z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1359,16 +1359,16 @@ public class PowderUtil {
 			case 20: {
 				// 8 14
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getLowestPosition();
+				int soFar = matrix.getMinZ();
 				boolean started = false;
-				while (soFar <= matrix.getFarthestDistance()) {
+				while (soFar <= matrix.getMaxDistance()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int x = 0; 
 								x <= soFar; x++) {
-							int y = matrix.getTallestLayerHeight() - (soFar - x);
-							for (int z = matrix.getLowestPosition(); 
-									z <= matrix.getHighestPosition(); z++) {
+							int y = matrix.getMaxY() - (soFar - x);
+							for (int z = matrix.getMinZ(); 
+									z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1393,16 +1393,16 @@ public class PowderUtil {
 			case 21: {
 				// 6 16
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
-				while (soFar >= matrix.getLowestPosition()) {
+				while (soFar >= matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int x = 0; 
 								x <= soFar; x++) {
 							int y = soFar - x;
-							for (int z = matrix.getLowestPosition(); 
-									z <= matrix.getHighestPosition(); z++) {
+							for (int z = matrix.getMinZ(); 
+									z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1427,16 +1427,16 @@ public class PowderUtil {
 			case 22: {
 				// 14 8
 				int newStartTime = matrix.getStartTime();
-				int soFar = matrix.getFarthestDistance();
+				int soFar = matrix.getMaxDistance();
 				boolean started = false;
-				while (soFar >= matrix.getLowestPosition()) {
+				while (soFar >= matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int t = 0; t < length; t++) {
 						for (int x = 0; 
 								x <= soFar; x++) {
-							int y = matrix.getTallestLayerHeight() - (soFar - x);
-							for (int z = matrix.getLowestPosition(); 
-									z <= matrix.getHighestPosition(); z++) {
+							int y = matrix.getMaxY() - (soFar - x);
+							for (int z = matrix.getMinZ(); 
+									z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1474,8 +1474,8 @@ public class PowderUtil {
 				if (y > 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int newy = 0; newy < y; newy++) {
-						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
-							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+						for (int x = 0; x <= matrix.getMaxX(); x++) {
+							for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, newy, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1490,11 +1490,11 @@ public class PowderUtil {
 					}
 				}
 				int rotation = 0;
-				while (y <= matrix.getTallestLayerHeight()) {
+				while (y <= matrix.getMaxY()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int i = 0; i < length; i++) {
-						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
-							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+						for (int x = 0; x <= matrix.getMaxX(); x++) {
+							for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1528,8 +1528,8 @@ public class PowderUtil {
 				if (x > 0) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int newx = 0; newx < x; newx++) {
-						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
-							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+						for (int y = 0; y <= matrix.getMaxY(); y++) {
+							for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(newx, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1544,11 +1544,11 @@ public class PowderUtil {
 					}
 				}
 				int pitch = 0;
-				while (x <= matrix.getLongestRowLength()) {
+				while (x <= matrix.getMaxX()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int i = 0; i < length; i++) {
-						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
-							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+						for (int y = 0; y <= matrix.getMaxY(); y++) {
+							for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1579,11 +1579,11 @@ public class PowderUtil {
 		    }
 		    case 3: {
 		    	int z = startingPoint;
-				if (z > matrix.getLowestPosition()) {
+				if (z > matrix.getMinZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
-					for (int newz = matrix.getLowestPosition(); newz < z; newz++) {
-						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
-							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
+					for (int newz = matrix.getMinZ(); newz < z; newz++) {
+						for (int y = 0; y <= matrix.getMaxY(); y++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, newz);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1598,11 +1598,11 @@ public class PowderUtil {
 					}
 				}
 				int tilt = 0;
-				while (z <= matrix.getHighestPosition()) {
+				while (z <= matrix.getMaxZ()) {
 					ParticleMatrix newMatrix = new ParticleMatrix();
 					for (int i = 0; i < length; i++) {
-						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
-							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
+						for (int y = 0; y <= matrix.getMaxY(); y++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1640,9 +1640,9 @@ public class PowderUtil {
 
 	public static ParticleMatrix setFlash(ParticleMatrix matrix, int r, int g, int b, int flash) {
 		ParticleMatrix newMatrix = new ParticleMatrix();
-		for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
-			for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
-				for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
+		for (int x = 0; x <= matrix.getMaxX(); x++) {
+			for (int y = 0; y <= matrix.getMaxY(); y++) {
+				for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
 					PowderParticle powderParticle = 
 							matrix.getParticleAtLocation(x, y, z);
 					if (powderParticle == null || 
