@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.model;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -13,12 +14,13 @@ import org.bukkit.util.Vector;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
+import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 
 public class ParticleMatrix implements PowderElement {
 
 	// list of individual Layers associated with this ParticleMatrix
-	private Set<Layer> layers;
+	private Set<PositionedPowderParticle> particles;
 	// how far left the ParticleMatrix should be started
 	private int playerLeft;
 	// same, but how far up
@@ -47,7 +49,7 @@ public class ParticleMatrix implements PowderElement {
 	private int iterations;
 
 	public ParticleMatrix() {
-		this.layers = new HashSet<>();
+		this.particles = new HashSet<>();
 		this.playerLeft = 0;
 		this.playerUp = 0;
 		this.spacing = 0;
@@ -58,7 +60,7 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public ParticleMatrix(ParticleMatrix particleMatrix) {
-		this.layers = particleMatrix.getLayers();
+		this.particles = particleMatrix.getParticles();
 		this.playerLeft = particleMatrix.getPlayerLeft();
 		this.playerUp = particleMatrix.getPlayerUp();
 		this.spacing = particleMatrix.getSpacing();
@@ -72,9 +74,9 @@ public class ParticleMatrix implements PowderElement {
 		this.iterations = 0;
 	}
 
-	public ParticleMatrix(Set<Layer> layers, int playerLeft, int playerUp, 
+	public ParticleMatrix(Set<PositionedPowderParticle> particles, int playerLeft, int playerUp, 
 			double spacing, int startTime, int repeatTime, int lockedIterations) {
-		this.layers = layers;
+		this.particles = particles;
 		this.playerLeft = playerLeft;
 		this.playerUp = playerUp;
 		this.spacing = spacing;
@@ -84,45 +86,10 @@ public class ParticleMatrix implements PowderElement {
 		this.iterations = 0;
 	}
 
-	public PowderParticle getPowderParticleAtLocation(int x, int y, int z) {
-		for (Layer layer : this.getLayersAtPosition(z)) {
-			try {
-				return layer.getRows().get(y).get(x);
-			} catch (Exception e) {
-				continue;
-			}
-		}
-		return null;
-	}
-
 	public void putPowderParticle(PowderParticle powderParticle, int x, int y, int z) {
-		List<Layer> layers = this.getLayersAtPosition(z);
-		Layer layer;
-		if (layers.isEmpty()) {
-			layer = new Layer();
-			layer.setPosition(z);
-		} else {
-			layer = layers.get(0);
-		}
-		List<PowderParticle> row = null;
-		try {
-			row = new ArrayList<>(layer.getRows().get(y));
-		} catch (Exception e) {
-			for (int i = layer.getRows().size(); i <= y; i++) {
-				layer.addRow(new ArrayList<>());
-			}
-			row = new ArrayList<>(layer.getRows().get(y));
-		}
-		try {
-			row.add(x, powderParticle);
-		} catch (Exception e) {
-			for (int i = row.size(); i < x; i++) {
-				row.add(i, new PowderParticle());
-			}
-			row.add(x, powderParticle);
-		}
-		layer.putRow(y, row);
-		this.addLayer(layer);
+		PositionedPowderParticle newParticle = 
+				new PositionedPowderParticle(powderParticle, x, y, z);
+		addParticle(newParticle);
 	}
 
 	public int getFarthestDistance() {
@@ -131,82 +98,72 @@ public class ParticleMatrix implements PowderElement {
 	}
 
 	public int getLowestPosition() {
-		int lowest = 0;
-		for (Layer layer : this.layers) {
-			if (layer.getPosition() < lowest) {
-				lowest = (int) layer.getPosition();
+		int z = 0;
+		for (PositionedPowderParticle particle : particles) {
+			if (particle.getZ() < z) {
+				z = particle.getZ();
 			}
 		}
-		return lowest;
+		return z;
 	}
 
 	public int getHighestPosition() {
-		int highest = 0;
-		for (Layer layer : this.layers) {
-			if (layer.getPosition() > highest) {
-				highest = (int) layer.getPosition();
+		int z = 0;
+		for (PositionedPowderParticle particle : particles) {
+			if (particle.getZ() > z) {
+				z = particle.getZ();
 			}
 		}
-		return highest;
-	}
-
-	public List<Layer> getLayersAtPosition(int position) {
-		List<Layer> layers = new ArrayList<>();
-		for (Layer layer : this.layers) {
-			if ((int) layer.getPosition() == position) {
-				layers.add(layer);
-			}
-		}
-		return layers;
+		return z;
 	}
 
 	public int getLongestRowLength() {
-		int longest = 0;
-		for (Layer layer : this.layers) {
-			for (List<PowderParticle> list : layer.getRows()) {
-				int rows = list.size();
-				if (rows > longest) {
-					longest = rows;
-				}
+		int x = 0;
+		for (PositionedPowderParticle particle : particles) {
+			if (particle.getX() > x) {
+				x = particle.getX();
 			}
 		}
-		return longest;
+		return x;
 	}
 
 	public int getTallestLayerHeight() {
-		int longest = 0;
-		for (Layer layer : this.layers) {
-			int rows = layer.getRows().size();
-			if (rows > longest) {
-				longest = rows;
+		int y = 0;
+		for (PositionedPowderParticle particle : particles) {
+			if (particle.getY() > y) {
+				y = particle.getY();
 			}
 		}
-		return longest;
+		return y;
 	}
 
 	public boolean hasParticles() {
-		for (Layer layer : this.layers) {
-			for (List<PowderParticle> row : layer.getRows()) {
-				for (PowderParticle powderParticle : row) {
-					if (powderParticle != null && powderParticle.getParticle() != null) {
-						return true;
-					}
-				}
+		return !particles.isEmpty();
+	}
+
+	public Set<PositionedPowderParticle> getParticles() {
+		return particles;
+	}
+
+	public PositionedPowderParticle getParticleAtLocation(int x, int y, int z) {
+		for (PositionedPowderParticle particle : particles) {
+			if (particle.getX() == x && particle.getY() == y && particle.getZ() == z) {
+				return particle;
 			}
 		}
-		return false;
+		return null;
 	}
 
-	public Set<Layer> getLayers() {
-		return layers;
+	public void setParticles(Collection<PositionedPowderParticle> particles) {
+		this.particles = new HashSet<>(particles);
 	}
 
-	public void setLayers(Set<Layer> layers) {
-		this.layers = layers;
+	public void addParticles(Collection<PositionedPowderParticle> particles) {
+		this.particles.addAll(particles);
 	}
 
-	public void addLayer(Layer layer) {
-		layers.add(layer);
+	public void addParticle(PositionedPowderParticle particle) {
+		particles.add(particle);
 	}
 
 	public int getPlayerLeft() {
@@ -342,6 +299,7 @@ public class ParticleMatrix implements PowderElement {
 					((location.clone().getYaw() + getAddedRotation() + 180) * Math.PI) / 180;
 			double sidewaysTilt = 
 					((getAddedTilt() - 90) * Math.PI) / 180;
+
 			final Vector sideToSideVector = 
 					new Vector(Math.sin(sidewaysTilt) * Math.cos(sidewaysYaw), 
 							Math.cos(sidewaysTilt), 

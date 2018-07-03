@@ -19,12 +19,6 @@ public abstract class PowderParticle implements Cloneable {
 	// extra data 
 	private double data;
 
-	@Deprecated
-	public PowderParticle() {
-		particleChar = 0;
-		particle = null;
-	}
-
 	public PowderParticle(PowderParticle powderParticle) {
 		this.particleChar = powderParticle.getCharacter();
 		this.particle = powderParticle.getParticle();
@@ -116,6 +110,26 @@ public abstract class PowderParticle implements Cloneable {
 
 	public void setData(double data) {
 		this.data = data;
+	}
+
+	@Override
+	public PowderParticle clone() {
+		return this;
+	}
+
+	@Override
+	public boolean equals(Object object) {
+		if (!(object instanceof PowderParticle)) {
+			return false;
+		}
+		PowderParticle particle = (PowderParticle) object;
+		if (particle.getAmount() == this.amount && particle.getCharacter() == this.particleChar &&
+				particle.getParticle() == this.particle && particle.getXOff() == this.xOff && 
+				particle.getYOff() == this.yOff && particle.getZOff() == this.zOff 
+				&& particle.getData() == particle.getData()) {
+			return true;
+		}
+		return false;
 	}
 
 }

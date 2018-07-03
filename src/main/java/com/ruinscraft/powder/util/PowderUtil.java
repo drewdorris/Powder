@@ -733,7 +733,7 @@ public class PowderUtil {
 						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -764,7 +764,7 @@ public class PowderUtil {
 						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -795,7 +795,7 @@ public class PowderUtil {
 						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -826,7 +826,7 @@ public class PowderUtil {
 						for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -857,7 +857,7 @@ public class PowderUtil {
 						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -888,7 +888,7 @@ public class PowderUtil {
 						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 							for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -922,7 +922,7 @@ public class PowderUtil {
 							for (int y = 0; y <= soFar - lowest; y++) {
 								int z = matrix.getHighestPosition() - (soFar - y - x);
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -956,7 +956,7 @@ public class PowderUtil {
 								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
 										soFar + y - x;
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -990,7 +990,7 @@ public class PowderUtil {
 								int z = matrix.getHighestPosition() + matrix.getLongestRowLength() - 
 										soFar + y - x;
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1024,7 +1024,7 @@ public class PowderUtil {
 							for (int y = 0; y <= soFar - lowest; y++) {
 								int z = matrix.getHighestPosition() - (soFar - y - x);
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1060,7 +1060,7 @@ public class PowderUtil {
 								}
 								int x = matrix.getLongestRowLength() - (soFar - y - z);
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1096,7 +1096,7 @@ public class PowderUtil {
 									break;
 								}
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1132,7 +1132,7 @@ public class PowderUtil {
 									break;
 								}
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1168,7 +1168,7 @@ public class PowderUtil {
 								}
 								int x = matrix.getLongestRowLength() - (soFar - y - z);
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1202,7 +1202,7 @@ public class PowderUtil {
 									(soFar - (matrix.getHighestPosition() - z));
 							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1235,7 +1235,7 @@ public class PowderUtil {
 							int y = soFar - (matrix.getHighestPosition() - z);
 							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1269,7 +1269,7 @@ public class PowderUtil {
 									(soFar - (matrix.getHighestPosition() - z));
 							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1302,7 +1302,7 @@ public class PowderUtil {
 							int y = soFar - (matrix.getHighestPosition() - z);
 							for (int x = 0; x < matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1336,7 +1336,7 @@ public class PowderUtil {
 							for (int z = matrix.getLowestPosition(); 
 									z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1370,7 +1370,7 @@ public class PowderUtil {
 							for (int z = matrix.getLowestPosition(); 
 									z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1404,7 +1404,7 @@ public class PowderUtil {
 							for (int z = matrix.getLowestPosition(); 
 									z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1438,7 +1438,7 @@ public class PowderUtil {
 							for (int z = matrix.getLowestPosition(); 
 									z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1477,7 +1477,7 @@ public class PowderUtil {
 						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, newy, z);
+										matrix.getParticleAtLocation(x, newy, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1496,7 +1496,7 @@ public class PowderUtil {
 						for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1531,7 +1531,7 @@ public class PowderUtil {
 						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(newx, y, z);
+										matrix.getParticleAtLocation(newx, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1550,7 +1550,7 @@ public class PowderUtil {
 						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 							for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1585,7 +1585,7 @@ public class PowderUtil {
 						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, newz);
+										matrix.getParticleAtLocation(x, y, newz);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1604,7 +1604,7 @@ public class PowderUtil {
 						for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 							for (int x = 0; x <= matrix.getLongestRowLength(); x++) {
 								PowderParticle powderParticle = 
-										matrix.getPowderParticleAtLocation(x, y, z);
+										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
 									continue;
 								}
@@ -1644,7 +1644,7 @@ public class PowderUtil {
 			for (int y = 0; y <= matrix.getTallestLayerHeight(); y++) {
 				for (int z = matrix.getLowestPosition(); z <= matrix.getHighestPosition(); z++) {
 					PowderParticle powderParticle = 
-							matrix.getPowderParticleAtLocation(x, y, z);
+							matrix.getParticleAtLocation(x, y, z);
 					if (powderParticle == null || 
 							powderParticle.getParticle() != Particle.REDSTONE) {
 						continue;

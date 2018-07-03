@@ -16,16 +16,16 @@ import javax.imageio.ImageIO;
 import org.bukkit.Particle;
 
 import com.ruinscraft.powder.PowderPlugin;
-import com.ruinscraft.powder.model.particle.PowderParticle;
+import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 
 public class ImageUtil {
 
-	public static List<List<PowderParticle>> getRows(List<List<PowderParticle>> rows, String name, 
-			int resizedWidth, int resizedHeight) throws IOException {
+	public static List<PositionedPowderParticle> getRows(String name, int z, 
+			int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
 		if (name.contains("/")) {
-			return getRowsFromURL(rows, name, resizedWidth, resizedHeight);
+			return getRowsFromURL(name, z, yAdd, xAdd, resizedWidth, resizedHeight);
 		} else {
-			return getRowsFromPath(rows, name, resizedWidth, resizedHeight);
+			return getRowsFromPath(name, z, yAdd, xAdd, resizedWidth, resizedHeight);
 		}
 	}
 
@@ -34,9 +34,10 @@ public class ImageUtil {
 	}
 
 	// gets rows of a Layer from an image from a URL
-	public static List<List<PowderParticle>> getRowsFromURL(List<List<PowderParticle>> rows,
-			String urlName, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<PositionedPowderParticle> getRowsFromURL(String urlName, 
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
 		URL url = PowderUtil.readURL(urlName);
+		List<PositionedPowderParticle> particles = new ArrayList<>();
 
 		try {
 			InputStream stream = PowderUtil.getInputStreamFromURL(url);
@@ -44,17 +45,19 @@ public class ImageUtil {
 				throw new IOException("Error while attempting to read URL: " + url.toString());
 			}
 			BufferedImage bufferedImage = ImageIO.read(stream);
-			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
+			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
-		return rows;
+		return particles;
 	}
 
 	// gets rows of a Layer from an image from a path in the data folder
-	public static List<List<PowderParticle>> getRowsFromPath(List<List<PowderParticle>> rows, 
-			String fileName, int resizedWidth, int resizedHeight) throws IOException {
+	public static List<PositionedPowderParticle> getRowsFromPath(String fileName, 
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
+		List<PositionedPowderParticle> particles = new ArrayList<>();
+
 		try {
 			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
 			if (!file.exists()) {
@@ -65,13 +68,14 @@ public class ImageUtil {
 			if (bufferedImage == null) {
 				throw new IOException("Error while attempting to read image: " + fileName);
 			}
-			addToLayer(rows, bufferedImage, resizedWidth, resizedHeight);
+			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight));
 		} catch (IOException io) {
 			io.printStackTrace();
 		}
 
-		return rows;
+		return particles;
 	}
+
 	// scales an image to the given width/height (height is generally ignored)
 	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height) {
 		int finalWidth = width;
@@ -96,13 +100,13 @@ public class ImageUtil {
 
 	// creates PowderParticles from pixels and adds them to the rows
 	// which are then added to the Layer
-	public static List<List<PowderParticle>> addToLayer(List<List<PowderParticle>> rows, 
-			BufferedImage bufferedImage, int resizedWidth, int resizedHeight) {
+	public static List<PositionedPowderParticle> addToLayer(BufferedImage bufferedImage, 
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) {
 		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
 
-		for (int y = 0; y <= newImage.getHeight() - 1; y++) {
-			List<PowderParticle> row = new ArrayList<>();
-			for (int x = 0; x <= newImage.getWidth() - 1; x++) {
+		List<PositionedPowderParticle> particles = new ArrayList<>();
+		for (int y = 0; y < newImage.getHeight(); y++) {
+			for (int x = 0; x < newImage.getWidth(); x++) {
 				int pixel;
 				try {
 					pixel = newImage.getRGB(x, y);
@@ -113,9 +117,9 @@ public class ImageUtil {
 				}
 				// if pixel is transparent, make it null
 				if ((pixel >> 24) == 0x00) {
-					row.add(new PowderParticle());
 					continue;
 				}
+
 				Color color = new Color(pixel);
 				int arr = color.getRed();
 				int gee = color.getGreen();
@@ -123,14 +127,14 @@ public class ImageUtil {
 				if (arr == 0) {
 					arr = 1;
 				}
-				PowderParticle powderParticle = new PowderParticle(
-						Particle.REDSTONE, 0, arr, gee, bee, 1);
-				row.add(powderParticle);
+
+				PositionedPowderParticle powderParticle = new PositionedPowderParticle(
+						Particle.REDSTONE, 0, arr, gee, bee, 1, x + xAdd, y + yAdd, z);
+				particles.add(powderParticle);
 			}
-			rows.add(row);
 		}
 
-		return rows;
+		return particles;
 	}
 
 }

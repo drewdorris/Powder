@@ -24,13 +24,14 @@ import org.bukkit.configuration.file.YamlConfiguration;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Dust;
-import com.ruinscraft.powder.model.Layer;
 import com.ruinscraft.powder.model.ParticleMatrix;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderElement;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.SoundEffect;
+import com.ruinscraft.powder.model.particle.ModelPowderParticle;
 import com.ruinscraft.powder.model.particle.ParticleName;
+import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
@@ -290,7 +291,7 @@ public class ConfigUtil {
 				double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
 				double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
 				double data = powderConfig.getDouble(eachSection + ".data", 0);
-				powder.addPowderParticle(new PowderParticle(character, particle, 
+				powder.addPowderParticle(new ModelPowderParticle(character, particle, 
 						amount, xOffset, yOffset, zOffset, data));
 			}
 		}
@@ -305,9 +306,9 @@ public class ConfigUtil {
 					try {
 						Particle particle = Particle.valueOf(
 								ParticleName.valueOf(dustName).getName());
-						powderParticle = new PowderParticle(character, particle);
+						powderParticle = new ModelPowderParticle(character, particle);
 					} catch (Exception e) {
-						powderParticle = new PowderParticle();
+						continue;
 					}
 				}
 				double radius = powderConfig.getDouble(eachSection + ".radius", 1);
@@ -363,23 +364,33 @@ public class ConfigUtil {
 				for (String sss : powderConfig
 						.getConfigurationSection(eachSection + ".layers").getKeys(false)) {
 					String eachEachSection = eachSection + ".layers." + sss;
-					Layer layer = new Layer();
-					layer.setPosition(powderConfig.getDouble(eachEachSection + ".position", 0));
-					for (String ssss : (List<String>) powderConfig
-							.getList(eachEachSection + ".layerMatrix", new ArrayList<String>())) {
+					int z = powderConfig.getInt(eachEachSection + ".position", 0);
+					List<String> layerMatrix = (List<String>) powderConfig
+							.getList(eachEachSection + ".layerMatrix", new ArrayList<String>());
+					for (int index = 0; index < layerMatrix.size(); index++) {
+						String ssss = layerMatrix.get(index);
 						if (ssss.contains(":")) {
 							if (ssss.contains("img:")) {
 								String urlName;
 								int width;
 								int height;
+								int xAdd;
 								ssss = ssss.replace("img:", "");
 								urlName = ssss.substring(0, ssss.indexOf(";"));
 								ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
 								width = Integer.valueOf(ssss.substring(0, ssss.indexOf(";")));
 								ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
-								height = Integer.valueOf(ssss);
+								if (ssss.contains(";")) {
+									height = Integer.valueOf(ssss.substring(0, ssss.indexOf(";")));
+									ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
+									xAdd = Integer.valueOf(ssss);
+								} else {
+									height = Integer.valueOf(ssss);
+									xAdd = 0;
+								}
 								try {
-									ImageUtil.getRows(layer.getRows(), urlName, width, height);
+									particleMatrix.addParticles(
+											ImageUtil.getRows(urlName, z, index, xAdd, width, height));
 								} catch (IOException io) {
 									logger.warning("Failed to load image: '" + urlName + "'");
 									continue;
@@ -391,7 +402,7 @@ public class ConfigUtil {
 							continue;
 						}
 						// if the Layer is in the same position as where the location/player is
-						if (layer.getPosition() == 0) {
+						if (z == 0) {
 							up++;
 							// if the string contains location/player
 							if (ssss.contains("?")) {
@@ -408,27 +419,24 @@ public class ConfigUtil {
 								particleMatrix.setPlayerUp(up + 1);
 							}
 						}
-						// add a row to the Layer if it has gone through everything
-						// rows contain PowderParticles
-						List<PowderParticle> row = new ArrayList<>();
-						for (char character : ssss.toCharArray()) {
-							PowderParticle powderParticle;
-							powderParticle = powder.getPowderParticle(character);
-							if (powderParticle == null) {
+						for (int x = 0; x < ssss.toCharArray().length; x++) {
+							char character = sss.toCharArray()[x];
+							PositionedPowderParticle powderParticle = new PositionedPowderParticle(
+									powder.getPowderParticle(character), x, index, z);
+							if (powder.getPowderParticle(character) == null) {
 								try {
 									String string = String.valueOf(character);
 									Particle particle = Particle.valueOf(
 											ParticleName.valueOf(string).getName());
-									powderParticle = new PowderParticle(character, particle);
+									powderParticle = new PositionedPowderParticle(
+											character, particle, x, index, z);
 								} catch (Exception e) {
-									powderParticle = new PowderParticle();
+									continue;
 								}
 							}
-							row.add(powderParticle);
+							particleMatrix.addParticle(powderParticle);
 						}
-						layer.addRow(row);
 					}
-					particleMatrix.addLayer(layer);
 				}
 				if (!containsPlayer) {
 					particleMatrix.setPlayerLeft(powder.getDefaultLeft());
