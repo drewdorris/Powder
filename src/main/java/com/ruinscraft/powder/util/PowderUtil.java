@@ -1200,7 +1200,7 @@ public class PowderUtil {
 								z >= matrix.getMaxZ() - soFar; z--) {
 							int y = matrix.getMaxY() - 
 									(soFar - (matrix.getMaxZ() - z));
-							for (int x = 0; x < matrix.getMaxX(); x++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1233,7 +1233,7 @@ public class PowderUtil {
 						for (int z = matrix.getMaxZ(); 
 								z >= matrix.getMaxZ() - soFar; z--) {
 							int y = soFar - (matrix.getMaxZ() - z);
-							for (int x = 0; x < matrix.getMaxX(); x++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1267,7 +1267,7 @@ public class PowderUtil {
 								z >= matrix.getMaxZ() - soFar; z--) {
 							int y = matrix.getMaxY() - 
 									(soFar - (matrix.getMaxZ() - z));
-							for (int x = 0; x < matrix.getMaxX(); x++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
@@ -1300,7 +1300,7 @@ public class PowderUtil {
 						for (int z = matrix.getMaxZ(); 
 								z >= matrix.getMaxZ() - soFar; z--) {
 							int y = soFar - (matrix.getMaxZ() - z);
-							for (int x = 0; x < matrix.getMaxX(); x++) {
+							for (int x = 0; x <= matrix.getMaxX(); x++) {
 								PowderParticle powderParticle = 
 										matrix.getParticleAtLocation(x, y, z);
 								if (powderParticle == null || powderParticle.getParticle() == null) {
