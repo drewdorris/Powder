@@ -49,7 +49,7 @@ public class ConfigUtil {
 		instance.reloadConfig();
 		config = instance.getConfig();
 		instance.setConfigVersion(config.getInt("configVersion", 0));
-		instance.setFastMode(config.getBoolean("fastMode", true));
+		instance.setFastMode(config.getBoolean("fastMode", false));
 		checkConfigVersion();
 		return config;
 	}
