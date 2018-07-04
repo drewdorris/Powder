@@ -56,16 +56,17 @@ public class ConfigUtil {
 
 	public static boolean checkConfigVersion() {
 		int configVersion = PowderPlugin.getInstance().getConfigVersion();
-		int currentConfigVersion = 1;
+		int currentConfigVersion = 2;
 		int versionsBehind = currentConfigVersion - configVersion;
 		if (versionsBehind == 1) {
 			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
-					"1 version behind. Please update to get the latest functionality.");
+					"1 version behind. Please obtain a new version of the config" + 
+					" to get the latest functionality.");
 			return false;
 		} else if (versionsBehind > 1) {
 			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
-					versionsBehind + " versions behind. Please " + 
-					"update to get the latest functionality.");
+					versionsBehind + " versions behind. Please obtain a " + 
+					"new version of the config to get the latest functionality.");
 			return false;
 		} else {
 			return true;
@@ -200,9 +201,6 @@ public class ConfigUtil {
 
 		// set some given values if they exist, default value if they don't
 		powder.setName(powderConfig.getString(section + ".name", null));
-		if (powder.getName().equals("CoolArrow")) {
-			Bukkit.getLogger().info("Start CoolArrow");
-		}
 		powder.setDefaultSpacing(
 				powderConfig.getDouble(section + ".defaultSpacing", .1));
 		powder.setDefaultStartTime(
@@ -448,22 +446,13 @@ public class ConfigUtil {
 					particleMatrix.setPlayerUp(powder.getDefaultUp());
 				}
 
-				if (powder.getName().equals("CoolArrow")) {
-					Bukkit.getLogger().info("Start gradients and stuff");
-				}
 				List<ParticleMatrix> matrices = new ArrayList<>();
 				if (powderConfig.getInt(eachSection + ".settings.gradient.type", 0) > 0) {
 					int gradient = powderConfig.getInt(eachSection + ".settings.gradient.type");
 					int tickSpeed = powderConfig.getInt(eachSection + ".settings.gradient.speed", 1);
 					int length = powderConfig.getInt(eachSection + ".settings.gradient.length", 1);
-					if (powder.getName().equals("CoolArrow")) {
-						Bukkit.getLogger().info("Add all the gradients");
-					}
 					matrices.addAll(
 							PowderUtil.setGradients(particleMatrix, gradient, tickSpeed, length));
-					if (powder.getName().equals("CoolArrow")) {
-						Bukkit.getLogger().info("Stop adding all the gradients");
-					}
 				} else if (powderConfig.getInt(eachSection + ".settings.twist.type", 0) > 0) {
 					int type = powderConfig.getInt(eachSection + ".settings.twist.type", 0);
 					int magnitude = powderConfig.getInt(eachSection + ".settings.twist.magnitude", 0);
@@ -487,9 +476,6 @@ public class ConfigUtil {
 						matrices.add(size + i, PowderUtil.setFlash(matrix, r, g, b, flash));
 					}
 				}
-				if (powder.getName().equals("CoolArrow")) {
-					Bukkit.getLogger().info("End gradients and stuff, add to the mix");
-				}
 				powder.addPowderElements(matrices);
 			}
 		}
@@ -497,9 +483,6 @@ public class ConfigUtil {
 			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
 					powder.getName() + "' appears empty and/or incorrectly formatted.");
 			return null;
-		}
-		if (powder.getName().equals("CoolArrow")) {
-			Bukkit.getLogger().info("Loaded.");
 		}
 		return powder;
 	}

@@ -21,6 +21,9 @@ pageLength: 7
 ## If true, the console will send a list of all Powders loaded on startup/reload
 listOfLoadedPowders: true
 
+## If false, all Powders will be loaded onto the server at start. This will make the creation of Powders virtually immediate, but will result in higher memory usage
+fastMode: true
+
 ## If true, Powders are divided into categories
 categoriesEnabled: true
 
