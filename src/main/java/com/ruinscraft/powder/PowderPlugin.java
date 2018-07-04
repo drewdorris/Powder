@@ -275,7 +275,6 @@ public class PowderPlugin extends JavaPlugin {
 
 		String powderAmount = String.valueOf(powderNames.size());
 		String niceTotal = powderAmount + " total!";
-
 		// alert console of the Powders loaded
 		StringBuilder msg = new StringBuilder();
 		String loaded = "Loaded Powders: ";

@@ -118,9 +118,9 @@ public class SoundEffect implements PowderElement {
 
 	// creates this SoundEffect at the designated location
 	@Override
-	public void create(final Location location) {
+	public void create(Location location) {
+		World world = location.getWorld();
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			World world = location.getWorld();
 			if (surroundSound) {
 				world.playSound(
 						location.clone().add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 

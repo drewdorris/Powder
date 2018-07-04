@@ -200,6 +200,9 @@ public class ConfigUtil {
 
 		// set some given values if they exist, default value if they don't
 		powder.setName(powderConfig.getString(section + ".name", null));
+		if (powder.getName().equals("CoolArrow")) {
+			Bukkit.getLogger().info("Start CoolArrow");
+		}
 		powder.setDefaultSpacing(
 				powderConfig.getDouble(section + ".defaultSpacing", .1));
 		powder.setDefaultStartTime(
@@ -232,7 +235,7 @@ public class ConfigUtil {
 				powder.addCategory("Other");
 			}
 		}
-		if (!(powderConfig.getConfigurationSection(section + ".songs") == null)) {
+		if (powderConfig.getConfigurationSection(section + ".songs") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".songs").getKeys(false)) {
 				String eachSection = section + ".songs." + ss;
@@ -258,7 +261,7 @@ public class ConfigUtil {
 				}
 			}
 		}
-		if (!(powderConfig.getConfigurationSection(section + ".sounds") == null)) {
+		if (powderConfig.getConfigurationSection(section + ".sounds") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".sounds").getKeys(false)) {
 				String eachSection = section + ".sounds." + ss;
@@ -276,7 +279,7 @@ public class ConfigUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
-		if (!(powderConfig.getConfigurationSection(section + ".changes") == null)) {
+		if (powderConfig.getConfigurationSection(section + ".changes") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".changes").getKeys(false)) {
 				String eachSection = section + ".changes." + ss;
@@ -295,7 +298,7 @@ public class ConfigUtil {
 						amount, xOffset, yOffset, zOffset, data));
 			}
 		}
-		if (!(powderConfig.getConfigurationSection(section + ".dusts") == null)) {
+		if (powderConfig.getConfigurationSection(section + ".dusts") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".dusts").getKeys(false)) {
 				String eachSection = section + ".dusts." + ss;
@@ -337,7 +340,7 @@ public class ConfigUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
-		if (!(powderConfig.getConfigurationSection(section + ".matrices") == null)) {
+		if (powderConfig.getConfigurationSection(section + ".matrices") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".matrices").getKeys(false)) {
 				String eachSection = section + ".matrices." + ss;
@@ -445,13 +448,22 @@ public class ConfigUtil {
 					particleMatrix.setPlayerUp(powder.getDefaultUp());
 				}
 
+				if (powder.getName().equals("CoolArrow")) {
+					Bukkit.getLogger().info("Start gradients and stuff");
+				}
 				List<ParticleMatrix> matrices = new ArrayList<>();
 				if (powderConfig.getInt(eachSection + ".settings.gradient.type", 0) > 0) {
 					int gradient = powderConfig.getInt(eachSection + ".settings.gradient.type");
 					int tickSpeed = powderConfig.getInt(eachSection + ".settings.gradient.speed", 1);
 					int length = powderConfig.getInt(eachSection + ".settings.gradient.length", 1);
+					if (powder.getName().equals("CoolArrow")) {
+						Bukkit.getLogger().info("Add all the gradients");
+					}
 					matrices.addAll(
 							PowderUtil.setGradients(particleMatrix, gradient, tickSpeed, length));
+					if (powder.getName().equals("CoolArrow")) {
+						Bukkit.getLogger().info("Stop adding all the gradients");
+					}
 				} else if (powderConfig.getInt(eachSection + ".settings.twist.type", 0) > 0) {
 					int type = powderConfig.getInt(eachSection + ".settings.twist.type", 0);
 					int magnitude = powderConfig.getInt(eachSection + ".settings.twist.magnitude", 0);
@@ -475,6 +487,9 @@ public class ConfigUtil {
 						matrices.add(size + i, PowderUtil.setFlash(matrix, r, g, b, flash));
 					}
 				}
+				if (powder.getName().equals("CoolArrow")) {
+					Bukkit.getLogger().info("End gradients and stuff, add to the mix");
+				}
 				powder.addPowderElements(matrices);
 			}
 		}
@@ -482,6 +497,9 @@ public class ConfigUtil {
 			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
 					powder.getName() + "' appears empty and/or incorrectly formatted.");
 			return null;
+		}
+		if (powder.getName().equals("CoolArrow")) {
+			Bukkit.getLogger().info("Loaded.");
 		}
 		return powder;
 	}

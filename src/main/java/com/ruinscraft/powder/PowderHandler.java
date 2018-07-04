@@ -29,7 +29,7 @@ public class PowderHandler {
 	// list of all Powders on the server
 	private List<Powder> powders;
 	// set of current PowderTasks being handled
-	private Set<PowderTask> powderTasks;
+	private List<PowderTask> powderTasks;
 	// map of categories and their descriptions
 	private Map<String, String> categories;
 	// are categories enabled?
@@ -43,7 +43,7 @@ public class PowderHandler {
 	// initialize
 	public PowderHandler() {
 		powders = new ArrayList<>();
-		powderTasks = new HashSet<>();
+		powderTasks = new ArrayList<>();
 		categories = new HashMap<>();
 
 		if (PowderPlugin.getInstance().useStorage()) {
@@ -98,7 +98,7 @@ public class PowderHandler {
 		this.powders.add(powder);
 	}
 
-	public Set<PowderTask> getPowderTasks() {
+	public List<PowderTask> getPowderTasks() {
 		return this.powderTasks;
 	}
 
