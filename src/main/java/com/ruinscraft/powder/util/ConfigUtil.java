@@ -464,7 +464,18 @@ public class ConfigUtil {
 				} else {
 					matrices.add(particleMatrix);
 				}
-				if (powderConfig.getInt(eachSection + ".settings.flash.flash", 0) > 0) {
+				int rgbr = powderConfig.getInt(eachSection + ".settings.rgb.r", 0);
+				int rgbg = powderConfig.getInt(eachSection + ".settings.rgb.g", 0);
+				int rgbb = powderConfig.getInt(eachSection + ".settings.rgb.b", 0);
+				if (rgbr + rgbg + rgbb != 0) {
+					int size = matrices.size();
+					for (int i = 0; i < size; i++) {
+						ParticleMatrix matrix = matrices.get(0);
+						matrices.add(PowderUtil.setNewRGB(matrix, rgbr, rgbg, rgbb));
+						matrices.remove(matrix);
+					}
+				}
+				if (powderConfig.getInt(eachSection + ".settings.flash.flash", 0) != 0) {
 					int r = powderConfig.getInt(eachSection + ".settings.flash.r", 0);
 					int g = powderConfig.getInt(eachSection + ".settings.flash.g", 0);
 					int b = powderConfig.getInt(eachSection + ".settings.flash.b", 0);
@@ -472,7 +483,7 @@ public class ConfigUtil {
 					int size = matrices.size();
 					for (int i = 0; i < size; i++) {
 						ParticleMatrix matrix = matrices.get(i);
-						matrices.add(size + i, PowderUtil.setFlash(matrix, r, g, b, flash));
+						matrices.add(PowderUtil.setFlash(matrix, r, g, b, flash));
 					}
 				}
 				powder.addPowderElements(matrices);

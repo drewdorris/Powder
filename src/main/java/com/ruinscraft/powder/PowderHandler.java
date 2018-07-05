@@ -178,8 +178,11 @@ public class PowderHandler {
 		for (PowderTask powderTask : this.powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
 			for (Powder powder : powderTask.getPowders().keySet()) {
-				int distance = (int) location.distance(
-						powderTask.getPowders().get(powder).getCurrentLocation());
+				Location otherLocation = powderTask.getPowders().get(powder).getCurrentLocation();
+				if (!otherLocation.getWorld().equals(location.getWorld())) {
+					continue;
+				}
+				int distance = (int) location.distance(otherLocation);
 				if (distance < taskRange) {
 					taskRange = distance;
 				}

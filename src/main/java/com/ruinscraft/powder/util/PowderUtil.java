@@ -35,6 +35,7 @@ import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.ParticleMatrix;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 
 import net.md_5.bungee.api.ChatColor;
@@ -1640,25 +1641,36 @@ public class PowderUtil {
 
 	public static ParticleMatrix setFlash(ParticleMatrix matrix, int r, int g, int b, int flash) {
 		ParticleMatrix newMatrix = new ParticleMatrix();
-		for (int x = 0; x <= matrix.getMaxX(); x++) {
-			for (int y = 0; y <= matrix.getMaxY(); y++) {
-				for (int z = matrix.getMinZ(); z <= matrix.getMaxZ(); z++) {
-					PowderParticle powderParticle = 
-							matrix.getParticleAtLocation(x, y, z);
-					if (powderParticle == null || 
-							powderParticle.getParticle() != Particle.REDSTONE) {
-						continue;
-					}
-					PowderParticle newParticle = powderParticle.clone();
-					newParticle.setXOff((newParticle.getXOff() + r) % 255);
-					newParticle.setYOff((newParticle.getYOff() + g) % 255);
-					newParticle.setZOff((newParticle.getZOff() + b) % 255);
-					newMatrix.putPowderParticle(newParticle, x, y, z);
-				}
+		for (PositionedPowderParticle particle : matrix.getParticles()) {
+			if (particle.getParticle() != Particle.REDSTONE) {
+				continue;
 			}
+			PowderParticle newParticle = particle.clone();
+			newParticle.setXOff((newParticle.getXOff() + r) % 255);
+			newParticle.setYOff((newParticle.getYOff() + g) % 255);
+			newParticle.setZOff((newParticle.getZOff() + b) % 255);
+			newMatrix.putPowderParticle(
+					newParticle, particle.getX(), particle.getY(), particle.getZ());
 		}
 		setDefaults(matrix, newMatrix, matrix.getStartTime());
 		matrix.setStartTime(matrix.getStartTime() + flash);
+		return newMatrix;
+	}
+
+	public static ParticleMatrix setNewRGB(ParticleMatrix matrix, int r, int g, int b) {
+		ParticleMatrix newMatrix = new ParticleMatrix();
+		for (PositionedPowderParticle particle : matrix.getParticles()) {
+			if (particle.getParticle() != Particle.REDSTONE) {
+				continue;
+			}
+			PowderParticle newParticle = particle.clone();
+			newParticle.setXOff((newParticle.getXOff() + r) % 255);
+			newParticle.setYOff((newParticle.getYOff() + g) % 255);
+			newParticle.setZOff((newParticle.getZOff() + b) % 255);
+			newMatrix.putPowderParticle(
+					newParticle, particle.getX(), particle.getY(), particle.getZ());
+		}
+		setDefaults(matrix, newMatrix, matrix.getStartTime());
 		return newMatrix;
 	}
 
