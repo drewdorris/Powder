@@ -454,7 +454,7 @@ public class ConfigUtil {
 							PowderUtil.setGradients(particleMatrix, gradient, tickSpeed, length));
 				} else if (powderConfig.getInt(eachSection + ".settings.twist.type", 0) > 0) {
 					int type = powderConfig.getInt(eachSection + ".settings.twist.type", 0);
-					int magnitude = powderConfig.getInt(eachSection + ".settings.twist.magnitude", 0);
+					int magnitude = powderConfig.getInt(eachSection + ".settings.twist.magnitude", 2);
 					int length = powderConfig.getInt(eachSection + ".settings.twist.length", 1);
 					int startingPoint = powderConfig.getInt(
 							eachSection + ".settings.twist.startingPoint", 0);
