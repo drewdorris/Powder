@@ -6,7 +6,6 @@ import java.util.Set;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,13 +26,22 @@ public class PowdersCreationTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
+		tick++;
+		if (PowderPlugin.getInstance().asyncMode()) {
+			Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+				createElements();
+			});
+		} else {
+			createElements();
+		}
+	}
+
+	public void createElements() {
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
 		if (powderHandler == null || 
 				powderHandler.getPowderTasks().isEmpty()) {
-			tick++;
 			return;
 		}
-		tick++;
 		Set<UUID> uuidsToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<>();
@@ -66,16 +74,8 @@ public class PowdersCreationTask extends BukkitRunnable {
 						continue;
 					}
 					if (element.getNextTick() <= tick) {
-						Location location = tracker.getCurrentLocation().clone();
-						if (PowderPlugin.getInstance().asyncMode()) {
-							Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-								element.create(location);
-								element.iterate();
-							});
-						} else {
-							element.create(location);
-							element.iterate();
-						}
+						element.create(tracker.getCurrentLocation().clone());
+						element.iterate();
 					}
 				}
 			}
