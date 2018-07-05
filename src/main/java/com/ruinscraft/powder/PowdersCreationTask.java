@@ -4,8 +4,8 @@ import java.util.HashSet;
 import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -28,7 +28,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 	public void run() {
 		tick++;
 		if (PowderPlugin.getInstance().asyncMode()) {
-			Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+			CompletableFuture.runAsync(() -> {
 				createElements();
 			});
 		} else {

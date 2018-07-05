@@ -26,8 +26,7 @@ listOfLoadedPowders: true
 fastMode: false
 
 ## If true, the main Powder creation task will be performed in a separate thread, resulting in an almost 100% performance increase 
-## A downside is that effects will often play a tick or two off, or sometimes "clump" together, sacrificing animation and flow
-## This should only be enabled if you are in dire need of a performance increase
+## This mode has been thoroughly tested, but due to the nature of asynchronous tasks, use at your own risk
 asyncMode: false
 
 ## If true, Powders are divided into categories
