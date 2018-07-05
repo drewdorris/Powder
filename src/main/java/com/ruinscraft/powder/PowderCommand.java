@@ -44,7 +44,7 @@ public class PowderCommand implements CommandExecutor {
 						});
 					} else {
 						PowderPlugin.getInstance().getLogger().info(
-								"Can't reload while " + "already loading!");
+								"Can't reload while already loading!");
 					}
 				} else {
 					PowderUtil.sendMainConsoleMessage();
@@ -503,15 +503,15 @@ public class PowderCommand implements CommandExecutor {
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
-				int page;
+				int range = 200;
+				int page = 1;
 				try {
-					page = Integer.valueOf(args[1]);
-				} catch (Exception e) {
-					page = 1;
-				}
+					range = Integer.valueOf(args[1]);
+					page = Integer.valueOf(args[2]);
+				} catch (Exception e) { }
 				PowderUtil.sendPrefixMessage(player, Message.NEARBY_PREFIX, label);
 				Map<PowderTask, Integer> nearby = 
-						powderHandler.getNearbyPowderTasks(player.getLocation(), 200);
+						powderHandler.getNearbyPowderTasks(player.getLocation(), range);
 				List<TextComponent> nearbyText = new ArrayList<>();
 				for (PowderTask powderTask : nearby.keySet()) {
 					TextComponent text = PowderUtil.setText(Message.NEARBY, 
@@ -537,7 +537,7 @@ public class PowderCommand implements CommandExecutor {
 					}
 					nearbyText.add(text);
 				}
-				PowderUtil.paginateAndSend(player, nearbyText, " nearby ", page, 7, label);
+				PowderUtil.paginateAndSend(player, nearbyText, " nearby " + range + " ", page, 7, label);
 				return true;
 			} else {
 				if (powderHandler.categoriesEnabled()) {
