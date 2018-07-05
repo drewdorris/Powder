@@ -26,6 +26,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	private static PowderPlugin instance;
 	private static PowderHandler powderHandler;
+	private PowdersCreationTask creationTask;
 
 	private FileConfiguration config;
 	private int configVersion;
@@ -39,6 +40,7 @@ public class PowderPlugin extends JavaPlugin {
 	private static boolean isLoading;
 
 	private boolean fastMode;
+	private boolean asyncMode;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -56,6 +58,7 @@ public class PowderPlugin extends JavaPlugin {
 		// delete all tasks & powders
 		powderHandler.clearEverything();
 		disableStorage();
+		creationTask.cancel();
 
 		instance = null;
 	}
@@ -63,14 +66,15 @@ public class PowderPlugin extends JavaPlugin {
 	public synchronized void load() {
 		isLoading = true;
 		config = ConfigUtil.loadConfig();
+		creationTask = new PowdersCreationTask();
+		creationTask.runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
 
 		loadMessages();
 
 		enableStorage();
 
 		// load all powders async & load users' powders if storage is enabled
-		PowderPlugin.getInstance().getServer().getScheduler()
-		.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+		getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
 			loadPowdersFromSources();
 			// load all saved powders from db if enabled
 			if (useStorage()) {
@@ -116,6 +120,14 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void setFastMode(boolean fastMode) {
 		this.fastMode = fastMode;
+	}
+
+	public boolean asyncMode() {
+		return asyncMode;
+	}
+
+	public void setAsyncMode(boolean asyncMode) {
+		this.asyncMode = asyncMode;
 	}
 
 	// end all current tasks & reinitialize powderHandler

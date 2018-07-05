@@ -47,14 +47,14 @@ public class PowderTask {
 	public Set<UUID> getUUIDsIfExist() {
 		Set<UUID> uuids = new HashSet<>();
 		for (Tracker tracker : this.powders.values()) {
-			if (getUUIDIfExist(tracker) != null) {
-				uuids.add(getUUIDIfExist(tracker));
+			if (getUUIDIfExists(tracker) != null) {
+				uuids.add(getUUIDIfExists(tracker));
 			}
 		}
 		return uuids;
 	}
 
-	public UUID getUUIDIfExist(Tracker unknownTracker) {
+	public UUID getUUIDIfExists(Tracker unknownTracker) {
 		if (trackerType == Tracker.Type.ENTITY) {
 			EntityTracker tracker = (EntityTracker) unknownTracker;
 			return tracker.getUUID();

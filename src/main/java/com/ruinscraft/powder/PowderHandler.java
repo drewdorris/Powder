@@ -244,9 +244,6 @@ public class PowderHandler {
 				powderElement.setStartingTick();
 			}
 		}
-		if (getPowderTasks().isEmpty()) {
-			new PowdersCreationTask().runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
-		}
 		this.powderTasks.add(powderTask);
 		if (!powderTask.getUUIDsIfExist().isEmpty()) {
 			PowderUtil.savePowdersForUUIDs(powderTask.getUUIDsIfExist());

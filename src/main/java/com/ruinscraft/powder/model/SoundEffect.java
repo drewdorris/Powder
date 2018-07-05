@@ -1,11 +1,9 @@
 package com.ruinscraft.powder.model;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Sound;
 import org.bukkit.World;
 
-import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 
 public class SoundEffect implements PowderElement {
@@ -120,15 +118,13 @@ public class SoundEffect implements PowderElement {
 	@Override
 	public void create(Location location) {
 		World world = location.getWorld();
-		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			if (surroundSound) {
-				world.playSound(
-						location.clone().add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 
-						sound, (float) volume, (float) pitch);
-			} else {
-				world.playSound(location, sound, (float) volume, (float) pitch);
-			}
-		});
+		if (surroundSound) {
+			world.playSound(
+					location.add(Math.random() - .5, Math.random() - .5, Math.random() - .5), 
+					sound, (float) volume, (float) pitch);
+		} else {
+			world.playSound(location, sound, (float) volume, (float) pitch);
+		}
 		/*/
 		 * other method for surroundSound, sounds a little blocky
 		 * location.getWorld().playSound(

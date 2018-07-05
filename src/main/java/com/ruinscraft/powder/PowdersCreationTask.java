@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 import java.util.Set;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -17,13 +19,7 @@ import com.ruinscraft.powder.util.PowderUtil;
 
 public class PowdersCreationTask extends BukkitRunnable {
 
-	private PowderHandler powderHandler;
-	private static int tick;
-
-	public PowdersCreationTask() {
-		powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		tick = 0;
-	}
+	private static int tick = 0;
 
 	public static int getCurrentTick() {
 		return tick;
@@ -31,9 +27,11 @@ public class PowdersCreationTask extends BukkitRunnable {
 
 	@Override
 	public void run() {
-		if (powderHandler.getPowderTasks().isEmpty()) {
-			tick = 0;
-			cancel();
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		if (powderHandler == null || 
+				powderHandler.getPowderTasks().isEmpty()) {
+			tick++;
+			return;
 		}
 		tick++;
 		Set<UUID> uuidsToRemove = new HashSet<>();
@@ -60,16 +58,24 @@ public class PowdersCreationTask extends BukkitRunnable {
 						break;
 					}
 				}
-				for (int i = 0; i < powder.powderElements.size(); i++) {
-					PowderElement element = powder.powderElements.get(i);
+				for (int indexTwo = 0; indexTwo < powder.powderElements.size(); indexTwo++) {
+					PowderElement element = powder.powderElements.get(indexTwo);
 					if (element.getIterations() >= element.getLockedIterations()) {
 						powder.powderElements.remove(element);
-						i--;
+						indexTwo--;
 						continue;
 					}
 					if (element.getNextTick() <= tick) {
-						element.create(tracker.getCurrentLocation());
-						element.iterate();
+						Location location = tracker.getCurrentLocation().clone();
+						if (PowderPlugin.getInstance().asyncMode()) {
+							Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+								element.create(location);
+								element.iterate();
+							});
+						} else {
+							element.create(location);
+							element.iterate();
+						}
 					}
 				}
 			}

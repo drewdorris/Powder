@@ -4,12 +4,10 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.util.Vector;
 
-import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
@@ -278,54 +276,53 @@ public class ParticleMatrix implements PowderElement {
 	@Override
 	public void create(final Location location) {
 		World world = location.getWorld();
-		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			double forwardPitch = 
-					((location.clone().getPitch() + getAddedPitch() - 180) * Math.PI) / 180;
-			if (forwardPitch == 0) {
-				forwardPitch = Math.PI / 180;
-			}
-			double upwardPitch = 
-					((location.clone().getPitch() + getAddedPitch() - 90) * Math.PI) / 180;
-			if (!hasPitch()) {
-				forwardPitch = ((getAddedPitch() - 180) * Math.PI) / 180;
-				upwardPitch = ((getAddedPitch() - 90) * Math.PI) / 180;
-			}
-			double forwardYaw = 
-					((location.clone().getYaw() + getAddedRotation() + 90) * Math.PI) / 180;
-			double sidewaysYaw = 
-					((location.clone().getYaw() + getAddedRotation() + 180) * Math.PI) / 180;
-			double sidewaysTilt = 
-					((getAddedTilt() - 90) * Math.PI) / 180;
+		double forwardPitch = 
+				((location.clone().getPitch() + getAddedPitch() - 180) * Math.PI) / 180;
+		if (forwardPitch == 0) {
+			forwardPitch = Math.PI / 180;
+		}
+		double upwardPitch = 
+				((location.clone().getPitch() + getAddedPitch() - 90) * Math.PI) / 180;
+		if (!hasPitch()) {
+			forwardPitch = ((getAddedPitch() - 180) * Math.PI) / 180;
+			upwardPitch = ((getAddedPitch() - 90) * Math.PI) / 180;
+		}
+		double forwardYaw = 
+				((location.clone().getYaw() + getAddedRotation() + 90) * Math.PI) / 180;
+		double sidewaysYaw = 
+				((location.clone().getYaw() + getAddedRotation() + 180) * Math.PI) / 180;
+		double sidewaysTilt = 
+				((getAddedTilt() - 90) * Math.PI) / 180;
 
-			final Vector sideToSideVector = 
-					new Vector(Math.sin(sidewaysTilt) * Math.cos(sidewaysYaw), 
-							Math.cos(sidewaysTilt), 
-							Math.sin(sidewaysTilt) * Math.sin(sidewaysYaw))
-					.normalize().multiply(spacing);
-			final Vector upAndDownVector = 
-					new Vector(Math.sin(upwardPitch + sidewaysTilt) * Math.cos(forwardYaw), 
-							Math.cos(upwardPitch + sidewaysTilt), 
-							Math.sin(upwardPitch + sidewaysTilt) * Math.sin(forwardYaw))
-					.normalize().multiply(spacing);
-			final Vector forwardVector = 
-					new Vector(Math.sin(forwardPitch + sidewaysTilt) * Math.cos(forwardYaw), 
-							Math.cos(forwardPitch - sidewaysTilt), 
-							Math.sin(forwardPitch + sidewaysTilt) * Math.sin(forwardYaw))
-					.normalize().multiply(spacing);
+		final Vector sideToSideVector = 
+				new Vector(Math.sin(sidewaysTilt) * Math.cos(sidewaysYaw), 
+						Math.cos(sidewaysTilt), 
+						Math.sin(sidewaysTilt) * Math.sin(sidewaysYaw))
+				.normalize().multiply(spacing);
+		final Vector upAndDownVector = 
+				new Vector(Math.sin(upwardPitch + sidewaysTilt) * Math.cos(forwardYaw), 
+						Math.cos(upwardPitch + sidewaysTilt), 
+						Math.sin(upwardPitch + sidewaysTilt) * Math.sin(forwardYaw))
+				.normalize().multiply(spacing);
+		final Vector forwardVector = 
+				new Vector(Math.sin(forwardPitch + sidewaysTilt) * Math.cos(forwardYaw), 
+						Math.cos(forwardPitch - sidewaysTilt), 
+						Math.sin(forwardPitch + sidewaysTilt) * Math.sin(forwardYaw))
+				.normalize().multiply(spacing);
 
-			Location start = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
-					.subtract(sideToSideVector.clone().multiply(getPlayerLeft()));
-			for (PositionedPowderParticle particle : particles) {
-				Location position = start.clone()
-						.add(sideToSideVector.clone().multiply(particle.getX()))
-						.add(upAndDownVector.clone().multiply(particle.getY()))
-						.add(forwardVector.clone().multiply(particle.getZ()));
-				world.spawnParticle(
-						particle.getParticle(), position, particle.getAmount(), 
-						particle.getXOff() / 255, particle.getYOff() / 255,
-						particle.getZOff() / 255, particle.getData());
-			}
-			/*/
+		Location start = location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
+				.subtract(sideToSideVector.clone().multiply(getPlayerLeft()));
+		for (PositionedPowderParticle particle : particles) {
+			Location position = start.clone()
+					.add(sideToSideVector.clone().multiply(particle.getX()))
+					.add(upAndDownVector.clone().multiply(particle.getY()))
+					.add(forwardVector.clone().multiply(particle.getZ()));
+			world.spawnParticle(
+					particle.getParticle(), position, particle.getAmount(), 
+					particle.getXOff() / 255, particle.getYOff() / 255,
+					particle.getZOff() / 255, particle.getData());
+		}
+		/*/
 			for (Layer layer : getLayers()) {
 				Location startingLocation = 
 						location.clone().subtract((upAndDownVector.clone().multiply(getPlayerUp())))
@@ -356,8 +353,7 @@ public class ParticleMatrix implements PowderElement {
 							.add(sideToSideVector.clone().multiply(i)).add(upAndDownVector.clone());
 				}
 			}
-			 */
-		});
+		 */
 	}
 
 }

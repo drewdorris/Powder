@@ -1,9 +1,7 @@
 package com.ruinscraft.powder.model;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 
-import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 
@@ -117,16 +115,14 @@ public class Dust implements PowderElement {
 	// creates this Dust at the designated location
 	@Override
 	public void create(Location location) {
-		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-			location.getWorld().spawnParticle(
-					powderParticle.getParticle(), location.clone().add(
-							(Math.random() - .5) * (2 * getRadius()), 
-							((Math.random() - .5) * getYSpan()) + getHeight() - .625,
-							(Math.random() - .5) * (2 * getRadius())), 
-					powderParticle.getAmount(), 
-					powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-					powderParticle.getZOff() / 255, (double) powderParticle.getData());
-		});
+		location.getWorld().spawnParticle(
+				powderParticle.getParticle(), location.add(
+						(Math.random() - .5) * (2 * getRadius()), 
+						((Math.random() - .5) * getYSpan()) + getHeight() - .625,
+						(Math.random() - .5) * (2 * getRadius())), 
+				powderParticle.getAmount(), 
+				powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+				powderParticle.getZOff() / 255, (double) powderParticle.getData());
 	}
 
 }

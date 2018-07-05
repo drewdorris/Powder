@@ -50,6 +50,7 @@ public class ConfigUtil {
 		config = instance.getConfig();
 		instance.setConfigVersion(config.getInt("configVersion", 0));
 		instance.setFastMode(config.getBoolean("fastMode", false));
+		instance.setAsyncMode(config.getBoolean("asyncMode", false));
 		checkConfigVersion();
 		return config;
 	}
@@ -254,9 +255,7 @@ public class ConfigUtil {
 								getStart(powderConfig, powder, eachSection), 
 								getRepeat(powderConfig, powder, eachSection), 
 								getIterations(powderConfig, powder, eachSection));
-				for (SoundEffect soundEffect : songSoundEffects) {
-					powder.addPowderElement(soundEffect);
-				}
+				powder.addPowderElements(songSoundEffects);
 			}
 		}
 		if (powderConfig.getConfigurationSection(section + ".sounds") != null) {
