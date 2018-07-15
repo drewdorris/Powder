@@ -6,6 +6,7 @@ import java.util.Set;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 
+import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -27,26 +28,56 @@ public class PowdersCreationTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		tick++;
+		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		if (powderHandler == null || powderHandler.getPowderTasks().isEmpty()) return;
+
+		refreshLocations(powderHandler);
+
 		if (PowderPlugin.getInstance().asyncMode()) {
 			CompletableFuture.runAsync(() -> {
-				createElements();
+				createElements(powderHandler);
 			});
 		} else {
-			createElements();
+			createElements(powderHandler);
 		}
 	}
 
-	public void createElements() {
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		if (powderHandler == null || 
-				powderHandler.getPowderTasks().isEmpty()) {
-			return;
+	public void createElements(PowderHandler powderHandler) {
+		for (int index = 0; index < powderHandler.getPowderTasks().size(); index++) {
+			PowderTask powderTask = powderHandler.getPowderTasks().get(index);
+
+			for (Entry<Powder, Tracker> activePowder : powderTask.getPowders().entrySet()) {
+				Powder powder = activePowder.getKey();
+				Tracker tracker = activePowder.getValue();
+				Location currentLocation = tracker.getCurrentLocation();
+
+				for (int indexTwo = 0; indexTwo < powder.powderElements.size(); indexTwo++) {
+					PowderElement element = powder.powderElements.get(indexTwo);
+
+					if (element.getIterations() >= element.getLockedIterations()) {
+						powder.powderElements.remove(element);
+						indexTwo--;
+						continue;
+					}
+
+					if (element.getNextTick() <= tick) {
+						element.create(currentLocation.clone());
+						element.iterate();
+					}
+				}
+			}
 		}
+	}
+
+	// Must be run sync!
+	public void refreshLocations(PowderHandler powderHandler) {
 		Set<UUID> uuidsToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemove = new HashSet<>();
 		Set<PowderTask> powderTasksToRemoveWithoutSaving = new HashSet<>();
+
 		for (int index = 0; index < powderHandler.getPowderTasks().size(); index++) {
 			PowderTask powderTask = powderHandler.getPowderTasks().get(index);
+
 			for (Entry<Powder, Tracker> activePowder : powderTask.getPowders().entrySet()) {
 				Powder powder = activePowder.getKey();
 				Tracker tracker = activePowder.getValue();
@@ -66,23 +97,15 @@ public class PowdersCreationTask extends BukkitRunnable {
 						break;
 					}
 				}
-				for (int indexTwo = 0; indexTwo < powder.powderElements.size(); indexTwo++) {
-					PowderElement element = powder.powderElements.get(indexTwo);
-					if (element.getIterations() >= element.getLockedIterations()) {
-						powder.powderElements.remove(element);
-						indexTwo--;
-						continue;
-					}
-					if (element.getNextTick() <= tick) {
-						element.create(tracker.getCurrentLocation().clone());
-						element.iterate();
-					}
-				}
+
+				activePowder.getValue().refreshLocation();
 			}
+
 			if (!powderTask.hasAnyElements()) {
 				powderTasksToRemove.add(powderTask);
 			}
 		}
+
 		for (UUID uuid : uuidsToRemove) {
 			PowderUtil.cancelAllPowdersAndSave(uuid);
 		}

@@ -16,6 +16,9 @@ public class StationaryTracker implements Tracker {
 	}
 
 	@Override
+	public void refreshLocation() {}
+
+	@Override
 	public Location getCurrentLocation() {
 		return location;
 	}

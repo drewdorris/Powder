@@ -6,6 +6,8 @@ public interface Tracker {
 
 	Tracker.Type getType();
 
+	void refreshLocation();
+
 	Location getCurrentLocation();
 
 	public enum Type {
