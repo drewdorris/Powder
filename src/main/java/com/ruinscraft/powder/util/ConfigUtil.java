@@ -14,10 +14,11 @@ import java.util.Set;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.Sound;
 import org.bukkit.World;
+import org.bukkit.Particle.DustOptions;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -28,6 +29,7 @@ import com.ruinscraft.powder.model.ParticleMatrix;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderElement;
 import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.Sound;
 import com.ruinscraft.powder.model.SoundEffect;
 import com.ruinscraft.powder.model.particle.ModelPowderParticle;
 import com.ruinscraft.powder.model.particle.ParticleName;
@@ -265,12 +267,13 @@ public class ConfigUtil {
 				String soundEnum = powderConfig.getString(eachSection + ".soundEnum", 
 						"BLOCK_NOTE_CHIME");
 				Sound sound = Sound.valueOf(soundEnum);
+				org.bukkit.Sound bukkitSound = sound.bukkitSound();
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
 				soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
 				boolean surroundSound = powderConfig.getBoolean(
 						eachSection + ".surroundSound", true);
-				powder.addPowderElement(new SoundEffect(sound, volume, soundPitch, surroundSound,
+				powder.addPowderElement(new SoundEffect(bukkitSound, volume, soundPitch, surroundSound,
 						getStart(powderConfig, powder, eachSection), 
 						getRepeat(powderConfig, powder, eachSection), 
 						getIterations(powderConfig, powder, eachSection)));
@@ -290,7 +293,15 @@ public class ConfigUtil {
 				double xOffset = powderConfig.getDouble(eachSection + ".xOffset", 0);
 				double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
 				double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
-				double data = powderConfig.getDouble(eachSection + ".data", 0);
+				Object data = null;
+				if (particle == Particle.REDSTONE && PowderPlugin.getVersion().equals("1.13")) {
+					data = new DustOptions(Color.fromRGB(
+							(int) xOffset, 
+							(int) yOffset, 
+							(int) zOffset), 1F);
+				} else {
+					data = (Void) null;
+				}
 				powder.addPowderParticle(new ModelPowderParticle(character, particle, 
 						amount, xOffset, yOffset, zOffset, data));
 			}
@@ -422,19 +433,37 @@ public class ConfigUtil {
 						for (int x = 0; x < ssss.toCharArray().length; x++) {
 							char character = ssss.toCharArray()[x];
 							PositionedPowderParticle powderParticle;
-							if (powder.getPowderParticle(character) == null) {
+							PowderParticle model = powder.getPowderParticle(character);
+							if (model == null) {
 								try {
 									String string = String.valueOf(character);
 									Particle particle = Particle.valueOf(
 											ParticleName.valueOf(string).getName());
+									Object data = null;
+									if (particle == Particle.REDSTONE 
+											&& PowderPlugin.getVersion().equals("1.13")) {
+										data = new DustOptions(Color.fromRGB(0, 0, 0), 1F);
+									} else {
+										data = (Void) data;
+									}
 									powderParticle = new PositionedPowderParticle(
 											character, particle, x, index, z);
 								} catch (Exception e) {
 									continue;
 								}
 							} else {
+								Object data = null;
+								if (model.getParticle() == Particle.REDSTONE 
+										&& PowderPlugin.getVersion().equals("1.13")) {
+									data = new DustOptions(Color.fromRGB(
+											(int) model.getXOff(), 
+											(int) model.getYOff(), 
+											(int) model.getZOff()), 1F);
+								} else {
+									data = (Void) data;
+								}
 								powderParticle = new PositionedPowderParticle(
-										powder.getPowderParticle(character), x, index, z);
+										model, x, index, z);
 							}
 							particleMatrix.addParticle(powderParticle);
 						}

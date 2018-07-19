@@ -17,7 +17,7 @@ public abstract class PowderParticle implements Cloneable {
 	// z-offset data
 	private double zOff;
 	// extra data 
-	private double data;
+	private Object data;
 
 	public PowderParticle(PowderParticle powderParticle) {
 		this.particleChar = powderParticle.getCharacter();
@@ -30,7 +30,7 @@ public abstract class PowderParticle implements Cloneable {
 	}
 
 	public PowderParticle(char particleChar, Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data) {
+			double xOff, double yOff, double zOff, Object data) {
 		this.particleChar = particleChar;
 		this.particle = particle;
 		this.amount = amount;
@@ -41,7 +41,7 @@ public abstract class PowderParticle implements Cloneable {
 	}
 
 	public PowderParticle(Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data) {
+			double xOff, double yOff, double zOff, Object data) {
 		this.particleChar = 0;
 		this.particle = particle;
 		this.amount = amount;
@@ -54,6 +54,10 @@ public abstract class PowderParticle implements Cloneable {
 	public PowderParticle(char particleChar, Particle particle) {
 		this.particleChar = particleChar;
 		this.particle = particle;
+		this.xOff = 0;
+		this.yOff = 0;
+		this.zOff = 0;
+		this.data = (Void) null;
 	}
 
 	public char getCharacter() {
@@ -104,7 +108,7 @@ public abstract class PowderParticle implements Cloneable {
 		this.zOff = zOff;
 	}
 
-	public double getData() {
+	public Object getData() {
 		return data;
 	}
 

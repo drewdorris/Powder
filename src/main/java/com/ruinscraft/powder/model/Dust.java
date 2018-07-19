@@ -122,7 +122,7 @@ public class Dust implements PowderElement {
 						(Math.random() - .5) * (2 * getRadius())), 
 				powderParticle.getAmount(), 
 				powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-				powderParticle.getZOff() / 255, (double) powderParticle.getData());
+				powderParticle.getZOff() / 255, powderParticle.getData());
 	}
 
 }

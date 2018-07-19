@@ -190,6 +190,11 @@ public class PowderPlugin extends JavaPlugin {
 		}
 	}
 
+	public static String getVersion() {
+		if (Bukkit.getVersion().contains("1.13")) return "1.13";
+		return "1.12";
+	}
+
 	public Storage getStorage() {
 		return storage;
 	}

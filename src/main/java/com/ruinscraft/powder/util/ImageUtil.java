@@ -14,6 +14,7 @@ import java.util.List;
 import javax.imageio.ImageIO;
 
 import org.bukkit.Particle;
+import org.bukkit.Particle.DustOptions;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
@@ -128,8 +129,14 @@ public class ImageUtil {
 					arr = 1;
 				}
 
+				Object data = (Void) null;
+				if (PowderPlugin.getVersion().equals("1.13")) {
+					data = new DustOptions(
+							org.bukkit.Color.fromRGB(arr, gee, bee), 1F);
+				}
+
 				PositionedPowderParticle powderParticle = new PositionedPowderParticle(
-						Particle.REDSTONE, 0, arr, gee, bee, 1, x + xAdd, y + yAdd, z);
+						Particle.REDSTONE, 0, arr, gee, bee, data, x + xAdd, y + yAdd, z);
 				particles.add(powderParticle);
 			}
 		}

@@ -9,12 +9,12 @@ public class ModelPowderParticle extends PowderParticle {
 	}
 
 	public ModelPowderParticle(Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data) {
+			double xOff, double yOff, double zOff, Object data) {
 		super('0', particle, amount, xOff, yOff, zOff, data);
 	}
 
 	public ModelPowderParticle(char particleChar, Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data) {
+			double xOff, double yOff, double zOff, Object data) {
 		super(particleChar, particle, amount, xOff, yOff, zOff, data);
 	}
 

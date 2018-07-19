@@ -15,7 +15,6 @@ public class PositionedPowderParticle extends PowderParticle {
 		this.z = z;
 	}
 
-
 	public PositionedPowderParticle(char particleChar, Particle particle, int x, int y, int z) {
 		super(particleChar, particle);
 		this.x = x;
@@ -24,7 +23,7 @@ public class PositionedPowderParticle extends PowderParticle {
 	}
 
 	public PositionedPowderParticle(Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data, int x, int y, int z) {
+			double xOff, double yOff, double zOff, Object data, int x, int y, int z) {
 		super('0', particle, amount, xOff, yOff, zOff, data);
 		this.x = x;
 		this.y = y;
@@ -32,7 +31,7 @@ public class PositionedPowderParticle extends PowderParticle {
 	}
 
 	public PositionedPowderParticle(char particleChar, Particle particle, int amount, 
-			double xOff, double yOff, double zOff, double data, int x, int y, int z) {
+			double xOff, double yOff, double zOff, Object data, int x, int y, int z) {
 		super(particleChar, particle, amount, xOff, yOff, zOff, data);
 		this.x = x;
 		this.y = y;
