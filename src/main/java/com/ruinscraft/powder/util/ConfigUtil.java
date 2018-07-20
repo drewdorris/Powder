@@ -236,6 +236,7 @@ public class ConfigUtil {
 				powder.addCategory("Other");
 			}
 		}
+
 		if (powderConfig.getConfigurationSection(section + ".songs") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".songs").getKeys(false)) {
@@ -260,14 +261,14 @@ public class ConfigUtil {
 				powder.addPowderElements(songSoundEffects);
 			}
 		}
+
 		if (powderConfig.getConfigurationSection(section + ".sounds") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".sounds").getKeys(false)) {
 				String eachSection = section + ".sounds." + ss;
 				String soundEnum = powderConfig.getString(eachSection + ".soundEnum", 
 						"BLOCK_NOTE_CHIME");
-				Sound sound = Sound.valueOf(soundEnum);
-				org.bukkit.Sound bukkitSound = sound.bukkitSound();
+				org.bukkit.Sound bukkitSound = Sound.getFromBukkitName(soundEnum);
 				double volume = powderConfig.getDouble(eachSection + ".volume", 1);
 				float soundPitch = (float) powderConfig.getDouble(eachSection + ".note", 1);
 				soundPitch = (float) Math.pow(2.0, ((double)soundPitch - 12.0) / 12.0);
@@ -279,6 +280,7 @@ public class ConfigUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
+
 		if (powderConfig.getConfigurationSection(section + ".changes") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".changes").getKeys(false)) {
@@ -306,6 +308,7 @@ public class ConfigUtil {
 						amount, xOffset, yOffset, zOffset, data));
 			}
 		}
+
 		if (powderConfig.getConfigurationSection(section + ".dusts") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".dusts").getKeys(false)) {
@@ -348,6 +351,7 @@ public class ConfigUtil {
 						getIterations(powderConfig, powder, eachSection)));
 			}
 		}
+
 		if (powderConfig.getConfigurationSection(section + ".matrices") != null) {
 			for (String ss : powderConfig
 					.getConfigurationSection(section + ".matrices").getKeys(false)) {
@@ -518,11 +522,13 @@ public class ConfigUtil {
 				powder.addPowderElements(matrices);
 			}
 		}
+
 		if (powder.getPowderElements().isEmpty()) {
 			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
 					powder.getName() + "' appears empty and/or incorrectly formatted.");
 			return null;
 		}
+
 		return powder;
 	}
 

@@ -6,7 +6,7 @@ package com.ruinscraft.powder.model;
  * Enum mapping to sound names for different
  * Minecraft versions.
  * 
- * Source: https://gist.github.com/NiklasEi/7bd0ffd136f8459df0940e4501d47a8a
+ * @see https://gist.github.com/NiklasEi/7bd0ffd136f8459df0940e4501d47a8a
  * @author NiklasEi
  */
 public enum Sound {
@@ -46,9 +46,13 @@ public enum Sound {
 	NOTE_PIANO("NOTE_PIANO", "BLOCK_NOTE_HARP", "BLOCK_NOTE_BLOCK_HARP"),
 	NOTE_BASS_DRUM("NOTE_BASS_DRUM", "BLOCK_NOTE_BASEDRUM", "BLOCK_NOTE_BLOCK_BASEDRUM"),
 	NOTE_STICKS("NOTE_STICKS", "BLOCK_NOTE_HAT", "BLOCK_NOTE_BLOCK_HAT"),
-	NOTE_BASS_GUITAR("NOTE_BASS_GUITAR", "BLOCK_NOTE_GUITAR", "BLOCK_NOTE_BLOCK_GUITAR", "BLOCK_NOTE_BASS" /* 1.10 doesn't know guitar... */),
+	NOTE_BASS_GUITAR("NOTE_BASS_GUITAR", "BLOCK_NOTE_GUITAR", "BLOCK_NOTE_BLOCK_GUITAR"),
 	NOTE_SNARE_DRUM("NOTE_SNARE_DRUM", "BLOCK_NOTE_SNARE", "BLOCK_NOTE_BLOCK_SNARE"),
 	NOTE_PLING("NOTE_PLING", "BLOCK_NOTE_PLING", "BLOCK_NOTE_BLOCK_PLING"),
+	NOTE_BELL("NOTE_BELL", "BLOCK_NOTE_BELL", "BLOCK_NOTE_BLOCK_BELL"),
+	NOTE_CHIME("NOTE_CHIME", "BLOCK_NOTE_CHIME", "BLOCK_NOTE_BLOCK_CHIME"),
+	NOTE_FLUTE("NOTE_FLUTE", "BLOCK_NOTE_FLUTE", "BLOCK_NOTE_BLOCK_FLUTE"),
+	NOTE_XYLOPHONE("NOTE_XYLOPHONE", "BLOCK_NOTE_XYLOPHONE", "BLOCK_NOTE_BLOCK_XYLOPHONE"),
 	ORB_PICKUP("ORB_PICKUP", "ENTITY_EXPERIENCE_ORB_PICKUP"),
 	PISTON_EXTEND("PISTON_EXTEND", "BLOCK_PISTON_EXTEND"),
 	PISTON_RETRACT("PISTON_RETRACT", "BLOCK_PISTON_CONTRACT"),
@@ -214,12 +218,20 @@ public enum Sound {
 	}
 
 	/**
-	 * Get the bukkit sound for current server version
-	 *
-	 * Caches sound on first call
-	 * @return corresponding {@link org.bukkit.Sound}
+	 * Attempts to retrieve the org.bukkit.Sound equivalent of a version dependent enum name
+	 * @param bukkitSoundName
+	 * @return org.bukkit.Sound enum
 	 */
-	public org.bukkit.Sound bukkitSound() {
+	public static org.bukkit.Sound getFromBukkitName(String bukkitSoundName) {
+		for (Sound sound : values()) {
+			for (String soundName : sound.versionDependentNames) {
+				if (soundName.equalsIgnoreCase(bukkitSoundName)) return sound.getSound();
+			}
+		}
+		return org.bukkit.Sound.valueOf(bukkitSoundName);
+	}
+
+	private org.bukkit.Sound getSound() {
 		if (cached != null) return cached;
 		for (String name : versionDependentNames) {
 			try {
@@ -227,6 +239,19 @@ public enum Sound {
 			} catch (IllegalArgumentException ignore2) {
 				// try next
 			}
+		}
+		return null;
+	}
+
+	/**
+	 * Get the bukkit sound for current server version
+	 *
+	 * Caches sound on first call
+	 * @return corresponding {@link org.bukkit.Sound}
+	 */
+	public org.bukkit.Sound bukkitSound() {
+		if (getSound() != null) {
+			return getSound();
 		}
 		throw new IllegalArgumentException("Found no valid sound name for " + this.name());
 	}

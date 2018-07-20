@@ -23,8 +23,8 @@
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
 		</repository>
 		<repository>
-			<id>jitpack.io</id>
-			<url>https://jitpack.io/</url>
+			<id>ruinscraft-repo</id>
+			<url>https://ci.ruinscraft.com/plugin/repository/everything/</url>
 		</repository>
 	</repositories>
 
@@ -42,9 +42,10 @@
 			<scope>compile</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.github.koca2000</groupId>
+			<groupId>com.xxmicloxx</groupId>
 			<artifactId>NoteBlockAPI</artifactId>
-			<version>-SNAPSHOT</version>
+			<version>1.2.0</version>
+			<scope>compile</scope>
 		</dependency>
 	</dependencies>
 

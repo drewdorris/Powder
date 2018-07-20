@@ -6,11 +6,10 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.bukkit.Sound;
-
 import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.model.Sound;
 import com.ruinscraft.powder.model.SoundEffect;
-import com.xxmicloxx.NoteBlockAPI.Instrument;
+import com.xxmicloxx.NoteBlockAPI.InstrumentUtils;
 import com.xxmicloxx.NoteBlockAPI.Layer;
 import com.xxmicloxx.NoteBlockAPI.NBSDecoder;
 import com.xxmicloxx.NoteBlockAPI.Note;
@@ -55,7 +54,8 @@ public class SoundUtil {
 			for (int i = 0; i < volumeMultiplier; i++) {
 				for (Integer tick : layer.getHashMap().keySet()) {
 					Note note = layer.getHashMap().get(tick);
-					Sound sound = Instrument.getInstrument(note.getInstrument());
+					String soundName = InstrumentUtils.getInstrumentName(note.getInstrument());
+					org.bukkit.Sound sound = Sound.getFromBukkitName(soundName);
 					float newVolume = (layer.getVolume() / 100F) * ((float) volume);
 					float pitch = note.getKey() - 33;
 					if (limitNotes) {
