@@ -130,7 +130,7 @@ public class ImageUtil {
 				}
 
 				Object data = (Void) null;
-				if (PowderPlugin.getVersion().equals("1.13")) {
+				if (PowderPlugin.is1_13()) {
 					data = new DustOptions(
 							org.bukkit.Color.fromRGB(arr, gee, bee), 1F);
 				}

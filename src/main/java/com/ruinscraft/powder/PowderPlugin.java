@@ -38,6 +38,7 @@ public class PowderPlugin extends JavaPlugin {
 	private Storage storage;
 
 	private static boolean isLoading;
+	private static boolean is1_13;
 
 	private boolean fastMode;
 	private boolean asyncMode;
@@ -65,6 +66,7 @@ public class PowderPlugin extends JavaPlugin {
 
 	public synchronized void load() {
 		isLoading = true;
+		is1_13 = Bukkit.getVersion().contains("1.13") ? true : false;
 		config = ConfigUtil.loadConfig();
 		creationTask = new PowdersCreationTask();
 		creationTask.runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
@@ -190,9 +192,8 @@ public class PowderPlugin extends JavaPlugin {
 		}
 	}
 
-	public static String getVersion() {
-		if (Bukkit.getVersion().contains("1.13")) return "1.13";
-		return "1.12";
+	public static boolean is1_13() {
+		return is1_13;
 	}
 
 	public Storage getStorage() {

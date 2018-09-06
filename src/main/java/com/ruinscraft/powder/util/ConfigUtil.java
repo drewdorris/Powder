@@ -296,7 +296,7 @@ public class ConfigUtil {
 				double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
 				double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
 				Object data = null;
-				if (particle == Particle.REDSTONE && PowderPlugin.getVersion().equals("1.13")) {
+				if (particle == Particle.REDSTONE && PowderPlugin.is1_13()) {
 					data = new DustOptions(Color.fromRGB(
 							(int) xOffset, 
 							(int) yOffset, 
@@ -445,7 +445,7 @@ public class ConfigUtil {
 											ParticleName.valueOf(string).getName());
 									Object data = null;
 									if (particle == Particle.REDSTONE 
-											&& PowderPlugin.getVersion().equals("1.13")) {
+											&& PowderPlugin.is1_13()) {
 										data = new DustOptions(Color.fromRGB(0, 0, 0), 1F);
 									} else {
 										data = (Void) data;
@@ -458,7 +458,7 @@ public class ConfigUtil {
 							} else {
 								Object data = null;
 								if (model.getParticle() == Particle.REDSTONE 
-										&& PowderPlugin.getVersion().equals("1.13")) {
+										&& PowderPlugin.is1_13()) {
 									data = new DustOptions(Color.fromRGB(
 											(int) model.getXOff(), 
 											(int) model.getYOff(), 
