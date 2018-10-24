@@ -58,6 +58,9 @@ storage:
     table: powders
     username: root
     password: password
+  sqlite:
+    use: false
+    file: powders.db
 
 ## Locale to use (from locale source folder)
 locale: 'en-us.yml'

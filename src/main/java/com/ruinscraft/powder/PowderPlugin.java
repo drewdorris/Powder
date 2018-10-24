@@ -15,7 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
-import com.ruinscraft.powder.storage.MySqlStorage;
+import com.ruinscraft.powder.storage.MySQLStorage;
+import com.ruinscraft.powder.storage.SQLiteStorage;
 import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
@@ -215,9 +216,17 @@ public class PowderPlugin extends JavaPlugin {
 			String password = config.getString("storage.mysql.password");
 			String powdersTable = config.getString("storage.mysql.table");
 
-			storage = new MySqlStorage(host, port, database, username, password, powdersTable);
+			storage = new MySQLStorage(host, port, database, username, password, powdersTable);
 
 			getLogger().info("Using MySQL storage");
+		}
+		
+		else if (config.getBoolean("storage.sqlite.use")) {
+			String dbFileName = config.getString("storage.sqlite.file");
+			
+			storage = new SQLiteStorage(new File(getDataFolder(), dbFileName));
+			
+			getLogger().info("Using SQLite storage");
 		}
 	}
 

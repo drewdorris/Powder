@@ -14,7 +14,7 @@ import java.util.UUID;
 import com.ruinscraft.powder.util.PowderUtil;
 import com.zaxxer.hikari.HikariDataSource;
 
-public class MySqlStorage implements SqlStorage {
+public class MySQLStorage implements SQLStorage {
 
 	private HikariDataSource dataSource;
 
@@ -23,7 +23,7 @@ public class MySqlStorage implements SqlStorage {
 	private String insert_powder;
 	private String delete_powders;
 
-	public MySqlStorage(String host, int port, 
+	public MySQLStorage(String host, int port, 
 			String database, String username, String password, String powdersTable) {
 		create_table = "CREATE TABLE IF NOT EXISTS " + 
 				powdersTable + " (uuid VARCHAR(36), powder VARCHAR(32));";
