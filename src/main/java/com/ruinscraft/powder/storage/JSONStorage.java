@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
@@ -14,6 +15,7 @@ import java.util.UUID;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class JSONStorage implements Storage {
@@ -25,10 +27,39 @@ public class JSONStorage implements Storage {
 
 	public JSONStorage(File jsonFile) {
 		this.jsonFile = jsonFile;
+		
+		/* Try to create the JSON file if it doesn't exist */
+		try {
+			if (this.jsonFile.createNewFile()) {
+				try (FileWriter writer = new FileWriter(jsonFile)) {
+				    GSON.toJson(new Object(), writer);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+			PowderPlugin.warning("Failed to create JSON file");
+			return;
+		}
+		
+		/* Ensure GSON is supported on the platform */
+		try {
+			Class.forName("com.google.gson.Gson");
+		} catch (ClassNotFoundException e) {
+			PowderPlugin.warning("JSON (GSON) unsupported on this server platform");
+			return;
+		}
 	}
 
 	@Override
 	public List<String> get(UUID uuid) {
+		JsonObject root = getRoot();
+		
+		if (!root.has(uuid.toString())) {
+			return new ArrayList<>();
+		}
+		
 		Node node = GSON.fromJson(getRoot().get(uuid.toString()), Node.class);
 		
 		return Arrays.asList(node.powders);
@@ -59,7 +90,13 @@ public class JSONStorage implements Storage {
 			return batch;
 		}
 
+		JsonObject root = getRoot();
+		
 		for (UUID uuid : uuids) {
+			if (!root.has(uuid.toString())) {
+				continue;
+			}
+			
 			Node node = GSON.fromJson(getRoot().get(uuid.toString()), Node.class);
 			
 			batch.put(uuid, Arrays.asList(node.powders));
