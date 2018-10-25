@@ -61,10 +61,10 @@ public class SQLiteStorage implements SQLStorage {
 		try (PreparedStatement ps = getConnection().prepareStatement(query_powders)) {
 			ps.setString(1, uuid.toString());
 
-			ResultSet rs = ps.executeQuery();
-
-			while (rs.next()) {
-				powders.add(rs.getString("powder"));
+			try (ResultSet rs = ps.executeQuery()) {
+				while (rs.next()) {
+					powders.add(rs.getString("powder"));
+				}
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -104,12 +104,12 @@ public class SQLiteStorage implements SQLStorage {
 
 				ps.setString(1, uuid.toString());
 
-				ResultSet rs = ps.executeQuery();
-
-				while (rs.next()) {
-					powders.add(rs.getString("powder"));
+				try (ResultSet rs = ps.executeQuery()) {
+					while (rs.next()) {
+						powders.add(rs.getString("powder"));
+					}
 				}
-
+				
 				batch.put(uuid, powders);
 			}
 		} catch (SQLException e) {
