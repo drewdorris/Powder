@@ -3,7 +3,7 @@
 ## # #  # # ##
 
 ## Current version of this config.yml. Should not be edited.
-configVersion: 2
+configVersion: 3
 
 ## Maximum amount of Powders that a user can be using at one time
 maxPowdersAtOneTime: 3
@@ -47,9 +47,9 @@ categories:
   Crowns:
     desc: '{total} Particles Around your Head'
 
-## Use storage to continue Powders between each server (requires MySQL) or after logout
-## If disabled, Powders attached to entities will unload alongside chunk unloading
-## Only enable one storage method at a time
+## Use storage to persist Powders upon logout (or when switching server if using MySQL)
+## If none are enabled, Powders attached to entities will unload alongside chunk unloading
+## Only enable one storage method at a time. If you aren't sure which one to pick, use SQLite
 storage:
   mysql:
     use: false
