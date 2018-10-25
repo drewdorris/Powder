@@ -636,7 +636,7 @@ public class PowderCommand implements CommandExecutor {
 			return false;
 		}
 		// if there's a wait time between using each Powder
-		if (!(waitTime <= 0)) {
+		if (waitTime > 0) {
 			// add user to this list of recent command senders for the given amount of time
 			PowderPlugin.getInstance().getServer().getScheduler()
 			.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
