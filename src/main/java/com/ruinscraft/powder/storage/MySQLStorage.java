@@ -75,14 +75,14 @@ public class MySQLStorage implements SQLStorage {
 	}
 
 	@Override
-	public void save(UUID uuid, List<String> powders) {
+	public void save(UUID uuid) {
 		try (Connection c = getConnection();
 				PreparedStatement delete = c.prepareStatement(delete_powders);
 				PreparedStatement insert = c.prepareStatement(insert_powder)) {
 			delete.setString(1, uuid.toString());
 			delete.execute();
 
-			for (String powder : powders) {
+			for (String powder : PowderUtil.getEnabledPowderNames(uuid)) {
 				insert.setString(1, uuid.toString());
 				insert.setString(2, powder);
 				insert.addBatch();

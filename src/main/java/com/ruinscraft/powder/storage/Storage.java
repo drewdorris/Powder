@@ -9,7 +9,7 @@ public interface Storage {
 
 	List<String> get(UUID uuid);
 
-	void save(UUID uuid, List<String> powders);
+	void save(UUID uuid);
 
 	Map<UUID, List<String>> getBatch(Collection<UUID> uuids);
 

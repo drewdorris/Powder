@@ -15,6 +15,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.storage.JSONStorage;
 import com.ruinscraft.powder.storage.MySQLStorage;
 import com.ruinscraft.powder.storage.SQLiteStorage;
 import com.ruinscraft.powder.storage.Storage;
@@ -227,6 +228,14 @@ public class PowderPlugin extends JavaPlugin {
 			storage = new SQLiteStorage(new File(getDataFolder(), dbFileName));
 			
 			getLogger().info("Using SQLite storage");
+		}
+		
+		else if (config.getBoolean("storage.json.use")) {
+			String jsonFileName = config.getString("storage.json.file");
+			
+			storage = new JSONStorage(new File(getDataFolder(), jsonFileName));
+			
+			getLogger().info("Using JSON storage");
 		}
 	}
 

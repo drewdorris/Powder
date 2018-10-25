@@ -646,7 +646,7 @@ public class PowderUtil {
 				return;
 			}
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
+				plugin.getStorage().save(uuid);
 			});
 		}
 	}
@@ -654,7 +654,7 @@ public class PowderUtil {
 	public static void savePowdersForUUIDAndCancel(UUID uuid) {
 		if (plugin.useStorage()) {
 			plugin.getServer().getScheduler().runTaskAsynchronously(plugin, () -> {
-				plugin.getStorage().save(uuid, PowderUtil.getEnabledPowderNames(uuid));
+				plugin.getStorage().save(uuid);
 				PowderUtil.cancelAllPowders(uuid);
 			});
 		}

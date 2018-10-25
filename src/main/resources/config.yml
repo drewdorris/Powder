@@ -47,8 +47,9 @@ categories:
   Crowns:
     desc: '{total} Particles Around your Head'
 
-## Use storage to continue Powders between each server or after logout
+## Use storage to continue Powders between each server (requires MySQL) or after logout
 ## If disabled, Powders attached to entities will unload alongside chunk unloading
+## Only enable one storage method at a time
 storage:
   mysql:
     use: false
@@ -61,6 +62,9 @@ storage:
   sqlite:
     use: false
     file: powders.db
+  json:
+    use: false
+    file: powders.json
 
 ## Locale to use (from locale source folder)
 locale: 'en-us.yml'
