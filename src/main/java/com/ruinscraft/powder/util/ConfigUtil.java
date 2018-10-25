@@ -11,14 +11,13 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
-import org.bukkit.World;
 import org.bukkit.Particle.DustOptions;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
@@ -45,7 +44,7 @@ public class ConfigUtil {
 		PowderPlugin instance = PowderPlugin.getInstance();
 		File configFile = new File(instance.getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
-			instance.getLogger().info("config.yml not found, creating!");
+			PowderPlugin.info("config.yml not found, creating!");
 			instance.saveDefaultConfig();
 		}
 		instance.reloadConfig();
@@ -62,12 +61,12 @@ public class ConfigUtil {
 		int currentConfigVersion = 2;
 		int versionsBehind = currentConfigVersion - configVersion;
 		if (versionsBehind == 1) {
-			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
+			PowderPlugin.warning("Your config version is out of date! You are " + 
 					"1 version behind. Please obtain a new version of the config" + 
 					" to get the latest functionality.");
 			return false;
 		} else if (versionsBehind > 1) {
-			Bukkit.getLogger().warning("Your config version is out of date! You are " + 
+			PowderPlugin.warning("Your config version is out of date! You are " + 
 					versionsBehind + " versions behind. Please obtain a " + 
 					"new version of the config to get the latest functionality.");
 			return false;
@@ -80,7 +79,6 @@ public class ConfigUtil {
 		// list of configuration files that contain Powders
 		List<FileConfiguration> powderConfigs = new ArrayList<>();
 
-		Logger logger = PowderPlugin.getInstance().getLogger();
 		FileConfiguration config = PowderPlugin.getInstance().getConfig();
 		File dataFolder = PowderPlugin.getInstance().getDataFolder();
 
@@ -95,7 +93,7 @@ public class ConfigUtil {
 					if (urlName.equals("powders.yml")) {
 						continue;
 					}
-					logger.warning("Failed to load config file '" + urlName + "'.");
+					PowderPlugin.warning("Failed to load config file '" + urlName + "'.");
 					continue;
 				}
 				powderConfig = YamlConfiguration.loadConfiguration(file);
@@ -111,7 +109,7 @@ public class ConfigUtil {
 				powderConfig = YamlConfiguration.loadConfiguration(reader);
 
 			} else {
-				logger.warning("Failed to load config file '" + urlName + "'.");
+				PowderPlugin.warning("Failed to load config file '" + urlName + "'.");
 				continue;
 			}
 
@@ -122,7 +120,7 @@ public class ConfigUtil {
 		File defaultPowderConfig = new File(dataFolder, "powders.yml");
 		if (!defaultPowderConfig.exists() && 
 				config.getStringList("powderSources").contains("powders.yml")) {
-			logger.info("powders.yml not found and listed as a source, creating!");
+			PowderPlugin.info("powders.yml not found and listed as a source, creating!");
 			PowderPlugin.getInstance().saveResource("powders.yml", false);
 			FileConfiguration powderConfig = 
 					YamlConfiguration.loadConfiguration(defaultPowderConfig);
@@ -165,7 +163,6 @@ public class ConfigUtil {
 		Powder powder = new Powder(path);
 
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		Logger logger = PowderPlugin.getInstance().getLogger();
 
 		String section = "powders." + path;
 
@@ -179,7 +176,7 @@ public class ConfigUtil {
 			for (String t : (List<String>) powderConfig
 					.getList(section + ".categories", new ArrayList<String>())) {
 				if (!(powderHandler.getCategories().keySet().contains(t))) {
-					logger.warning("Invalid category '" + t + 
+					PowderPlugin.warning("Invalid category '" + t + 
 							"' for '" + powder.getName() + "' in " + powderConfig.getName());
 					continue;
 				}
@@ -198,7 +195,6 @@ public class ConfigUtil {
 		Powder powder = new Powder(path);
 
 		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		Logger logger = PowderPlugin.getInstance().getLogger();
 
 		String section = "powders." + path;
 
@@ -226,7 +222,7 @@ public class ConfigUtil {
 			for (String t : (List<String>) powderConfig
 					.getList(section + ".categories", new ArrayList<String>())) {
 				if (!(powderHandler.getCategories().keySet().contains(t))) {
-					logger.warning("Invalid category '" + t + 
+					PowderPlugin.warning("Invalid category '" + t + 
 							"' for '" + powder.getName() + "' in " + powderConfig.getName());
 					continue;
 				}
@@ -407,7 +403,7 @@ public class ConfigUtil {
 									particleMatrix.addParticles(
 											ImageUtil.getRows(urlName, z, index, xAdd, width, height));
 								} catch (IOException io) {
-									logger.warning("Failed to load image: '" + urlName + "'");
+									PowderPlugin.warning("Failed to load image: '" + urlName + "'");
 									continue;
 								}
 								// add height to compensate for dist. from location 
@@ -524,7 +520,7 @@ public class ConfigUtil {
 		}
 
 		if (powder.getPowderElements().isEmpty()) {
-			PowderPlugin.getInstance().getLogger().warning("Powder '" + 
+			PowderPlugin.warning("Powder '" + 
 					powder.getName() + "' appears empty and/or incorrectly formatted.");
 			return null;
 		}
@@ -659,7 +655,7 @@ public class ConfigUtil {
 			String powderName = config.getString(newSection + ".powder");
 			Powder powder = PowderPlugin.getInstance().getPowderHandler().getPowder(powderName);
 			if (powder == null) {
-				Bukkit.getLogger().warning("Unknown Powder '" + 
+				PowderPlugin.warning("Unknown Powder '" + 
 						powderName + "' in createdpowders.yml");
 				return null;
 			}
@@ -667,7 +663,7 @@ public class ConfigUtil {
 			String worldName = config.getString(newSection + ".world");
 			World world = Bukkit.getWorld(worldName);
 			if (world == null) {
-				Bukkit.getLogger().warning("Unknown World '" + 
+				PowderPlugin.warning("Unknown World '" + 
 						worldName + "' in createdpowders.yml");
 				return null;
 			}

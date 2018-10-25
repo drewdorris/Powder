@@ -112,7 +112,7 @@ public class ImageUtil {
 				try {
 					pixel = newImage.getRGB(x, y);
 				} catch (Exception e) {
-					PowderPlugin.getInstance().getLogger().warning(
+					PowderPlugin.warning(
 							"Error while processing pixel " + x + ";" + y + " in image!");
 					continue;
 				}

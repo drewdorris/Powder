@@ -175,7 +175,7 @@ public class PowderPlugin extends JavaPlugin {
 		String fileName = config.getString("locale", "english_US.yml");
 		File file = new File(getDataFolder() + "/locale", fileName);
 		if (!file.exists()) {
-			getLogger().warning("Locale '" + fileName +  "' not found, loading if exists!");
+			warning("Locale '" + fileName +  "' not found, loading if exists!");
 			saveResource("locale/" + fileName, false);
 		}
 		FileConfiguration locale = YamlConfiguration
@@ -184,7 +184,7 @@ public class PowderPlugin extends JavaPlugin {
 		for (Message message : Message.values()) {
 			String actualMessage = locale.getString(message.name());
 			if (actualMessage == null) {
-				getLogger().warning("No message specified for '" + 
+				warning("No message specified for '" + 
 						message.name() + "' in '" + fileName + "'." + 
 						" Is your locale or version of Powder outdated?");
 				continue;
@@ -219,7 +219,7 @@ public class PowderPlugin extends JavaPlugin {
 
 			storage = new MySQLStorage(host, port, database, username, password, powdersTable);
 
-			getLogger().info("Using MySQL storage");
+			info("Using MySQL storage");
 		}
 		
 		else if (config.getBoolean("storage.sqlite.use")) {
@@ -227,7 +227,7 @@ public class PowderPlugin extends JavaPlugin {
 			
 			storage = new SQLiteStorage(new File(getDataFolder(), dbFileName));
 			
-			getLogger().info("Using SQLite storage");
+			info("Using SQLite storage");
 		}
 		
 		else if (config.getBoolean("storage.json.use")) {
@@ -235,7 +235,7 @@ public class PowderPlugin extends JavaPlugin {
 			
 			storage = new JSONStorage(new File(getDataFolder(), jsonFileName));
 			
-			getLogger().info("Using JSON storage");
+			info("Using JSON storage");
 		}
 	}
 
@@ -257,7 +257,7 @@ public class PowderPlugin extends JavaPlugin {
 		powderHandler.setIfCategoriesEnabled(config.getBoolean("categoriesEnabled", false));
 
 		// alert online players of the reload
-		getLogger().info("Loading Powders...");
+		info("Loading Powders...");
 		for (Player player : Bukkit.getOnlinePlayers()) {
 			if (player.hasPermission("powder.reload")) {
 				PowderUtil.sendPrefixMessage(player,
@@ -275,7 +275,7 @@ public class PowderPlugin extends JavaPlugin {
 					try {
 						powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
 					} catch (Exception e) {
-						getLogger().warning("Powder '" + s + 
+						warning("Powder '" + s + 
 								"' encountered an error and was not loaded:");
 						e.printStackTrace();
 						continue;
@@ -293,7 +293,7 @@ public class PowderPlugin extends JavaPlugin {
 					try {
 						powder = ConfigUtil.loadPowderShellFromConfig(powderConfig, s);
 					} catch (Exception e) {
-						getLogger().warning("Powder '" + s + 
+						warning("Powder '" + s + 
 								"' encountered an error and was not loaded:");
 						e.printStackTrace();
 						continue;
@@ -322,9 +322,9 @@ public class PowderPlugin extends JavaPlugin {
 			}
 		}
 		if (config.getBoolean("listOfLoadedPowders", true)) {
-			getLogger().info(loaded + msg.toString() + ". " + niceTotal);
+			info(loaded + msg.toString() + ". " + niceTotal);
 		} else {
-			getLogger().info("Loaded all Powders. " + niceTotal);
+			info("Loaded all Powders. " + niceTotal);
 		}
 
 		// alert online players with permission of the Powders loaded
@@ -335,6 +335,14 @@ public class PowderPlugin extends JavaPlugin {
 						"powder", player.getName(), powderAmount, msg.toString());
 			}
 		}
+	}
+	
+	public static void info(String message) {
+		getInstance().getLogger().info(message);
+	}
+	
+	public static void warning(String message) {
+		getInstance().getLogger().warning(message);
 	}
 
 }

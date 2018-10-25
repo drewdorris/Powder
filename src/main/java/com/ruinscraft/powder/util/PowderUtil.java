@@ -228,8 +228,8 @@ public class PowderUtil {
 	}
 
 	public static void sendMainConsoleMessage() {
-		PowderPlugin.getInstance().getLogger().info("Powder");
-		PowderPlugin.getInstance().getLogger().info("Use '/powder reload' to reload");
+		PowderPlugin.info("Powder");
+		PowderPlugin.info("Use '/powder reload' to reload");
 	}
 
 	// sorts a list of TextComponents (Powders or categories) alphabetically
@@ -501,17 +501,17 @@ public class PowderUtil {
 				try {
 					url = new URL("http://" + urlString);
 				} catch (Exception mal2) {
-					plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
+					PowderPlugin.warning("Invalid URL: '" + urlName + "'");
 					mal2.printStackTrace();
 					return null;
 				}
 			} else {
-				plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
+				PowderPlugin.warning("Invalid URL: '" + urlName + "'");
 				mal.printStackTrace();
 				return null;
 			}
 		} catch (Exception e) {
-			plugin.getLogger().warning("Invalid URL: '" + urlName + "'");
+			PowderPlugin.warning("Invalid URL: '" + urlName + "'");
 			return null;
 		}
 		return url;
@@ -532,7 +532,7 @@ public class PowderUtil {
 			if (httpConnection.getResponseCode() == 301) {
 				String urlString = url.toString();
 				if (urlString.contains("https")) {
-					plugin.getLogger().warning("Failed to load URL '" + urlString + "'.");
+					PowderPlugin.warning("Failed to load URL '" + urlString + "'.");
 					return null;
 				}
 				// try again to see if the site requires https
@@ -540,7 +540,7 @@ public class PowderUtil {
 				url = new URL(urlString);
 				return getInputStreamFromURL(url);
 			} else if (!(httpConnection.getResponseCode() == 200)) {
-				plugin.getLogger().warning("Error" + 
+				PowderPlugin.warning("Error" + 
 						httpConnection.getResponseCode() + 
 						" while attempting to read URL: " + url.toString());
 				return null;

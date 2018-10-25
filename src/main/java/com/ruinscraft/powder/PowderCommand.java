@@ -43,7 +43,7 @@ public class PowderCommand implements CommandExecutor {
 							PowderPlugin.getInstance().reload();
 						});
 					} else {
-						PowderPlugin.getInstance().getLogger().info(
+						PowderPlugin.info(
 								"Can't reload while already loading!");
 					}
 				} else {

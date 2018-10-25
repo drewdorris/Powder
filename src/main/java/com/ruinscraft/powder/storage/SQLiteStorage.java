@@ -38,7 +38,7 @@ public class SQLiteStorage implements SQLStorage {
 			this.dbFile.createNewFile();
 		} catch (IOException e) {
 			e.printStackTrace();
-			PowderPlugin.getInstance().getLogger().warning("Failed to create DB file");
+			PowderPlugin.warning("Failed to create DB file");
 			return;
 		}
 
@@ -46,7 +46,7 @@ public class SQLiteStorage implements SQLStorage {
 		try {
 			Class.forName("org.sqlite.JDBC");
 		} catch (ClassNotFoundException e) {
-			PowderPlugin.getInstance().getLogger().warning("SQLite unsupported on this server platform");
+			PowderPlugin.warning("SQLite unsupported on this server platform");
 			return;
 		}
 
