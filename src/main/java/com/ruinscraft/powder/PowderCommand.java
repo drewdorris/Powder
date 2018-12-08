@@ -10,6 +10,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
@@ -26,7 +27,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import net.md_5.bungee.api.chat.HoverEvent;
 import net.md_5.bungee.api.chat.TextComponent;
 
-public class PowderCommand implements CommandExecutor {
+public class PowderCommand implements CommandExecutor, TabCompleter {
 
 	private List<Player> recentCommandSenders = new ArrayList<>();
 
@@ -657,6 +658,28 @@ public class PowderCommand implements CommandExecutor {
 					label, player.getName(), label);
 		}
 		return true;
+	}
+
+	@Override
+	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
+		List<String> powders = new ArrayList<>();
+		Set<String> categories = PowderPlugin.getInstance().getPowderHandler().getCategories().keySet();
+		
+		for (String category : categories) {
+			List<Powder> powdersInCategory = PowderPlugin.getInstance().getPowderHandler().getUnhiddenPowdersFromCategory(category);
+			
+			for (Powder powderInCategory : powdersInCategory) {
+				if (args.length > 0) {
+					if (powderInCategory.getName().toLowerCase().startsWith(args[0])) {
+						powders.add(powderInCategory.getName());
+					}
+				} else {
+					powders.add(powderInCategory.getName());
+				}
+			}
+		}
+		
+		return powders;
 	}
 
 }

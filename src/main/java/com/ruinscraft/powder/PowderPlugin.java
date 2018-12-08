@@ -88,7 +88,10 @@ public class PowderPlugin extends JavaPlugin {
 			isLoading = false;
 		});
 
-		getCommand("powder").setExecutor(new PowderCommand());
+		PowderCommand powderCommand = new PowderCommand();
+		
+		getCommand("powder").setExecutor(powderCommand);
+		getCommand("powder").setTabCompleter(powderCommand);
 		getServer().getPluginManager().registerEvents(new EnvironmentListener(), this);
 	}
 
