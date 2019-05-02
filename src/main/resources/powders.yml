@@ -646,7 +646,7 @@ powders:
               ## Dots can be omitted, as long as it can tell how far down/over the player is from the rest of the layer
               - '.'
               - '.'
-              - '...................?' 
+              - '...................?'
   hundredemoji:
     name: '100Emoji'
     categories:

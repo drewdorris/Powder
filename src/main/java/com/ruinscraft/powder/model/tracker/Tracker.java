@@ -4,15 +4,15 @@ import org.bukkit.Location;
 
 public interface Tracker {
 
-	Tracker.Type getType();
+    Tracker.Type getType();
 
-	void refreshLocation();
+    void refreshLocation();
 
-	Location getCurrentLocation();
+    Location getCurrentLocation();
 
-	public enum Type {
-		ENTITY,
-		STATIONARY
-	}
+    enum Type {
+        ENTITY,
+        STATIONARY
+    }
 
 }

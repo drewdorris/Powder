@@ -4,23 +4,24 @@ import org.bukkit.Location;
 
 public class StationaryTracker implements Tracker {
 
-	private Location location;
+    private Location location;
 
-	public StationaryTracker(Location location) {
-		this.location = location;
-	}
+    public StationaryTracker(Location location) {
+        this.location = location;
+    }
 
-	@Override
-	public Tracker.Type getType() {
-		return Tracker.Type.STATIONARY;
-	}
+    @Override
+    public Tracker.Type getType() {
+        return Tracker.Type.STATIONARY;
+    }
 
-	@Override
-	public void refreshLocation() {}
+    @Override
+    public void refreshLocation() {
+    }
 
-	@Override
-	public Location getCurrentLocation() {
-		return location;
-	}
+    @Override
+    public Location getCurrentLocation() {
+        return location;
+    }
 
 }
