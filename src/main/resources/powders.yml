@@ -1100,7 +1100,7 @@ powders:
         attachToNote: true
         attachedToNote: 'BLOCK_NOTE_BASS'
   ## These crowns take up a ton of space and are a bit confusing
-  ## but they look cool and and easily copy/pasted and changed a bit
+  ## but they look cool and are easily copy/pasted and changed a bit
   rainbowcrown:
     name: 'RainbowCrown'
     categories:

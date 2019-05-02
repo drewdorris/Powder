@@ -41,7 +41,7 @@ public class JSONStorage implements Storage {
         try {
             Class.forName("com.google.gson.Gson");
         } catch (ClassNotFoundException e) {
-            PowderPlugin.warning("JSON (GSON) unsupported on this server platform");
+            PowderPlugin.warning("JSON (Gson) unsupported on this server platform");
             return;
         }
     }

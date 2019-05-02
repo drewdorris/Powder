@@ -62,6 +62,16 @@ public class PowderPlugin extends JavaPlugin {
 
     public synchronized void load() {
         isLoading = true;
+
+        // check if running Spigot
+        try {
+            Class.forName("org.bukkit.entity.Player.Spigot");
+        } catch (ClassNotFoundException e) {
+            warning("Powder requires Spigot! www.spigotmc.org");
+            getServer().getPluginManager().disablePlugin(this);
+            return;
+        }
+
         is1_13 = Bukkit.getVersion().contains("1.13") ? true : false;
         config = ConfigUtil.loadConfig();
         creationTask = new PowdersCreationTask();
