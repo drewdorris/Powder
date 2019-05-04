@@ -1,6 +1,7 @@
 main: ${mainClass}
 name: ${name}
 version: ${version}
+api-version: 1.13
 authors: [StupidDrew9, royalkingkb]
 commands:
   powder:
