@@ -65,7 +65,7 @@ public class PowderPlugin extends JavaPlugin {
 
         // check if running Spigot
         try {
-            Class.forName("org.bukkit.entity.Player.Spigot");
+            Class.forName("org.bukkit.entity.Player$Spigot");
         } catch (ClassNotFoundException e) {
             warning("Powder requires Spigot! www.spigotmc.org");
             getServer().getPluginManager().disablePlugin(this);
