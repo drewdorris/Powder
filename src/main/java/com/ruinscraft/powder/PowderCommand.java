@@ -6,10 +6,7 @@ import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import net.md_5.bungee.api.chat.HoverEvent;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.*;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -188,7 +185,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 } catch (Exception e) {
                     page = 1;
                 }
-                List<TextComponent> textComponents = new ArrayList<>();
+                List<BaseComponent> textComponents = new ArrayList<>();
                 for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
                     String powderName = "null";
                     for (Powder taskPowder : powderTask.getPowders().keySet()) {
@@ -508,7 +505,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 PowderUtil.sendPrefixMessage(player, Message.NEARBY_PREFIX, label);
                 Map<PowderTask, Integer> nearby =
                         powderHandler.getNearbyPowderTasks(player.getLocation(), range);
-                List<TextComponent> nearbyText = new ArrayList<>();
+                List<BaseComponent> nearbyText = new ArrayList<>();
                 for (PowderTask powderTask : nearby.keySet()) {
                     TextComponent text = PowderUtil.setText(Message.NEARBY,
                             powderTask.getName(), String.valueOf(nearby.get(powderTask)));
@@ -607,7 +604,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
         if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
             PowderUtil.sendPrefixMessage(player, Message.POWDER_MAX_PREFIX,
                     label, player.getName(), args[0], String.valueOf(maxSize));
-            List<TextComponent> texts = new ArrayList<>();
+            List<BaseComponent> texts = new ArrayList<>();
             for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
                 String powderName = "null";
                 for (Powder taskPowder : powderTask.getPowders().keySet()) {

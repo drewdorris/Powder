@@ -167,7 +167,7 @@ public class PowderUtil {
     // help message
     public static void helpMessage(Player player, String label, int page) {
         PowderUtil.sendPrefixMessage(player, Message.HELP_PREFIX, label);
-        List<TextComponent> texts = new ArrayList<>();
+        List<BaseComponent> texts = new ArrayList<>();
         texts.add(getMessage(Message.HELP_POWDER));
         texts.add(getMessage(Message.HELP_POWDER_CANCEL));
         texts.add(getMessage(Message.HELP_POWDER_STAR_CANCEL));
@@ -214,34 +214,19 @@ public class PowderUtil {
     }
 
     // sorts a list of TextComponents (Powders or categories) alphabetically
-    public static List<TextComponent> sortAlphabetically(Collection<TextComponent> texts) {
-        List<String> names = new ArrayList<>(texts.size());
-        for (TextComponent text : texts) {
-            names.add(text.toLegacyText());
-        }
-
-        Collections.sort(names, Collator.getInstance());
-
-        List<TextComponent> newList = new ArrayList<>(texts.size());
-        for (String name : names) {
-            for (TextComponent text : texts) {
-                if (text.toLegacyText().equals(name)) {
-                    newList.add(text);
-                    break;
-                }
-            }
-        }
-
-        return newList;
+    public static void sortAlphabetically(List<BaseComponent> texts) {
+        Collections.sort(texts, (Comparator) (one, two) -> {
+            return ((BaseComponent)one).toLegacyText().compareTo(((BaseComponent)two).toLegacyText());
+        });
     }
 
     // paginates & sends list of Powders/categories to player
-    public static void paginateAndSend(Player player, List<TextComponent> listOfElements,
+    public static void paginateAndSend(Player player, List<BaseComponent> listOfElements,
                                        String input, int page, int pageLength, String label) {
-        List<TextComponent> pageList = new ArrayList<TextComponent>();
+        List<BaseComponent> pageList = new ArrayList<>();
         // create list of Powders based on current page & given amnt per page
         for (int i = 1; i <= pageLength; i++) {
-            TextComponent current;
+            BaseComponent current;
             try {
                 current = listOfElements.get((page * pageLength) + i - pageLength - 1);
             } catch (Exception e) {
@@ -249,7 +234,7 @@ public class PowderUtil {
             }
             pageList.add(current);
             TextComponent combinedMessage = getMessage(Message.LIST_GENERAL_ITEM);
-            combinedMessage.addExtra(current);
+            combinedMessage.addExtra(current.duplicate());
             player.spigot().sendMessage(combinedMessage);
         }
 
@@ -297,13 +282,13 @@ public class PowderUtil {
                 Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
         // all Powders
-        List<TextComponent> listOfPowders = new ArrayList<>();
+        List<BaseComponent> listOfPowders = new ArrayList<>();
         // Powders currently in use by the player
-        List<TextComponent> activePowders = new ArrayList<>();
+        List<BaseComponent> activePowders = new ArrayList<>();
         // Powders the player has permission for
-        List<TextComponent> ableToPowders = new ArrayList<>();
+        List<BaseComponent> ableToPowders = new ArrayList<>();
         // Powders the player does not have permission for
-        List<TextComponent> noPermPowders = new ArrayList<>();
+        List<BaseComponent> noPermPowders = new ArrayList<>();
         for (Powder powder : powders) {
             if (!PowderUtil.hasPermission(player, powder)) {
                 if (powder.isHidden()) {
@@ -322,9 +307,9 @@ public class PowderUtil {
                         label, powder.getName()));
             }
         }
-        activePowders = sortAlphabetically(activePowders);
-        ableToPowders = sortAlphabetically(ableToPowders);
-        noPermPowders = sortAlphabetically(noPermPowders);
+        sortAlphabetically(activePowders);
+        sortAlphabetically(ableToPowders);
+        sortAlphabetically(noPermPowders);
         listOfPowders.addAll(activePowders);
         listOfPowders.addAll(ableToPowders);
         listOfPowders.addAll(noPermPowders);
@@ -338,14 +323,14 @@ public class PowderUtil {
                 Message.HELP_TIP_HOVER, Message.HELP_TIP_CLICK, label), label);
 
         // all categories
-        List<TextComponent> listOfCategories = new ArrayList<>();
+        List<BaseComponent> listOfCategories = new ArrayList<>();
         // categories containing Powders that are currently active
-        List<TextComponent> activeCategories = new ArrayList<>();
+        List<BaseComponent> activeCategories = new ArrayList<>();
         // categories containing Powders the player has permission for
-        List<TextComponent> ableToCategories = new ArrayList<>();
+        List<BaseComponent> ableToCategories = new ArrayList<>();
         // categories containing Powders the player has no permission for
         // or contains no Powders
-        List<TextComponent> noPermCategories = new ArrayList<>();
+        List<BaseComponent> noPermCategories = new ArrayList<>();
         PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
         for (String category : categories.keySet()) {
             String desc = categories.get(category);
@@ -391,9 +376,9 @@ public class PowderUtil {
                         label, category, desc));
             }
         }
-        activeCategories = sortAlphabetically(activeCategories);
-        ableToCategories = sortAlphabetically(ableToCategories);
-        noPermCategories = sortAlphabetically(noPermCategories);
+        sortAlphabetically(activeCategories);
+        sortAlphabetically(ableToCategories);
+        sortAlphabetically(noPermCategories);
         listOfCategories.addAll(activeCategories);
         listOfCategories.addAll(ableToCategories);
         listOfCategories.addAll(noPermCategories);
