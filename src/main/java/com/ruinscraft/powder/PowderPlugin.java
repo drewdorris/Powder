@@ -8,7 +8,7 @@ import com.ruinscraft.powder.storage.SQLiteStorage;
 import com.ruinscraft.powder.storage.Storage;
 import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
-import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.BaseComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -29,7 +29,7 @@ public class PowderPlugin extends JavaPlugin {
     private List<FileConfiguration> powderConfigs;
     private FileConfiguration createdPowders;
 
-    private static Map<Message, TextComponent> messages;
+    private static Map<Message, BaseComponent> messages;
 
     private Storage storage;
 
@@ -173,7 +173,7 @@ public class PowderPlugin extends JavaPlugin {
         this.createdPowders = fileConfig;
     }
 
-    public Map<Message, TextComponent> getMessages() {
+    public Map<Message, BaseComponent> getMessages() {
         return messages;
     }
 
@@ -196,8 +196,8 @@ public class PowderPlugin extends JavaPlugin {
                         " Is your locale or version of Powder outdated?");
                 continue;
             }
-            TextComponent textComponent = PowderUtil.format(PowderUtil.color(actualMessage));
-            messages.put(message, textComponent);
+            BaseComponent baseComponent = PowderUtil.format(PowderUtil.color(actualMessage));
+            messages.put(message, baseComponent);
         }
     }
 

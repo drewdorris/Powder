@@ -21,7 +21,6 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.text.Collator;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -63,7 +62,7 @@ public class PowderUtil {
         return ChatColor.translateAlternateColorCodes('&', newString);
     }
 
-    public static TextComponent format(String string) {
+    public static BaseComponent format(String string) {
         return new TextComponent(TextComponent.fromLegacyText(string));
     }
 
@@ -82,21 +81,15 @@ public class PowderUtil {
         return false;
     }
 
-    public static TextComponent getMessage(Message message) {
+    public static BaseComponent getMessage(Message message) {
         return new TextComponent(PowderPlugin.getInstance().getMessages().get(message));
     }
 
-    public static TextComponent replace(TextComponent text, String lookFor, String replace) {
-        TextComponent textComponent = new TextComponent(text);
-        textComponent.setText(textComponent.getText().replaceAll(lookFor, replace));
-        return textComponent;
-    }
-
     public static String setString(Message message, String... replacers) {
-        TextComponent textComponent = getMessage(message);
-        String actualText = textComponent.toLegacyText();
+        BaseComponent baseComponent = getMessage(message);
+        String actualText = baseComponent.toLegacyText();
         if (message.name().contains("CLICK")) {
-            actualText = textComponent.toPlainText();
+            actualText = baseComponent.toPlainText();
         }
         for (int i = 0; i < message.getPlaceholders().length; i++) {
             actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
@@ -104,44 +97,44 @@ public class PowderUtil {
         return actualText;
     }
 
-    public static TextComponent setText(Message message, String... replacers) {
-        TextComponent textComponent = getMessage(message);
-        String actualText = textComponent.toLegacyText();
+    public static BaseComponent setText(Message message, String... replacers) {
+        BaseComponent baseComponent = getMessage(message);
+        String actualText = baseComponent.toLegacyText();
         for (int i = 0; i < message.getPlaceholders().length; i++) {
             actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
         }
-        TextComponent newText = new TextComponent(actualText);
-        return newText;
+        BaseComponent newText = new TextComponent(actualText);
+        return newText.duplicate();
     }
 
-    public static TextComponent setTextAndHover(Message message,
+    public static BaseComponent setTextAndHover(Message message,
                                                 Message hover, String... replacers) {
-        TextComponent textComponent = setText(message, replacers);
-        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+        BaseComponent baseComponent = setText(message, replacers);
+        baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(setString(hover, replacers)).create()));
-        return textComponent;
+        return baseComponent.duplicate();
     }
 
-    public static TextComponent setTextHoverAndClick(Message message, Message hover,
+    public static BaseComponent setTextHoverAndClick(Message message, Message hover,
                                                      Message click, String... replacers) {
-        TextComponent textComponent = setText(message, replacers);
-        textComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+        BaseComponent baseComponent = setText(message, replacers);
+        baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                 new ComponentBuilder(setString(hover, replacers)).create()));
-        textComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+        baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                 setString(click, replacers)));
-        return textComponent;
+        return baseComponent.duplicate();
     }
 
     // sends a message with the given prefix in config.yml
     // label is the base command, i.e. "powder" or "pdr" or "pow"
     public static void sendPrefixMessage(Player player, String message, String label) {
-        TextComponent textComponent = format(message);
-        sendPrefixMessage(player, textComponent, label);
+        BaseComponent baseComponent = format(message);
+        sendPrefixMessage(player, baseComponent, label);
     }
 
     public static void sendPrefixMessage(Player player, Message message,
                                          String label, String... replacers) {
-        TextComponent text = PowderUtil.getMessage(message);
+        BaseComponent text = PowderUtil.getMessage(message);
         String actualText = text.toLegacyText();
         for (int i = 0; i < message.getPlaceholders().length; i++) {
             actualText = actualText.replace(message.getPlaceholders()[i], replacers[i]);
@@ -152,11 +145,11 @@ public class PowderUtil {
 
     public static void sendPrefixMessage(Player player, Message message,
                                          Message hover, String label, String... replacers) {
-        TextComponent text = setTextAndHover(message, hover, replacers);
+        BaseComponent text = setTextAndHover(message, hover, replacers);
         sendPrefixMessage(player, text, label);
     }
 
-    public static void sendPrefixMessage(Player player, TextComponent message, String label) {
+    public static void sendPrefixMessage(Player player, BaseComponent message, String label) {
         BaseComponent fullMessage = new TextComponent();
         fullMessage.addExtra(setTextHoverAndClick(
                 Message.PREFIX, Message.PREFIX_HOVER, Message.PREFIX_CLICK, label));
@@ -202,7 +195,7 @@ public class PowderUtil {
         if (player.hasPermission("powder.cancel")) {
             texts.add(getMessage(Message.HELP_CANCEL));
         }
-        TextComponent comp1 = getMessage(Message.HELP_EXTRA);
+        BaseComponent comp1 = getMessage(Message.HELP_EXTRA);
         comp1.setColor(comp1.getColor());
         texts.add(comp1);
         paginateAndSend(player, texts, " help ", page, 7, label);
@@ -215,9 +208,7 @@ public class PowderUtil {
 
     // sorts a list of TextComponents (Powders or categories) alphabetically
     public static void sortAlphabetically(List<BaseComponent> texts) {
-        Collections.sort(texts, (Comparator) (one, two) -> {
-            return ((BaseComponent)one).toLegacyText().compareTo(((BaseComponent)two).toLegacyText());
-        });
+        Collections.sort(texts, Comparator.comparing(baseComponent -> baseComponent.toLegacyText()));
     }
 
     // paginates & sends list of Powders/categories to player
@@ -232,19 +223,19 @@ public class PowderUtil {
             } catch (Exception e) {
                 break;
             }
-            pageList.add(current);
-            TextComponent combinedMessage = getMessage(Message.LIST_GENERAL_ITEM);
+            pageList.add(current.duplicate());
+            BaseComponent combinedMessage = getMessage(Message.LIST_GENERAL_ITEM);
             combinedMessage.addExtra(current.duplicate());
             player.spigot().sendMessage(combinedMessage);
         }
 
         // create arrows
-        TextComponent leftArrow = setTextHoverAndClick(Message.LIST_GENERAL_LEFT,
+        BaseComponent leftArrow = setTextHoverAndClick(Message.LIST_GENERAL_LEFT,
                 Message.LIST_GENERAL_LEFT_HOVER,
                 Message.LIST_GENERAL_LEFT_CLICK,
                 label, input, String.valueOf(page - 1));
-        TextComponent middle = getMessage(Message.LIST_GENERAL_MIDDLE);
-        TextComponent rightArrow = setTextHoverAndClick(Message.LIST_GENERAL_RIGHT,
+        BaseComponent middle = getMessage(Message.LIST_GENERAL_MIDDLE);
+        BaseComponent rightArrow = setTextHoverAndClick(Message.LIST_GENERAL_RIGHT,
                 Message.LIST_GENERAL_RIGHT_HOVER,
                 Message.LIST_GENERAL_RIGHT_CLICK,
                 label, input, String.valueOf(page + 1));

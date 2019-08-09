@@ -6,7 +6,10 @@ import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.util.PowderUtil;
-import net.md_5.bungee.api.chat.*;
+import net.md_5.bungee.api.chat.BaseComponent;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -192,10 +195,10 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         powderName = taskPowder.getName();
                         break;
                     }
-                    TextComponent text = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
+                    BaseComponent baseComponent = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
                             Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK,
                             player.getName(), label, powderName);
-                    textComponents.add(text);
+                    textComponents.add(baseComponent);
                 }
                 PowderUtil.paginateAndSend(player, textComponents, " active ", page, 7, label);
                 return false;
@@ -507,7 +510,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         powderHandler.getNearbyPowderTasks(player.getLocation(), range);
                 List<BaseComponent> nearbyText = new ArrayList<>();
                 for (PowderTask powderTask : nearby.keySet()) {
-                    TextComponent text = PowderUtil.setText(Message.NEARBY,
+                    BaseComponent baseComponent = PowderUtil.setText(Message.NEARBY,
                             powderTask.getName(), String.valueOf(nearby.get(powderTask)));
                     if (player.hasPermission("powder.remove")) {
                         Set<Powder> taskPowders = powderTask.getPowders().keySet();
@@ -519,16 +522,16 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                                 stringBuilder.append(", ");
                             }
                         }
-                        text.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
+                        baseComponent.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT,
                                 new ComponentBuilder(PowderUtil.setString(
                                         Message.NEARBY_HOVER, powderTask.getName(),
                                         stringBuilder.toString()))
                                         .create()));
-                        text.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
+                        baseComponent.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND,
                                 PowderUtil.setString(Message.NEARBY_CLICK,
                                         label, powderTask.getName())));
                     }
-                    nearbyText.add(text);
+                    nearbyText.add(baseComponent);
                 }
                 PowderUtil.paginateAndSend(player, nearbyText, " nearby " + range + " ", page, 7, label);
                 return true;
@@ -610,10 +613,10 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 for (Powder taskPowder : powderTask.getPowders().keySet()) {
                     powderName = taskPowder.getName();
                 }
-                TextComponent text = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
+                BaseComponent baseComponent = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
                         Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK,
                         player.getName(), label, powderName);
-                texts.add(text);
+                texts.add(baseComponent);
             }
             PowderUtil.paginateAndSend(player, texts, "/" + label + " " +
                     powder.getName(), 1, pageLength, label);
