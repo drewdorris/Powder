@@ -492,7 +492,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     }
                     return true;
                 }
-            } else if (args[0].equals("nearby")) {
+            } else if (args[0].equals("nearby") || args[0].equals("near")) {
                 if (!(player.hasPermission("powder.nearby"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
