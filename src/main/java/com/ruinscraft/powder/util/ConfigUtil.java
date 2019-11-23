@@ -283,6 +283,12 @@ public class ConfigUtil {
                             (int) xOffset,
                             (int) yOffset,
                             (int) zOffset), 1F);
+                } else if (particle == Particle.NOTE && PowderPlugin.is1_13()) {
+                	xOffset = xOffset * 255 / 10.625 / 24;
+                	if (xOffset > (255)) {
+                		xOffset -= (255);
+                	}
+                	data = 1D;
                 } else {
                     data = (Void) null;
                 }
@@ -314,6 +320,7 @@ public class ConfigUtil {
                 if (powderConfig.getBoolean(eachSection + ".attachToNote")) {
                     String noteName = powderConfig.getString(eachSection + ".attachedToNote",
                             "BLOCK_NOTE_HARP");
+                    noteName = com.xxmicloxx.NoteBlockAPI.model.Sound.getFromBukkitName(noteName).name();
                     for (PowderElement powderElement : powder.getPowderElements()) {
                         if (powderElement instanceof SoundEffect) {
                             SoundEffect soundEffect = (SoundEffect) powderElement;
