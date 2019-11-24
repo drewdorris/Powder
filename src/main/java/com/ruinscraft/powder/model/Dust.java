@@ -1,6 +1,5 @@
 package com.ruinscraft.powder.model;
 
-import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.PowdersCreationTask;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 import org.bukkit.Location;
@@ -125,15 +124,16 @@ public class Dust implements PowderElement {
                     powderParticle.getAmount(),
                     powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
                     powderParticle.getZOff() / 255, extra);
+    	} else {
+    		location.getWorld().spawnParticle(
+                    powderParticle.getParticle(), location.add(
+                            (Math.random() - .5) * (2 * getRadius()),
+                            ((Math.random() - .5) * getYSpan()) + getHeight() - .625,
+                            (Math.random() - .5) * (2 * getRadius())),
+                    powderParticle.getAmount(),
+                    powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
+                    powderParticle.getZOff() / 255, powderParticle.getData());
     	}
-        location.getWorld().spawnParticle(
-                powderParticle.getParticle(), location.add(
-                        (Math.random() - .5) * (2 * getRadius()),
-                        ((Math.random() - .5) * getYSpan()) + getHeight() - .625,
-                        (Math.random() - .5) * (2 * getRadius())),
-                powderParticle.getAmount(),
-                powderParticle.getXOff() / 255, powderParticle.getYOff() / 255,
-                powderParticle.getZOff() / 255, powderParticle.getData());
     }
 
 }

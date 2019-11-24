@@ -278,6 +278,19 @@ public class ConfigUtil {
                 double yOffset = powderConfig.getDouble(eachSection + ".yOffset", 0);
                 double zOffset = powderConfig.getDouble(eachSection + ".zOffset", 0);
                 Object data = null;
+
+                int note = powderConfig.getInt(eachSection + ".note");
+                if (powderConfig.getString(eachSection + ".note") != null) {
+                	note = note * 255 / 24;
+                	if (note > 255) note -= (255 - 10.625);
+                	xOffset = note;
+                	yOffset = 0;
+                	zOffset = 0;
+                	data = 1D;
+                	amount = 0;
+                	particle = Particle.NOTE;
+                }
+
                 if (particle == Particle.REDSTONE && PowderPlugin.is1_13()) {
                     data = new DustOptions(Color.fromRGB(
                             (int) xOffset,
@@ -292,6 +305,7 @@ public class ConfigUtil {
                 } else {
                     data = (Void) null;
                 }
+
                 powder.addPowderParticle(new ModelPowderParticle(character, particle,
                         amount, xOffset, yOffset, zOffset, data));
             }
