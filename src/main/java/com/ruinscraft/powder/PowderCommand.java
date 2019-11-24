@@ -82,7 +82,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 
         // if the first argument given is not a Powder
         if (powder == null) {
-            if (args[0].equals("help")) {
+            if (args[0].equalsIgnoreCase("help")) {
                 int page;
                 try {
                     page = Integer.valueOf(args[1]);
@@ -91,7 +91,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 }
                 PowderUtil.helpMessage(player, label, page);
                 return false;
-            } else if (args[0].equals("reload")) {
+            } else if (args[0].equalsIgnoreCase("reload")) {
                 if (!(player.hasPermission("powder.reload"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -107,7 +107,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                             });
                 }
                 return true;
-            } else if (args[0].equals("*")) {
+            } else if (args[0].equalsIgnoreCase("*")) {
                 if (args.length < 2) {
                     PowderUtil.sendPrefixMessage(player, Message.STAR_USE_CANCEL,
                             label, player.getName());
@@ -125,7 +125,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     return true;
                 }
                 // list Powders, not by category
-            } else if (args[0].equals("list")) {
+            } else if (args[0].equalsIgnoreCase("list")) {
                 int page;
                 try {
                     page = Integer.valueOf(args[1]);
@@ -136,7 +136,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         " list ", page, pageLength, label);
                 return false;
                 // list all categories
-            } else if (args[0].equals("cancel")) {
+            } else if (args[0].equalsIgnoreCase("cancel")) {
                 String powderTaskName;
                 try {
                     powderTaskName = args[1];
@@ -179,7 +179,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 }
                 return false;
                 // list all categories
-            } else if (args[0].equals("active")) {
+            } else if (args[0].equalsIgnoreCase("active")) {
                 PowderUtil.sendPrefixMessage(player,
                         Message.ACTIVE_PREFIX, label, player.getName());
                 int page;
@@ -203,7 +203,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 PowderUtil.paginateAndSend(player, textComponents, " active ", page, 7, label);
                 return false;
                 // list Powders by category
-            } else if (args[0].equals("categories")) {
+            } else if (args[0].equalsIgnoreCase("categories")) {
                 if (!powderHandler.categoriesEnabled()) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.CATEGORIES_NOT_ENABLED, label, player.getName());
@@ -221,7 +221,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         " categories ", page, pageLength, label);
                 return false;
                 // list Powders by category
-            } else if (args[0].equals("category")) {
+            } else if (args[0].equalsIgnoreCase("category")) {
                 if (!powderHandler.categoriesEnabled()) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.CATEGORIES_NOT_ENABLED, label, player.getName());
@@ -258,7 +258,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 }
                 return true;
                 // search by Powder name
-            } else if (args[0].equals("search")) {
+            } else if (args[0].equalsIgnoreCase("search")) {
                 String search;
                 int page;
                 try {
@@ -276,7 +276,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 PowderUtil.listPowders(player, powderHandler.getSimilarPowders(search),
                         " search " + search + " ", page, pageLength, label);
                 return false;
-            } else if (args[0].equals("attach")) {
+            } else if (args[0].equalsIgnoreCase("attach")) {
                 if (!(player.hasPermission("powder.attach"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -319,7 +319,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         label, player.getName(), powderName,
                         PowderUtil.cleanEntityName(entity));
                 return true;
-            } else if (args[0].equals("create")) {
+            } else if (args[0].equalsIgnoreCase("create")) {
                 if (!(player.hasPermission("powder.create"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -351,7 +351,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                 PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
                         player.getName(), powderName, name);
                 return true;
-            } else if (args[0].equals("addto")) {
+            } else if (args[0].equalsIgnoreCase("addto")) {
                 if (!(player.hasPermission("powder.addto"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -390,7 +390,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 return true;
-            } else if (args[0].equals("removefrom")) {
+            } else if (args[0].equalsIgnoreCase("removefrom")) {
                 if (!(player.hasPermission("powder.removefrom"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -428,7 +428,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     return false;
                 }
                 return true;
-            } else if (args[0].equals("remove")) {
+            } else if (args[0].equalsIgnoreCase("remove")) {
                 if (!(player.hasPermission("powder.remove"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -439,7 +439,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                             label, player.getName(), label);
                     return false;
                 }
-                if (args[1].equals("user")) {
+                if (args[1].equalsIgnoreCase("user")) {
                     Player powderUser;
                     try {
                         powderUser = Bukkit.getPlayer(args[2]);
@@ -492,7 +492,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     }
                     return true;
                 }
-            } else if (args[0].equals("nearby") || args[0].equals("near")) {
+            } else if (args[0].equalsIgnoreCase("nearby") || args[0].equalsIgnoreCase("near")) {
                 if (!(player.hasPermission("powder.nearby"))) {
                     PowderUtil.sendPrefixMessage(player,
                             Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -538,6 +538,13 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
             } else {
                 if (powderHandler.categoriesEnabled()) {
                     if (powderHandler.getCategory(args[0]) != null) {
+                    	if (args.length > 1) {
+                    		if (powderHandler.getPowder(args[1]) != null) {
+                    			powder = powderHandler.getPowder(args[1]);
+                    			spawnPowderThroughCommand(powder, player, label, args[0]);
+                    			return true;
+                    		}
+                    	}
                         PowderUtil.listPowders(player,
                                 powderHandler.getPowdersFromCategory(args[0]),
                                 " category " + args[0] + " ", 1, pageLength, label);
@@ -623,13 +630,19 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
-        // wait time between creating each Powder
+        // spawn it!
+        spawnPowderThroughCommand(powder, player, label, args[0]);
+        return true;
+    }
+
+    public void spawnPowderThroughCommand(Powder powder, Player player, String label, String arg) {
+    	// wait time between creating each Powder
         int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
         // if they sent a command in the given wait time, don't do it
         if (recentCommandSenders.contains(player)) {
             PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT,
-                    label, player.getName(), args[0], String.valueOf(waitTime));
-            return false;
+                    label, player.getName(), arg, String.valueOf(waitTime));
+            return;
         }
         // if there's a wait time between using each Powder
         if (waitTime > 0) {
@@ -652,29 +665,44 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
             PowderUtil.sendPrefixMessage(player, Message.POWDER_CREATED_TIP,
                     label, player.getName(), label);
         }
-        return true;
     }
 
     @Override
     public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
-        List<String> powders = new ArrayList<>();
-        Set<String> categories = PowderPlugin.getInstance().getPowderHandler().getCategories().keySet();
+        List<String> strings = new ArrayList<>();
 
-        for (String category : categories) {
-            List<Powder> powdersInCategory = PowderPlugin.getInstance().getPowderHandler().getUnhiddenPowdersFromCategory(category);
+        if (args.length == 1) {
+        	for (String category : PowderPlugin.getInstance().getPowderHandler().getCategories().keySet()) {
+        		if (category.toLowerCase().startsWith(args[0].toLowerCase())) {
+        			strings.add(category);
+        		}
+        	}
+        	if ("category".startsWith(args[0].toLowerCase())) {
+        		strings.add("Category");
+        	}
+    	} else if (args.length == 2) {
+    		if (args[0].equalsIgnoreCase("category")) {
+    			for (String category : PowderPlugin.getInstance().getPowderHandler().getCategories().keySet()) {
+            		if (category.toLowerCase().startsWith(args[1].toLowerCase())) {
+            			strings.add(category);
+            		}
+            	}
+    		} else {
+    			for (Powder powder : PowderPlugin.getInstance().getPowderHandler().getPowders()) {
+        			for (String category : powder.getCategories()) {
+                		if (category.equalsIgnoreCase(args[0])) {
+                			if (powder.getName().toLowerCase().startsWith(args[1])) {
+                				strings.add(powder.getName());
+                			}
+                		}
+                	}
+        		}
+    		}
+    	} else {
+    		return strings;
+    	}
 
-            for (Powder powderInCategory : powdersInCategory) {
-                if (args.length > 0) {
-                    if (powderInCategory.getName().toLowerCase().startsWith(args[0])) {
-                        powders.add(powderInCategory.getName());
-                    }
-                } else {
-                    powders.add(powderInCategory.getName());
-                }
-            }
-        }
-
-        return powders;
+        return strings;
     }
 
 }
