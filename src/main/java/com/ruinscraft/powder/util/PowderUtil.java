@@ -216,10 +216,10 @@ public class PowderUtil {
                                        String input, int page, int pageLength, String label) {
         List<BaseComponent> pageList = new ArrayList<>();
         // create list of Powders based on current page & given amnt per page
-        for (int i = 1; i <= pageLength; i++) {
+        for (int i = 0; i < pageLength; i++) {
             BaseComponent current;
             try {
-                current = listOfElements.get((page * pageLength) + i - pageLength - 1);
+                current = listOfElements.get(((page - 1) * pageLength) + i);
             } catch (Exception e) {
                 break;
             }
@@ -245,24 +245,33 @@ public class PowderUtil {
         if (pageList.isEmpty()) {
             player.spigot().sendMessage(getMessage(Message.LIST_NO_ELEMENTS));
             return;
-        } else if ((!pageList.contains(listOfElements.get(0))
-                && pageList.contains(listOfElements.get(listOfElements.size() - 1)))) {
+        } else if ((!containsElement(listOfElements.get(0), pageList)
+                && containsElement(listOfElements.get(listOfElements.size() - 1), pageList))) {
             fullArrows.addExtra(leftArrow);
             fullArrows.addExtra(middle);
-        } else if (!(pageList.contains(listOfElements.get(0)))
-                && !(pageList.contains(listOfElements.get(listOfElements.size() - 1)))) {
+        } else if (!(containsElement(listOfElements.get(0), pageList))
+                && !(containsElement(listOfElements.get(listOfElements.size() - 1), pageList))) {
             fullArrows.addExtra(leftArrow);
             fullArrows.addExtra(middle);
             fullArrows.addExtra(rightArrow);
-        } else if (pageList.contains(listOfElements.get(0))
-                && !pageList.contains(listOfElements.get(listOfElements.size() - 1))) {
+        } else if (containsElement(listOfElements.get(0), pageList)
+                && !containsElement(listOfElements.get(listOfElements.size() - 1), pageList)) {
             fullArrows.addExtra(middle);
             fullArrows.addExtra(rightArrow);
-        } else if (pageList.contains(listOfElements.get(0))
-                && pageList.contains(listOfElements.get(listOfElements.size() - 1))) {
+        } else if (containsElement(listOfElements.get(0), pageList)
+                && containsElement(listOfElements.get(listOfElements.size() - 1), pageList)) {
             return;
         }
         player.spigot().sendMessage(fullArrows);
+    }
+
+    public static boolean containsElement(BaseComponent element, List<BaseComponent> components) {
+    	for (BaseComponent component : components) {
+    		if (component.toPlainText().equals(element.toPlainText())) {
+    			return true;
+    		}
+    	}
+    	return false;
     }
 
     // organizes given the given List<Powder> by active/allowed/not allowed Powders,
