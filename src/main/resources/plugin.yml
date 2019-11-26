@@ -13,6 +13,9 @@ permissions:
     description: Enables access to all commands and subcommands
     children:
       powder.powder.*: true
+      powder.command: true
+      powder.help: true
+      powder.nearby: true
       powder.reload: true
       powder.attach: true
       powder.cancel: true
