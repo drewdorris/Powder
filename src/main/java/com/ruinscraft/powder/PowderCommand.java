@@ -541,7 +541,13 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     	if (args.length > 1) {
                     		if (powderHandler.getPowder(args[1]) != null) {
                     			powder = powderHandler.getPowder(args[1]);
-                    			spawnPowderThroughCommand(powder, player, label, args[0]);
+                    			boolean loop = false;
+                    			if (args.length > 2) {
+                    				if (args[2].equalsIgnoreCase("loop")) {
+                    					loop = true;
+                    				}
+                    			}
+                    			spawnPowderThroughCommand(powder, player, label, args[0], loop);
                     			return true;
                     		}
                     	}
@@ -576,6 +582,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
             return false;
         }
 
+        boolean loop = false;
+
         // if another argument after the Powder name
         if (args.length > 1) {
             if (args[1].equalsIgnoreCase("cancel")) {
@@ -589,8 +597,10 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                     PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_FAILURE,
                             label, player.getName(), powder.getName());
                 }
+                return false;
+            } else if (args[1].equalsIgnoreCase("loop")) {
+            	loop = true;
             }
-            return false;
         }
 
         // if this Powder is already running for the player
@@ -631,11 +641,11 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
         }
 
         // spawn it!
-        spawnPowderThroughCommand(powder, player, label, args[0]);
+        spawnPowderThroughCommand(powder, player, label, args[0], loop);
         return true;
     }
 
-    public void spawnPowderThroughCommand(Powder powder, Player player, String label, String arg) {
+    public void spawnPowderThroughCommand(Powder powder, Player player, String label, String arg, boolean loop) {
     	// wait time between creating each Powder
         int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
         // if they sent a command in the given wait time, don't do it
