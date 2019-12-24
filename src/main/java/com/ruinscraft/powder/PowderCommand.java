@@ -5,6 +5,7 @@ import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
+import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -662,6 +663,14 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
                         recentCommandSenders.remove(player);
                     }, (waitTime * 20));
             recentCommandSenders.add(player);
+        }
+
+        if (PowderPlugin.getInstance().fastMode()) {
+            powder = ConfigUtil.loadPowderFromConfig(powder.getPath());
+            if (powder == null) {
+            	PowderPlugin.warning("Powder was null for some reason!");
+            	return;
+            }
         }
 
         // spawn the Powder

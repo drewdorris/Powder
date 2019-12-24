@@ -122,14 +122,7 @@ public class PowderTask {
         if (!tracker.getType().equals(trackerType)) {
             return false;
         }
-        if (PowderPlugin.getInstance().fastMode()) {
-            Powder actualPowder = ConfigUtil.loadPowderFromConfig(powder.getPath());
-            if (actualPowder != null) {
-                this.powders.put(actualPowder, tracker);
-            }
-        } else {
-            this.powders.put(powder.clone(), tracker);
-        }
+        this.powders.put(powder, tracker);
         ConfigUtil.saveStationaryPowder(
                 PowderPlugin.getInstance().getCreatedPowdersFile(), this);
         return true;

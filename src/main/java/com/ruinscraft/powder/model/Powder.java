@@ -251,7 +251,7 @@ public class Powder implements Cloneable {
     public void spawn(Entity entity) {
         Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
             PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
-                    PowderUtil.generateID(8), this, new EntityTracker(
+                    PowderUtil.generateID(8), this.clone(), new EntityTracker(
                     entity, Bukkit.getPlayer(entity.getUniqueId()) != null,
                     entity instanceof LivingEntity));
             spawn(powderTask);
@@ -259,7 +259,7 @@ public class Powder implements Cloneable {
     }
 
     public void spawn(String name, Location location) {
-        PowderTask powderTask = new PowderTask(name, this, new StationaryTracker(location));
+        PowderTask powderTask = new PowderTask(name, this.clone(), new StationaryTracker(location));
         spawn(powderTask);
     }
 
@@ -267,12 +267,14 @@ public class Powder implements Cloneable {
     public void spawn(Player player) {
         Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
             PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6),
-                    this, new EntityTracker(player.getUniqueId(), true, true));
+                    this.clone(), new EntityTracker(player.getUniqueId(), true, true));
             spawn(powderTask);
         });
     }
 
     public void spawn(PowderTask powderTask) {
+    	// handle loop boolean
+    	
         // create a PowderTask, add taskIDs to it
         PowderPlugin.getInstance().getPowderHandler().runPowderTask(powderTask);
     }
@@ -281,6 +283,12 @@ public class Powder implements Cloneable {
     public boolean cancel(UUID uuid) {
         PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
         return powderHandler.cancelPowderTasks(powderHandler.getPowderTasks(uuid, this));
+    }
+
+    public Powder loop() {
+    	Powder powder = this.clone();
+    	// do stuff to it
+    	return powder;
     }
 
     @Override
