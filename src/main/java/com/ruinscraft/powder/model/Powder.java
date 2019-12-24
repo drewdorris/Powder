@@ -285,8 +285,23 @@ public class Powder implements Cloneable {
 
 	public Powder loop() {
 		Powder powder = this.clone();
-		// do stuff to it
-		
+
+		int greatestStartTime = 0;
+		for (PowderElement element : powder.getPowderElements()) {
+			element.setLockedIterations(0);
+			if (element.getStartTime() > greatestStartTime) {
+				greatestStartTime = element.getStartTime() + 1;
+			}
+		}
+
+		if (greatestStartTime <= 1) greatestStartTime = 20;
+
+		for (PowderElement element : powder.getPowderElements()) {
+			if (element.getRepeatTime() == 0) {
+				element.setRepeatTime(greatestStartTime);
+			}
+		}
+
 		return powder;
 	}
 

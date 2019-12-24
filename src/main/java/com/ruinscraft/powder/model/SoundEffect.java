@@ -78,6 +78,11 @@ public class SoundEffect implements PowderElement {
     }
 
     @Override
+    public void setRepeatTime(int repeatTime) {
+        this.repeatTime = repeatTime;
+    }
+
+    @Override
     public int getLockedIterations() {
         return lockedIterations;
     }

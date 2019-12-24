@@ -19,6 +19,12 @@ public interface PowderElement extends Cloneable {
 	int getRepeatTime();
 
 	/**
+	 * Get how many ticks after the start time to iterate
+	 * @param repeatTime
+	 */
+	void setRepeatTime(int repeatTime);
+
+	/**
 	 * Get how many times to iterate this element
 	 * 0 if unlimited
 	 * @return integer
@@ -27,6 +33,7 @@ public interface PowderElement extends Cloneable {
 
 	/**
 	 * Set how many times to iterate this element
+	 * 0 if unlimited
 	 * @param lockedIterations
 	 */
 	void setLockedIterations(int lockedIterations);

@@ -231,6 +231,7 @@ public class ParticleMatrix implements PowderElement {
         return repeatTime;
     }
 
+    @Override
     public void setRepeatTime(int repeatTime) {
         this.repeatTime = repeatTime;
     }
