@@ -673,8 +673,9 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			}
 		}
 
+		if (loop) powder = powder.loop();
+
 		// spawn the Powder
-		powder.spawn(player);
 
 		PowderUtil.sendPrefixMessage(player, PowderUtil.setTextHoverAndClick(
 				Message.POWDER_CREATED, Message.POWDER_CREATED_HOVER,
