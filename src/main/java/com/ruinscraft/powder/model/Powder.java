@@ -273,8 +273,6 @@ public class Powder implements Cloneable {
 	}
 
 	public void spawn(PowderTask powderTask) {
-		// handle loop boolean
-
 		// create a PowderTask, add taskIDs to it
 		PowderPlugin.getInstance().getPowderHandler().runPowderTask(powderTask);
 	}
@@ -288,6 +286,7 @@ public class Powder implements Cloneable {
 	public Powder loop() {
 		Powder powder = this.clone();
 		// do stuff to it
+		
 		return powder;
 	}
 
