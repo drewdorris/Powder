@@ -5,8 +5,8 @@ import java.sql.SQLException;
 
 public interface SQLStorage extends Storage {
 
-    void createTable();
+	void createTable();
 
-    Connection getConnection() throws SQLException;
+	Connection getConnection() throws SQLException;
 
 }

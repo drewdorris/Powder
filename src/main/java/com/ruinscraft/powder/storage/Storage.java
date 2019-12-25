@@ -7,14 +7,14 @@ import java.util.UUID;
 
 public interface Storage {
 
-    List<String> get(UUID uuid);
+	List<String> get(UUID uuid);
 
-    void save(UUID uuid);
+	void save(UUID uuid);
 
-    Map<UUID, List<String>> getBatch(Collection<UUID> uuids);
+	Map<UUID, List<String>> getBatch(Collection<UUID> uuids);
 
-    void saveBatch(Collection<UUID> uuids);
+	void saveBatch(Collection<UUID> uuids);
 
-    void close();
+	void close();
 
 }
