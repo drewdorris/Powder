@@ -191,7 +191,7 @@ public class ConfigUtil {
         powder.setDefaultStartTime(
                 powderConfig.getInt(section + ".defaultStartTime", 0));
         powder.setDefaultRepeatTime(
-                powderConfig.getInt(section + ".defaultRepeatTime", 20));
+                powderConfig.getInt(section + ".defaultRepeatTime", 0));
         powder.setDefaultLockedIterations(
                 powderConfig.getInt(section + ".defaultIterations", 1));
         powder.setDefaultAddedPitch(
