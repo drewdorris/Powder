@@ -338,6 +338,18 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							label, player.getName(), label);
 					return false;
 				}
+				if (PowderPlugin.getInstance().fastMode()) {
+					newPowder = ConfigUtil.loadPowderFromConfig(newPowder.getPath());
+					if (newPowder == null) {
+						PowderPlugin.warning("Powder was null for some reason!");
+						return false;
+					}
+				}
+				if (args.length > 3) {
+					if (args[3].equalsIgnoreCase("loop")) {
+						newPowder = newPowder.loop();
+					}
+				}
 				if (!(powderHandler.getPowderTask(name) == null)) {
 					PowderUtil.sendPrefixMessage(player, Message.CREATE_ALREADY_EXISTS,
 							label, player.getName(), name, powderName);
@@ -369,6 +381,13 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					PowderUtil.sendPrefixMessage(player, Message.ADDTO_SYNTAX, label,
 							player.getName(), label);
 					return false;
+				}
+				if (PowderPlugin.getInstance().fastMode()) {
+					newPowder = ConfigUtil.loadPowderFromConfig(newPowder.getPath());
+					if (newPowder == null) {
+						PowderPlugin.warning("Powder was null for some reason!");
+						return false;
+					}
 				}
 				if ((powderHandler.getPowderTask(name) == null)) {
 					PowderUtil.sendPrefixMessage(player, Message.ADDTO_DOES_NOT_EXIST,
