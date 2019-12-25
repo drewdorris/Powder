@@ -17,9 +17,9 @@ public enum ParticleName {
     K("DRIP_WATER"), // tiny too but little water thing
     L("ENCHANTMENT_TABLE"), // enchant letters come to you
     M("END_ROD"), // snow ball kinda small flies away
-    N("EXPLOSION_HUGE"), //
-    O("EXPLOSION_LARGE"), //
-    P("EXPLOSION_NORMAL"), // explode
+    N("EXPLOSION"), //
+    O("EXPLOSION"), //
+    P("EXPLOSION"), // explode
     Q("FALLING_DUST"), // black goes into ur head
     R("FIREWORKS_SPARK"), // spark
     S("FLAME"), // everywhere flame
