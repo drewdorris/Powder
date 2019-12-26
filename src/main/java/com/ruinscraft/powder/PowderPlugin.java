@@ -13,6 +13,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -38,6 +39,9 @@ public class PowderPlugin extends JavaPlugin {
 
 	private boolean fastMode;
 	private boolean asyncMode;
+
+	private Plugin towny;
+	private Plugin plotSquared;
 
 	public static PowderPlugin getInstance() {
 		return instance;
@@ -97,6 +101,8 @@ public class PowderPlugin extends JavaPlugin {
 		getCommand("powder").setExecutor(powderCommand);
 		getCommand("powder").setTabCompleter(powderCommand);
 		getServer().getPluginManager().registerEvents(new EnvironmentListener(), this);
+
+		loadIntegrations();
 	}
 
 	public synchronized void reload() {
@@ -203,6 +209,26 @@ public class PowderPlugin extends JavaPlugin {
 
 	public static boolean is1_13() {
 		return is1_13;
+	}
+
+	public void loadIntegrations() {
+		// check for Towny and PlotSquared/PlotCubed existence, load if necessary
+	}
+
+	public Plugin getTowny() {
+		return towny;
+	}
+
+	public boolean hasTowny() {
+		return towny != null;
+	}
+
+	public Plugin getPlotSquared() {
+		return plotSquared;
+	}
+
+	public boolean hasPlotSquared() {
+		return plotSquared != null;
 	}
 
 	public Storage getStorage() {
