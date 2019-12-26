@@ -5,7 +5,6 @@ import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
-import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -338,13 +337,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							label, player.getName(), label);
 					return false;
 				}
-				if (PowderPlugin.getInstance().fastMode()) {
-					newPowder = ConfigUtil.loadPowderFromConfig(newPowder.getPath());
-					if (newPowder == null) {
-						PowderPlugin.warning("Powder was null for some reason!");
-						return false;
-					}
-				}
 				if (args.length > 3) {
 					if (args[3].equalsIgnoreCase("loop")) {
 						newPowder = newPowder.loop();
@@ -360,7 +352,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							player.getName(), powderName);
 					return false;
 				}
-				newPowder.spawn(name, player.getLocation());
+				newPowder.spawn(name, player.getLocation(), player.getUniqueId());
 				PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
 						player.getName(), powderName, name);
 				return true;
@@ -382,13 +374,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							player.getName(), label);
 					return false;
 				}
-				if (PowderPlugin.getInstance().fastMode()) {
-					newPowder = ConfigUtil.loadPowderFromConfig(newPowder.getPath());
-					if (newPowder == null) {
-						PowderPlugin.warning("Powder was null for some reason!");
-						return false;
-					}
-				}
 				if ((powderHandler.getPowderTask(name) == null)) {
 					PowderUtil.sendPrefixMessage(player, Message.ADDTO_DOES_NOT_EXIST,
 							label, player.getName(), name);
@@ -401,7 +386,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				}
 				PowderTask powderTask = powderHandler.getPowderTask(name);
 				if (powderTask.addPowder(newPowder,
-						new StationaryTracker(player.getLocation()))) {
+						new StationaryTracker(player.getLocation(), player.getUniqueId()))) {
 					PowderUtil.sendPrefixMessage(player, Message.ADDTO_SUCCESS,
 							label, player.getName(), powderName, name);
 				} else {
@@ -682,14 +667,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				recentCommandSenders.remove(player);
 			}, (waitTime * 20));
 			recentCommandSenders.add(player);
-		}
-
-		if (PowderPlugin.getInstance().fastMode()) {
-			powder = ConfigUtil.loadPowderFromConfig(powder.getPath());
-			if (powder == null) {
-				PowderPlugin.warning("Powder was null for some reason!");
-				return;
-			}
 		}
 
 		if (loop) powder = powder.loop();

@@ -258,8 +258,8 @@ public class Powder implements Cloneable {
 		});
 	}
 
-	public void spawn(String name, Location location) {
-		PowderTask powderTask = new PowderTask(name, this.clone(), new StationaryTracker(location));
+	public void spawn(String name, Location location, UUID owner) {
+		PowderTask powderTask = new PowderTask(name, this.clone(), new StationaryTracker(location, owner));
 		spawn(powderTask);
 	}
 

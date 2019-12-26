@@ -76,6 +76,14 @@ public class PowderHandler {
 	public Powder getPowder(String name) {
 		for (Powder powder : this.powders) {
 			if (powder.getName().equalsIgnoreCase(name)) {
+				if (PowderPlugin.getInstance().fastMode()) {
+					Powder newPowder = ConfigUtil.loadPowderFromConfig(powder.getPath());
+					if (newPowder == null) {
+						PowderPlugin.warning("Powder was null for some reason!");
+						continue;
+					}
+					return newPowder;
+				}
 				return powder;
 			}
 		}

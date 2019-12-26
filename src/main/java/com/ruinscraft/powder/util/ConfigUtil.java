@@ -22,6 +22,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map.Entry;
 import java.util.Set;
+import java.util.UUID;
 
 public class ConfigUtil {
 
@@ -654,6 +655,11 @@ public class ConfigUtil {
 
 	public static PowderTask loadStationaryPowder(FileConfiguration config, String section) {
 		PowderTask powderTask = new PowderTask(config.getString(section + ".name"));
+		String ownerString = config.getString(section + ".owner", null);
+		UUID uuid = null;
+		if (ownerString != null) {
+			uuid = UUID.fromString(ownerString);
+		}
 		for (String powderSection : config.getConfigurationSection(section).getKeys(false)) {
 			String newSection = section + "." + powderSection;
 			if (powderSection.equals("name")) {
@@ -680,7 +686,7 @@ public class ConfigUtil {
 			float yaw = (float) config.getDouble(newSection + ".yaw");
 			float pitch = (float) config.getDouble(newSection + ".pitch");
 			Location location = new Location(world, x, y, z, yaw, pitch);
-			powderTask.addPowder(powder, new StationaryTracker(location));
+			powderTask.addPowder(powder, new StationaryTracker(location, uuid));
 		}
 		return powderTask;
 	}
