@@ -28,7 +28,7 @@ public class ConfigUtil {
 
 	public static FileConfiguration loadConfig() {
 		FileConfiguration config = null;
-		PowderPlugin instance = PowderPlugin.getInstance();
+		PowderPlugin instance = PowderPlugin.get();
 		File configFile = new File(instance.getDataFolder(), "config.yml");
 		if (!configFile.exists()) {
 			PowderPlugin.info("config.yml not found, creating!");
@@ -44,7 +44,7 @@ public class ConfigUtil {
 	}
 
 	public static boolean checkConfigVersion() {
-		int configVersion = PowderPlugin.getInstance().getConfigVersion();
+		int configVersion = PowderPlugin.get().getConfigVersion();
 		int currentConfigVersion = 2;
 		int versionsBehind = currentConfigVersion - configVersion;
 		if (versionsBehind == 1) {
@@ -66,8 +66,8 @@ public class ConfigUtil {
 		// list of configuration files that contain Powders
 		List<FileConfiguration> powderConfigs = new ArrayList<>();
 
-		FileConfiguration config = PowderPlugin.getInstance().getConfig();
-		File dataFolder = PowderPlugin.getInstance().getDataFolder();
+		FileConfiguration config = PowderPlugin.get().getConfig();
+		File dataFolder = PowderPlugin.get().getDataFolder();
 
 		for (String urlName : config.getStringList("powderSources")) {
 			FileConfiguration powderConfig;
@@ -108,7 +108,7 @@ public class ConfigUtil {
 		if (!defaultPowderConfig.exists() &&
 				config.getStringList("powderSources").contains("powders.yml")) {
 			PowderPlugin.info("powders.yml not found and listed as a source, creating!");
-			PowderPlugin.getInstance().saveResource("powders.yml", false);
+			PowderPlugin.get().saveResource("powders.yml", false);
 			FileConfiguration powderConfig =
 					YamlConfiguration.loadConfiguration(defaultPowderConfig);
 			powderConfigs.add(powderConfig);
@@ -117,8 +117,8 @@ public class ConfigUtil {
 	}
 
 	public static void reloadCategories() {
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
-		FileConfiguration config = PowderPlugin.getInstance().getConfig();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
+		FileConfiguration config = PowderPlugin.get().getConfig();
 		if (powderHandler.categoriesEnabled()) {
 			for (String s : config.getConfigurationSection("categories").getKeys(false)) {
 				powderHandler.addCategory(s, config.getString("categories." + s + ".desc", ""));
@@ -137,7 +137,7 @@ public class ConfigUtil {
 	}
 
 	public static Powder loadPowderFromConfig(String path) {
-		for (FileConfiguration config : PowderPlugin.getInstance().getPowderConfigs()) {
+		for (FileConfiguration config : PowderPlugin.get().getPowderConfigs()) {
 			if (configContainsPowder(config, path)) {
 				return loadPowderFromConfig(config, path);
 			}
@@ -149,7 +149,7 @@ public class ConfigUtil {
 	public static Powder loadPowderShellFromConfig(FileConfiguration powderConfig, String path) {
 		Powder powder = new Powder(path);
 
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 
 		String section = "powders." + path;
 
@@ -181,7 +181,7 @@ public class ConfigUtil {
 	public static Powder loadPowderFromConfig(FileConfiguration powderConfig, String path) {
 		Powder powder = new Powder(path);
 
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 
 		String section = "powders." + path;
 
@@ -550,7 +550,7 @@ public class ConfigUtil {
 
 	public static void saveFile(FileConfiguration config, String fileName) {
 		try {
-			File file = new File(PowderPlugin.getInstance()
+			File file = new File(PowderPlugin.get()
 					.getDataFolder(), fileName);
 			if (!file.exists()) {
 				try {
@@ -566,7 +566,7 @@ public class ConfigUtil {
 	}
 
 	public static boolean containsTask(PowderTask powderTask) {
-		FileConfiguration config = PowderPlugin.getInstance().getCreatedPowdersFile();
+		FileConfiguration config = PowderPlugin.get().getCreatedPowdersFile();
 		if (config == null) {
 			return false;
 		}
@@ -579,7 +579,7 @@ public class ConfigUtil {
 
 	public static FileConfiguration loadCreatedPowders() {
 		FileConfiguration config = null;
-		PowderPlugin instance = PowderPlugin.getInstance();
+		PowderPlugin instance = PowderPlugin.get();
 		File configFile = new File(instance.getDataFolder(), "createdpowders.yml");
 		if (configFile.exists()) {
 			config = YamlConfiguration.loadConfiguration(configFile);
@@ -589,7 +589,7 @@ public class ConfigUtil {
 		if (config == null) {
 			return null;
 		}
-		PowderPlugin.getInstance().setCreatedPowdersFile(config);
+		PowderPlugin.get().setCreatedPowdersFile(config);
 		Set<PowderTask> powderTasks = loadStationaryPowders();
 		for (PowderTask powderTask : powderTasks) {
 			instance.getPowderHandler().runPowderTask(powderTask);
@@ -600,7 +600,7 @@ public class ConfigUtil {
 	public static void saveStationaryPowder(
 			FileConfiguration createdPowders, PowderTask powderTask) {
 		if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
-			PowderPlugin instance = PowderPlugin.getInstance();
+			PowderPlugin instance = PowderPlugin.get();
 			if (createdPowders == null) {
 				File file = new File(instance.getDataFolder(), "createdpowders.yml");
 				try {
@@ -640,7 +640,7 @@ public class ConfigUtil {
 
 	public static Set<PowderTask> loadStationaryPowders() {
 		Set<PowderTask> powderTasks = new HashSet<>();
-		FileConfiguration createdPowders = PowderPlugin.getInstance().getCreatedPowdersFile();
+		FileConfiguration createdPowders = PowderPlugin.get().getCreatedPowdersFile();
 		if (createdPowders == null) {
 			return powderTasks;
 		}
@@ -667,7 +667,7 @@ public class ConfigUtil {
 				continue;
 			}
 			String powderName = config.getString(newSection + ".powder");
-			Powder powder = PowderPlugin.getInstance().getPowderHandler().getPowder(powderName);
+			Powder powder = PowderPlugin.get().getPowderHandler().getPowder(powderName);
 			if (powder == null) {
 				PowderPlugin.warning("Unknown Powder '" +
 						powderName + "' in createdpowders.yml");
@@ -698,8 +698,8 @@ public class ConfigUtil {
 
 	public static void removeStationaryPowder(PowderTask powderTask) {
 		if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
-			FileConfiguration createdPowders = PowderPlugin.getInstance().getCreatedPowdersFile();
-			PowderPlugin.getInstance().getCreatedPowdersFile()
+			FileConfiguration createdPowders = PowderPlugin.get().getCreatedPowdersFile();
+			PowderPlugin.get().getCreatedPowdersFile()
 			.set("created." + PowderUtil.cleanPowderTaskName(powderTask), null);
 			saveFile(createdPowders, "createdpowders.yml");
 		}

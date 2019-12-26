@@ -38,10 +38,10 @@ public class PowderHandler {
 		powderTasks = new ArrayList<>();
 		categories = new HashMap<>();
 
-		if (PowderPlugin.getInstance().useStorage()) {
+		if (PowderPlugin.get().useStorage()) {
 			entitiesToLoad = new HashSet<UUID>();
-			PowderPlugin.getInstance().getServer()
-			.getScheduler().runTaskTimer(PowderPlugin.getInstance(), () -> {
+			PowderPlugin.get().getServer()
+			.getScheduler().runTaskTimer(PowderPlugin.get(), () -> {
 				if (PowderPlugin.isLoading()) {
 					return;
 				}
@@ -76,7 +76,7 @@ public class PowderHandler {
 	public Powder getPowder(String name) {
 		for (Powder powder : this.powders) {
 			if (powder.getName().equalsIgnoreCase(name)) {
-				if (PowderPlugin.getInstance().fastMode()) {
+				if (PowderPlugin.get().fastMode()) {
 					Powder newPowder = ConfigUtil.loadPowderFromConfig(powder.getPath());
 					if (newPowder == null) {
 						PowderPlugin.warning("Powder was null for some reason!");
@@ -253,7 +253,7 @@ public class PowderHandler {
 		}
 		if (!ConfigUtil.containsTask(powderTask)) {
 			ConfigUtil.saveStationaryPowder(
-					PowderPlugin.getInstance().getCreatedPowdersFile(), powderTask);
+					PowderPlugin.get().getCreatedPowdersFile(), powderTask);
 		}
 	}
 

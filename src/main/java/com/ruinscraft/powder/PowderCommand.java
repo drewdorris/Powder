@@ -33,9 +33,9 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				if (args[0].equals("reload")) {
 					// reload
 					if (!PowderPlugin.isLoading()) {
-						PowderPlugin.getInstance().getServer().getScheduler()
-						.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-							PowderPlugin.getInstance().reload();
+						PowderPlugin.get().getServer().getScheduler()
+						.runTaskAsynchronously(PowderPlugin.get(), () -> {
+							PowderPlugin.get().reload();
 						});
 					} else {
 						PowderPlugin.info(
@@ -59,10 +59,10 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			return false;
 		}
 
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 
 		// elements contained within a page of a list
-		int pageLength = PowderPlugin.getInstance().getConfig().getInt("pageLength");
+		int pageLength = PowderPlugin.get().getConfig().getInt("pageLength");
 
 		// if no args, lists categories if categories enabled, else list all Powders
 		if (args.length < 1) {
@@ -101,9 +101,9 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					PowderUtil.sendPrefixMessage(player, Message.LOADING_ALREADY,
 							label, player.getName());
 				} else {
-					PowderPlugin.getInstance().getServer().getScheduler()
-					.runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
-						PowderPlugin.getInstance().reload();
+					PowderPlugin.get().getServer().getScheduler()
+					.runTaskAsynchronously(PowderPlugin.get(), () -> {
+						PowderPlugin.get().reload();
 					});
 				}
 				return true;
@@ -611,7 +611,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 		// if this Powder is already running for the player
 		if (!(powderHandler.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 			// if multiple uses of one Powder are not allowed, cancel it
-			if (!(PowderPlugin.getInstance().getConfig()
+			if (!(PowderPlugin.get().getConfig()
 					.getBoolean("allowSamePowdersAtOneTime"))) {
 				if (powder.cancel(player.getUniqueId())) {
 					PowderUtil.sendPrefixMessage(player, Message.POWDER_CANCEL_SINGLE_SUCCESS,
@@ -625,7 +625,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 		}
 
 		// if player has maxPowdersAtOneTime, don't do it
-		int maxSize = PowderPlugin.getInstance().getConfig().getInt("maxPowdersAtOneTime");
+		int maxSize = PowderPlugin.get().getConfig().getInt("maxPowdersAtOneTime");
 		if ((powderHandler.getPowderTasks(player.getUniqueId()).size() >= maxSize)) {
 			PowderUtil.sendPrefixMessage(player, Message.POWDER_MAX_PREFIX,
 					label, player.getName(), args[0], String.valueOf(maxSize));
@@ -652,7 +652,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 
 	public void spawnPowderThroughCommand(Powder powder, Player player, String label, String arg, boolean loop) {
 		// wait time between creating each Powder
-		int waitTime = PowderPlugin.getInstance().getConfig().getInt("secondsBetweenPowderUsage");
+		int waitTime = PowderPlugin.get().getConfig().getInt("secondsBetweenPowderUsage");
 		// if they sent a command in the given wait time, don't do it
 		if (recentCommandSenders.contains(player)) {
 			PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT,
@@ -662,8 +662,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 		// if there's a wait time between using each Powder
 		if (waitTime > 0) {
 			// add user to this list of recent command senders for the given amount of time
-			PowderPlugin.getInstance().getServer().getScheduler()
-			.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+			PowderPlugin.get().getServer().getScheduler()
+			.scheduleSyncDelayedTask(PowderPlugin.get(), () -> {
 				recentCommandSenders.remove(player);
 			}, (waitTime * 20));
 			recentCommandSenders.add(player);
@@ -689,7 +689,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 		List<String> strings = new ArrayList<>();
 
 		if (args.length == 1) {
-			for (String category : PowderPlugin.getInstance().getPowderHandler().getCategories().keySet()) {
+			for (String category : PowderPlugin.get().getPowderHandler().getCategories().keySet()) {
 				if (category.toLowerCase().startsWith(args[0].toLowerCase())) {
 					strings.add(category);
 				}
@@ -699,13 +699,13 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("category")) {
-				for (String category : PowderPlugin.getInstance().getPowderHandler().getCategories().keySet()) {
+				for (String category : PowderPlugin.get().getPowderHandler().getCategories().keySet()) {
 					if (category.toLowerCase().startsWith(args[1].toLowerCase())) {
 						strings.add(category);
 					}
 				}
 			} else {
-				for (Powder powder : PowderPlugin.getInstance().getPowderHandler().getPowders()) {
+				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
 					for (String category : powder.getCategories()) {
 						if (category.equalsIgnoreCase(args[0])) {
 							if (powder.getName().toLowerCase().startsWith(args[1])) {

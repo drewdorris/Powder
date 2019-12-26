@@ -56,9 +56,9 @@ public class ImageUtil {
 		List<PositionedPowderParticle> particles = new ArrayList<>();
 
 		try {
-			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/images", fileName);
+			File file = new File(PowderPlugin.get().getDataFolder() + "/images", fileName);
 			if (!file.exists()) {
-				PowderPlugin.getInstance().saveResource("images/" + fileName, false);
+				PowderPlugin.get().saveResource("images/" + fileName, false);
 			}
 			BufferedImage bufferedImage;
 			bufferedImage = ImageIO.read(file);

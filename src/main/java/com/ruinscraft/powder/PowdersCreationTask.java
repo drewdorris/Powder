@@ -27,12 +27,12 @@ public class PowdersCreationTask extends BukkitRunnable {
 	@Override
 	public void run() {
 		tick++;
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 		if (powderHandler == null || powderHandler.getPowderTasks().isEmpty()) return;
 
 		refreshLocations(powderHandler);
 
-		if (PowderPlugin.getInstance().asyncMode()) {
+		if (PowderPlugin.get().asyncMode()) {
 			CompletableFuture.runAsync(() -> {
 				createElements(powderHandler);
 			});

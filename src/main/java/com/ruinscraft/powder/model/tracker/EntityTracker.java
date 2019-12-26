@@ -66,7 +66,7 @@ public class EntityTracker implements Tracker {
 
 	@Override
 	public Location getCurrentLocation() {
-		if (PowderPlugin.getInstance().asyncMode()) {
+		if (PowderPlugin.get().asyncMode()) {
 			refreshLocation();
 			return this.location;
 		} else {

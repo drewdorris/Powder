@@ -27,7 +27,7 @@ import java.util.stream.Stream;
 
 public class PowderUtil {
 
-	private static PowderPlugin plugin = PowderPlugin.getInstance();
+	private static PowderPlugin plugin = PowderPlugin.get();
 	public static Random random = new Random();
 
 	private static Set<UUID> recentlyLoadedUUIDs = new HashSet<>();
@@ -82,7 +82,7 @@ public class PowderUtil {
 	}
 
 	public static BaseComponent getMessage(Message message) {
-		return new TextComponent(PowderPlugin.getInstance().getMessages().get(message));
+		return new TextComponent(PowderPlugin.get().getMessages().get(message));
 	}
 
 	public static String setString(Message message, String... replacers) {
@@ -166,7 +166,7 @@ public class PowderUtil {
 		texts.add(getMessage(Message.HELP_POWDER_STAR_CANCEL));
 		texts.add(getMessage(Message.HELP_ACTIVE));
 		texts.add(getMessage(Message.HELP_LIST));
-		if (PowderPlugin.getInstance().getPowderHandler().categoriesEnabled()) {
+		if (PowderPlugin.get().getPowderHandler().categoriesEnabled()) {
 			texts.add(getMessage(Message.HELP_CATEGORIES));
 			texts.add(getMessage(Message.HELP_CATEGORY));
 		}
@@ -299,7 +299,7 @@ public class PowderUtil {
 				}
 				noPermPowders.add(setTextAndHover(Message.LIST_POWDER_NO_PERM,
 						Message.LIST_POWDER_NO_PERM_HOVER, powder.getName()));
-			} else if (!(PowderPlugin.getInstance().getPowderHandler()
+			} else if (!(PowderPlugin.get().getPowderHandler()
 					.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 				activePowders.add(setTextHoverAndClick(Message.LIST_POWDER_ACTIVE,
 						Message.LIST_POWDER_ACTIVE_HOVER, Message.LIST_POWDER_ACTIVE_CLICK,
@@ -334,7 +334,7 @@ public class PowderUtil {
 		// categories containing Powders the player has no permission for
 		// or contains no Powders
 		List<BaseComponent> noPermCategories = new ArrayList<>();
-		PowderHandler powderHandler = PowderPlugin.getInstance().getPowderHandler();
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 		for (String category : categories.keySet()) {
 			String desc = categories.get(category);
 			int i = 0;
@@ -342,7 +342,7 @@ public class PowderUtil {
 			boolean isAllowed = false;
 			for (Powder powder : powderHandler.getPowdersFromCategory(category)) {
 				i++;
-				if (!(PowderPlugin.getInstance().getPowderHandler()
+				if (!(PowderPlugin.get().getPowderHandler()
 						.getPowderTasks(player.getUniqueId(), powder).isEmpty())) {
 					active = true;
 					break;
@@ -537,7 +537,7 @@ public class PowderUtil {
 	public static void loadUUID(UUID uuid) {
 		loadPowdersForUUID(uuid);
 		plugin.getServer().getScheduler()
-		.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+		.scheduleSyncDelayedTask(PowderPlugin.get(), () -> {
 			recentlyLoadedUUIDs.remove(uuid);
 		}, 20L);
 		recentlyLoadedUUIDs.add(uuid);
@@ -547,7 +547,7 @@ public class PowderUtil {
 	public static void loadUUIDs(Collection<UUID> uuids) {
 		loadPowdersForUUIDs(uuids);
 		plugin.getServer().getScheduler()
-		.scheduleSyncDelayedTask(PowderPlugin.getInstance(), () -> {
+		.scheduleSyncDelayedTask(PowderPlugin.get(), () -> {
 			recentlyLoadedUUIDs.removeAll(uuids);
 		}, 20L);
 		recentlyLoadedUUIDs.addAll(uuids);

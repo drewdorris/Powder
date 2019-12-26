@@ -34,9 +34,9 @@ public class SoundUtil {
 			return getSoundEffectsFromSong(song, volume, multiplier, surroundSound,
 					transpose, limitNotes, volumeMultiplier, startTime, repeatTime, lockedIterations);
 		} else {
-			File file = new File(PowderPlugin.getInstance().getDataFolder() + "/songs", fileName);
+			File file = new File(PowderPlugin.get().getDataFolder() + "/songs", fileName);
 			if (!file.exists()) {
-				PowderPlugin.getInstance().saveResource("songs/" + fileName, false);
+				PowderPlugin.get().saveResource("songs/" + fileName, false);
 			}
 			Song song = NBSDecoder.parse(file);
 

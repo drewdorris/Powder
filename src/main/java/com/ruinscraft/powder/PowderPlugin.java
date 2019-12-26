@@ -43,7 +43,7 @@ public class PowderPlugin extends JavaPlugin {
 	private Plugin towny;
 	private Plugin plotSquared;
 
-	public static PowderPlugin getInstance() {
+	public static PowderPlugin get() {
 		return instance;
 	}
 
@@ -79,14 +79,14 @@ public class PowderPlugin extends JavaPlugin {
 		is1_13 = Bukkit.getVersion().contains("1.13") ? true : false;
 		config = ConfigUtil.loadConfig();
 		creationTask = new PowdersCreationTask();
-		creationTask.runTaskTimer(PowderPlugin.getInstance(), 0L, 1L);
+		creationTask.runTaskTimer(PowderPlugin.get(), 0L, 1L);
 
 		loadMessages();
 
 		enableStorage();
 
 		// load all powders async & load users' powders if storage is enabled
-		getServer().getScheduler().runTaskAsynchronously(PowderPlugin.getInstance(), () -> {
+		getServer().getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
 			loadPowdersFromSources();
 			// load all saved powders from db if enabled
 			if (useStorage()) {
@@ -111,7 +111,7 @@ public class PowderPlugin extends JavaPlugin {
 
 		if (!useStorage()) {
 			for (UUID uuid : PowderPlugin
-					.getInstance().getPowderHandler().getAllPowderTaskUsers()) {
+					.get().getPowderHandler().getAllPowderTaskUsers()) {
 				Player player = Bukkit.getPlayer(uuid);
 				PowderUtil.sendPrefixMessage(player,
 						Message.LOADING_ALERT, "powder", player.getName());
@@ -367,11 +367,11 @@ public class PowderPlugin extends JavaPlugin {
 	}
 
 	public static void info(String message) {
-		getInstance().getLogger().info(message);
+		get().getLogger().info(message);
 	}
 
 	public static void warning(String message) {
-		getInstance().getLogger().warning(message);
+		get().getLogger().warning(message);
 	}
 
 }

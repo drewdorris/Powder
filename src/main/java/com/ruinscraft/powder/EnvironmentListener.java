@@ -14,7 +14,7 @@ public class EnvironmentListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onChunkLoad(ChunkLoadEvent event) {
-		PowderPlugin instance = PowderPlugin.getInstance();
+		PowderPlugin instance = PowderPlugin.get();
 		if (instance.getPowderHandler() == null || !instance.useStorage()) {
 			return;
 		}
@@ -26,13 +26,13 @@ public class EnvironmentListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onPlayerJoin(PlayerJoinEvent event) {
-		if (PowderPlugin.isLoading() || !PowderPlugin.getInstance().useStorage()) {
+		if (PowderPlugin.isLoading() || !PowderPlugin.get().useStorage()) {
 			return;
 		}
 
 		Player player = event.getPlayer();
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(
-				PowderPlugin.getInstance(),
+				PowderPlugin.get(),
 				() -> PowderUtil.loadUUID(player.getUniqueId()));
 	}
 

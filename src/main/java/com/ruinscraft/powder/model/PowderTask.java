@@ -59,7 +59,7 @@ public class PowderTask {
 		Set<UUID> uuidsToSave = getUUIDsIfExist();
 		this.powders.clear();
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getCreatedPowdersFile(), this);
 		return uuidsToSave;
 	}
 
@@ -70,7 +70,7 @@ public class PowderTask {
 	public void setName(String name) {
 		this.name = name;
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getCreatedPowdersFile(), this);
 	}
 
 	public Tracker.Type getTrackerType() {
@@ -124,7 +124,7 @@ public class PowderTask {
 		}
 		this.powders.put(powder.clone(), tracker);
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getCreatedPowdersFile(), this);
 		return true;
 	}
 
@@ -138,7 +138,7 @@ public class PowderTask {
 		}
 		boolean removed = powders.remove(toRemove) != null;
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.getInstance().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getCreatedPowdersFile(), this);
 		return removed;
 	}
 
