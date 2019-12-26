@@ -18,6 +18,9 @@ public class MySQLStorage implements SQLStorage {
 	private String insert_powder;
 	private String delete_powders;
 
+	private String insert_start_column;
+	private String insert_loop_column;
+
 	public MySQLStorage(String host, int port,
 			String database, String username, String password, String powdersTable) {
 		create_table = "CREATE TABLE IF NOT EXISTS " +
@@ -37,6 +40,11 @@ public class MySQLStorage implements SQLStorage {
 		dataSource.setLeakDetectionThreshold(3000);
 
 		createTable();
+
+		// check if start/loop columns are in the table; if not, add them
+
+		insert_start_column = "ALTER TABLE " + powdersTable + " ADD COLUMN start INT";
+		insert_loop_column = "ALTER TABLE " + powdersTable + " ADD COLUMN loop BOOL";
 	}
 
 	@Override
