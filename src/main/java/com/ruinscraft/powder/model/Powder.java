@@ -305,6 +305,15 @@ public class Powder implements Cloneable {
 		return powder;
 	}
 
+	public boolean isLooping() {
+		for (PowderElement element : this.getClonedPowderElements()) {
+			if (element.getLockedIterations() != 0) {
+				return false;
+			}
+		}
+		return true;
+	}
+
 	@Override
 	public Powder clone() {
 		return new Powder(this);

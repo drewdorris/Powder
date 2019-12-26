@@ -632,6 +632,7 @@ public class ConfigUtil {
 				createdPowders.set(powderPath + ".z", location.getZ());
 				createdPowders.set(powderPath + ".pitch", location.getPitch());
 				createdPowders.set(powderPath + ".yaw", location.getYaw());
+				createdPowders.set(powderPath + ".loop", powder.isLooping());
 			}
 			saveFile(createdPowders, "createdpowders.yml");
 		}
@@ -671,6 +672,10 @@ public class ConfigUtil {
 				PowderPlugin.warning("Unknown Powder '" +
 						powderName + "' in createdpowders.yml");
 				return null;
+			}
+			boolean loop = config.getBoolean(newSection + ".loop", true);
+			if (loop) {
+				powder = powder.loop();
 			}
 			newSection = newSection + ".location";
 			String worldName = config.getString(newSection + ".world");
