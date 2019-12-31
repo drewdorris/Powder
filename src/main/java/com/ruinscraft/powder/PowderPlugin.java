@@ -1,5 +1,7 @@
 package com.ruinscraft.powder;
 
+import com.ruinscraft.powder.integration.PlotSquaredHandler;
+import com.ruinscraft.powder.integration.TownyHandler;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.storage.JSONStorage;
@@ -13,7 +15,6 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
@@ -40,8 +41,8 @@ public class PowderPlugin extends JavaPlugin {
 	private boolean fastMode;
 	private boolean asyncMode;
 
-	private Plugin towny;
-	private Plugin plotSquared;
+	private PlotSquaredHandler plotSquared;
+	private TownyHandler towny;
 
 	public static PowderPlugin get() {
 		return instance;
@@ -213,9 +214,22 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void loadIntegrations() {
 		// check for Towny and PlotSquared/PlotCubed existence, load if necessary
+		if (this.getServer().getPluginManager().getPlugin("Towny") != null) {
+			System.out.println("Located Towny!");
+			this.towny = new TownyHandler();
+		}
+		if (this.getServer().getPluginManager().getPlugin("PlotSquared") == null) {
+			if (this.getServer().getPluginManager().getPlugin("PlotCubed") != null) {
+				System.out.println("Located PlotCubed!");
+				this.plotSquared = new PlotSquaredHandler();
+			}
+		} else {
+			System.out.println("Found PlotSquared!");
+			this.plotSquared = new PlotSquaredHandler();
+		}
 	}
 
-	public Plugin getTowny() {
+	public TownyHandler getTownyHandler() {
 		return towny;
 	}
 
@@ -223,7 +237,7 @@ public class PowderPlugin extends JavaPlugin {
 		return towny != null;
 	}
 
-	public Plugin getPlotSquared() {
+	public PlotSquaredHandler getPlotSquaredHandler() {
 		return plotSquared;
 	}
 

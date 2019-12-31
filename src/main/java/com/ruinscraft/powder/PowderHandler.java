@@ -139,6 +139,29 @@ public class PowderHandler {
 		return playerPowderTasks;
 	}
 
+	public List<PowderTask> getCreatedPowderTasks(Player player) {
+		return getCreatedPowderTasks(player.getUniqueId());
+	}
+
+	public List<PowderTask> getCreatedPowderTasks(UUID uuid) {
+		List<PowderTask> powderTasks = new ArrayList<>();
+
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getPowderTasks()) {
+			if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
+				for (Tracker tracker : powderTask.getPowders().values()) {
+					StationaryTracker stationaryTracker = (StationaryTracker) tracker;
+					UUID trackerUUID = stationaryTracker.getCreator();
+					if (trackerUUID.equals(uuid)) {
+						powderTasks.add(powderTask);
+						break;
+					}
+				}
+			}
+		}
+
+		return powderTasks;
+	}
+
 	// gets all users who have a running PowderTask
 	public Set<UUID> getAllPowderTaskUsers() {
 		Set<UUID> players = new HashSet<>();
