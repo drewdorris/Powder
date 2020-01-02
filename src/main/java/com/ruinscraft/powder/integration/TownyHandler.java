@@ -20,6 +20,10 @@ import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.Tracker;
 
+/**
+ * Handles Towny-related features and events
+ *
+ */
 public class TownyHandler implements Listener {
 
 	private TownyAPI townyAPI;
@@ -66,6 +70,7 @@ public class TownyHandler implements Listener {
 	@EventHandler
 	public void onPreDeleteTownEvent(PreDeleteTownEvent event) {
 		// go through chunks in the town and do checks
+		
 	}
 
 	@EventHandler

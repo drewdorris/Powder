@@ -2,6 +2,7 @@ package com.ruinscraft.powder.model;
 
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
 import com.ruinscraft.powder.model.tracker.EntityTracker;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
@@ -312,6 +313,21 @@ public class Powder implements Cloneable {
 			}
 		}
 		return true;
+	}
+
+	public double maxWidthDistance() {
+		double max = 0;
+		for (PowderElement element : this.getPowderElements()) {
+			if (element instanceof ParticleMatrix) {
+				ParticleMatrix matrix = (ParticleMatrix) element;
+				double spacing = matrix.getSpacing();
+				for (PositionedPowderParticle particle : matrix.getParticles()) {
+					int dist = particle.getX();
+					if (max < dist * spacing) max = dist * spacing;
+				}
+			}
+		}
+		return max;
 	}
 
 	@Override
