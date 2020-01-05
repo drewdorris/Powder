@@ -1,16 +1,25 @@
 package com.ruinscraft.powder.integration;
 
-import java.util.List;
+import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 
 import com.github.intellectualsites.plotsquared.api.PlotAPI;
+import com.github.intellectualsites.plotsquared.bukkit.events.PlayerPlotTrustedEvent;
+import com.github.intellectualsites.plotsquared.bukkit.events.PlotClearEvent;
+import com.github.intellectualsites.plotsquared.bukkit.events.PlotDeleteEvent;
+import com.github.intellectualsites.plotsquared.bukkit.events.PlotUnlinkEvent;
 import com.github.intellectualsites.plotsquared.plot.object.Location;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 
 /**
  * Handles PlotSquared-related features and events
@@ -26,16 +35,25 @@ public class PlotSquaredHandler implements Listener {
 
 	public boolean checkLocation(Powder powder, Player player) {
 		PlotPlayer plotPlayer = plotAPI.wrapPlayer(player.getUniqueId());
-		Location location = plotPlayer.getLocation();
 
 		if (!canPlacePowders(plotPlayer)) return false;
 
 		double roadDist = this.getDistanceFromRoad(plotPlayer);
 		double powderWidth = powder.maxWidthDistance();
 		if (powderWidth > roadDist) return false;
+
+		Plot plot = plotPlayer.getLocation().getPlotAbs();
+		// check if player has already placed too many Powders
 		
-		// check location is within allowed bounds of player
-		return false;
+		return true;
+	}
+
+	public boolean checkLocation(Powder powder, Location location) {
+		double roadDist = this.getDistanceFromRoad(location);
+		double powderWidth = powder.maxWidthDistance();
+		if (powderWidth > roadDist) return false;
+		
+		return true;
 	}
 
 	public boolean canPlacePowders(PlotPlayer player) {
@@ -58,7 +76,7 @@ public class PlotSquaredHandler implements Listener {
 	 * @return distance in blocks to the nearest road
 	 */
 	public double getDistanceFromRoad(PlotPlayer player) {
-		return getDistanceFromRoad(player.getLocation(), player.getCurrentPlot());
+		return getDistanceFromRoad(player.getLocation());
 	}
 
 	/**
@@ -67,7 +85,8 @@ public class PlotSquaredHandler implements Listener {
 	 * @param plot
 	 * @return distance in blocks to the nearest road
 	 */
-	public double getDistanceFromRoad(Location location, Plot plot) {
+	public double getDistanceFromRoad(Location location) {
+		Plot plot = location.getPlot();
 		if (location.isPlotRoad()) return 0;
 		if (location.getPlot() != plot) return 0;
 		for (int i = 1; i < 5; i++) {
@@ -83,7 +102,7 @@ public class PlotSquaredHandler implements Listener {
 				return i;
 			}
 		}
-		// more than this doesn't really matter
+		// more than 5 is whatever
 		return 5;
 	}
 
@@ -96,13 +115,43 @@ public class PlotSquaredHandler implements Listener {
 		return true;
 	}
 
-	
-	// listen for plot unclaims / clears to see if Powders were in the plot
+	@EventHandler
+	public void onPlotClear(PlotClearEvent event) {
+		Plot plot = event.getPlot();
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Tracker tracker = entry.getValue();
 
-	// ensure Powder is within limits when created
+				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
 
-	// remove powders if user who placed them is removed from the plot
+				if (location.getPlot().equals(plot)) {
+					powderTask.removePowder(entry.getKey());
+				} else if (!checkLocation(entry.getKey(), location)) {
+					powderTask.removePowder(entry.getKey());
+				}
+			}
+		}
+		// go through all placed powders and check if any are in the plot; delete if so
+	}
 
-	// remove powders that are in a road if plots are unlinked
+	@EventHandler
+	public void onPlotDelete(PlotDeleteEvent event) {
+		Plot plot = event.getPlot();
+		// go through all placed powders and check if any are in the plot; delete if so
+	}
+
+	@EventHandler
+	public void onPlayerPlotTrusted(PlayerPlotTrustedEvent event) {
+		if (event.wasAdded()) return;
+		UUID uuid = event.getPlayer();
+		// go through all placed powders and check if any are in the plot and owned by uuid
+	}
+
+	@EventHandler
+	public void onPlotUnlinkEvent(PlotUnlinkEvent event) {
+		// just go through all placed powders and check if theyre in a road
+	}
 
 }

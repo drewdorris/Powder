@@ -146,16 +146,26 @@ public class PowderHandler {
 	public List<PowderTask> getCreatedPowderTasks(UUID uuid) {
 		List<PowderTask> powderTasks = new ArrayList<>();
 
+		for (PowderTask powderTask : this.getCreatedPowderTasks()) {
+			for (Tracker tracker : powderTask.getPowders().values()) {
+				StationaryTracker stationaryTracker = (StationaryTracker) tracker;
+				UUID trackerUUID = stationaryTracker.getCreator();
+				if (trackerUUID.equals(uuid)) {
+					powderTasks.add(powderTask);
+					break;
+				}
+			}
+		}
+
+		return powderTasks;
+	}
+
+	public List<PowderTask> getCreatedPowderTasks() {
+		List<PowderTask> powderTasks = new ArrayList<>();
+
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getPowderTasks()) {
 			if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
-				for (Tracker tracker : powderTask.getPowders().values()) {
-					StationaryTracker stationaryTracker = (StationaryTracker) tracker;
-					UUID trackerUUID = stationaryTracker.getCreator();
-					if (trackerUUID.equals(uuid)) {
-						powderTasks.add(powderTask);
-						break;
-					}
-				}
+				powderTasks.add(powderTask);
 			}
 		}
 
