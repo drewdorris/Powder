@@ -3,6 +3,7 @@ package com.ruinscraft.powder.integration;
 import java.util.Map.Entry;
 import java.util.UUID;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,6 +13,7 @@ import com.github.intellectualsites.plotsquared.bukkit.events.PlayerPlotTrustedE
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotClearEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotDeleteEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotUnlinkEvent;
+import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
 import com.github.intellectualsites.plotsquared.plot.object.Location;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
@@ -33,6 +35,12 @@ public class PlotSquaredHandler implements Listener {
 		this.plotAPI = new PlotAPI();
 	}
 
+	/**
+	 * Checks whether a player can place a Powder at their current location
+	 * @param powder
+	 * @param player
+	 * @return if they can place a Powder
+	 */
 	public boolean checkLocation(Powder powder, Player player) {
 		PlotPlayer plotPlayer = plotAPI.wrapPlayer(player.getUniqueId());
 
@@ -43,29 +51,48 @@ public class PlotSquaredHandler implements Listener {
 		if (powderWidth > roadDist) return false;
 
 		Plot plot = plotPlayer.getLocation().getPlotAbs();
-		// check if player has already placed too many Powders
-		
+		// check if player has already placed too many Powders in this abs. plot
+
 		return true;
 	}
 
+	/**
+	 * Checks if a Powder is fine to be placed here, regardless of player
+	 * @param powder
+	 * @param location
+	 * @return if Powder can be placed here
+	 */
 	public boolean checkLocation(Powder powder, Location location) {
 		double roadDist = this.getDistanceFromRoad(location);
 		double powderWidth = powder.maxWidthDistance();
 		if (powderWidth > roadDist) return false;
-		
+
 		return true;
 	}
 
+	/**
+	 * Checks whether the player can place Powders in their current plot
+	 * @param player
+	 * @return if they can place Powders where they are
+	 */
 	public boolean canPlacePowders(PlotPlayer player) {
-		return canPlacePowdersInPlot(player, player.getCurrentPlot());
+		if (player.getCurrentPlot() == null) return false;
+		if (player.getLocation().isPlotRoad()) return false;
+		return canPlacePowdersInPlot(player.getUUID(), player.getCurrentPlot());
 	}
 
-	public boolean canPlacePowdersInPlot(PlotPlayer player, Plot plot) {
+	/**
+	 * Checks whether a player can place Powders in a plot
+	 * @param player
+	 * @param plot
+	 * @return if they can place Powders in the plot
+	 */
+	public boolean canPlacePowdersInPlot(UUID player, Plot plot) {
 		for (UUID uuid : plot.getTrusted()) {
-			if (uuid.equals(player.getUUID())) return true;
+			if (uuid.equals(player)) return true;
 		}
 		for (UUID uuid : plot.getOwners()) {
-			if (uuid.equals(player.getUUID())) return true;
+			if (uuid.equals(player)) return true;
 		}
 		return false;
 	}
@@ -103,9 +130,15 @@ public class PlotSquaredHandler implements Listener {
 			}
 		}
 		// more than 5 is whatever
-		return 5;
+		return Double.MAX_VALUE;
 	}
 
+	/**
+	 * Checks if an array of locations are all in the plot
+	 * @param plot
+	 * @param locations
+	 * @return if all the locations are in the plot
+	 */
 	public boolean isInPlot(Plot plot, Location... locations) {
 		for (Location location : locations) {
 			if (location.isPlotRoad() || location.getPlot() != plot) {
@@ -120,6 +153,7 @@ public class PlotSquaredHandler implements Listener {
 		Plot plot = event.getPlot();
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Powder powder = entry.getKey();
 				Tracker tracker = entry.getValue();
 
 				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
@@ -127,31 +161,68 @@ public class PlotSquaredHandler implements Listener {
 						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
 
 				if (location.getPlot().equals(plot)) {
-					powderTask.removePowder(entry.getKey());
-				} else if (!checkLocation(entry.getKey(), location)) {
-					powderTask.removePowder(entry.getKey());
+					powderTask.removePowder(powder);
+				} else if (!checkLocation(powder, location)) {
+					powderTask.removePowder(powder);
 				}
 			}
 		}
-		// go through all placed powders and check if any are in the plot; delete if so
 	}
 
 	@EventHandler
 	public void onPlotDelete(PlotDeleteEvent event) {
 		Plot plot = event.getPlot();
-		// go through all placed powders and check if any are in the plot; delete if so
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Powder powder = entry.getKey();
+				Tracker tracker = entry.getValue();
+
+				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+
+				if (location.getPlot().equals(plot)) {
+					powderTask.removePowder(powder);
+				} else if (!checkLocation(powder, location)) {
+					powderTask.removePowder(powder);
+				}
+			}
+		}
 	}
 
 	@EventHandler
 	public void onPlayerPlotTrusted(PlayerPlotTrustedEvent event) {
 		if (event.wasAdded()) return;
 		UUID uuid = event.getPlayer();
-		// go through all placed powders and check if any are in the plot and owned by uuid
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				StationaryTracker tracker = (StationaryTracker) entry.getValue();
+				if (!tracker.getCreator().equals(uuid)) continue;
+
+				Powder powder = entry.getKey();
+				if (!this.checkLocation(powder, Bukkit.getPlayer(uuid))) {
+					powderTask.removePowder(powder);
+				}
+			}
+		}
 	}
 
 	@EventHandler
 	public void onPlotUnlinkEvent(PlotUnlinkEvent event) {
-		// just go through all placed powders and check if theyre in a road
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Powder powder = entry.getKey();
+				StationaryTracker tracker = (StationaryTracker) entry.getValue();
+
+				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+
+				if (location.isPlotRoad() || location.getPlot() == null) {
+					powderTask.removePowder(powder);
+				}
+			}
+		}
 	}
 
 }
