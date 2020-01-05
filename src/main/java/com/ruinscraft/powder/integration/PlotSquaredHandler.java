@@ -13,7 +13,6 @@ import com.github.intellectualsites.plotsquared.bukkit.events.PlayerPlotTrustedE
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotClearEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotDeleteEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotUnlinkEvent;
-import com.github.intellectualsites.plotsquared.bukkit.util.BukkitUtil;
 import com.github.intellectualsites.plotsquared.plot.object.Location;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;

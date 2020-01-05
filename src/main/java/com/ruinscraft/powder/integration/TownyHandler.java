@@ -1,5 +1,8 @@
 package com.ruinscraft.powder.integration;
 
+import java.util.Map.Entry;
+import java.util.UUID;
+
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -17,6 +20,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.ruinscraft.powder.PowderPlugin;
+import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.Tracker;
 
@@ -32,7 +36,12 @@ public class TownyHandler implements Listener {
 		this.townyAPI = TownyAPI.getInstance();
 	}
 
-	// checks if location is safe with Towny to put a Powder in
+	/**
+	 * Checks if location is safe with Towny to put a Powder in
+	 * @param player
+	 * @param location
+	 * @return if safe to place Powder
+	 */
 	public boolean checkLocation(Player player, Location location) {
 		TownBlock block = townyAPI.getTownBlock(location);
 
@@ -48,6 +57,8 @@ public class TownyHandler implements Listener {
 		if (!town.hasResident(player.getName())) return false;
 		if (!townyAPI.isActiveResident(resident)) return false;
 
+		// check if above player limit
+
 		return true;
 	}
 
@@ -58,10 +69,11 @@ public class TownyHandler implements Listener {
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getPowderTasks()) {
 			if (powderTask.getTrackerType() != Tracker.Type.STATIONARY) continue; 
-			for (Tracker tracker : powderTask.getPowders().values()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Tracker tracker = entry.getValue();
 				Location trackerSpot = tracker.getCurrentLocation();
 				if (trackerSpot.getChunk().equals(chunk)) {
-					powderTask.cancel();
+					powderTask.removePowder(entry.getKey());
 				}
 			}
 		}
@@ -69,13 +81,39 @@ public class TownyHandler implements Listener {
 
 	@EventHandler
 	public void onPreDeleteTownEvent(PreDeleteTownEvent event) {
-		// go through chunks in the town and do checks
-		
+		Town town = event.getTown();
+
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Powder powder = entry.getKey();
+				Tracker tracker = entry.getValue();
+
+				UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
+
+				if (town.getUuid().equals(townUUID)) {
+					powderTask.removePowder(powder);
+				}
+			}
+		}
 	}
 
 	@EventHandler
 	public void onTownRemoveResidentEvent(TownRemoveResidentEvent event) {
-		// go through powderHandler.getCreatedPowderTasks() and see if any are in the town
+		Town town = event.getTown();
+		Player player = townyAPI.getPlayer(event.getResident());
+
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player)) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Powder powder = entry.getKey();
+				Tracker tracker = entry.getValue();
+
+				UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
+
+				if (town.getUuid().equals(townUUID)) {
+					powderTask.removePowder(powder);
+				}
+			}
+		}
 	}
 
 }
