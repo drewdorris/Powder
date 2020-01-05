@@ -30,7 +30,7 @@ public class PlotSquaredHandler implements Listener {
 
 		if (!canPlacePowders(plotPlayer)) return false;
 
-		double roadDist = getDistanceFromRoad(plotPlayer);
+		double roadDist = this.getDistanceFromRoad(plotPlayer);
 		double powderWidth = powder.maxWidthDistance();
 		if (powderWidth > roadDist) return false;
 		
@@ -52,21 +52,57 @@ public class PlotSquaredHandler implements Listener {
 		return false;
 	}
 
+	/**
+	 * Roughly get the distance to the nearest road
+	 * @param player
+	 * @return distance in blocks to the nearest road
+	 */
 	public double getDistanceFromRoad(PlotPlayer player) {
 		return getDistanceFromRoad(player.getLocation(), player.getCurrentPlot());
 	}
 
+	/**
+	 * Roughly get the distance to the nearest road
+	 * @param location
+	 * @param plot
+	 * @return distance in blocks to the nearest road
+	 */
 	public double getDistanceFromRoad(Location location, Plot plot) {
 		if (location.isPlotRoad()) return 0;
-		List<Location> corners = plot.getAllCorners();
-		// impl
-		return 1;
+		if (location.getPlot() != plot) return 0;
+		for (int i = 1; i < 5; i++) {
+			Location locOne = new Location(location.getWorld(), 
+					location.getX() + i, location.getY(), location.getZ() + i);
+			Location locTwo = new Location(location.getWorld(), 
+					location.getX() + i, location.getY(), location.getZ() - i);
+			Location locThree = new Location(location.getWorld(), 
+					location.getX() - i, location.getY(), location.getZ() + i);
+			Location locFour = new Location(location.getWorld(), 
+					location.getX() - i, location.getY(), location.getZ() - i);
+			if (!isInPlot(plot, locOne, locTwo, locThree, locFour)) {
+				return i;
+			}
+		}
+		// more than this doesn't really matter
+		return 5;
 	}
 
+	public boolean isInPlot(Plot plot, Location... locations) {
+		for (Location location : locations) {
+			if (location.isPlotRoad() || location.getPlot() != plot) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+	
 	// listen for plot unclaims / clears to see if Powders were in the plot
 
 	// ensure Powder is within limits when created
 
 	// remove powders if user who placed them is removed from the plot
+
+	// remove powders that are in a road if plots are unlinked
 
 }
