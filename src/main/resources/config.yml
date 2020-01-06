@@ -3,7 +3,7 @@
 ## # #  # # ##
 
 ## Current version of this config.yml. Should not be edited.
-configVersion: 3
+configVersion: 4
 
 ## Maximum amount of Powders that a user can be using at one time
 maxPowdersAtOneTime: 3
@@ -47,6 +47,18 @@ categories:
   Crowns:
     desc: '{total} Particles Around your Head'
 
+## Max allowed to create per user with the powder.create permission
+## powder.createany is unlimited
+maxCreated: 100
+
+## Settings for Towny and PlotSquared for maximum amount of created Powders within an area
+towny:
+  ## Maximum for a town, regardless of town size
+  maxCreatedTown: 40
+plotsquared:
+  ## Maximum for a single plot area (ignoring merging)
+  maxCreatedPlot: 20
+
 ## Use storage to persist Powders upon logout (or when switching server if using MySQL)
 ## If none are enabled, Powders attached to entities will unload alongside chunk unloading
 ## Only enable one storage method at a time. If you aren't sure which one to pick, use SQLite
@@ -64,7 +76,7 @@ storage:
     file: powders.db
   json:
     use: false
-    file: powders.json
+    file: powders.json  
 
 ## Locale to use (from locale source folder)
 locale: 'en-us.yml'

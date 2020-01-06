@@ -1,5 +1,6 @@
 package com.ruinscraft.powder.integration;
 
+import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
@@ -29,9 +30,19 @@ import com.ruinscraft.powder.model.tracker.Tracker;
 public class PlotSquaredHandler implements Listener {
 
 	private PlotAPI plotAPI;
+	private int maxPerPlot;
 
-	public PlotSquaredHandler() {
+	public PlotSquaredHandler(int maxPerPlot) {
 		this.plotAPI = new PlotAPI();
+		this.maxPerPlot = maxPerPlot;
+	}
+
+	/**
+	 * Max amount of Powders a player can place per plot (ignoring merging)
+	 * @return int
+	 */
+	public int getMaxPerPlot() {
+		return this.maxPerPlot;
 	}
 
 	/**
@@ -50,7 +61,23 @@ public class PlotSquaredHandler implements Listener {
 		if (powderWidth > roadDist) return false;
 
 		Plot plot = plotPlayer.getLocation().getPlotAbs();
-		// check if player has already placed too many Powders in this abs. plot
+		
+		List<PowderTask> userCreatedPowders = PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player);
+		if (userCreatedPowders.size() > PowderPlugin.get().getMaxCreatedPowders()) return false;
+
+		int amntInPlot = 0;
+		for (PowderTask powderTask : userCreatedPowders) {
+			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
+				Tracker tracker = entry.getValue();
+
+				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+				
+				if (location.getPlotAbs().equals(plot)) amntInPlot++;
+			}
+		}
+		if (amntInPlot > this.maxPerPlot) return false;
 
 		return true;
 	}
@@ -147,6 +174,7 @@ public class PlotSquaredHandler implements Listener {
 		return true;
 	}
 
+	// removes Powders in a cleared plot
 	@EventHandler
 	public void onPlotClear(PlotClearEvent event) {
 		Plot plot = event.getPlot();
@@ -168,6 +196,7 @@ public class PlotSquaredHandler implements Listener {
 		}
 	}
 
+	// removes Powders in a deleted/unclaimed plot
 	@EventHandler
 	public void onPlotDelete(PlotDeleteEvent event) {
 		Plot plot = event.getPlot();
@@ -189,6 +218,7 @@ public class PlotSquaredHandler implements Listener {
 		}
 	}
 
+	// removes Powders if the owner of them is removed from the plot
 	@EventHandler
 	public void onPlayerPlotTrusted(PlayerPlotTrustedEvent event) {
 		if (event.wasAdded()) return;
@@ -206,6 +236,7 @@ public class PlotSquaredHandler implements Listener {
 		}
 	}
 
+	// removes Powders that could be in the road after unlinking two plots
 	@EventHandler
 	public void onPlotUnlinkEvent(PlotUnlinkEvent event) {
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {

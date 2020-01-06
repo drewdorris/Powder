@@ -41,6 +41,8 @@ public class PowderPlugin extends JavaPlugin {
 	private boolean fastMode;
 	private boolean asyncMode;
 
+	private int maxCreatedPowders;
+
 	private PlotSquaredHandler plotSquared;
 	private TownyHandler towny;
 
@@ -148,6 +150,14 @@ public class PowderPlugin extends JavaPlugin {
 		this.asyncMode = asyncMode;
 	}
 
+	public int getMaxCreatedPowders() {
+		return this.maxCreatedPowders;
+	}
+
+	public void setMaxCreatedPowders(int maxCreatedPowders) {
+		this.maxCreatedPowders = maxCreatedPowders;
+	}
+
 	// end all current tasks & reinitialize powderHandler
 	public void cleanHandlers() {
 		if (!(powderHandler == null)) {
@@ -216,16 +226,16 @@ public class PowderPlugin extends JavaPlugin {
 		// check for Towny and PlotSquared/PlotCubed existence, load if necessary
 		if (this.getServer().getPluginManager().getPlugin("Towny") != null) {
 			System.out.println("Located Towny!");
-			this.towny = new TownyHandler();
+			this.towny = new TownyHandler(config.getInt("towny.maxCreatedTown", 40));
 		}
 		if (this.getServer().getPluginManager().getPlugin("PlotSquared") == null) {
 			if (this.getServer().getPluginManager().getPlugin("PlotCubed") != null) {
 				System.out.println("Located PlotCubed!");
-				this.plotSquared = new PlotSquaredHandler();
+				this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
 			}
 		} else {
 			System.out.println("Found PlotSquared!");
-			this.plotSquared = new PlotSquaredHandler();
+			this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
 		}
 	}
 
