@@ -32,6 +32,10 @@ CANCEL_UNKNOWN_SPECIFY: '&cUnknown Powder specified.'
 CANCEL_SUCCESS: '&7Successfully canceled ''{powder}''.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cCould not cancel this Powder.'
+## {user} {powder}
+CANCEL_TOWNY_NO_PLACE: '&cCould not create Powder due to Towny limits. Are you in a Town? Have you placed too many in the Town?'
+## {user} {powder}
+CANCEL_PLOTSQUARED_NO_PLACE: '&cCould not create Powder due to PlotSquared limits. Are you in a road? Have you placed too many in the plot?'
 ## {user}
 ACTIVE_PREFIX: '&7Active Powders:'
 ## {user} {command} {powder}

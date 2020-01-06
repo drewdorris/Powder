@@ -337,6 +337,27 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							label, player.getName(), label);
 					return false;
 				}
+				if (newPowder == null) {
+					PowderUtil.sendPrefixMessage(player, Message.CREATE_UNKNOWN, label,
+							player.getName(), powderName);
+					return false;
+				}
+				if (!(player.hasPermission("powder.createany"))) {
+					if (PowderPlugin.get().hasTowny()) {
+						if (!PowderPlugin.get().getTownyHandler().checkLocation(newPowder, player)) {
+							PowderUtil.sendPrefixMessage(player, Message.CREATE_TOWNY_NO_PLACE, label,
+									player.getName(), powderName);
+							return false;
+						}
+					}
+					if (PowderPlugin.get().hasPlotSquared()) {
+						if (!PowderPlugin.get().getPlotSquaredHandler().checkLocation(newPowder, player)) {
+							PowderUtil.sendPrefixMessage(player, Message.CREATE_PLOTSQUARED_NO_PLACE, label,
+									player.getName(), powderName);
+							return false;
+						}
+					}
+				}
 				if (args.length > 3) {
 					if (args[3].equalsIgnoreCase("loop")) {
 						newPowder = newPowder.loop();
@@ -345,11 +366,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				if (!(powderHandler.getPowderTask(name) == null)) {
 					PowderUtil.sendPrefixMessage(player, Message.CREATE_ALREADY_EXISTS,
 							label, player.getName(), name, powderName);
-					return false;
-				}
-				if (newPowder == null) {
-					PowderUtil.sendPrefixMessage(player, Message.CREATE_UNKNOWN, label,
-							player.getName(), powderName);
 					return false;
 				}
 				newPowder.spawn(name, player.getLocation(), player.getUniqueId());

@@ -55,7 +55,8 @@ public class TownyHandler implements Listener {
 	 * @param location
 	 * @return if safe to place Powder
 	 */
-	public boolean checkLocation(Player player, Location location) {
+	public boolean checkLocation(Powder powder, Player player) {
+		Location location = player.getLocation();
 		TownBlock block = townyAPI.getTownBlock(location);
 
 		if (block == null || !block.hasTown()) return false;
@@ -71,7 +72,7 @@ public class TownyHandler implements Listener {
 		if (!townyAPI.isActiveResident(resident)) return false;
 
 		if (!hasPermissionForPowder(town, location, resident)) return false;
-		if (!canPlacePowdersInTown(town, location)) return false;
+		if (!canPlacePowdersInTown(powder, town, location)) return false;
 
 		// check if above player limit
 		List<PowderTask> userCreatedPowders = PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player);
@@ -141,12 +142,16 @@ public class TownyHandler implements Listener {
 
 	/**
 	 * Checks if Powder is too close to the edge of the Town
+	 * @param powder
 	 * @param town
 	 * @param location
 	 * @return if the Powder is too close to the edge of the Town
 	 */
-	public boolean canPlacePowdersInTown(Town town, Location location) {
+	public boolean canPlacePowdersInTown(Powder powder, Town town, Location location) {
 		// check if too close to side, like in P2Handler
+		double widthPowder = powder.maxWidthDistance();
+		double distToEdge = getDistanceToEdgeOfTown(town, location);
+		if (widthPowder > distToEdge) return false;
 		return true;
 	}
 

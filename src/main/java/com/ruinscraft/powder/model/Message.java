@@ -42,6 +42,8 @@ public enum Message {
 	CREATE_ALREADY_EXISTS("{user}", "{name}", "{powder}"),
 	CREATE_UNKNOWN("{user}", "{powder}"),
 	CREATE_SUCCESS("{user}", "{name}", "{powder}"),
+	CREATE_TOWNY_NO_PLACE("{user}", "{powder}"),
+	CREATE_PLOTSQUARED_NO_PLACE("{user}", "{powder}"),
 	ADDTO_SYNTAX("{user}", "{command}"),
 	ADDTO_DOES_NOT_EXIST("{user}", "{name}"),
 	ADDTO_UNKNOWN("{user}", "{powder}"),

@@ -68,6 +68,10 @@ CREATE_ALREADY_EXISTS: '&cUn Powder activo con este nombre está activo ya!'
 CREATE_UNKNOWN: '&cPowder desconocido ''{powder}''.'
 ## {user} {powder} {name}
 CREATE_SUCCESS: '&7Creado ''{name}'' con éxito.'
+## {user} {powder}
+CANCEL_TOWNY_NO_PLACE: '&cNo se pudo crear Patty debido a los límites de Towny.'
+## {user} {powder}
+CANCEL_PLOTSQUARED_NO_PLACE: '&cNo se pudo crear Patty debido a los límites de PlotSquared.'
 ## {user} {command}
 ADDTO_SYNTAX: '&c/{command} addto <name> <Powder>'
 ## {user} {name}

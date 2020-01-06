@@ -201,6 +201,9 @@ public class PowderPlugin extends JavaPlugin {
 		if (!file.exists()) {
 			warning("Locale '" + fileName + "' not found, loading if exists!");
 			saveResource("locale/" + fileName, false);
+		} else {
+			// save it anyway
+			saveResource("locale/" + fileName, false);
 		}
 		FileConfiguration locale = YamlConfiguration
 				.loadConfiguration(file);
@@ -226,16 +229,23 @@ public class PowderPlugin extends JavaPlugin {
 		// check for Towny and PlotSquared/PlotCubed existence, load if necessary
 		if (this.getServer().getPluginManager().getPlugin("Towny") != null) {
 			System.out.println("Located Towny!");
+
 			this.towny = new TownyHandler(config.getInt("towny.maxCreatedTown", 40));
+			getServer().getPluginManager().registerEvents(this.towny, this);
 		}
+
 		if (this.getServer().getPluginManager().getPlugin("PlotSquared") == null) {
 			if (this.getServer().getPluginManager().getPlugin("PlotCubed") != null) {
 				System.out.println("Located PlotCubed!");
+
 				this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
+				getServer().getPluginManager().registerEvents(this.plotSquared, this);
 			}
 		} else {
 			System.out.println("Found PlotSquared!");
+
 			this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
+			getServer().getPluginManager().registerEvents(this.plotSquared, this);
 		}
 	}
 
