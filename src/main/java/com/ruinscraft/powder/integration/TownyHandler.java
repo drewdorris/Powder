@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.integration;
 
 import java.util.Map.Entry;
+import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
 
@@ -19,6 +20,7 @@ import com.palmergames.bukkit.towny.exceptions.NotRegisteredException;
 import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
+import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
@@ -68,6 +70,9 @@ public class TownyHandler implements Listener {
 		if (!town.hasResident(player.getName())) return false;
 		if (!townyAPI.isActiveResident(resident)) return false;
 
+		if (!hasPermissionForPowder(town, location, resident)) return false;
+		if (!canPlacePowdersInTown(town, location)) return false;
+
 		// check if above player limit
 		List<PowderTask> userCreatedPowders = PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player);
 		if (userCreatedPowders.size() > PowderPlugin.get().getMaxCreatedPowders()) return false;
@@ -83,7 +88,7 @@ public class TownyHandler implements Listener {
 						amntInTown++;
 					}
 				}
-				
+
 			}
 		}
 		if (amntInTown > this.maxPerTown) return false; 
@@ -97,9 +102,41 @@ public class TownyHandler implements Listener {
 	 * @param player
 	 * @return if a player has permission to place Powders in this Town
 	 */
-	public boolean hasPermissionForPowder(Town town, Player player) {
-		// check if they have build perm
-		return true;
+	public boolean hasPermissionForPowder(Town town, Location location, Resident resident) {
+		if (town == null) return false;
+
+		if (town.getMayor().equals(resident)) return true;
+		for (Resident assistant : town.getAssistants()) {
+			if (assistant.equals(resident)) return true;
+		}
+
+		try {
+			if (checkPerms(resident, town, town.getPermissions())) return true;
+
+			TownBlock block = townyAPI.getTownBlock(location);
+			if (block == null || block.getPermissions() == null) return false;
+			if (checkPerms(resident, town, block.getPermissions())) return true;
+		} catch (NotRegisteredException e) {
+			return false;
+		}
+
+		return false;
+	}
+
+	/**
+	 * Checks if resident has permissions in this area to build
+	 * @param town
+	 * @param permission
+	 * @param resident
+	 * @return
+	 * @throws NotRegisteredException
+	 */
+	public boolean checkPerms(Resident resident, Town town, TownyPermission permission) throws NotRegisteredException {
+		if (permission.residentBuild && resident.getTown().equals(town)) return true;
+		if (permission.nationBuild && resident.getTown().getNation().equals(town.getNation())) return true;
+		if (permission.allyBuild && resident.isAlliedWith(town.getMayor())) return true;
+		if (permission.outsiderBuild) return true;
+		return false;
 	}
 
 	/**
@@ -110,6 +147,79 @@ public class TownyHandler implements Listener {
 	 */
 	public boolean canPlacePowdersInTown(Town town, Location location) {
 		// check if too close to side, like in P2Handler
+		return true;
+	}
+
+	/**
+	 * Checks distance from location to edge of town
+	 * If > 5, returns Double.MAX_VALUE
+	 * @param town
+	 * @param location
+	 * @return distance from location to edge of town
+	 */
+	public double getDistanceToEdgeOfTown(Town town, Location location) {
+		TownBlock block = townyAPI.getTownBlock(location);
+		if (block == null) return 0;
+		if (!block.hasTown()) return 0;
+
+		TownBlock bOne = townyAPI.getTownBlock(location.clone().add(-16, 0, 16));
+		TownBlock bTwo = townyAPI.getTownBlock(location.clone().add(16, 0, 0));
+		TownBlock bThree = townyAPI.getTownBlock(location.clone().add(16, 0, 0));
+		TownBlock bFour = townyAPI.getTownBlock(location.clone().add(0, 0, -16));
+		TownBlock bFive = townyAPI.getTownBlock(location.clone().add(0, 0, -16));
+		TownBlock bSix = townyAPI.getTownBlock(location.clone().add(-16, 0, 0));
+		TownBlock bSeven = townyAPI.getTownBlock(location.clone().add(-16, 0, 0));
+		TownBlock bEight = townyAPI.getTownBlock(location.clone().add(0, 0, 16));
+		if (isInTown(town, block, bOne, bTwo, bThree, bFour, bFive, bSix, bSeven, bEight)) {
+			// more than 16 doesn't matter
+			return Double.MAX_VALUE;
+		} else {
+			for (int i = 1; i < 5; i++) {
+				TownBlock blockOne = townyAPI.getTownBlock(new Location(location.getWorld(), 
+						location.getX() + i, location.getY(), location.getZ() + i));
+				TownBlock blockTwo = townyAPI.getTownBlock(new Location(location.getWorld(), 
+						location.getX() + i, location.getY(), location.getZ() - i));
+				TownBlock blockThree = townyAPI.getTownBlock(new Location(location.getWorld(), 
+						location.getX() - i, location.getY(), location.getZ() + i));
+				TownBlock blockFour = townyAPI.getTownBlock(new Location(location.getWorld(), 
+						location.getX() - i, location.getY(), location.getZ() - i));
+				if (!isInTown(town, blockOne, blockTwo, blockThree, blockFour)) {
+					return i;
+				}
+			}
+		}
+		// more than 5 doesn't matter
+		return Double.MAX_VALUE;
+	}
+
+	/**
+	 * Checks if an array of locations are all in the Town
+	 * @param Town
+	 * @param locations
+	 * @return if all the locations are in the Town
+	 */
+	public boolean isInTown(Town town, Location... locations) {
+		return isInTown(town, 
+				(TownBlock[]) Arrays.asList(locations).stream().map(
+						location -> townyAPI.getTownBlock(location)).toArray());
+	}
+
+	/**
+	 * Checks if an array of TownBlocks are all in the Town
+	 * @param Town
+	 * @param townBlocks
+	 * @return if all the locations are in the Town
+	 */
+	public boolean isInTown(Town town, TownBlock... townBlocks) {
+		for (TownBlock townBlock : townBlocks) {
+			if (townBlock == null) return false;
+			if (!townBlock.hasTown()) return false;
+			try {
+				if (!townBlock.getTown().equals(town)) return false;
+			} catch (NotRegisteredException e) {
+				return false;
+			}
+		}
 		return true;
 	}
 
