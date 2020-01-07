@@ -3,6 +3,7 @@ name: ${name}
 version: ${version}
 api-version: 1.13
 authors: [StupidDrew9, royalkingkb]
+softdepend: [Towny, PlotSquared, PlotCubed]
 commands:
   powder:
     aliases: [pow, pdr, powders]
@@ -47,6 +48,9 @@ permissions:
   powder.create:
     default: op
     description: Creates a stationary Powder at your location
+  powder.createany:
+    default: op
+    description: Creates a stationary Powder at any location with no limit
   powder.addto:
     default: op
     description: Adds a Powder to a created Powder
@@ -55,4 +59,7 @@ permissions:
     description: Removes a Powder from a created Powder
   powder.remove:
     default: op
-    description: Removes any Powder
+    description: Removes a stationary Powder you made
+  powder.removeany:
+    default: op
+    description: Removes any stationary Powder

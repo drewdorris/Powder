@@ -5,6 +5,7 @@ import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -474,6 +475,11 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 								label, player.getName());
 						return false;
 					}
+					if (!(player.hasPermission("powder.removeany") && !powderUser.equals(player))) {
+						PowderUtil.sendPrefixMessage(player,
+								Message.GENERAL_NO_PERMISSION, label, player.getName());
+						return false;
+					}
 					if (powderHandler.cancelPowderTasks(
 							powderHandler.getPowderTasks(powderUser.getUniqueId()))) {
 						if (!(powderUser.equals(player))) {
@@ -497,13 +503,27 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 								label, player.getName(), label);
 						return false;
 					}
-					if (powderHandler.getPowderTask(name) == null) {
+
+					PowderTask task = powderHandler.getPowderTask(name);
+					if (task == null) {
 						PowderUtil.sendPrefixMessage(player,
 								Message.REMOVE_NO_USER_DOES_NOT_EXIST,
 								label, player.getName(), name);
 						return false;
 					}
-					if (powderHandler.cancelPowderTask(powderHandler.getPowderTask(name))) {
+					if (!(player.hasPermission("powder.removeany"))) {
+						for (Tracker tracker : task.getPowders().values()) {
+							if (tracker.getType() != Tracker.Type.STATIONARY) return false; 
+							StationaryTracker stationary = (StationaryTracker) tracker;
+
+							if (!stationary.getCreator().equals(player.getUniqueId())) {
+								PowderUtil.sendPrefixMessage(player,
+										Message.GENERAL_NO_PERMISSION, label, player.getName());
+								return false;
+							}
+						}
+					}
+					if (powderHandler.cancelPowderTask(task)) {
 						PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SUCCESS,
 								label, player.getName(), name);
 					} else {
