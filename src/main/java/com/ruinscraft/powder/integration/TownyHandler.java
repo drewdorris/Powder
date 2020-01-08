@@ -99,6 +99,46 @@ public class TownyHandler implements Listener {
 
 	/**
 	 * Check whether a player has permission to place Powders in this Town
+	 * 
+	 * If they can place one, they can destroy one, too!
+	 * @param player
+	 * @param location
+	 * @return if a player has permission to place Powders in this Town
+	 */
+	public boolean hasPermissionForPowder(Player player, Location location) {
+		try {
+			return hasPermissionForPowder(townyAPI.getDataSource().getResident(player.getName()), location);
+		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+
+	/**
+	 * Check whether a player has permission to place Powders in this Town
+	 * 
+	 * If they can place one, they can destroy one, too!
+	 * @param resident
+	 * @param location
+	 * @return if a player has permission to place Powders in this Town
+	 */
+	public boolean hasPermissionForPowder(Resident resident, Location location) {
+		TownBlock block = townyAPI.getTownBlock(location);
+		if (!block.hasTown()) return false;
+		Town town = null;
+		try {
+			town = block.getTown();
+		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+		}
+
+		return hasPermissionForPowder(town, location, resident);
+	}
+
+	/**
+	 * Check whether a player has permission to place Powders in this Town
+	 * 
+	 * If they can place one, they can destroy one, too!
 	 * @param town
 	 * @param player
 	 * @return if a player has permission to place Powders in this Town

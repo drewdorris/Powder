@@ -4,6 +4,7 @@ import com.google.common.collect.Iterables;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
@@ -553,7 +554,15 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				for (PowderTask powderTask : nearby.keySet()) {
 					BaseComponent baseComponent = PowderUtil.setText(Message.NEARBY,
 							powderTask.getName(), String.valueOf(nearby.get(powderTask)));
-					if (player.hasPermission("powder.remove")) {
+					boolean hasPermissionForPowder = false;
+					for (Tracker tracker : powderTask.getPowders().values()) {
+						if (tracker.hasControl(player)) {
+							hasPermissionForPowder = true;
+							break;
+						}
+					}
+					if (player.hasPermission("powder.removeany") || 
+							(player.hasPermission("powder.remove") && hasPermissionForPowder)) {
 						Set<Powder> taskPowders = powderTask.getPowders().keySet();
 						StringBuilder stringBuilder = new StringBuilder();
 						for (Powder taskPowder : taskPowders) {

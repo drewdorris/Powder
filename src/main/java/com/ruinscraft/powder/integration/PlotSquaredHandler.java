@@ -54,7 +54,7 @@ public class PlotSquaredHandler implements Listener {
 	public boolean checkLocation(Powder powder, Player player) {
 		PlotPlayer plotPlayer = plotAPI.wrapPlayer(player.getUniqueId());
 
-		if (!canPlacePowders(plotPlayer)) return false;
+		if (!hasPermissionForPowder(plotPlayer)) return false;
 
 		double roadDist = this.getDistanceFromRoad(plotPlayer);
 		double powderWidth = powder.maxWidthDistance();
@@ -88,7 +88,7 @@ public class PlotSquaredHandler implements Listener {
 	 * @param location
 	 * @return if Powder can be placed here
 	 */
-	public boolean checkLocation(Powder powder, Location location) {
+	public boolean checkLocationWithoutPlayer(Powder powder, Location location) {
 		double roadDist = this.getDistanceFromRoad(location);
 		double powderWidth = powder.maxWidthDistance();
 		if (powderWidth > roadDist) return false;
@@ -97,14 +97,26 @@ public class PlotSquaredHandler implements Listener {
 	}
 
 	/**
+	 * Checks whether a player can place Powders in a plot
+	 * @param player
+	 * @param plot
+	 * @return if they can place Powders in the plot
+	 */
+	public boolean hasPermissionForPowder(UUID player, org.bukkit.Location bukkitLoc) {
+		Location location = new Location(bukkitLoc.getWorld().getName(), 
+				bukkitLoc.getBlockX(), bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+		return hasPermissionForPowder(player, location.getPlot());
+	}
+
+	/**
 	 * Checks whether the player can place Powders in their current plot
 	 * @param player
 	 * @return if they can place Powders where they are
 	 */
-	public boolean canPlacePowders(PlotPlayer player) {
+	public boolean hasPermissionForPowder(PlotPlayer player) {
 		if (player.getCurrentPlot() == null) return false;
 		if (player.getLocation().isPlotRoad()) return false;
-		return canPlacePowdersInPlot(player.getUUID(), player.getCurrentPlot());
+		return hasPermissionForPowder(player.getUUID(), player.getCurrentPlot());
 	}
 
 	/**
@@ -113,7 +125,7 @@ public class PlotSquaredHandler implements Listener {
 	 * @param plot
 	 * @return if they can place Powders in the plot
 	 */
-	public boolean canPlacePowdersInPlot(UUID player, Plot plot) {
+	public boolean hasPermissionForPowder(UUID player, Plot plot) {
 		for (UUID uuid : plot.getTrusted()) {
 			if (uuid.equals(player)) return true;
 		}
@@ -189,7 +201,7 @@ public class PlotSquaredHandler implements Listener {
 
 				if (location.getPlot().equals(plot)) {
 					powderTask.removePowder(powder);
-				} else if (!checkLocation(powder, location)) {
+				} else if (!checkLocationWithoutPlayer(powder, location)) {
 					powderTask.removePowder(powder);
 				}
 			}
@@ -211,7 +223,7 @@ public class PlotSquaredHandler implements Listener {
 
 				if (location.getPlot().equals(plot)) {
 					powderTask.removePowder(powder);
-				} else if (!checkLocation(powder, location)) {
+				} else if (!checkLocationWithoutPlayer(powder, location)) {
 					powderTask.removePowder(powder);
 				}
 			}
@@ -229,7 +241,7 @@ public class PlotSquaredHandler implements Listener {
 				if (!tracker.getCreator().equals(uuid)) continue;
 
 				Powder powder = entry.getKey();
-				if (!this.checkLocation(powder, Bukkit.getPlayer(uuid))) {
+				if (!this.hasPermissionForPowder(uuid, event.getPlot())) {
 					powderTask.removePowder(powder);
 				}
 			}

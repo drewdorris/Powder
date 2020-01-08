@@ -1,6 +1,7 @@
 package com.ruinscraft.powder.model.tracker;
 
 import org.bukkit.Location;
+import org.bukkit.entity.Player;
 
 public interface Tracker {
 
@@ -9,6 +10,8 @@ public interface Tracker {
 	void refreshLocation();
 
 	Location getCurrentLocation();
+
+	boolean hasControl(Player player);
 
 	enum Type {
 		ENTITY,
