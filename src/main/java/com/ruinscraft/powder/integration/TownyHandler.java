@@ -98,6 +98,30 @@ public class TownyHandler implements Listener {
 	}
 
 	/**
+	 * Get the name of a location, e.g. "Town of Paris"
+	 * 
+	 * Returns null if not in town
+	 * @param location
+	 * @return formatted string
+	 */
+	public String getFormattedLocation(Location location) {
+		TownBlock block = townyAPI.getTownBlock(location);
+		if (!block.hasTown()) return null;
+		try {
+			Town town = block.getTown();
+			String townName = "Town of " + town.getFormattedName();
+			if (block.hasResident()) {
+				Resident owner = block.getResident();
+				return (townName + ", " + owner.getName() + "'s plot");
+			}
+			return townName;
+		} catch (NotRegisteredException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+
+	/**
 	 * Check whether a player has permission to place Powders in this Town
 	 * 
 	 * If they can place one, they can destroy one, too!

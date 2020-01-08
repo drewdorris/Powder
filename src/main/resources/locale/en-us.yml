@@ -71,6 +71,13 @@ CREATE_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ## {user} {powder} {name}
 CREATE_SUCCESS: '&7Successfully created ''{name}''.'
 ## {user} {command}
+CREATED_PREFIX: '&7Created Powders:'
+## {name} {location}
+CREATED: '&d{name} &7{location}'
+## {name} {powders}
+CREATED_HOVER: '&7Powders: {powders} || &aClick to cancel this active Powder'
+## {command} {name}
+CREATED_CLICK: '/{command} remove {name}'
 ADDTO_SYNTAX: '&c/{command} addto <name> <Powder>'
 ## {user} {name}
 ADDTO_DOES_NOT_EXIST: '&cThe active Powder ''{name}'' does not exist.'

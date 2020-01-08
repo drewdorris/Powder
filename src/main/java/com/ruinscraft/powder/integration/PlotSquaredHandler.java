@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.Map.Entry;
 import java.util.UUID;
 
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -15,6 +14,7 @@ import com.github.intellectualsites.plotsquared.bukkit.events.PlotClearEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotDeleteEvent;
 import com.github.intellectualsites.plotsquared.bukkit.events.PlotUnlinkEvent;
 import com.github.intellectualsites.plotsquared.plot.object.Location;
+import com.github.intellectualsites.plotsquared.plot.object.OfflinePlotPlayer;
 import com.github.intellectualsites.plotsquared.plot.object.Plot;
 import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
 import com.ruinscraft.powder.PowderPlugin;
@@ -80,6 +80,26 @@ public class PlotSquaredHandler implements Listener {
 		if (amntInPlot > this.maxPerPlot) return false;
 
 		return true;
+	}
+
+	/**
+	 * Get the name of a location, e.g. "Town of Paris"
+	 * 
+	 * Returns null if not in town
+	 * @param location
+	 * @return formatted string
+	 */
+	public String getFormattedLocation(org.bukkit.Location bukkitLoc) {
+		Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+				bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+		Plot plot = location.getPlot();
+		if (plot == null) return null;
+		if (!plot.hasOwner()) return null;
+		for (UUID owner : plot.getOwners()) {
+			OfflinePlotPlayer player = plotAPI.getUUIDWrapper().getOfflinePlayer(owner);
+			return player.getName() + "'s plot";
+		}
+		return null;
 	}
 
 	/**

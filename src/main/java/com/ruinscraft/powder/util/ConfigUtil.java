@@ -600,6 +600,10 @@ public class ConfigUtil {
 
 	public static void saveStationaryPowder(
 			FileConfiguration createdPowders, PowderTask powderTask) {
+		if (powderTask.getPowders().size() == 0) {
+			ConfigUtil.removeStationaryPowder(powderTask);
+			return;
+		}
 		if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
 			PowderPlugin instance = PowderPlugin.get();
 			if (createdPowders == null) {
@@ -625,6 +629,8 @@ public class ConfigUtil {
 				StationaryTracker stationaryTracker = (StationaryTracker) tracker;
 				String powderPath = path + ".powder" + String.valueOf(i);
 				createdPowders.set(powderPath + ".powder", powder.getName());
+				createdPowders.set(powderPath + ".creator", stationaryTracker.getCreator().toString());
+				createdPowders.set(powderPath + ".loop", powder.isLooping());
 				powderPath = powderPath + ".location";
 				Location location = stationaryTracker.getCurrentLocation().clone();
 				createdPowders.set(powderPath + ".world", location.getWorld().getName());
@@ -633,7 +639,6 @@ public class ConfigUtil {
 				createdPowders.set(powderPath + ".z", location.getZ());
 				createdPowders.set(powderPath + ".pitch", location.getPitch());
 				createdPowders.set(powderPath + ".yaw", location.getYaw());
-				createdPowders.set(powderPath + ".loop", powder.isLooping());
 			}
 			saveFile(createdPowders, "createdpowders.yml");
 		}
@@ -657,17 +662,19 @@ public class ConfigUtil {
 
 	public static PowderTask loadStationaryPowder(FileConfiguration config, String section) {
 		PowderTask powderTask = new PowderTask(config.getString(section + ".name"));
-		String ownerString = config.getString(section + ".owner", null);
-		UUID uuid = null;
-		if (ownerString != null) {
-			uuid = UUID.fromString(ownerString);
-		}
 		for (String powderSection : config.getConfigurationSection(section).getKeys(false)) {
 			String newSection = section + "." + powderSection;
 			if (powderSection.equals("name")) {
 				continue;
 			}
 			String powderName = config.getString(newSection + ".powder");
+			String uuidString = config.getString(newSection + ".creator");
+			UUID uuid = UUID.fromString(uuidString);
+			if (uuid == null) {
+				PowderPlugin.warning("Unknown creator of Powder '" +
+						powderName + "' in createdpowders.yml");
+				return null;
+			}
 			Powder powder = PowderPlugin.get().getPowderHandler().getPowder(powderName);
 			if (powder == null) {
 				PowderPlugin.warning("Unknown Powder '" +

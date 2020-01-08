@@ -2,11 +2,9 @@ package com.ruinscraft.powder.model;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.tracker.EntityTracker;
-import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.ConfigUtil;
 import org.bukkit.Location;
-import org.bukkit.entity.Player;
 
 import java.util.*;
 import java.util.Map.Entry;
@@ -139,8 +137,12 @@ public class PowderTask {
 			}
 		}
 		boolean removed = powders.remove(toRemove) != null;
-		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.get().getCreatedPowdersFile(), this);
+		if (powders.size() == 0) {
+			this.cancel();
+		} else {
+			ConfigUtil.saveStationaryPowder(
+					PowderPlugin.get().getCreatedPowdersFile(), this);
+		}
 		return removed;
 	}
 
