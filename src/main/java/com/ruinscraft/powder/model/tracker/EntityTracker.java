@@ -94,8 +94,11 @@ public class EntityTracker implements Tracker {
 		if (isPlayer()) {
 			owner = (Player) getEntity();
 		}
-		if (owner != null && owner.equals(possibleOwner)) {
-			return true;
+		if (owner != null) {
+			if (owner.equals(possibleOwner)) {
+				return true;
+			}
+			return false;
 		}
 
 		Location location = getCurrentLocation();

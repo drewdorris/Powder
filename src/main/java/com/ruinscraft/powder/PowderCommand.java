@@ -514,10 +514,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					}
 					if (!(player.hasPermission("powder.removeany"))) {
 						for (Tracker tracker : task.getPowders().values()) {
-							if (tracker.getType() != Tracker.Type.STATIONARY) return false; 
-							StationaryTracker stationary = (StationaryTracker) tracker;
-
-							if (!stationary.getCreator().equals(player.getUniqueId())) {
+							if (!tracker.hasControl(player)) {
 								PowderUtil.sendPrefixMessage(player,
 										Message.GENERAL_NO_PERMISSION, label, player.getName());
 								return false;
