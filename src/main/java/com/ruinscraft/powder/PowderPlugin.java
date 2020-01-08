@@ -1,5 +1,6 @@
 package com.ruinscraft.powder;
 
+import com.google.common.base.Charsets;
 import com.ruinscraft.powder.integration.PlotSquaredHandler;
 import com.ruinscraft.powder.integration.TownyHandler;
 import com.ruinscraft.powder.model.Message;
@@ -18,6 +19,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
 import java.util.*;
 
 public class PowderPlugin extends JavaPlugin {
@@ -196,24 +201,41 @@ public class PowderPlugin extends JavaPlugin {
 
 	public void loadMessages() {
 		messages = new HashMap<>();
-		String fileName = config.getString("locale", "english_US.yml");
+		String fileName = config.getString("locale", "en-us.yml");
 		File file = new File(getDataFolder() + "/locale", fileName);
 		if (!file.exists()) {
 			warning("Locale '" + fileName + "' not found, loading if exists!");
-			saveResource("locale/" + fileName, false);
-		} else {
-			// save it anyway
 			saveResource("locale/" + fileName, false);
 		}
 		FileConfiguration locale = YamlConfiguration
 				.loadConfiguration(file);
 
+		YamlConfiguration jarConfig = null;
+		try (Reader jarConfigStream = 
+				new InputStreamReader(this.getResource("locale" + File.separator + fileName), "UTF-8")) {
+			jarConfig = YamlConfiguration.loadConfiguration(jarConfigStream);
+			locale.setDefaults(jarConfig);
+			locale.save(file);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+
 		for (Message message : Message.values()) {
 			String actualMessage = locale.getString(message.name());
 			if (actualMessage == null) {
+				if (jarConfig != null) {
+					actualMessage = jarConfig.getString(message.name());
+					if (actualMessage == null) {
+						warning("Something broke!");
+						continue;
+					}
+					locale.set(message.name(), actualMessage);
+					continue;
+				}
 				warning("No message specified for '" +
 						message.name() + "' in '" + fileName + "'." +
 						" Is your locale or version of Powder outdated?");
+
 				continue;
 			}
 			BaseComponent baseComponent = PowderUtil.format(PowderUtil.color(actualMessage));
@@ -228,7 +250,7 @@ public class PowderPlugin extends JavaPlugin {
 	public void loadIntegrations() {
 		// check for Towny and PlotSquared/PlotCubed existence, load if necessary
 		if (this.getServer().getPluginManager().getPlugin("Towny") != null) {
-			System.out.println("Located Towny!");
+			info("Located Towny!");
 
 			this.towny = new TownyHandler(config.getInt("towny.maxCreatedTown", 40));
 			getServer().getPluginManager().registerEvents(this.towny, this);
@@ -236,13 +258,13 @@ public class PowderPlugin extends JavaPlugin {
 
 		if (this.getServer().getPluginManager().getPlugin("PlotSquared") == null) {
 			if (this.getServer().getPluginManager().getPlugin("PlotCubed") != null) {
-				System.out.println("Located PlotCubed!");
+				info("Located PlotCubed!");
 
 				this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
 				getServer().getPluginManager().registerEvents(this.plotSquared, this);
 			}
 		} else {
-			System.out.println("Found PlotSquared!");
+			info("Found PlotSquared!");
 
 			this.plotSquared = new PlotSquaredHandler(config.getInt("plotsquared.maxCreatedPlot", 20));
 			getServer().getPluginManager().registerEvents(this.plotSquared, this);
