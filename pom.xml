@@ -44,6 +44,7 @@
 	</repositories>
 
 	<dependencies>
+		<!-- Spigot -->
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
@@ -57,24 +58,36 @@
 			<version>2.8.0</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- MySQL handling -->
 		<dependency>
 			<groupId>com.zaxxer</groupId>
 			<artifactId>HikariCP</artifactId>
 			<version>2.7.8</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- SoundUtil -->
 		<dependency>
 			<groupId>com.github.koca2000</groupId>
 			<artifactId>NoteBlockAPI</artifactId>
 			<version>1.2.5</version>
 			<scope>compile</scope>
 		</dependency>
+		<!-- TownyHandler -->
 		<dependency>
 			<groupId>com.palmergames.bukkit.towny</groupId>
 			<artifactId>Towny</artifactId>
 			<version>0.95.0.5</version>
 			<scope>provided</scope>
 		</dependency>
+		<!-- No UUID support in Towny?!?! -->
+		<dependency>
+            <groupId>TownyNameUpdater</groupId>
+            <artifactId>TownyNameUpdater</artifactId>
+            <version>unknown</version>
+            <scope>system</scope>
+            <systemPath>${basedir}/lib/TownyNameUpdater.jar</systemPath>
+        </dependency>
+		<!-- PlotSquared (repo is weird) -->
 		<dependency>
             <groupId>PlotSquared</groupId>
             <artifactId>PlotSquared</artifactId>

@@ -22,6 +22,7 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.WorldCoord;
+import com.palmergames.townynameupdater.TownyNameUpdaterConfiguration;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
@@ -106,7 +107,7 @@ public class TownyHandler implements Listener {
 	 */
 	public String getFormattedLocation(Location location) {
 		TownBlock block = townyAPI.getTownBlock(location);
-		if (!block.hasTown()) return null;
+		if (block == null || !block.hasTown()) return null;
 		try {
 			Town town = block.getTown();
 			String townName = "Town of " + town.getFormattedName();
@@ -148,7 +149,7 @@ public class TownyHandler implements Listener {
 	 */
 	public boolean hasPermissionForPowder(Resident resident, Location location) {
 		TownBlock block = townyAPI.getTownBlock(location);
-		if (!block.hasTown()) return false;
+		if (block == null || !block.hasTown()) return false;
 		Town town = null;
 		try {
 			town = block.getTown();
@@ -228,8 +229,7 @@ public class TownyHandler implements Listener {
 	 */
 	public double getDistanceToEdgeOfTown(Town town, Location location) {
 		TownBlock block = townyAPI.getTownBlock(location);
-		if (block == null) return 0;
-		if (!block.hasTown()) return 0;
+		if (block == null || !block.hasTown()) return 0;
 
 		TownBlock bOne = townyAPI.getTownBlock(location.clone().add(-16, 0, 16));
 		TownBlock bTwo = townyAPI.getTownBlock(location.clone().add(16, 0, 0));
@@ -296,6 +296,7 @@ public class TownyHandler implements Listener {
 	@EventHandler
 	public void onTownUnclaimEvent(TownUnclaimEvent event) {
 		WorldCoord worldCoord = event.getWorldCoord();
+		// probably shouldn't just check for the first world
 		Chunk chunk = Bukkit.getWorlds().get(0).getChunkAt(worldCoord.getX(), worldCoord.getZ());
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
@@ -317,6 +318,7 @@ public class TownyHandler implements Listener {
 	@EventHandler
 	public void onPreDeleteTownEvent(PreDeleteTownEvent event) {
 		Town town = event.getTown();
+		if (town == null) return;
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
@@ -336,9 +338,12 @@ public class TownyHandler implements Listener {
 	@EventHandler
 	public void onTownRemoveResidentEvent(TownRemoveResidentEvent event) {
 		Town town = event.getTown();
-		Player player = townyAPI.getPlayer(event.getResident());
+		Resident resident = event.getResident();
+		String uuidString = TownyNameUpdaterConfiguration.getString(resident.getName());
+		UUID uuid = UUID.fromString(uuidString);
+		if (uuid == null) return;
 
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player)) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(uuid)) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Powder powder = entry.getKey();
 				Tracker tracker = entry.getValue();
