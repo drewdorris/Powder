@@ -81,20 +81,20 @@
 		</dependency>
 		<!-- No UUID support in Towny?!?! -->
 		<dependency>
-            <groupId>TownyNameUpdater</groupId>
-            <artifactId>TownyNameUpdater</artifactId>
-            <version>unknown</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/TownyNameUpdater.jar</systemPath>
-        </dependency>
+			<groupId>TownyNameUpdater</groupId>
+			<artifactId>TownyNameUpdater</artifactId>
+			<version>unknown</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/TownyNameUpdater.jar</systemPath>
+		</dependency>
 		<!-- PlotSquared (repo is weird) -->
 		<dependency>
-            <groupId>PlotSquared</groupId>
-            <artifactId>PlotSquared</artifactId>
-            <version>unknown</version>
-            <scope>system</scope>
-            <systemPath>${basedir}/lib/PlotSquared.jar</systemPath>
-        </dependency>
+			<groupId>PlotSquared</groupId>
+			<artifactId>PlotSquared</artifactId>
+			<version>unknown</version>
+			<scope>system</scope>
+			<systemPath>${basedir}/lib/PlotSquared.jar</systemPath>
+		</dependency>
 	</dependencies>
 
 	<build>
