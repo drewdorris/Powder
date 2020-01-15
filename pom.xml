@@ -79,14 +79,6 @@
 			<version>0.95.0.5</version>
 			<scope>provided</scope>
 		</dependency>
-		<!-- No UUID support in Towny?!?! -->
-		<dependency>
-			<groupId>TownyNameUpdater</groupId>
-			<artifactId>TownyNameUpdater</artifactId>
-			<version>unknown</version>
-			<scope>system</scope>
-			<systemPath>${basedir}/lib/TownyNameUpdater.jar</systemPath>
-		</dependency>
 		<!-- PlotSquared (repo is weird) -->
 		<dependency>
 			<groupId>PlotSquared</groupId>

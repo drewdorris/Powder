@@ -8,6 +8,7 @@ import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -22,10 +23,10 @@ import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyPermission;
 import com.palmergames.bukkit.towny.object.WorldCoord;
-import com.palmergames.townynameupdater.TownyNameUpdaterConfiguration;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 
 /**
@@ -335,23 +336,59 @@ public class TownyHandler implements Listener {
 	}
 
 	// removes Powders from a Town that removes the owner of those Powders
+	// this is unnecessarily complicated because Towny sucks with UUIDs
 	@EventHandler
 	public void onTownRemoveResidentEvent(TownRemoveResidentEvent event) {
 		Town town = event.getTown();
 		Resident resident = event.getResident();
-		String uuidString = TownyNameUpdaterConfiguration.getString(resident.getName());
-		UUID uuid = UUID.fromString(uuidString);
-		if (uuid == null) return;
 
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(uuid)) {
+		OfflinePlayer player = null;
+		UUID uuid = null;
+		if (resident != null) {
+			player = Bukkit.getOfflinePlayer(resident.getName());
+			uuid = townyAPI.getPlayerUUID(resident);
+		}
+
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Powder powder = entry.getKey();
-				Tracker tracker = entry.getValue();
+				StationaryTracker tracker = (StationaryTracker) entry.getValue();
 
 				UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
+				if (townUUID == null) {
+					powderTask.removePowder(powder);
+					continue;
+				}
 
 				if (town.getUuid().equals(townUUID)) {
-					powderTask.removePowder(powder);
+					UUID creator = tracker.getCreator();
+					if (uuid != null) {
+						if (creator.equals(uuid)) {
+							powderTask.removePowder(powder);
+							continue;
+						}
+
+						OfflinePlayer powderPlayer = Bukkit.getOfflinePlayer(creator);
+						if (powderPlayer == null) {
+							powderTask.removePowder(powder);
+							continue;
+						}
+
+						if (player != null) {
+							if (powderPlayer.getName().equals(player.getName()) ||
+									powderPlayer.getUniqueId().equals(player.getUniqueId())) {
+								powderTask.removePowder(powder);
+								continue;
+							}
+						}
+
+						try {
+							TownyAPI.getInstance().getDataSource().getResident(powderPlayer.getName());
+						} catch (NotRegisteredException e) {
+							powderTask.removePowder(powder);
+							continue;
+						}
+					}
 				}
 			}
 		}

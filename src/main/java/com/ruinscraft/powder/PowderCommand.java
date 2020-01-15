@@ -321,6 +321,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 						PowderUtil.cleanEntityName(entity));
 				return true;
 			} else if (args[0].equalsIgnoreCase("create")) {
+				long time = System.nanoTime();
 				if (!(player.hasPermission("powder.create"))) {
 					PowderUtil.sendPrefixMessage(player,
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -332,7 +333,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				try {
 					name = args[1];
 					powderName = args[2];
-					newPowder = powderHandler.getPowder(powderName);
 				} catch (Exception e) {
 					PowderUtil.sendPrefixMessage(player, Message.CREATE_SYNTAX,
 							label, player.getName(), label);
@@ -348,6 +348,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							powderHandler.getCreatedPowderTasks(player);
 					List<BaseComponent> createdText = new ArrayList<>();
 
+					long time1 = System.nanoTime();
 					for (PowderTask powderTask : created) {
 						boolean hasPermissionForPowder = false;
 						String location = null;
@@ -383,15 +384,20 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 						}
 						createdText.add(baseComponent);
 					}
+					long time2 = System.nanoTime();
+					System.out.println("Going through created Powders: " + (time2 - time1));
 					PowderUtil.paginateAndSend(player, createdText, " create ", page, 7, label);
 					return false;
 				}
+				newPowder = powderHandler.getPowder(powderName);
 				if (newPowder == null) {
 					PowderUtil.sendPrefixMessage(player, Message.CREATE_UNKNOWN, label,
 							player.getName(), powderName);
 					return false;
 				}
 				if (!(player.hasPermission("powder.createany"))) {
+					long newTime = System.nanoTime();
+					System.out.println("createany " + (newTime - time));
 					if (PowderPlugin.get().hasTowny()) {
 						if (!PowderPlugin.get().getTownyHandler().checkLocation(newPowder, player)) {
 							PowderUtil.sendPrefixMessage(player, Message.CREATE_TOWNY_NO_PLACE, label,
@@ -417,6 +423,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							label, player.getName(), name, powderName);
 					return false;
 				}
+				long newTime = System.nanoTime();
+				System.out.println("ending " + (newTime - time));
 				newPowder.spawn(name, player.getLocation(), player.getUniqueId());
 				PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
 						player.getName(), powderName, name);

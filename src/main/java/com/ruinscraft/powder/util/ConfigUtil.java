@@ -182,8 +182,6 @@ public class ConfigUtil {
 	public static Powder loadPowderFromConfig(FileConfiguration powderConfig, String path) {
 		Powder powder = new Powder(path);
 
-		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
-
 		String section = "powders." + path;
 
 		// set some given values if they exist, default value if they don't
@@ -205,6 +203,7 @@ public class ConfigUtil {
 		powder.setHidden(
 				powderConfig.getBoolean(section + ".hidden", false));
 
+		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 		// add categories if enabled
 		if (powderHandler.categoriesEnabled()) {
 			for (String t : (List<String>) powderConfig

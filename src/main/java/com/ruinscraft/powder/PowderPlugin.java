@@ -125,11 +125,14 @@ public class PowderPlugin extends JavaPlugin {
 
 		loadMessages();
 		enableStorage();
-		loadPowdersFromSources();
 
-		PowderUtil.loadAllUUIDs();
-		this.createdPowders = ConfigUtil.loadCreatedPowders();
-		isLoading = false;
+		getServer().getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
+			loadPowdersFromSources();
+
+			PowderUtil.loadAllUUIDs();
+			this.createdPowders = ConfigUtil.loadCreatedPowders();
+			isLoading = false;
+		});
 	}
 
 	public static boolean isLoading() {
