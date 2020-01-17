@@ -277,6 +277,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				PowderUtil.listPowders(player, powderHandler.getSimilarPowders(search),
 						" search " + search + " ", page, pageLength, label);
 				return false;
+				// attach a Powder to a creature
 			} else if (args[0].equalsIgnoreCase("attach")) {
 				if (!(player.hasPermission("powder.attach"))) {
 					PowderUtil.sendPrefixMessage(player,
@@ -320,12 +321,33 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 						label, player.getName(), powderName,
 						PowderUtil.cleanEntityName(entity));
 				return true;
+				// create a stationary Powder
 			} else if (args[0].equalsIgnoreCase("create")) {
 				long time = System.nanoTime();
-				if (!(player.hasPermission("powder.create"))) {
+				if (!player.hasPermission("powder.create")) {
 					PowderUtil.sendPrefixMessage(player,
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
+				}
+				// do this before the loading of the powder and such
+				if (!player.hasPermission("powder.createany")) {
+					// wait time between creating each Powder
+					int waitTime = PowderPlugin.get().getConfig().getInt("secondsBetweenPowderUsage");
+					// if they sent a command in the given wait time, don't do it
+					if (recentCommandSenders.contains(player)) {
+						PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT,
+								label, player.getName(), args[0], String.valueOf(waitTime));
+						return false;
+					}
+					// if there's a wait time between using each Powder
+					if (waitTime > 0) {
+						// add user to this list of recent command senders for the given amount of time
+						PowderPlugin.get().getServer().getScheduler()
+						.scheduleSyncDelayedTask(PowderPlugin.get(), () -> {
+							recentCommandSenders.remove(player);
+						}, (waitTime * 20));
+						recentCommandSenders.add(player);
+					}
 				}
 				String name;
 				String powderName;
@@ -398,6 +420,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				if (!(player.hasPermission("powder.createany"))) {
 					long newTime = System.nanoTime();
 					System.out.println("createany " + (newTime - time));
+
 					if (PowderPlugin.get().hasTowny()) {
 						if (!PowderPlugin.get().getTownyHandler().checkLocation(newPowder, player)) {
 							PowderUtil.sendPrefixMessage(player, Message.CREATE_TOWNY_NO_PLACE, label,
@@ -429,6 +452,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
 						player.getName(), powderName, name);
 				return true;
+				// list created stationary Powders
 			} else if (args[0].equalsIgnoreCase("created")) { 
 				int page = 1;
 				try {
@@ -479,6 +503,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 
 				PowderUtil.paginateAndSend(player, createdText, " created ", page, 7, label);
 				return true;
+				// add a Powder to an existing stationary Powder
 			} else if (args[0].equalsIgnoreCase("addto")) {
 				if (!(player.hasPermission("powder.addto"))) {
 					PowderUtil.sendPrefixMessage(player,
@@ -518,6 +543,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					return false;
 				}
 				return true;
+				// remove a Powder from a stationary Powder
 			} else if (args[0].equalsIgnoreCase("removefrom")) {
 				if (!(player.hasPermission("powder.removefrom"))) {
 					PowderUtil.sendPrefixMessage(player,
@@ -556,6 +582,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					return false;
 				}
 				return true;
+				// remove a stationary Powder
 			} else if (args[0].equalsIgnoreCase("remove")) {
 				if (!(player.hasPermission("powder.remove"))) {
 					PowderUtil.sendPrefixMessage(player,
@@ -636,6 +663,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					}
 					return true;
 				}
+				// find nearby Powders
 			} else if (args[0].equalsIgnoreCase("nearby") || args[0].equalsIgnoreCase("near")) {
 				if (!(player.hasPermission("powder.nearby"))) {
 					PowderUtil.sendPrefixMessage(player,

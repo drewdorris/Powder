@@ -337,6 +337,7 @@ public class TownyHandler implements Listener {
 
 	// removes Powders from a Town that removes the owner of those Powders
 	// this is unnecessarily complicated because Towny sucks with UUIDs
+	@SuppressWarnings("deprecation")
 	@EventHandler
 	public void onTownRemoveResidentEvent(TownRemoveResidentEvent event) {
 		Town town = event.getTown();
