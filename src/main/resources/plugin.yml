@@ -41,6 +41,9 @@ permissions:
     description: Enables access to the '/powder reload' command, allowing a user to reload Powders/locale/storage/etc.
   powder.attach:
     default: op
+    description: Enables access to attaching Powders to any entity or player you're looking at
+  powder.attachany:
+    default: op
     description: Enables access to attaching Powders to an entity or player you're looking at
   powder.cancel:
     default: op

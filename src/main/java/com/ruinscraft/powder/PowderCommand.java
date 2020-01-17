@@ -284,6 +284,28 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							Message.GENERAL_NO_PERMISSION, label, player.getName());
 					return false;
 				}
+
+				// do this before the loading of the powder and such
+				if (!player.hasPermission("powder.attachany")) {
+					// wait time between creating each Powder
+					int waitTime = PowderPlugin.get().getConfig().getInt("secondsBetweenPowderUsage");
+					// if they sent a command in the given wait time, don't do it
+					if (recentCommandSenders.contains(player)) {
+						PowderUtil.sendPrefixMessage(player, Message.POWDER_WAIT,
+								label, player.getName(), args[0], String.valueOf(waitTime));
+						return false;
+					}
+					// if there's a wait time between using each Powder
+					if (waitTime > 0) {
+						// add user to this list of recent command senders for the given amount of time
+						PowderPlugin.get().getServer().getScheduler()
+						.scheduleSyncDelayedTask(PowderPlugin.get(), () -> {
+							recentCommandSenders.remove(player);
+						}, (waitTime * 20));
+						recentCommandSenders.add(player);
+					}
+				}
+
 				String powderName;
 				Powder newPowder;
 				try {
@@ -294,18 +316,32 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 							Message.ATTACH_SYNTAX, label, player.getName(), label);
 					return false;
 				}
+
+				boolean loop = false;
+				try {
+					String loopString = args[2];
+					if (loopString.equalsIgnoreCase("loop")) loop = true;
+				} catch (Exception e) { }
+
 				if (newPowder == null) {
 					PowderUtil.sendPrefixMessage(player,
 							Message.ATTACH_UNKNOWN, label, player.getName(), powderName);
 					return false;
 				}
+
+				if (loop) newPowder = newPowder.loop();
+				if (!player.hasPermission("powder.attachany")) {
+					// make sure that the player isnt above their limit or w.e
+				}
+
 				Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
 				if (entity == null) {
 					PowderUtil.sendPrefixMessage(player,
 							Message.ATTACH_NO_ENTITY, label, player.getName());
 					return false;
 				}
-				if (entity instanceof Player) {
+
+				if (entity instanceof Player && player.hasPermission("powder.attachany")) {
 					newPowder.spawn((Player) entity);
 					PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_PLAYER,
 							label, player.getName(), powderName, entity.getName());
@@ -317,6 +353,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				} else {
 					newPowder.spawn(entity);
 				}
+
 				PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_ENTITY,
 						label, player.getName(), powderName,
 						PowderUtil.cleanEntityName(entity));
