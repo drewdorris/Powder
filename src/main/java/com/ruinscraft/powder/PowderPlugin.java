@@ -1,5 +1,6 @@
 package com.ruinscraft.powder;
 
+import com.ruinscraft.powder.command.PowderCommand;
 import com.ruinscraft.powder.integration.PlotSquaredHandler;
 import com.ruinscraft.powder.integration.TownyHandler;
 import com.ruinscraft.powder.model.Message;

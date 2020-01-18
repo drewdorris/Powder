@@ -70,7 +70,7 @@ public class TownyHandler implements Listener {
 		} catch (NotRegisteredException e) {
 			return false;
 		}
-		if (!town.hasResident(player.getName())) return false;
+
 		if (!townyAPI.isActiveResident(resident)) return false;
 
 		if (!hasPermissionForPowder(town, location, resident)) return false;
@@ -199,8 +199,8 @@ public class TownyHandler implements Listener {
 	 * @throws NotRegisteredException
 	 */
 	public boolean checkPerms(Resident resident, Town town, TownyPermission permission) throws NotRegisteredException {
-		if (permission.residentBuild && resident.getTown().equals(town)) return true;
-		if (permission.nationBuild && resident.getTown().getNation().equals(town.getNation())) return true;
+		if (permission.residentBuild && resident.getTown().getUuid().equals(town.getUuid())) return true;
+		if (permission.nationBuild && resident.getTown().getNation().getUuid().equals(town.getNation().getUuid())) return true;
 		if (permission.allyBuild && resident.isAlliedWith(town.getMayor())) return true;
 		if (permission.outsiderBuild) return true;
 		return false;
