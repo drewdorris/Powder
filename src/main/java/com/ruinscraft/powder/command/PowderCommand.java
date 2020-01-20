@@ -66,6 +66,12 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
+		if (PowderPlugin.isLoading()) {
+			// IS_LOADING enum
+			sender.sendMessage("Powder is currently loading, please wait until it loads!");
+			return false;
+		}
+
 		Player player = (Player) sender;
 
 		// if no permission for using the command itself
@@ -259,6 +265,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 	@Override
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		List<String> strings = new ArrayList<>();
+
+		if (PowderPlugin.isLoading()) return strings;
 
 		if (!(sender instanceof Player)) return strings;
 		Player player = (Player) sender;
