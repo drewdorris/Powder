@@ -17,7 +17,6 @@ import com.ruinscraft.powder.command.subcommand.ReloadCommand;
 import com.ruinscraft.powder.command.subcommand.RemoveCommand;
 import com.ruinscraft.powder.command.subcommand.RemovefromCommand;
 import com.ruinscraft.powder.command.subcommand.SearchCommand;
-import com.ruinscraft.powder.command.subcommand.StarCommand;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
@@ -36,13 +35,14 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 	private List<Player> recentCommandSenders = new ArrayList<>();
 
 	private Set<SubCommand> subCommands = new HashSet<>(Arrays.asList(
-			new HelpCommand(), new ReloadCommand(), new StarCommand(), new ListCommand(), 
+			new HelpCommand(), new ReloadCommand(), new ListCommand(), 
 			new CancelCommand(), new ActiveCommand(), new CategoriesCommand(), new CategoryCommand(),
 			new SearchCommand(), new AttachCommand(), new CreateCommand(), new CreatedCommand(),
 			new AddtoCommand(), new RemovefromCommand(), new RemoveCommand(), new NearbyCommand()));
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
+		long time = System.nanoTime();
 		// if console
 		if (!(sender instanceof Player)) {
 			try {
@@ -101,6 +101,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			for (SubCommand subCommand : this.subCommands) {
 				if (eq(args[0], subCommand)) {
 					subCommand.command(player, label, args);
+					long time2 = System.nanoTime();
+					PowderPlugin.info("uhhhhhh " + (time2 - time));
 					return true;
 				}
 			}
@@ -258,20 +260,55 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 	public List<String> onTabComplete(CommandSender sender, Command command, String alias, String[] args) {
 		List<String> strings = new ArrayList<>();
 
+		if (!(sender instanceof Player)) return strings;
+		Player player = (Player) sender;
+
 		if (args.length == 1) {
+			for (SubCommand subCommand : this.subCommands) {
+				for (String label : subCommand.getLabels()) {
+					if (label.toLowerCase().startsWith(args[0].toLowerCase())) {
+						strings.add(label);
+					}
+				}
+			}
 			for (String category : PowderPlugin.get().getPowderHandler().getCategories().keySet()) {
 				if (category.toLowerCase().startsWith(args[0].toLowerCase())) {
 					strings.add(category);
 				}
 			}
-			if ("category".startsWith(args[0].toLowerCase())) {
-				strings.add("Category");
+			for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
+				if (powder.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+					strings.add(powder.getName());
+				}
 			}
 		} else if (args.length == 2) {
 			if (args[0].equalsIgnoreCase("category")) {
 				for (String category : PowderPlugin.get().getPowderHandler().getCategories().keySet()) {
 					if (category.toLowerCase().startsWith(args[1].toLowerCase())) {
 						strings.add(category);
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("attach")) {
+				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
+					if (powder.getName().toLowerCase().startsWith(args[1])) {
+						strings.add(powder.getName());
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("remove")) {
+				for (PowderTask task : PowderPlugin.get().getPowderHandler().getPowderTasks(player.getUniqueId())) {
+					if (task.getName().toLowerCase().startsWith(args[1])) {
+						strings.add(task.getName());
+					}
+				}
+			} else if (args[0].equalsIgnoreCase("cancel")) {
+				for (PowderTask task : PowderPlugin.get().getPowderHandler().getPowderTasks(player.getUniqueId())) {
+					for (Powder powder : task.getPowders().keySet()) {
+						if (powder.getName().toLowerCase().startsWith(args[1])) {
+							strings.add(powder.getName());
+						}
+					}
+					if (task.getName().toLowerCase().startsWith(args[1])) {
+						strings.add(task.getName());
 					}
 				}
 			} else {
@@ -282,6 +319,14 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 								strings.add(powder.getName());
 							}
 						}
+					}
+				}
+			}
+		} else if (args.length == 3) {
+			if (args[0].equalsIgnoreCase("create")) {
+				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
+					if (powder.getName().toLowerCase().startsWith(args[2])) {
+						strings.add(powder.getName());
 					}
 				}
 			}

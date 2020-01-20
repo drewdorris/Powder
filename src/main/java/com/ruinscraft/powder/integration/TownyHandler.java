@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
-import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.entity.Player;
@@ -22,7 +21,6 @@ import com.palmergames.bukkit.towny.object.Resident;
 import com.palmergames.bukkit.towny.object.Town;
 import com.palmergames.bukkit.towny.object.TownBlock;
 import com.palmergames.bukkit.towny.object.TownyPermission;
-import com.palmergames.bukkit.towny.object.WorldCoord;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
@@ -296,10 +294,6 @@ public class TownyHandler implements Listener {
 	// removes Powders that end up in the wilderness after a Town unclaims an area
 	@EventHandler
 	public void onTownUnclaimEvent(TownUnclaimEvent event) {
-		WorldCoord worldCoord = event.getWorldCoord();
-		// probably shouldn't just check for the first world
-		Chunk chunk = Bukkit.getWorlds().get(0).getChunkAt(worldCoord.getX(), worldCoord.getZ());
-
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
 			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
 				Tracker tracker = entry.getValue();
@@ -307,9 +301,6 @@ public class TownyHandler implements Listener {
 				if (townyAPI.getTownUUID(trackerSpot) == null) {
 					powderTask.removePowder(entry.getKey());
 					continue;
-				}
-				if (trackerSpot.getChunk().equals(chunk)) {
-					powderTask.removePowder(entry.getKey());
 				}
 			}
 		}
