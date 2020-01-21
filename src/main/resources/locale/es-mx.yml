@@ -9,13 +9,15 @@ PREFIX_CLICK: '/{command}'
 ## {user}
 GENERAL_NO_PERMISSION: '&7No tienes permiso.'
 ## {user}
+GENERAL_LOADING: '&7Powder está cargando actualmente. ¡Por favor espere hasta que se cargue!'
+## {user}
 LOADING_ALERT: '&7Tus Powders fueron cancelados porque de una recarga.'
 ## {user}
-LOADING_ALREADY: '&cNo puedes recarga cuando ya recargando!'
+LOADING_ALREADY: '&c¡No puedes recarga cuando ya recargando!'
 ## {user}
 LOADING_START: '&7Cargando Powders...'
 ## {user} {total} {list}
-LOADING_FINISH: '&7Todos Powders cargaron! ({total} total)'
+LOADING_FINISH: '&7¡Todos Powders cargaron! ({total} total)'
 ## {user} {total} {list}
 LOADING_FINISH_HOVER: '&7Carga Powders: {list}.'
 ## {user}
@@ -23,7 +25,7 @@ STAR_USE_CANCEL: '&7Usa ''* cancel'' para cancelar todos Powders activos.'
 ## {user}
 STAR_NO_ACTIVE: '&cHay no Powders activos ahora mismo.'
 ## {user} {total}
-STAR_CANCEL_SUCCESS: '&7Cancelado todos Powders con éxito! ({total} total)'
+STAR_CANCEL_SUCCESS: '&7¡Cancelado todos Powders con éxito! ({total} total)'
 ## {user}
 CANCEL_SPECIFY: '&cPor favor especifica un Powder.'
 ## {user} {powder}
@@ -63,7 +65,7 @@ ATTACH_SUCCESS_ENTITY: '&7Atribuyó ''{powder}'' con ''{entity}'' con éxito.'
 ## {user} {command}
 CREATE_SYNTAX: '&c/{command} create <name> <Powder>'
 ## {user} {name} {powder}
-CREATE_ALREADY_EXISTS: '&cUn Powder activo con este nombre está activo ya!'
+CREATE_ALREADY_EXISTS: '&c¡Un Powder activo con este nombre está activo ya!'
 ## {user} {powder}
 CREATE_UNKNOWN: '&cPowder desconocido ''{powder}''.'
 ## {user} {powder} {name}
@@ -120,19 +122,19 @@ NEARBY_CLICK: '/{command} remove {name}'
 ## {powder}
 POWDER_NO_PERMISSION: '&cNo tienes permiso a usar el Powder ''{powder}''.'
 ## {user} {powder} {total}
-POWDER_CANCEL_SUCCESS: '&7Powder ''{powder}'' canceled! ({total} total)'
+POWDER_CANCEL_SUCCESS: '&7¡Powder ''{powder}'' canceled! ({total} total)'
 ## {user} {powder}
 POWDER_CANCEL_FAILURE: '&cThere are no ''{powder}'' Powders you are running.'
 ## {user} {powder}
-POWDER_CANCEL_SINGLE_SUCCESS: '&7Powder ''{powder}'' está cancelado!'
+POWDER_CANCEL_SINGLE_SUCCESS: '&7¡Powder ''{powder}'' está cancelado!'
 ## {user} {powder}
 POWDER_CANCEL_SINGLE_FAILURE: '&cHay no ''{powder}'' Powders activos.'
 ## {user} {powder} {total}
-POWDER_MAX_PREFIX: '&cTu ya tienes {total} Powders activan ahora mismo!'
+POWDER_MAX_PREFIX: '&c¡Tu ya tienes {total} Powders activan ahora mismo!'
 ## {user} {powder} {seconds}
 POWDER_WAIT: '&cPor favor espere {seconds} segundos antes de usar un Powder.'
 ## {user} {command} {powder}
-POWDER_CREATED: '&7Powder ''{powder}'' creado! Haga clic a cancelar.'
+POWDER_CREATED: '&7¡Powder ''{powder}'' creado! Haga clic a cancelar.'
 ## {user} {command} {powder}
 POWDER_CREATED_HOVER: '&eHaga clic a cancelar ''{powder}''.'
 ## {user} {command} {powder}
@@ -140,11 +142,10 @@ POWDER_CREATED_CLICK: '/{command} {powder} cancel'
 ## {user} {command}
 POWDER_CREATED_TIP: '&7Consejo: Cancele con ''/{command} <Powder> cancel''.'
 ## {user} {command}
-POWDER_CREATED_WITHOUT_HOVER: '&7Powder ''{powder}'' creado!'
+POWDER_CREATED_WITHOUT_HOVER: '&7¡Powder ''{powder}'' creado!'
 HELP_PREFIX: '&7Powder Ayuda'
 HELP_POWDER: '&d/powder <Powder> &7- Use un Powder'
 HELP_POWDER_CANCEL: '&d/powder <Powder> cancel &7- Cancele un Powder'
-HELP_POWDER_STAR_CANCEL: '&d/powder * cancel &7- Cancele todos Powders'
 HELP_ACTIVE: '&d/powder active &7- Liste o cancele Powders activos'
 HELP_LIST: '&d/powder list [page] &7- Liste Powders por página'
 HELP_CATEGORIES: '&d/powder categories [page] &7- Liste todas categorías'
@@ -153,6 +154,7 @@ HELP_SEARCH: '&d/powder search <term> [page] &7- Busque para un Powder'
 HELP_RELOAD: '&d/powder reload &7- Recargue Powder'
 HELP_NEARBY: '&d/powder nearby &7- Mostre Powders cercanos'
 HELP_CREATE: '&d/powder create <name> <Powder> &7- Cree un Powder nombrado a tu posición'
+HELP_CREATED: '&d/powder created &7- Liste las Powders que has hecho'
 HELP_REMOVE: '&d/powder remove <name> &7- Quite un Powder nombrado'
 HELP_ATTACH: '&d/powder attach <Powder> &7- Adjunte un Powder a una entidad en frente de tu'
 HELP_ADDTO: '&d/powder addto <name> <Powder> &7- Añada un Powder a un Powder ya creado'

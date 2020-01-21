@@ -66,13 +66,13 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			return true;
 		}
 
+		Player player = (Player) sender;
+
 		if (PowderPlugin.isLoading()) {
-			// IS_LOADING enum
-			sender.sendMessage("Powder is currently loading, please wait until it loads!");
+			PowderUtil.sendPrefixMessage(player, 
+					Message.GENERAL_NO_PERMISSION, label, player.getName());
 			return false;
 		}
-
-		Player player = (Player) sender;
 
 		// if no permission for using the command itself
 		if (!(player.hasPermission("powder.command"))) {

@@ -7,6 +7,8 @@ PREFIX_CLICK: '/{command}'
 ## {user}
 GENERAL_NO_PERMISSION: 'You don''t have permission to do this.'
 ## {user}
+GENERAL_LOADING: '&7Powder is currently loading, please wait until it loads!'
+## {user}
 LOADING_ALERT: '&7Your Powders were canceled due to a reload.'
 ## {user}
 LOADING_ALREADY: '&cYou can''t reload while reloading!'
@@ -158,6 +160,7 @@ HELP_SEARCH: '&d/powder search <term> [page] &7- Search for a Powder'
 HELP_RELOAD: '&d/powder reload &7- Reload Powder'
 HELP_NEARBY: '&d/powder nearby &7- Show nearby Powders'
 HELP_CREATE: '&d/powder create <name> <Powder> &7- Creates a named Powder at your location'
+HELP_CREATED: '&d/powder created &7- Lists the Powders you have made'
 HELP_REMOVE: '&d/powder remove <name> &7- Removes a named Powder'
 HELP_ATTACH: '&d/powder attach <Powder> &7- Attaches a powder to an entity in front of you'
 HELP_ADDTO: '&d/powder addto <name> <Powder> &7- Adds a Powder to an existing named Powder'

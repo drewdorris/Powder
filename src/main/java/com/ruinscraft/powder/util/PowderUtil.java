@@ -163,7 +163,6 @@ public class PowderUtil {
 		List<BaseComponent> texts = new ArrayList<>();
 		texts.add(getMessage(Message.HELP_POWDER));
 		texts.add(getMessage(Message.HELP_POWDER_CANCEL));
-		texts.add(getMessage(Message.HELP_POWDER_STAR_CANCEL));
 		texts.add(getMessage(Message.HELP_ACTIVE));
 		texts.add(getMessage(Message.HELP_LIST));
 		if (PowderPlugin.get().getPowderHandler().categoriesEnabled()) {
@@ -179,6 +178,7 @@ public class PowderUtil {
 		}
 		if (player.hasPermission("powder.create")) {
 			texts.add(getMessage(Message.HELP_CREATE));
+			texts.add(getMessage(Message.HELP_CREATED));
 		}
 		if (player.hasPermission("powder.remove")) {
 			texts.add(getMessage(Message.HELP_REMOVE));
