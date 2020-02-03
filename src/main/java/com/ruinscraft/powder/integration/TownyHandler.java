@@ -1,6 +1,5 @@
 package com.ruinscraft.powder.integration;
 
-import java.util.Map.Entry;
 import java.util.Arrays;
 import java.util.List;
 import java.util.UUID;
@@ -80,16 +79,13 @@ public class TownyHandler implements Listener {
 
 		int amntInTown = 0;
 		for (PowderTask powderTask : userCreatedPowders) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
+			Tracker tracker = powderTask.getTracker();
 
-				Location trackerLocation = tracker.getCurrentLocation();
-				if (townyAPI.getTownUUID(trackerLocation) != null) {
-					if (townyAPI.getTownUUID(trackerLocation).equals(town.getUuid())) {
-						amntInTown++;
-					}
+			Location trackerLocation = tracker.getCurrentLocation();
+			if (townyAPI.getTownUUID(trackerLocation) != null) {
+				if (townyAPI.getTownUUID(trackerLocation).equals(town.getUuid())) {
+					amntInTown++;
 				}
-
 			}
 		}
 		if (amntInTown > this.maxPerTown) return false; 
@@ -295,13 +291,11 @@ public class TownyHandler implements Listener {
 	@EventHandler
 	public void onTownUnclaimEvent(TownUnclaimEvent event) {
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-				Location trackerSpot = tracker.getCurrentLocation();
-				if (townyAPI.getTownUUID(trackerSpot) == null) {
-					powderTask.removePowder(entry.getKey());
-					continue;
-				}
+			Tracker tracker = powderTask.getTracker();
+			Location trackerSpot = tracker.getCurrentLocation();
+			if (townyAPI.getTownUUID(trackerSpot) == null) {
+				powderTask.cancel();
+				continue;
 			}
 		}
 	}
@@ -313,15 +307,10 @@ public class TownyHandler implements Listener {
 		if (town == null) return;
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Powder powder = entry.getKey();
-				Tracker tracker = entry.getValue();
+			UUID townUUID = townyAPI.getTownUUID(powderTask.getTracker().getCurrentLocation());
 
-				UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
-
-				if (town.getUuid().equals(townUUID)) {
-					powderTask.removePowder(powder);
-				}
+			if (town.getUuid().equals(townUUID)) {
+				powderTask.cancel();
 			}
 		}
 	}
@@ -342,44 +331,41 @@ public class TownyHandler implements Listener {
 		}
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Powder powder = entry.getKey();
-				StationaryTracker tracker = (StationaryTracker) entry.getValue();
+			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();
 
-				UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
-				if (townUUID == null) {
-					powderTask.removePowder(powder);
-					continue;
-				}
+			UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());
+			if (townUUID == null) {
+				powderTask.cancel();
+				continue;
+			}
 
-				if (town.getUuid().equals(townUUID)) {
-					UUID creator = tracker.getCreator();
-					if (uuid != null) {
-						if (creator.equals(uuid)) {
-							powderTask.removePowder(powder);
+			if (town.getUuid().equals(townUUID)) {
+				UUID creator = tracker.getCreator();
+				if (uuid != null) {
+					if (creator.equals(uuid)) {
+						powderTask.cancel();
+						continue;
+					}
+
+					OfflinePlayer powderPlayer = Bukkit.getOfflinePlayer(creator);
+					if (powderPlayer == null) {
+						powderTask.cancel();
+						continue;
+					}
+
+					if (player != null) {
+						if (powderPlayer.getName().equals(player.getName()) ||
+								powderPlayer.getUniqueId().equals(player.getUniqueId())) {
+							powderTask.cancel();
 							continue;
 						}
+					}
 
-						OfflinePlayer powderPlayer = Bukkit.getOfflinePlayer(creator);
-						if (powderPlayer == null) {
-							powderTask.removePowder(powder);
-							continue;
-						}
-
-						if (player != null) {
-							if (powderPlayer.getName().equals(player.getName()) ||
-									powderPlayer.getUniqueId().equals(player.getUniqueId())) {
-								powderTask.removePowder(powder);
-								continue;
-							}
-						}
-
-						try {
-							TownyAPI.getInstance().getDataSource().getResident(powderPlayer.getName());
-						} catch (NotRegisteredException e) {
-							powderTask.removePowder(powder);
-							continue;
-						}
+					try {
+						TownyAPI.getInstance().getDataSource().getResident(powderPlayer.getName());
+					} catch (NotRegisteredException e) {
+						powderTask.cancel();
+						continue;
 					}
 				}
 			}

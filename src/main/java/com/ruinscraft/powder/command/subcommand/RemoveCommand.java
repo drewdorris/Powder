@@ -8,7 +8,6 @@ import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.command.SubCommand;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.PowderTask;
-import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
 
 public class RemoveCommand implements SubCommand {
@@ -77,23 +76,21 @@ public class RemoveCommand implements SubCommand {
 				return;
 			}
 
-			PowderTask task = powderHandler.getPowderTask(name);
-			if (task == null) {
+			PowderTask powderTask = powderHandler.getPowderTask(name);
+			if (powderTask == null) {
 				PowderUtil.sendPrefixMessage(player,
 						Message.REMOVE_NO_USER_DOES_NOT_EXIST,
 						label, player.getName(), name);
 				return;
 			}
 			if (!(player.hasPermission("powder.removeany"))) {
-				for (Tracker tracker : task.getPowders().values()) {
-					if (!tracker.hasControl(player)) {
-						PowderUtil.sendPrefixMessage(player,
-								Message.GENERAL_NO_PERMISSION, label, player.getName());
-						return;
-					}
+				if (!powderTask.getTracker().hasControl(player)) {
+					PowderUtil.sendPrefixMessage(player,
+							Message.GENERAL_NO_PERMISSION, label, player.getName());
+					return;
 				}
 			}
-			if (powderHandler.cancelPowderTask(task)) {
+			if (powderHandler.cancelPowderTask(powderTask)) {
 				PowderUtil.sendPrefixMessage(player, Message.REMOVE_NO_USER_SUCCESS,
 						label, player.getName(), name);
 			} else {

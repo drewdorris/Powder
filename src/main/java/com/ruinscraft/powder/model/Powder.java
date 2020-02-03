@@ -160,6 +160,10 @@ public class Powder implements Cloneable {
 		this.defaultAddedTilt = defaultAddedTilt;
 	}
 
+	public boolean hasPowderElements() {
+		return powderElements.size() != 0;
+	}
+
 	public List<PowderElement> getPowderElements() {
 		return powderElements;
 	}
@@ -325,6 +329,9 @@ public class Powder implements Cloneable {
 					int dist = particle.getX();
 					if (max < dist * spacing) max = dist * spacing;
 				}
+			} else if (element instanceof Dust) {
+				Dust dust = (Dust) element;
+				if (max < dust.getRadius()) max = dust.getRadius();
 			}
 		}
 		return max;

@@ -55,11 +55,12 @@ public class CancelCommand implements SubCommand {
 			}
 		}
 		PowderTask powderTask = powderHandler.getPowderTask(powderTaskName);
-		if (!player.hasPermission("powder.cancel") &&
-				!powderTask.getUUIDsIfExist().contains(player.getUniqueId())) {
-			PowderUtil.sendPrefixMessage(player, Message.CANCEL_FAILURE,
-					label, player.getName(), powderTaskName);
-			return;
+		if (!player.hasPermission("powder.cancel")) {
+			if (!powderTask.getTracker().hasControl(player)) {
+				PowderUtil.sendPrefixMessage(player, Message.CANCEL_FAILURE,
+						label, player.getName(), powderTaskName);
+				return;
+			}
 		}
 		if (powderTask == null) {
 			PowderUtil.sendPrefixMessage(player, Message.CANCEL_UNKNOWN_SPECIFY,

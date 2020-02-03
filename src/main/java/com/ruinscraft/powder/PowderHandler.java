@@ -101,13 +101,11 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Tracker tracker : powderTask.getPowders().values()) {
-				if (tracker.getType() == Tracker.Type.ENTITY) {
-					EntityTracker entityTracker = (EntityTracker) tracker;
-					if (entityTracker.getUUID().equals(uuid)) {
-						playerPowderTasks.add(powderTask);
-						break;
-					}
+			if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
+				EntityTracker entityTracker = (EntityTracker) powderTask.getTracker();
+				if (entityTracker.getUUID().equals(uuid)) {
+					playerPowderTasks.add(powderTask);
+					break;
 				}
 			}
 		}
@@ -118,15 +116,13 @@ public class PowderHandler {
 	public Set<PowderTask> getPowderTasks(UUID uuid, Powder powder) {
 		Set<PowderTask> playerPowderTasks = new HashSet<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-				if (powder.getName().equals(entry.getKey().getName())) {
-					if (tracker.getType() == Tracker.Type.ENTITY) {
-						EntityTracker entityTracker = (EntityTracker) tracker;
-						if (entityTracker.getUUID().equals(uuid)) {
-							playerPowderTasks.add(powderTask);
-							break;
-						}
+			Tracker tracker = powderTask.getTracker();
+			if (powder.getName().equals(powderTask.getPowder().getName())) {
+				if (tracker.getType() == Tracker.Type.ENTITY) {
+					EntityTracker entityTracker = (EntityTracker) tracker;
+					if (entityTracker.getUUID().equals(uuid)) {
+						playerPowderTasks.add(powderTask);
+						break;
 					}
 				}
 			}
@@ -142,13 +138,12 @@ public class PowderHandler {
 		List<PowderTask> powderTasks = new ArrayList<>();
 
 		for (PowderTask powderTask : this.getCreatedPowderTasks()) {
-			for (Tracker tracker : powderTask.getPowders().values()) {
-				StationaryTracker stationaryTracker = (StationaryTracker) tracker;
-				UUID trackerUUID = stationaryTracker.getCreator();
-				if (trackerUUID.equals(uuid)) {
-					powderTasks.add(powderTask);
-					break;
-				}
+			if (powderTask.getTracker().getType() != Tracker.Type.STATIONARY) continue; 
+			StationaryTracker stationaryTracker = (StationaryTracker) powderTask.getTracker();
+			UUID trackerUUID = stationaryTracker.getCreator();
+			if (trackerUUID.equals(uuid)) {
+				powderTasks.add(powderTask);
+				break;
 			}
 		}
 
@@ -159,7 +154,7 @@ public class PowderHandler {
 		List<PowderTask> powderTasks = new ArrayList<>();
 
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getPowderTasks()) {
-			if (powderTask.getTrackerType() == Tracker.Type.STATIONARY) {
+			if (powderTask.getTracker().getType() == Tracker.Type.STATIONARY) {
 				powderTasks.add(powderTask);
 			}
 		}
@@ -205,15 +200,13 @@ public class PowderHandler {
 		Map<PowderTask, Integer> nearbyPowderTasks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
 			int taskRange = Integer.MAX_VALUE;
-			for (Powder powder : powderTask.getPowders().keySet()) {
-				Location otherLocation = powderTask.getPowders().get(powder).getCurrentLocation();
-				if (!otherLocation.getWorld().equals(location.getWorld())) {
-					continue;
-				}
-				int distance = (int) location.distance(otherLocation);
-				if (distance < taskRange) {
-					taskRange = distance;
-				}
+			Location otherLocation = powderTask.getTracker().getCurrentLocation();
+			if (!otherLocation.getWorld().equals(location.getWorld())) {
+				continue;
+			}
+			int distance = (int) location.distance(otherLocation);
+			if (distance < taskRange) {
+				taskRange = distance;
 			}
 			if (taskRange < range) {
 				nearbyPowderTasks.put(powderTask, taskRange);
@@ -225,12 +218,9 @@ public class PowderHandler {
 	public Map<Powder, EntityTracker> getCurrentEntityTracks() {
 		Map<Powder, EntityTracker> entityTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-				if (tracker.getType() == Tracker.Type.ENTITY) {
-					entityTracks.put(entry.getKey(), (EntityTracker) tracker);
-					break;
-				}
+			if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
+				entityTracks.put(powderTask.getPowder(), (EntityTracker) powderTask.getTracker());
+				break;
 			}
 		}
 		return entityTracks;
@@ -239,12 +229,9 @@ public class PowderHandler {
 	public Map<Powder, StationaryTracker> getCurrentStationaryTracks() {
 		Map<Powder, StationaryTracker> stationaryTracks = new HashMap<>();
 		for (PowderTask powderTask : this.powderTasks) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-				if (tracker.getType() == Tracker.Type.STATIONARY) {
-					stationaryTracks.put(entry.getKey(), (StationaryTracker) tracker);
-					break;
-				}
+			if (powderTask.getTracker().getType() == Tracker.Type.STATIONARY) {
+				stationaryTracks.put(powderTask.getPowder(), (StationaryTracker) powderTask.getTracker());
+				break;
 			}
 		}
 		return stationaryTracks;
@@ -252,10 +239,8 @@ public class PowderHandler {
 
 	public PowderTask getPowderTask(Powder powder, Tracker tracker) {
 		for (PowderTask powderTask : this.powderTasks) {
-			if (powderTask.getPowders().containsKey(powder) &&
-					powderTask.getPowders().containsValue(tracker)) {
-				return powderTask;
-			}
+			if (powder.equals(powderTask.getPowder()) && 
+					tracker.equals(powderTask.getTracker())) return powderTask;
 		}
 		return null;
 	}
@@ -267,17 +252,16 @@ public class PowderHandler {
 
 	// adds a PowderTask
 	public void runPowderTask(PowderTask powderTask) {
-		for (Powder powder : powderTask.getPowders().keySet()) {
-			for (PowderElement powderElement : powder.getPowderElements()) {
-				if (powderElement.getLockedIterations() == 0) {
-					powderElement.setLockedIterations(Integer.MAX_VALUE);
-				}
-				powderElement.setStartingTick();
+		if (powderTask == null || powderTask.getPowder() == null) return;
+		for (PowderElement powderElement : powderTask.getPowder().getPowderElements()) {
+			if (powderElement.getLockedIterations() == 0) {
+				powderElement.setLockedIterations(Integer.MAX_VALUE);
 			}
+			powderElement.setStartingTick();
 		}
 		this.powderTasks.add(powderTask);
-		if (!powderTask.getUUIDsIfExist().isEmpty()) {
-			PowderUtil.savePowdersForUUIDs(powderTask.getUUIDsIfExist());
+		if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
+			PowderUtil.savePowdersForUUID(((EntityTracker) powderTask.getTracker()).getUUID());
 		}
 		if (!ConfigUtil.containsTask(powderTask)) {
 			ConfigUtil.saveStationaryPowder(
@@ -288,7 +272,7 @@ public class PowderHandler {
 	// removes/ends a PowderTask
 	public boolean cancelPowderTask(PowderTask powderTask) {
 		boolean removal = this.powderTasks.remove(powderTask);
-		PowderUtil.savePowdersForUUIDs(powderTask.cancel());
+		PowderUtil.savePowdersForUUID(powderTask.cancel());
 		ConfigUtil.removeStationaryPowder(powderTask);
 		return removal;
 	}
@@ -305,7 +289,7 @@ public class PowderHandler {
 		Set<UUID> uuids = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
 			ConfigUtil.removeStationaryPowder(powderTask);
-			uuids.addAll(powderTask.cancel());
+			uuids.add(powderTask.cancel());
 		}
 		PowderUtil.savePowdersForUUIDs(uuids);
 		return removal;

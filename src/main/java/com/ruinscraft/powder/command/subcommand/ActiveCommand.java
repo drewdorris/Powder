@@ -9,7 +9,6 @@ import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.command.SubCommand;
 import com.ruinscraft.powder.model.Message;
-import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.util.PowderUtil;
 
@@ -38,11 +37,7 @@ public class ActiveCommand implements SubCommand {
 		}
 		List<BaseComponent> textComponents = new ArrayList<>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-			String powderName = "null";
-			for (Powder taskPowder : powderTask.getPowders().keySet()) {
-				powderName = taskPowder.getName();
-				break;
-			}
+			String powderName = powderTask.getPowder().getName();
 			BaseComponent baseComponent = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
 					Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK,
 					player.getName(), label, powderName);

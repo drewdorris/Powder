@@ -3,7 +3,6 @@ package com.ruinscraft.powder.command;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.command.subcommand.ActiveCommand;
-import com.ruinscraft.powder.command.subcommand.AddtoCommand;
 import com.ruinscraft.powder.command.subcommand.AttachCommand;
 import com.ruinscraft.powder.command.subcommand.CancelCommand;
 import com.ruinscraft.powder.command.subcommand.CategoriesCommand;
@@ -15,7 +14,6 @@ import com.ruinscraft.powder.command.subcommand.ListCommand;
 import com.ruinscraft.powder.command.subcommand.NearbyCommand;
 import com.ruinscraft.powder.command.subcommand.ReloadCommand;
 import com.ruinscraft.powder.command.subcommand.RemoveCommand;
-import com.ruinscraft.powder.command.subcommand.RemovefromCommand;
 import com.ruinscraft.powder.command.subcommand.SearchCommand;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
@@ -38,7 +36,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			new HelpCommand(), new ReloadCommand(), new ListCommand(), 
 			new CancelCommand(), new ActiveCommand(), new CategoriesCommand(), new CategoryCommand(),
 			new SearchCommand(), new AttachCommand(), new CreateCommand(), new CreatedCommand(),
-			new AddtoCommand(), new RemovefromCommand(), new RemoveCommand(), new NearbyCommand()));
+			new RemoveCommand(), new NearbyCommand()));
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
@@ -202,10 +200,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 					label, player.getName(), args[0], String.valueOf(maxSize));
 			List<BaseComponent> texts = new ArrayList<>();
 			for (PowderTask powderTask : powderHandler.getPowderTasks(player.getUniqueId())) {
-				String powderName = "null";
-				for (Powder taskPowder : powderTask.getPowders().keySet()) {
-					powderName = taskPowder.getName();
-				}
+				String powderName = powderTask.getPowder().getName();
 				BaseComponent baseComponent = PowderUtil.setTextHoverAndClick(Message.ACTIVE_POWDER,
 						Message.ACTIVE_POWDER_HOVER, Message.ACTIVE_POWDER_CLICK,
 						player.getName(), label, powderName);
@@ -310,10 +305,8 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				}
 			} else if (args[0].equalsIgnoreCase("cancel")) {
 				for (PowderTask task : PowderPlugin.get().getPowderHandler().getPowderTasks(player.getUniqueId())) {
-					for (Powder powder : task.getPowders().keySet()) {
-						if (powder.getName().toLowerCase().startsWith(args[1])) {
-							strings.add(powder.getName());
-						}
+					if (task.getPowder().getName().toLowerCase().startsWith(args[1])) {
+						strings.add(task.getPowder().getName());
 					}
 					if (task.getName().toLowerCase().startsWith(args[1])) {
 						strings.add(task.getName());

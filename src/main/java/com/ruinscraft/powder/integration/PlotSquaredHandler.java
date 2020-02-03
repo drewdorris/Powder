@@ -1,7 +1,6 @@
 package com.ruinscraft.powder.integration;
 
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -67,15 +66,13 @@ public class PlotSquaredHandler implements Listener {
 
 		int amntInPlot = 0;
 		for (PowderTask powderTask : userCreatedPowders) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Tracker tracker = entry.getValue();
-
-				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
-				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
-						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
-				
-				if (location.getPlotAbs().equals(plot)) amntInPlot++;
-			}
+			Tracker tracker = powderTask.getTracker();
+			
+			org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+			Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+					bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+			
+			if (location.getPlotAbs().equals(plot)) amntInPlot++;
 		}
 		if (amntInPlot > this.maxPerPlot) return false;
 
@@ -206,48 +203,37 @@ public class PlotSquaredHandler implements Listener {
 		return true;
 	}
 
+	/**
+	 * Handles Powders within emptied (cleared/deleted) plots
+	 * @param plot
+	 */
+	public void checkEmptiedPlot(Plot plot) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+			Powder powder = powderTask.getPowder();
+			Tracker tracker = powderTask.getTracker();
+
+			org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+			Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+					bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+
+			if (location.getPlot().equals(plot)) {
+				powderTask.cancel();
+			} else if (!checkLocationWithoutPlayer(powder, location)) {
+				powderTask.cancel();
+			}
+		}
+	}
+
 	// removes Powders in a cleared plot
 	@EventHandler
 	public void onPlotClear(PlotClearEvent event) {
-		Plot plot = event.getPlot();
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Powder powder = entry.getKey();
-				Tracker tracker = entry.getValue();
-
-				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
-				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
-						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
-
-				if (location.getPlot().equals(plot)) {
-					powderTask.removePowder(powder);
-				} else if (!checkLocationWithoutPlayer(powder, location)) {
-					powderTask.removePowder(powder);
-				}
-			}
-		}
+		checkEmptiedPlot(event.getPlot());
 	}
 
 	// removes Powders in a deleted/unclaimed plot
 	@EventHandler
 	public void onPlotDelete(PlotDeleteEvent event) {
-		Plot plot = event.getPlot();
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Powder powder = entry.getKey();
-				Tracker tracker = entry.getValue();
-
-				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
-				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
-						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
-
-				if (location.getPlot().equals(plot)) {
-					powderTask.removePowder(powder);
-				} else if (!checkLocationWithoutPlayer(powder, location)) {
-					powderTask.removePowder(powder);
-				}
-			}
-		}
+		checkEmptiedPlot(event.getPlot());
 	}
 
 	// removes Powders if the owner of them is removed from the plot
@@ -256,14 +242,12 @@ public class PlotSquaredHandler implements Listener {
 		if (event.wasAdded()) return;
 		UUID uuid = event.getPlayer();
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				StationaryTracker tracker = (StationaryTracker) entry.getValue();
-				if (!tracker.getCreator().equals(uuid)) continue;
+			if (powderTask.getTracker().getType() != Tracker.Type.STATIONARY) continue;
+			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();
+			if (!tracker.getCreator().equals(uuid)) continue;
 
-				Powder powder = entry.getKey();
-				if (!this.hasPermissionForPowder(uuid, event.getPlot())) {
-					powderTask.removePowder(powder);
-				}
+			if (!this.hasPermissionForPowder(uuid, event.getPlot())) {
+				powderTask.cancel();
 			}
 		}
 	}
@@ -272,17 +256,16 @@ public class PlotSquaredHandler implements Listener {
 	@EventHandler
 	public void onPlotUnlinkEvent(PlotUnlinkEvent event) {
 		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
-			for (Entry<Powder, Tracker> entry : powderTask.getPowders().entrySet()) {
-				Powder powder = entry.getKey();
-				StationaryTracker tracker = (StationaryTracker) entry.getValue();
+			if (powderTask.getTracker().getType() != Tracker.Type.STATIONARY) continue;
 
-				org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
-				Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
-						bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();
 
-				if (location.isPlotRoad() || location.getPlot() == null) {
-					powderTask.removePowder(powder);
-				}
+			org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
+			Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
+					bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
+
+			if (location.isPlotRoad() || location.getPlot() == null) {
+				powderTask.cancel();
 			}
 		}
 	}

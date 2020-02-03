@@ -581,10 +581,8 @@ public class PowderUtil {
 		PowderHandler powderHandler = plugin.getPowderHandler();
 		List<String> enabledPowders = new ArrayList<>();
 		for (PowderTask powderTask : powderHandler.getPowderTasks(uuid)) {
-			for (Powder powder : powderTask.getPowders().keySet()) {
-				if (powder.hasMovement()) {
-					enabledPowders.add(powder.getName());
-				}
+			if (powderTask.getPowder().hasMovement()) {
+				enabledPowders.add(powderTask.getPowder().getName());
 			}
 		}
 		return enabledPowders;
