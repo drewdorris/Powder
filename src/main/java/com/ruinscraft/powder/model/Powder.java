@@ -256,6 +256,14 @@ public class Powder implements Cloneable {
 		return false;
 	}
 
+	public void spawn(Entity entity, UUID creator) {
+		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
+			PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
+					PowderUtil.generateID(8), this.clone(), new EntityTracker(entity, creator));
+			spawn(powderTask);
+		});
+	}
+
 	public void spawn(Entity entity, Player creator) {
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
 			PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +

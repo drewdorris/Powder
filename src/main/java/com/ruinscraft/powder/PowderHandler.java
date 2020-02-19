@@ -45,7 +45,7 @@ public class PowderHandler {
 				if (PowderPlugin.isLoading()) {
 					return;
 				}
-				PowderUtil.loadPowdersForUUIDs(new HashSet<>(this.entitiesToLoad));
+				ConfigUtil.loadAllAttached(this.entitiesToLoad);
 				this.entitiesToLoad.clear();
 			}, 0L, 20L);
 		}
@@ -272,26 +272,36 @@ public class PowderHandler {
 	// removes/ends a PowderTask
 	public boolean cancelPowderTask(PowderTask powderTask) {
 		boolean removal = this.powderTasks.remove(powderTask);
-		PowderUtil.savePowdersForUUID(powderTask.cancel());
-		ConfigUtil.removeStationaryPowder(powderTask);
+
+		if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
+			EntityTracker tracker = (EntityTracker) powderTask.getTracker();
+			if (tracker.isPlayer()) {
+				PowderUtil.savePowdersForUUID(powderTask.cancel());
+			} else {
+				ConfigUtil.removeAttached(tracker.getUUID());
+			}
+		} else if (powderTask.getTracker().getType() == Tracker.Type.STATIONARY) { 
+			ConfigUtil.removeStationaryPowder(powderTask);
+		}
 		return removal;
 	}
 
 	// removes/ends a PowderTask
 	public boolean cancelPowderTaskWithoutSaving(PowderTask powderTask) {
 		ConfigUtil.removeStationaryPowder(powderTask);
+		if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
+			EntityTracker tracker = (EntityTracker) powderTask.getTracker();
+			ConfigUtil.removeAttached(tracker.getUUID());
+		}
 		return this.powderTasks.remove(powderTask);
 	}
 
 	// removes/ends a PowderTask
 	public boolean cancelPowderTasks(Collection<PowderTask> powderTasks) {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
-		Set<UUID> uuids = new HashSet<>();
 		for (PowderTask powderTask : powderTasks) {
-			ConfigUtil.removeStationaryPowder(powderTask);
-			uuids.add(powderTask.cancel());
+			cancelPowderTask(powderTask);
 		}
-		PowderUtil.savePowdersForUUIDs(uuids);
 		return removal;
 	}
 
@@ -299,7 +309,7 @@ public class PowderHandler {
 	public boolean cancelPowderTasksWithoutSaving(Collection<PowderTask> powderTasks) {
 		boolean removal = this.powderTasks.removeAll(powderTasks);
 		for (PowderTask powderTask : powderTasks) {
-			ConfigUtil.removeStationaryPowder(powderTask);
+			cancelPowderTaskWithoutSaving(powderTask);
 		}
 		return removal;
 	}

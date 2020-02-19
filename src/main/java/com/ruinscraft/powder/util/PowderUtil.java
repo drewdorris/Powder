@@ -590,6 +590,11 @@ public class PowderUtil {
 
 	// loads and creates a Powder (used for storage loading)
 	public static void createPowderFromName(UUID uuid, String powderName) {
+		createPowderFromName(uuid, powderName, false);
+	}
+
+	// loads and creates a Powder (used for storage loading)
+	public static void createPowderFromName(UUID uuid, String powderName, boolean loop) {
 		PowderHandler powderHandler = plugin.getPowderHandler();
 
 		Powder powder = powderHandler.getPowder(powderName);
@@ -597,6 +602,8 @@ public class PowderUtil {
 		if (powder == null) {
 			return;
 		}
+
+		if (loop) powder = powder.loop();
 
 		Player player = Bukkit.getPlayer(uuid);
 		Entity entity = Bukkit.getEntity(uuid);
@@ -606,7 +613,7 @@ public class PowderUtil {
 			}
 			powder.spawn(player);
 		} else if (entity != null) {
-			powder.spawn(entity, null);
+			// this shouldn't happen now
 		}
 	}
 

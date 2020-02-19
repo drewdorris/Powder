@@ -21,6 +21,7 @@ import org.bukkit.entity.Projectile;
 import java.io.*;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -761,6 +762,62 @@ public class ConfigUtil {
 
 		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
 				new EntityTracker(hitEntity, creator));
+	}
+
+	public static void saveAttached(Entity entity, PowderTask powderTask) {
+		saveAttached(entity, powderTask.getPowder(), powderTask.getTracker().getCreator());
+	}
+
+	public static void saveAttached(Entity entity, Powder powder, UUID creator) {
+		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (playerdata == null) return;
+		playerdata.set(creator + ".attached" + entity.getUniqueId() + ".powder", powder.getName());
+		playerdata.set(creator + ".attached" + entity.getUniqueId() + ".loop", powder.isLooping());
+
+		saveFile(playerdata, PLAYER_DATA_FILE);
+	}
+
+	public static void removeAttached(UUID entityUUID) {
+		FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+
+		for (String uuid : playerDataFile.getKeys(false)) {
+			if (playerDataFile.getConfigurationSection(uuid + ".attached") == null) continue;
+			for (String otherEntityUUID : playerDataFile.getConfigurationSection(uuid + ".attached").getKeys(false)) {
+				if (!otherEntityUUID.equals(entityUUID.toString())) continue;
+				playerDataFile.set(uuid + ".attached." + otherEntityUUID, null);
+			}
+		}
+	}
+
+	public static void loadAllAttached(Collection<UUID> uuids) {
+		FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+
+		for (String uuid : playerDataFile.getKeys(false)) {
+			if (playerDataFile.getConfigurationSection(uuid + ".attached") == null) continue;
+			for (String entityUUID : playerDataFile.getConfigurationSection(uuid + ".attached").getKeys(false)) {
+				boolean toLoad = false;
+				for (UUID otherEntityUUID : uuids) {
+					if (entityUUID.equals(otherEntityUUID.toString())) {
+						toLoad = true;
+						break;
+					}
+				}
+				if (!toLoad) continue;
+
+				Entity entity = Bukkit.getEntity(UUID.fromString(entityUUID));
+				if (entity == null) continue;
+				UUID creator = UUID.fromString(uuid);
+				if (creator == null) continue;
+
+				String powderName = playerDataFile.getString(uuid + ".attached." + entityUUID + ".powder");
+				boolean loop = playerDataFile.getBoolean(uuid + ".attached." + entityUUID + ".loop");
+
+				Powder powder = PowderPlugin.get().getPowderHandler().getPowder(powderName);
+				if (powder == null) continue;
+				if (loop) powder = powder.loop();
+				powder.spawn(entity, creator);
+			}
+		}
 	}
 
 }
