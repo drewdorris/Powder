@@ -221,6 +221,7 @@ public class ParticleMatrix implements PowderElement {
 		return startTime;
 	}
 
+	@Override
 	public void setStartTime(int startTime) {
 		this.startTime = startTime;
 		this.nextTick = startTime;

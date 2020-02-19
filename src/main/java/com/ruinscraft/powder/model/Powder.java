@@ -16,6 +16,7 @@ import org.bukkit.entity.Player;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.UUID;
 
 public class Powder implements Cloneable {
@@ -191,11 +192,13 @@ public class Powder implements Cloneable {
 	}
 
 	public void removePowderElement(PowderElement powderElement) {
+		PowderElement elementToRemove = null;
 		for (PowderElement otherElement : this.powderElements) {
-			if (otherElement == powderElement) {
-				otherElement = null;
+			if (otherElement.equals(powderElement)) {
+				elementToRemove = otherElement;
 			}
 		}
+		this.powderElements.remove(elementToRemove);
 	}
 
 	public List<PowderParticle> getPowderParticles() {
@@ -253,11 +256,11 @@ public class Powder implements Cloneable {
 		return false;
 	}
 
-	public void spawn(Entity entity) {
+	public void spawn(Entity entity, Player creator) {
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
 			PowderTask powderTask = new PowderTask(PowderUtil.cleanEntityName(entity) + "--" +
 					PowderUtil.generateID(8), this.clone(), new EntityTracker(
-							entity, Bukkit.getPlayer(entity.getUniqueId()) != null,
+							entity, creator, Bukkit.getPlayer(entity.getUniqueId()) != null,
 							entity instanceof LivingEntity));
 			spawn(powderTask);
 		});
@@ -272,7 +275,7 @@ public class Powder implements Cloneable {
 	public void spawn(Player player) {
 		Bukkit.getScheduler().runTaskAsynchronously(PowderPlugin.get(), () -> {
 			PowderTask powderTask = new PowderTask(player.getName() + "--" + PowderUtil.generateID(6),
-					this.clone(), new EntityTracker(player.getUniqueId(), true, true));
+					this.clone(), new EntityTracker(player.getUniqueId(), player.getUniqueId(), true, true));
 			spawn(powderTask);
 		});
 	}
@@ -308,6 +311,72 @@ public class Powder implements Cloneable {
 		}
 
 		return powder;
+	}
+
+	// this makes the powder play for a couple secs and then the particles/etc fade out
+	// limit of 8 seconds; 20 * 8 = 160
+	public Powder arrowFadeout() {
+		Powder powder = this.clone();
+
+		List<PowderElement> newElements = new ArrayList<>();
+		for (int i = 0; i < powder.getPowderElements().size(); i++) {
+			PowderElement element = powder.getPowderElements().get(i);
+			// no more elements past 8 seconds!
+			if (element.getStartTime() >= 160) {
+				powder.removePowderElement(element);
+				i--;
+				continue;
+			}
+
+			if (element.getLockedIterations() > 1) {
+				for (int j = element.getStartTime() + element.getRepeatTime(); j <= 160; j+= element.getRepeatTime()) {
+					PowderElement newElement = element.clone();
+					newElement.setStartTime(j);
+					newElement.setLockedIterations(1);
+
+					newElement = makeFadeout(newElement);
+					if (newElement == null) continue;
+
+					newElements.add(newElement);
+				}
+				element.setLockedIterations(1);
+				element = makeFadeout(element);
+				if (element == null) {
+					powder.removePowderElement(element);
+					i--;
+					continue;
+				}
+			}
+		}
+		powder.addPowderElements(newElements);
+
+		return powder;
+	}
+
+	// 160 is limit; 8 seconds!
+	// last 3 seconds are fadeout; this is how much fadeout left
+	private double percentageLeft(int startTime) {
+		if (startTime <= 100) return 1;
+		if (startTime >= 160) return 0;
+		return ((startTime - 100) * (100/60)) / 100;
+	}
+
+	private PowderElement makeFadeout(PowderElement element) {
+		double percent = percentageLeft(element.getStartTime());
+		if (element instanceof SoundEffect) {
+			SoundEffect soundEffect = (SoundEffect) element;
+			soundEffect.setVolume(soundEffect.getVolume() * percent);
+		} else if (element instanceof ParticleMatrix) {
+			ParticleMatrix matrix = (ParticleMatrix) element;
+			Set<PositionedPowderParticle> particlesLeft = matrix.getParticles();
+			for (PositionedPowderParticle particle : matrix.getParticles()) {
+				if (PowderUtil.getRandom().nextDouble() > percent) particlesLeft.remove(particle);
+			}
+			matrix.setParticles(particlesLeft);
+		} else {
+			if (PowderUtil.getRandom().nextDouble() > percent) element = null;
+		}
+		return element;
 	}
 
 	public boolean isLooping() {

@@ -71,6 +71,12 @@ public class Dust implements PowderElement {
 	}
 
 	@Override
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
+		this.nextTick = startTime;
+	}
+
+	@Override
 	public int getRepeatTime() {
 		return repeatTime;
 	}

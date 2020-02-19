@@ -265,7 +265,7 @@ public class PowderHandler {
 		}
 		if (!ConfigUtil.containsTask(powderTask)) {
 			ConfigUtil.saveStationaryPowder(
-					PowderPlugin.get().getCreatedPowdersFile(), powderTask);
+					PowderPlugin.get().getPlayerDataFile(), powderTask);
 		}
 	}
 

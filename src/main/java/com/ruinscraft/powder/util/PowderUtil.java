@@ -606,7 +606,7 @@ public class PowderUtil {
 			}
 			powder.spawn(player);
 		} else if (entity != null) {
-			powder.spawn(entity);
+			powder.spawn(entity, null);
 		}
 	}
 

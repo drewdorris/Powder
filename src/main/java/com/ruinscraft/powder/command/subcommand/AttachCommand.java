@@ -99,9 +99,9 @@ public class AttachCommand implements SubCommand {
 		} else if (entity instanceof LivingEntity) {
 			LivingEntity livingEntity = (LivingEntity) entity;
 			livingEntity.setRemoveWhenFarAway(false);
-			newPowder.spawn(livingEntity);
+			newPowder.spawn(livingEntity, player);
 		} else {
-			newPowder.spawn(entity);
+			newPowder.spawn(entity, player);
 		}
 
 		PowderUtil.sendPrefixMessage(player, Message.ATTACH_SUCCESS_ENTITY,

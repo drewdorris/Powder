@@ -59,6 +59,10 @@ public class SoundEffect implements PowderElement {
 		return volume;
 	}
 
+	public void setVolume(double volume) {
+		this.volume = volume;
+	}
+
 	public double getPitch() {
 		return pitch;
 	}
@@ -70,6 +74,12 @@ public class SoundEffect implements PowderElement {
 	@Override
 	public int getStartTime() {
 		return startTime;
+	}
+
+	@Override
+	public void setStartTime(int startTime) {
+		this.startTime = startTime;
+		this.nextTick = startTime;
 	}
 
 	@Override

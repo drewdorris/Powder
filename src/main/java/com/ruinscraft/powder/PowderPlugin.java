@@ -32,7 +32,7 @@ public class PowderPlugin extends JavaPlugin {
 	private FileConfiguration config;
 	private int configVersion;
 	private List<FileConfiguration> powderConfigs;
-	private FileConfiguration createdPowders;
+	private FileConfiguration playerDataFile;
 
 	private static Map<Message, BaseComponent> messages;
 
@@ -98,7 +98,7 @@ public class PowderPlugin extends JavaPlugin {
 			if (useStorage()) {
 				PowderUtil.loadAllUUIDs();
 			}
-			this.createdPowders = ConfigUtil.loadCreatedPowders();
+			this.playerDataFile = ConfigUtil.loadPlayerDataFile();
 			isLoading = false;
 		});
 
@@ -131,7 +131,7 @@ public class PowderPlugin extends JavaPlugin {
 			loadPowdersFromSources();
 
 			PowderUtil.loadAllUUIDs();
-			this.createdPowders = ConfigUtil.loadCreatedPowders();
+			this.playerDataFile = ConfigUtil.loadPlayerDataFile();
 			isLoading = false;
 		});
 	}
@@ -188,12 +188,12 @@ public class PowderPlugin extends JavaPlugin {
 		return powderConfigs;
 	}
 
-	public FileConfiguration getCreatedPowdersFile() {
-		return createdPowders;
+	public FileConfiguration getPlayerDataFile() {
+		return this.playerDataFile;
 	}
 
-	public void setCreatedPowdersFile(FileConfiguration fileConfig) {
-		this.createdPowders = fileConfig;
+	public void setPlayerDataFile(FileConfiguration fileConfig) {
+		this.playerDataFile = fileConfig;
 	}
 
 	public Map<Message, BaseComponent> getMessages() {

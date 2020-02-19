@@ -15,21 +15,32 @@ import java.util.UUID;
 public class EntityTracker implements Tracker {
 
 	private UUID uuid;
+	private UUID creator;
 	private boolean isPlayer, isLiving;
 
 	private Location location;
 
-	public EntityTracker(Entity entity, boolean isPlayer, boolean isLiving) {
+	public EntityTracker(Entity entity, Player creator, boolean isPlayer, boolean isLiving) {
 		this.uuid = entity.getUniqueId();
+		this.creator = creator.getUniqueId();
 		this.isPlayer = isPlayer;
 		this.isLiving = isLiving;
 		refreshLocation();
 	}
 
-	public EntityTracker(UUID entityId, boolean isPlayer, boolean isLiving) {
+	public EntityTracker(UUID entityId, UUID creator, boolean isPlayer, boolean isLiving) {
 		this.uuid = entityId;
+		this.creator = creator;
 		this.isPlayer = isPlayer;
 		this.isLiving = isLiving;
+		refreshLocation();
+	}
+
+	public EntityTracker(UUID entityId, UUID creator) {
+		this.uuid = entityId;
+		this.creator = creator;
+		this.isPlayer = Bukkit.getEntity(entityId) instanceof Player;
+		this.isLiving = Bukkit.getEntity(entityId) instanceof LivingEntity;
 		refreshLocation();
 	}
 
@@ -39,6 +50,10 @@ public class EntityTracker implements Tracker {
 
 	public UUID getUUID() {
 		return uuid;
+	}
+
+	public UUID getCreator() {
+		return creator;
 	}
 
 	public boolean isPlayer() {
@@ -80,6 +95,9 @@ public class EntityTracker implements Tracker {
 
 	public Location getEntityLocation(UUID entityUUID) {
 		Entity entity = Bukkit.getEntity(uuid);
+		if (entity == null) {
+			Bukkit.getLogger().info("Entity null!");
+		}
 		if (isLiving()) {
 			return ((LivingEntity) entity).getEyeLocation();
 		} else {

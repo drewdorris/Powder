@@ -1,12 +1,17 @@
 package com.ruinscraft.powder;
 
+import com.ruinscraft.powder.model.PowderTask;
+import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.world.ChunkLoadEvent;
 
@@ -34,6 +39,35 @@ public class EnvironmentListener implements Listener {
 		Bukkit.getServer().getScheduler().runTaskAsynchronously(
 				PowderPlugin.get(),
 				() -> PowderUtil.loadUUID(player.getUniqueId()));
+	}
+
+	@EventHandler
+	public void onEntityShootBow(EntityShootBowEvent event) {
+		// put the trail powder on the arrow
+		if (event.getProjectile() == null || !(event.getProjectile() instanceof Projectile)) return;
+		Projectile projectile = (Projectile) event.getProjectile();
+
+		Bukkit.getScheduler().runTaskLater(PowderPlugin.get(), () -> {
+			PowderTask powderTask = ConfigUtil.loadArrowTrail(projectile, event.getEntity().getUniqueId());
+			if (powderTask == null) return;
+			PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
+		}, 1);
+	}
+
+	@EventHandler
+	public void onProjectileHit(ProjectileHitEvent event) {
+		Projectile entity = event.getEntity();
+		if (!(entity.getShooter() instanceof Player)) return;
+
+		Player shooter = (Player) entity.getShooter();
+		Entity hit = event.getHitEntity();
+		if (entity == null || hit == null) return;
+
+		Bukkit.getScheduler().runTaskLater(PowderPlugin.get(), () -> {
+			PowderTask powderTask = ConfigUtil.loadArrowHit(hit.getUniqueId(), shooter.getUniqueId());
+			if (powderTask == null) return;
+			PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
+		}, 1);
 	}
 
 }

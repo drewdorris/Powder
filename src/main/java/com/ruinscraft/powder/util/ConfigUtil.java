@@ -8,12 +8,14 @@ import com.ruinscraft.powder.model.particle.ModelPowderParticle;
 import com.ruinscraft.powder.model.particle.ParticleName;
 import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 import org.bukkit.*;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Projectile;
 
 import java.io.*;
 import java.net.URL;
@@ -24,6 +26,8 @@ import java.util.Set;
 import java.util.UUID;
 
 public class ConfigUtil {
+
+	private static final String PLAYER_DATA_FILE = "playerdata.yml";
 
 	public static FileConfiguration loadConfig() {
 		FileConfiguration config = null;
@@ -565,21 +569,21 @@ public class ConfigUtil {
 	}
 
 	public static boolean containsTask(PowderTask powderTask) {
-		FileConfiguration config = PowderPlugin.get().getCreatedPowdersFile();
+		FileConfiguration config = PowderPlugin.get().getPlayerDataFile();
 		if (config == null) {
 			return false;
 		}
-		if (config.getConfigurationSection("created."
+		if (config.getConfigurationSection(powderTask.getTracker().getCreator() + ".stationary."
 				+ PowderUtil.cleanPowderTaskName(powderTask)) == null) {
 			return false;
 		}
 		return true;
 	}
 
-	public static FileConfiguration loadCreatedPowders() {
+	public static FileConfiguration loadPlayerDataFile() {
 		FileConfiguration config = null;
 		PowderPlugin instance = PowderPlugin.get();
-		File configFile = new File(instance.getDataFolder(), "createdpowders.yml");
+		File configFile = new File(instance.getDataFolder(), PLAYER_DATA_FILE);
 		if (configFile.exists()) {
 			config = YamlConfiguration.loadConfiguration(configFile);
 		} else {
@@ -588,7 +592,7 @@ public class ConfigUtil {
 		if (config == null) {
 			return null;
 		}
-		PowderPlugin.get().setCreatedPowdersFile(config);
+		PowderPlugin.get().setPlayerDataFile(config);
 		Set<PowderTask> powderTasks = loadStationaryPowders();
 		for (PowderTask powderTask : powderTasks) {
 			instance.getPowderHandler().runPowderTask(powderTask);
@@ -597,57 +601,61 @@ public class ConfigUtil {
 	}
 
 	public static void saveStationaryPowder(
-			FileConfiguration createdPowders, PowderTask powderTask) {
+			FileConfiguration playerDataFile, PowderTask powderTask) {
 		if (powderTask.getPowder() == null) {
 			ConfigUtil.removeStationaryPowder(powderTask);
 			return;
 		}
+		UUID uuid = powderTask.getTracker().getCreator();
+
 		if (powderTask.getTracker().getType() == Tracker.Type.STATIONARY) {
 			PowderPlugin instance = PowderPlugin.get();
-			if (createdPowders == null) {
-				File file = new File(instance.getDataFolder(), "createdpowders.yml");
+			if (playerDataFile == null) {
+				File file = new File(instance.getDataFolder(), PLAYER_DATA_FILE);
 				try {
 					file.createNewFile();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
-				createdPowders = YamlConfiguration.loadConfiguration(file);
-				instance.setCreatedPowdersFile(createdPowders);
+				playerDataFile = YamlConfiguration.loadConfiguration(file);
+				instance.setPlayerDataFile(playerDataFile);
 			}
-			String path = "created." + PowderUtil.cleanPowderTaskName(powderTask);
-			createdPowders.set(path + ".name", powderTask.getName());
+			String path = uuid + ".stationary." + PowderUtil.cleanPowderTaskName(powderTask);
+			playerDataFile.set(path + ".name", powderTask.getName());
 
 			Powder powder = powderTask.getPowder();
 			Tracker tracker = powderTask.getTracker();
 			StationaryTracker stationaryTracker = (StationaryTracker) tracker;
 
-			String powderPath = path + ".powder";
-			createdPowders.set(powderPath + ".powder", powder.getName());
-			createdPowders.set(powderPath + ".creator", stationaryTracker.getCreator().toString());
-			createdPowders.set(powderPath + ".loop", powder.isLooping());
-			powderPath = powderPath + ".location";
+			playerDataFile.set(path + ".powder", powder.getName());
+			playerDataFile.set(path + ".creator", stationaryTracker.getCreator().toString());
+			playerDataFile.set(path + ".loop", powder.isLooping());
+			path = path + ".location";
 			Location location = stationaryTracker.getCurrentLocation().clone();
-			createdPowders.set(powderPath + ".world", location.getWorld().getName());
-			createdPowders.set(powderPath + ".x", location.getX());
-			createdPowders.set(powderPath + ".y", location.getY());
-			createdPowders.set(powderPath + ".z", location.getZ());
-			createdPowders.set(powderPath + ".pitch", location.getPitch());
-			createdPowders.set(powderPath + ".yaw", location.getYaw());
+			playerDataFile.set(path + ".world", location.getWorld().getName());
+			playerDataFile.set(path + ".x", location.getX());
+			playerDataFile.set(path + ".y", location.getY());
+			playerDataFile.set(path + ".z", location.getZ());
+			playerDataFile.set(path + ".pitch", location.getPitch());
+			playerDataFile.set(path + ".yaw", location.getYaw());
 
-			saveFile(createdPowders, "createdpowders.yml");
+			saveFile(playerDataFile, PLAYER_DATA_FILE);
 		}
 	}
 
 	public static Set<PowderTask> loadStationaryPowders() {
 		Set<PowderTask> powderTasks = new HashSet<>();
-		FileConfiguration createdPowders = PowderPlugin.get().getCreatedPowdersFile();
-		if (createdPowders == null) {
+		FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+		if (playerDataFile == null) {
 			return powderTasks;
 		}
-		for (String task : createdPowders.getConfigurationSection("created").getKeys(false)) {
-			PowderTask powderTask = loadStationaryPowder(createdPowders, "created." + task);
-			if (powderTask == null) continue;
-			powderTasks.add(powderTask);
+		for (String uuid : playerDataFile.getKeys(false)) {
+			if (playerDataFile.getConfigurationSection(uuid + ".stationary") == null) continue;
+			for (String task : playerDataFile.getConfigurationSection(uuid + ".stationary").getKeys(false)) {
+				PowderTask powderTask = loadStationaryPowder(playerDataFile, uuid + ".stationary." + task);
+				if (powderTask == null) continue;
+				powderTasks.add(powderTask);
+			}
 		}
 		return powderTasks;
 	}
@@ -655,7 +663,7 @@ public class ConfigUtil {
 	// fix this eventually!!
 	public static PowderTask loadStationaryPowder(FileConfiguration config, String section) {
 		String newSection = section;
-		if (newSection.contains("name")) {
+		if (newSection.contains(".name")) {
 			return null;
 		}
 		String powderName = config.getString(newSection + ".powder");
@@ -663,13 +671,13 @@ public class ConfigUtil {
 		UUID uuid = UUID.fromString(uuidString);
 		if (uuid == null) {
 			PowderPlugin.warning("Unknown creator of Powder '" +
-					powderName + "' in createdpowders.yml");
+					powderName + "' in playerdata.yml");
 			return null;
 		}
 		Powder powder = PowderPlugin.get().getPowderHandler().getPowder(powderName);
 		if (powder == null) {
 			PowderPlugin.warning("Unknown Powder '" +
-					powderName + "' in createdpowders.yml");
+					powderName + "' in playerdata.yml");
 			return null;
 		}
 		boolean loop = config.getBoolean(newSection + ".loop", true);
@@ -681,7 +689,7 @@ public class ConfigUtil {
 		World world = Bukkit.getWorld(worldName);
 		if (world == null) {
 			PowderPlugin.warning("Unknown World '" +
-					worldName + "' in createdpowders.yml");
+					worldName + "' in playerdata.yml");
 			return null;
 		}
 		double x = config.getDouble(newSection + ".x");
@@ -699,11 +707,59 @@ public class ConfigUtil {
 
 	public static void removeStationaryPowder(PowderTask powderTask) {
 		if (powderTask.getTracker().getType() == Tracker.Type.STATIONARY) {
-			FileConfiguration createdPowders = PowderPlugin.get().getCreatedPowdersFile();
-			PowderPlugin.get().getCreatedPowdersFile()
-			.set("created." + PowderUtil.cleanPowderTaskName(powderTask), null);
-			saveFile(createdPowders, "createdpowders.yml");
+			FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+			PowderPlugin.get().getPlayerDataFile()
+			.set(powderTask.getTracker().getCreator() + ".stationary." + PowderUtil.cleanPowderTaskName(powderTask), null);
+			saveFile(playerDataFile, PLAYER_DATA_FILE);
 		}
+	}
+
+	public static void saveArrowTrail(UUID creator, Powder powder) {
+		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (playerdata == null) return;
+		playerdata.set(creator + ".arrowTrail.powder", powder.getName());
+		playerdata.set(creator + ".arrowTrail.loop", powder.isLooping());
+
+		saveFile(playerdata, PLAYER_DATA_FILE);
+	}
+
+	public static PowderTask loadArrowTrail(Projectile projectile, UUID creator) {
+		String powderName = PowderPlugin.get().getPlayerDataFile().getString("" + creator + ".arrowTrail.powder");
+		if (powderName == null) return null;
+		boolean loop = PowderPlugin.get().getPlayerDataFile().getBoolean("" + creator + ".arrowTrail.loop");
+
+		PowderHandler handler = PowderPlugin.get().getPowderHandler();
+		Powder powder = handler.getPowder(powderName);
+		if (powder == null) return null;
+		if (loop) powder = powder.loop();
+
+		Bukkit.getLogger().info("" + projectile.getUniqueId());
+		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
+				new EntityTracker(projectile.getUniqueId(), creator, false, false));
+	}
+
+	public static void saveArrowHit(UUID creator, Powder powder) {
+		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (playerdata == null) return;
+		playerdata.set(creator + ".arrowHit.powder", powder.getName());
+		playerdata.set(creator + ".arrowHit.loop", powder.isLooping());
+
+		saveFile(playerdata, PLAYER_DATA_FILE);
+	}
+
+	public static PowderTask loadArrowHit(UUID hitEntity, UUID creator) {
+		String powderName = PowderPlugin.get().getPlayerDataFile().getString("" + creator + ".arrowHit.powder");
+		if (powderName == null) return null;
+		boolean loop = PowderPlugin.get().getPlayerDataFile().getBoolean("" + creator + ".arrowHit.loop");
+
+		PowderHandler handler = PowderPlugin.get().getPowderHandler();
+		Powder powder = handler.getPowder(powderName);
+		if (powder == null) return null;
+		if (loop) powder = powder.loop();
+		powder = powder.arrowFadeout();
+
+		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
+				new EntityTracker(hitEntity, creator));
 	}
 
 }

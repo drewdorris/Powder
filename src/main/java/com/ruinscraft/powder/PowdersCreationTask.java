@@ -6,6 +6,8 @@ import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.EntityTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.PowderUtil;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.entity.Entity;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -76,14 +78,16 @@ public class PowdersCreationTask extends BukkitRunnable {
 
 			Tracker tracker = powderTask.getTracker();
 			if (tracker.getType() == Tracker.Type.ENTITY) {
+				Bukkit.getLogger().info("YES " + powderTask.getName());
 				EntityTracker entityTracker = (EntityTracker) tracker;
 				Entity entity = entityTracker.getEntity();
 				if (entity == null) {
+					Bukkit.getLogger().info(".... " + powderTask.getName());
 					if (entityTracker.isPlayer()) {
 						powderTasksToRemoveWithoutSaving.add(powderTask);
 						break;
 					}
-					powderTask.getPowder().getPowderElements().clear();
+					powderTask.cancel();
 					continue;
 				}
 				if (entity.isDead()) {

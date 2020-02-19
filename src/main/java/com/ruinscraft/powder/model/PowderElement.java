@@ -8,7 +8,7 @@ public interface PowderElement extends Cloneable {
 
 	/**
 	 * Get what tick the element starts at (0 being the initial creation of the Powder)
-	 * @return
+	 * @return integer
 	 */
 	int getStartTime();
 
@@ -19,7 +19,13 @@ public interface PowderElement extends Cloneable {
 	int getRepeatTime();
 
 	/**
-	 * Get how many ticks after the start time to iterate
+	 * Set what tick the element starts at (0 being the initial creation of the Powder)
+	 * @param startTime
+	 */
+	void setStartTime(int startTime);
+
+	/**
+	 * Set how many ticks after the start time to iterate
 	 * @param repeatTime
 	 */
 	void setRepeatTime(int repeatTime);

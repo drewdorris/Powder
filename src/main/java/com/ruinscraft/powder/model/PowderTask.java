@@ -24,13 +24,13 @@ public class PowderTask {
 		this.tracker = tracker;
 		this.powder = powder.clone();
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.get().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getPlayerDataFile(), this);
 	}
 
 	public UUID cancel() {
 		this.powder = null;
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.get().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getPlayerDataFile(), this);
 		if (this.tracker.getType() == Tracker.Type.ENTITY) {
 			return ((EntityTracker) tracker).getUUID();
 		}
@@ -44,7 +44,7 @@ public class PowderTask {
 	public void setName(String name) {
 		this.name = name;
 		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.get().getCreatedPowdersFile(), this);
+				PowderPlugin.get().getPlayerDataFile(), this);
 	}
 
 	public Tracker getTracker() {

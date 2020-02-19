@@ -1,5 +1,7 @@
 package com.ruinscraft.powder.model.tracker;
 
+import java.util.UUID;
+
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
 
@@ -16,6 +18,8 @@ public interface Tracker {
 	Location getCurrentLocation();
 
 	boolean hasControl(Player player);
+
+	UUID getCreator();
 
 	default String getFormattedLocation() {
 		Location location = getCurrentLocation();
