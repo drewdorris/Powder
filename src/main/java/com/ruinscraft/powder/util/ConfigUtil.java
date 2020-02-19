@@ -15,6 +15,7 @@ import org.bukkit.*;
 import org.bukkit.Particle.DustOptions;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Projectile;
 
 import java.io.*;
@@ -735,7 +736,7 @@ public class ConfigUtil {
 
 		Bukkit.getLogger().info("" + projectile.getUniqueId());
 		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
-				new EntityTracker(projectile.getUniqueId(), creator, false, false));
+				new EntityTracker(projectile, creator));
 	}
 
 	public static void saveArrowHit(UUID creator, Powder powder) {
@@ -747,7 +748,7 @@ public class ConfigUtil {
 		saveFile(playerdata, PLAYER_DATA_FILE);
 	}
 
-	public static PowderTask loadArrowHit(UUID hitEntity, UUID creator) {
+	public static PowderTask loadArrowHit(Entity hitEntity, UUID creator) {
 		String powderName = PowderPlugin.get().getPlayerDataFile().getString("" + creator + ".arrowHit.powder");
 		if (powderName == null) return null;
 		boolean loop = PowderPlugin.get().getPlayerDataFile().getBoolean("" + creator + ".arrowHit.loop");

@@ -14,14 +14,15 @@ import java.util.UUID;
 
 public class EntityTracker implements Tracker {
 
-	private UUID uuid;
+	// formerly a UUID, but Bukkit doesn't register entity UUIDs immediately
+	private Entity entity;
 	private UUID creator;
 	private boolean isPlayer, isLiving;
 
 	private Location location;
 
 	public EntityTracker(Entity entity, Player creator, boolean isPlayer, boolean isLiving) {
-		this.uuid = entity.getUniqueId();
+		this.entity = entity;
 		this.creator = creator.getUniqueId();
 		this.isPlayer = isPlayer;
 		this.isLiving = isLiving;
@@ -29,27 +30,27 @@ public class EntityTracker implements Tracker {
 	}
 
 	public EntityTracker(UUID entityId, UUID creator, boolean isPlayer, boolean isLiving) {
-		this.uuid = entityId;
+		this.entity = Bukkit.getEntity(entityId);
 		this.creator = creator;
 		this.isPlayer = isPlayer;
 		this.isLiving = isLiving;
 		refreshLocation();
 	}
 
-	public EntityTracker(UUID entityId, UUID creator) {
-		this.uuid = entityId;
+	public EntityTracker(Entity entity, UUID creator) {
+		this.entity = entity;
 		this.creator = creator;
-		this.isPlayer = Bukkit.getEntity(entityId) instanceof Player;
-		this.isLiving = Bukkit.getEntity(entityId) instanceof LivingEntity;
+		this.isPlayer = entity instanceof Player;
+		this.isLiving = entity instanceof LivingEntity;
 		refreshLocation();
 	}
 
 	public Entity getEntity() {
-		return Bukkit.getEntity(uuid);
+		return entity;
 	}
 
 	public UUID getUUID() {
-		return uuid;
+		return entity.getUniqueId();
 	}
 
 	public UUID getCreator() {
@@ -65,7 +66,6 @@ public class EntityTracker implements Tracker {
 	}
 
 	public boolean isAlive() {
-		Entity entity = Bukkit.getEntity(uuid);
 		if (entity == null || entity.isDead()) {
 			return false;
 		}
@@ -80,7 +80,7 @@ public class EntityTracker implements Tracker {
 	// Must be run sync!
 	@Override
 	public void refreshLocation() {
-		this.location = getEntityLocation(uuid);
+		this.location = getEntityLocation(entity);
 	}
 
 	@Override
@@ -89,12 +89,11 @@ public class EntityTracker implements Tracker {
 			refreshLocation();
 			return this.location;
 		} else {
-			return getEntityLocation(uuid);
+			return getEntityLocation(entity);
 		}
 	}
 
-	public Location getEntityLocation(UUID entityUUID) {
-		Entity entity = Bukkit.getEntity(uuid);
+	public Location getEntityLocation(Entity entity) {
 		if (entity == null) {
 			Bukkit.getLogger().info("Entity null!");
 		}

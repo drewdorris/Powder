@@ -64,7 +64,7 @@ public class EnvironmentListener implements Listener {
 		if (entity == null || hit == null) return;
 
 		Bukkit.getScheduler().runTaskLater(PowderPlugin.get(), () -> {
-			PowderTask powderTask = ConfigUtil.loadArrowHit(hit.getUniqueId(), shooter.getUniqueId());
+			PowderTask powderTask = ConfigUtil.loadArrowHit(hit, shooter.getUniqueId());
 			if (powderTask == null) return;
 			PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
 		}, 1);
