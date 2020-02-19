@@ -47,11 +47,9 @@ public class EnvironmentListener implements Listener {
 		if (event.getProjectile() == null || !(event.getProjectile() instanceof Projectile)) return;
 		Projectile projectile = (Projectile) event.getProjectile();
 
-		Bukkit.getScheduler().runTaskLater(PowderPlugin.get(), () -> {
-			PowderTask powderTask = ConfigUtil.loadArrowTrail(projectile, event.getEntity().getUniqueId());
-			if (powderTask == null) return;
-			PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
-		}, 1);
+		PowderTask powderTask = ConfigUtil.loadArrowTrail(projectile, event.getEntity().getUniqueId());
+		if (powderTask == null) return;
+		PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
 	}
 
 	@EventHandler
@@ -63,11 +61,9 @@ public class EnvironmentListener implements Listener {
 		Entity hit = event.getHitEntity();
 		if (entity == null || hit == null) return;
 
-		Bukkit.getScheduler().runTaskLater(PowderPlugin.get(), () -> {
-			PowderTask powderTask = ConfigUtil.loadArrowHit(hit, shooter.getUniqueId());
-			if (powderTask == null) return;
-			PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
-		}, 1);
+		PowderTask powderTask = ConfigUtil.loadArrowHit(hit, shooter.getUniqueId());
+		if (powderTask == null) return;
+		PowderPlugin.get().getPowderHandler().runPowderTask(powderTask);
 	}
 
 }

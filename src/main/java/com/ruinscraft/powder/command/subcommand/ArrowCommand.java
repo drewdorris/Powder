@@ -49,13 +49,17 @@ public class ArrowCommand implements SubCommand {
 		} else if (subCommand.equals("hit")) {
 			ConfigUtil.saveArrowHit(player.getUniqueId(), powder);
 			player.sendMessage("Arrow hit Powder saved");
+		} else if (subCommand.equals("removetrail")) {
+			ConfigUtil.unsetArrowTrail(player.getUniqueId());
+			player.sendMessage("Arrow trail removed.");
+		} else if (subCommand.equals("removehit")) {
+			ConfigUtil.unsetArrowHit(player.getUniqueId());
+			player.sendMessage("Arrow hit removed.");
 		} else {
 			// msg
 			player.sendMessage("Unknown command. Try /powder arrow trail <Powder>");
 			return;
 		}
 	}
-
-	
 
 }

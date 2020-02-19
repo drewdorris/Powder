@@ -716,6 +716,14 @@ public class ConfigUtil {
 		}
 	}
 
+	public static void unsetArrowTrail(UUID creator) {
+		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (playerdata == null) return;
+		playerdata.set(creator + ".arrowTrail", null);
+
+		saveFile(playerdata, PLAYER_DATA_FILE);
+	}
+
 	public static void saveArrowTrail(UUID creator, Powder powder) {
 		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
 		if (playerdata == null) return;
@@ -738,6 +746,14 @@ public class ConfigUtil {
 		Bukkit.getLogger().info("" + projectile.getUniqueId());
 		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
 				new EntityTracker(projectile, creator));
+	}
+
+	public static void unsetArrowHit(UUID creator) {
+		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (playerdata == null) return;
+		playerdata.set(creator + ".arrowHit", null);
+
+		saveFile(playerdata, PLAYER_DATA_FILE);
 	}
 
 	public static void saveArrowHit(UUID creator, Powder powder) {
@@ -787,6 +803,8 @@ public class ConfigUtil {
 				playerDataFile.set(uuid + ".attached." + otherEntityUUID, null);
 			}
 		}
+
+		saveFile(playerDataFile, PLAYER_DATA_FILE);
 	}
 
 	public static void loadAllAttached(Collection<UUID> uuids) {
