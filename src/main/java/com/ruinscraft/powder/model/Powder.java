@@ -182,7 +182,7 @@ public class Powder implements Cloneable {
 		if (powderElement.getLockedIterations() == 0) {
 			powderElement.setLockedIterations(Integer.MAX_VALUE);
 		}
-		powderElements.add(powderElement);
+		this.powderElements.add(powderElement);
 	}
 
 	public void addPowderElements(Collection<? extends PowderElement> powderElements) {
@@ -192,13 +192,17 @@ public class Powder implements Cloneable {
 	}
 
 	public void removePowderElement(PowderElement powderElement) {
-		PowderElement elementToRemove = null;
-		for (PowderElement otherElement : this.powderElements) {
-			if (otherElement.equals(powderElement)) {
-				elementToRemove = otherElement;
+		boolean worked = this.powderElements.remove(powderElement);
+		if (!worked) {
+			Bukkit.getLogger().info("uhhh");
+			PowderElement elementToRemove = null;
+			for (PowderElement otherElement : this.powderElements) {
+				if (otherElement.equals(powderElement)) {
+					elementToRemove = otherElement;
+				}
 			}
+			this.powderElements.remove(elementToRemove);
 		}
-		this.powderElements.remove(elementToRemove);
 	}
 
 	public List<PowderParticle> getPowderParticles() {
@@ -323,64 +327,63 @@ public class Powder implements Cloneable {
 
 	// this makes the powder play for a couple secs and then the particles/etc fade out
 	// limit of 8 seconds; 20 * 8 = 160
-	public Powder arrowFadeout() {
+	public Powder arrowFadeout(int timeBeforeFadeout) {
 		Powder powder = this.clone();
 
 		List<PowderElement> newElements = new ArrayList<>();
 		for (int i = 0; i < powder.getPowderElements().size(); i++) {
-			PowderElement element = powder.getPowderElements().get(i);
+			PowderElement element = powder.getPowderElements().get(i).clone();
 			// no more elements past 8 seconds!
-			if (element.getStartTime() >= 160) {
-				powder.removePowderElement(element);
-				i--;
+			if (element.getStartTime() >= timeBeforeFadeout + 60) {
 				continue;
 			}
 
-			if (element.getLockedIterations() > 1) {
-				for (int j = element.getStartTime() + element.getRepeatTime(); j <= 160; j+= element.getRepeatTime()) {
+			int repeatTime = element.getRepeatTime();
+			if (repeatTime != 0) {
+				for (int j = element.getStartTime() + repeatTime; j <= timeBeforeFadeout + 60; j+= repeatTime) {
 					PowderElement newElement = element.clone();
 					newElement.setStartTime(j);
 					newElement.setLockedIterations(1);
 
-					newElement = makeFadeout(newElement);
+					newElement = powder.makeFadeout(newElement, timeBeforeFadeout);
 					if (newElement == null) continue;
 
 					newElements.add(newElement);
 				}
-				element.setLockedIterations(1);
-				element = makeFadeout(element);
-				if (element == null) {
-					powder.removePowderElement(element);
-					i--;
-					continue;
-				}
 			}
+			element.setLockedIterations(1);
+			element = powder.makeFadeout(element, timeBeforeFadeout);
+			if (element == null) {
+				continue;
+			}
+			newElements.add(element);
 		}
-		powder.addPowderElements(newElements);
+		powder.powderElements.clear();
+		powder.powderElements.addAll(newElements);
 
 		return powder;
 	}
 
 	// 160 is limit; 8 seconds!
 	// last 3 seconds are fadeout; this is how much fadeout left
-	private double percentageLeft(int startTime) {
-		if (startTime <= 100) return 1;
-		if (startTime >= 160) return 0;
-		return ((startTime - 100) * (100/60)) / 100;
+	private double percentageLeft(int startTime, int timeBeforeFadeout) {
+		if (startTime <= timeBeforeFadeout) return 1;
+		if (startTime >= timeBeforeFadeout + 60) return 0;
+		double formula = .0003 * (startTime - timeBeforeFadeout - 60) * (startTime - timeBeforeFadeout - 160);
+		if (formula >= 1) return 1;
+		if (formula <= 0) return 0;
+		return formula;
 	}
 
-	private PowderElement makeFadeout(PowderElement element) {
-		double percent = percentageLeft(element.getStartTime());
+	private PowderElement makeFadeout(PowderElement element, int timeBeforeFadeout) {
+		double percent = percentageLeft(element.getStartTime(), timeBeforeFadeout);
 		if (element instanceof SoundEffect) {
 			SoundEffect soundEffect = (SoundEffect) element;
 			soundEffect.setVolume(soundEffect.getVolume() * percent);
+			return soundEffect;
 		} else if (element instanceof ParticleMatrix) {
-			ParticleMatrix matrix = (ParticleMatrix) element;
-			Set<PositionedPowderParticle> particlesLeft = matrix.getParticles();
-			for (PositionedPowderParticle particle : matrix.getParticles()) {
-				if (PowderUtil.getRandom().nextDouble() > percent) particlesLeft.remove(particle);
-			}
-			matrix.setParticles(particlesLeft);
+			// had some stuff that didnt work
+			return element;
 		} else {
 			if (PowderUtil.getRandom().nextDouble() > percent) element = null;
 		}
@@ -389,7 +392,7 @@ public class Powder implements Cloneable {
 
 	public boolean isLooping() {
 		for (PowderElement element : this.getClonedPowderElements()) {
-			if (element.getLockedIterations() != 0) {
+			if (element.getLockedIterations() != 0 && element.getLockedIterations() != Integer.MAX_VALUE) {
 				return false;
 			}
 		}

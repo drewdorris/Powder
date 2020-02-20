@@ -8,7 +8,10 @@ import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
 import com.ruinscraft.powder.util.ConfigUtil;
 import com.ruinscraft.powder.util.PowderUtil;
+
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.World;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 
@@ -38,17 +41,21 @@ public class PowderHandler {
 		powderTasks = new ArrayList<>();
 		categories = new HashMap<>();
 
-		if (PowderPlugin.get().useStorage()) {
-			entitiesToLoad = new HashSet<UUID>();
-			PowderPlugin.get().getServer()
-			.getScheduler().runTaskTimer(PowderPlugin.get(), () -> {
-				if (PowderPlugin.isLoading()) {
-					return;
-				}
-				ConfigUtil.loadAllAttached(this.entitiesToLoad);
-				this.entitiesToLoad.clear();
-			}, 0L, 20L);
+		entitiesToLoad = new HashSet<UUID>();
+		for (World world : Bukkit.getWorlds()) {
+			for (Entity entity : world.getEntities()) {
+				if (entity == null) continue;
+				this.entitiesToLoad.add(entity.getUniqueId());
+			}
 		}
+		PowderPlugin.get().getServer()
+		.getScheduler().runTaskTimer(PowderPlugin.get(), () -> {
+			if (PowderPlugin.isLoading()) {
+				return;
+			}
+			ConfigUtil.loadAllAttached(this.entitiesToLoad);
+			this.entitiesToLoad.clear();
+		}, 0L, 20L);
 	}
 
 	// clear all Powders and end all PowderTasks
@@ -261,9 +268,15 @@ public class PowderHandler {
 		}
 		this.powderTasks.add(powderTask);
 		if (powderTask.getTracker().getType() == Tracker.Type.ENTITY) {
-			PowderUtil.savePowdersForUUID(((EntityTracker) powderTask.getTracker()).getUUID());
+			EntityTracker tracker = (EntityTracker) powderTask.getTracker();
+			if (tracker.isPlayer()) {
+				PowderUtil.savePowdersForUUID(tracker.getUUID());
+			} else {
+				ConfigUtil.saveAttached(tracker.getEntity(), powderTask);
+			}
 		}
-		if (!ConfigUtil.containsTask(powderTask)) {
+
+		if (!ConfigUtil.containsTask(powderTask) && powderTask.getTracker().getType() == Tracker.Type.STATIONARY) {
 			ConfigUtil.saveStationaryPowder(
 					PowderPlugin.get().getPlayerDataFile(), powderTask);
 		}

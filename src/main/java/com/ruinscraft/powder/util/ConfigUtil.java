@@ -16,6 +16,7 @@ import org.bukkit.Particle.DustOptions;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 
 import java.io.*;
@@ -742,8 +743,8 @@ public class ConfigUtil {
 		Powder powder = handler.getPowder(powderName);
 		if (powder == null) return null;
 		if (loop) powder = powder.loop();
+		powder = powder.arrowFadeout(20 * 12);
 
-		Bukkit.getLogger().info("" + projectile.getUniqueId());
 		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
 				new EntityTracker(projectile, creator));
 	}
@@ -774,9 +775,9 @@ public class ConfigUtil {
 		Powder powder = handler.getPowder(powderName);
 		if (powder == null) return null;
 		if (loop) powder = powder.loop();
-		powder = powder.arrowFadeout();
+		powder = powder.arrowFadeout(20 * 5);
 
-		return new PowderTask("arrow-" + PowderUtil.generateID(5), powder, 
+		return new PowderTask("hit-" + PowderUtil.generateID(5), powder, 
 				new EntityTracker(hitEntity, creator));
 	}
 
@@ -786,9 +787,10 @@ public class ConfigUtil {
 
 	public static void saveAttached(Entity entity, Powder powder, UUID creator) {
 		FileConfiguration playerdata = PowderPlugin.get().getPlayerDataFile();
+		if (entity == null || entity instanceof Player) return;
 		if (playerdata == null) return;
-		playerdata.set(creator + ".attached" + entity.getUniqueId() + ".powder", powder.getName());
-		playerdata.set(creator + ".attached" + entity.getUniqueId() + ".loop", powder.isLooping());
+		playerdata.set(creator + ".attached." + entity.getUniqueId() + ".powder", powder.getName());
+		playerdata.set(creator + ".attached." + entity.getUniqueId() + ".loop", powder.isLooping());
 
 		saveFile(playerdata, PLAYER_DATA_FILE);
 	}
