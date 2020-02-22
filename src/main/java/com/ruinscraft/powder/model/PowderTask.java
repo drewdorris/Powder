@@ -29,8 +29,6 @@ public class PowderTask {
 
 	public UUID cancel() {
 		this.powder = null;
-		ConfigUtil.saveStationaryPowder(
-				PowderPlugin.get().getPlayerDataFile(), this);
 		if (this.tracker.getType() == Tracker.Type.ENTITY) {
 			return ((EntityTracker) tracker).getUUID();
 		}
@@ -56,6 +54,7 @@ public class PowderTask {
 	}
 
 	public boolean hasAnyElements() {
+		if (powder == null) return false;
 		if (powder.getPowderElements().size() > 0) {
 			return true;
 		}

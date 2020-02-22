@@ -60,18 +60,18 @@ public class PlotSquaredHandler implements Listener {
 		if (powderWidth > roadDist) return false;
 
 		Plot plot = plotPlayer.getLocation().getPlotAbs();
-		
+
 		List<PowderTask> userCreatedPowders = PowderPlugin.get().getPowderHandler().getCreatedPowderTasks(player);
 		if (userCreatedPowders.size() > PowderPlugin.get().getMaxCreatedPowders()) return false;
 
 		int amntInPlot = 0;
 		for (PowderTask powderTask : userCreatedPowders) {
 			Tracker tracker = powderTask.getTracker();
-			
+
 			org.bukkit.Location bukkitLoc = tracker.getCurrentLocation();
 			Location location = new Location(bukkitLoc.getWorld().getName(), bukkitLoc.getBlockX(),
 					bukkitLoc.getBlockY(), bukkitLoc.getBlockZ());
-			
+
 			if (location.getPlotAbs().equals(plot)) amntInPlot++;
 		}
 		if (amntInPlot > this.maxPerPlot) return false;
@@ -208,7 +208,7 @@ public class PlotSquaredHandler implements Listener {
 	 * @param plot
 	 */
 	public void checkEmptiedPlot(Plot plot) {
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			Powder powder = powderTask.getPowder();
 			Tracker tracker = powderTask.getTracker();
 
@@ -241,7 +241,7 @@ public class PlotSquaredHandler implements Listener {
 	public void onPlayerPlotTrusted(PlayerPlotTrustedEvent event) {
 		if (event.wasAdded()) return;
 		UUID uuid = event.getPlayer();
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			if (powderTask.getTracker().getType() != Tracker.Type.STATIONARY) continue;
 			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();
 			if (!tracker.getCreator().equals(uuid)) continue;
@@ -255,7 +255,7 @@ public class PlotSquaredHandler implements Listener {
 	// removes Powders that could be in the road after unlinking two plots
 	@EventHandler
 	public void onPlotUnlinkEvent(PlotUnlinkEvent event) {
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			if (powderTask.getTracker().getType() != Tracker.Type.STATIONARY) continue;
 
 			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();

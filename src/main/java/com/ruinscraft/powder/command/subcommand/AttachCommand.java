@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import com.ruinscraft.powder.PowderHandler;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.command.SubCommand;
+import com.ruinscraft.powder.integration.PlotSquaredHandler;
+import com.ruinscraft.powder.integration.TownyHandler;
 import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.util.PowderUtil;
@@ -80,15 +82,39 @@ public class AttachCommand implements SubCommand {
 		}
 
 		if (loop) newPowder = newPowder.loop();
-		if (!player.hasPermission("powder.attachany")) {
-			// make sure that the player isnt above their limit or w.e
-		}
 
 		Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
 		if (entity == null) {
 			PowderUtil.sendPrefixMessage(player,
 					Message.ATTACH_NO_ENTITY, label, player.getName());
 			return;
+		}
+
+		if (!player.hasPermission("powder.attachany")) {
+			if (powderHandler.getPowderTasks(entity.getUniqueId()).size() > 0) {
+				// send msg about only one powder per entity grrrr
+				return;
+			}
+
+			if (PowderPlugin.get().hasPlotSquared()) {
+				PlotSquaredHandler plotSquared = PowderPlugin.get().getPlotSquaredHandler();
+				if (!plotSquared.checkLocation(newPowder, player)) {
+					// cant do it msg
+					return;
+				}
+			}
+			if (PowderPlugin.get().hasTowny()) {
+				TownyHandler towny = PowderPlugin.get().getTownyHandler();
+				if (!towny.checkLocation(newPowder, player)) {
+					// cant do it msg
+					return;
+				}
+			}
+			if (PowderPlugin.get().getMaxCreatedPowders() < powderHandler.getPowderTasks(player.getUniqueId()).size()) {
+				// too many msg
+				return;
+			}
+			// make sure that the player isnt above their limit or w.e
 		}
 
 		if (entity instanceof Player && player.hasPermission("powder.attachany")) {

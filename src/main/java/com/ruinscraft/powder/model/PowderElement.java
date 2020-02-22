@@ -2,6 +2,8 @@ package com.ruinscraft.powder.model;
 
 import org.bukkit.Location;
 
+import com.ruinscraft.powder.PowdersCreationTask;
+
 public interface PowderElement extends Cloneable {
 
 	void create(Location location); // create this element at this location
@@ -65,6 +67,17 @@ public interface PowderElement extends Cloneable {
 	 * Sets the starting tick using the defined tick in PowdersCreationTask right before the element is used
 	 */
 	void setStartingTick();
+
+	/**
+	 * Get the time (in ticks) this element has been in existance
+	 * @return
+	 */
+	default int getTimeAlive() {
+		int startTime = getStartTime();
+		int iterations = getRepeatTime() * (getIterations() - 1);
+		int timeUntilNext = getRepeatTime() - (getNextTick() - PowdersCreationTask.getCurrentTick());
+		return startTime + iterations + timeUntilNext;
+	}
 
 	/**
 	 * Clones this PowderElement

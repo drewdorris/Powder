@@ -19,6 +19,7 @@ import java.util.concurrent.CompletableFuture;
 public class PowdersCreationTask extends BukkitRunnable {
 
 	private static int tick = 0;
+	private static final int TIME_BEFORE_REFRESH = 20 * 60 * 60; // 1 hour
 
 	public static int getCurrentTick() {
 		return tick;
@@ -49,8 +50,14 @@ public class PowdersCreationTask extends BukkitRunnable {
 
 			Location currentLocation = tracker.getCurrentLocation();
 
+			boolean refresh = false;
 			for (int indexTwo = 0; indexTwo < powder.powderElements.size(); indexTwo++) {
 				PowderElement element = powder.powderElements.get(indexTwo);
+
+				if (element.getTimeAlive() > TIME_BEFORE_REFRESH) {
+					refresh = true;
+					break;
+				}
 
 				if (element.getIterations() >= element.getLockedIterations()) {
 					powder.powderElements.remove(element);
@@ -63,6 +70,7 @@ public class PowdersCreationTask extends BukkitRunnable {
 					element.iterate();
 				}
 			}
+			if (refresh) PowderUtil.refreshAndRestart(powderTask);
 		}
 	}
 

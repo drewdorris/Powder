@@ -714,7 +714,32 @@ public class ConfigUtil {
 			PowderPlugin.get().getPlayerDataFile()
 			.set(powderTask.getTracker().getCreator() + ".stationary." + PowderUtil.cleanPowderTaskName(powderTask), null);
 			saveFile(playerDataFile, PLAYER_DATA_FILE);
+			powderTask.cancel();
 		}
+	}
+
+	public static int getAmountCreated(UUID creator) {
+		return getAmountAttached(creator) + getAmountStationed(creator);
+	}
+
+	public static int getAmountAttached(UUID creator) {
+		FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+		for (String uuid : playerDataFile.getKeys(false)) {
+			if (!uuid.equals(creator.toString())) continue;
+			if (playerDataFile.getConfigurationSection(uuid + ".attached") == null) return 0;
+			return playerDataFile.getConfigurationSection(uuid + ".attached").getKeys(false).size();
+		}
+		return 0;
+	}
+
+	public static int getAmountStationed(UUID creator) {
+		FileConfiguration playerDataFile = PowderPlugin.get().getPlayerDataFile();
+		for (String uuid : playerDataFile.getKeys(false)) {
+			if (!uuid.equals(creator.toString())) continue;
+			if (playerDataFile.getConfigurationSection(uuid + ".stationary") == null) return 0;
+			return playerDataFile.getConfigurationSection(uuid + ".stationary").getKeys(false).size();
+		}
+		return 0;
 	}
 
 	public static void unsetArrowTrail(UUID creator) {

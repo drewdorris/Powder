@@ -290,7 +290,7 @@ public class TownyHandler implements Listener {
 	// removes Powders that end up in the wilderness after a Town unclaims an area
 	@EventHandler
 	public void onTownUnclaimEvent(TownUnclaimEvent event) {
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			Tracker tracker = powderTask.getTracker();
 			Location trackerSpot = tracker.getCurrentLocation();
 			if (townyAPI.getTownUUID(trackerSpot) == null) {
@@ -306,7 +306,7 @@ public class TownyHandler implements Listener {
 		Town town = event.getTown();
 		if (town == null) return;
 
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			UUID townUUID = townyAPI.getTownUUID(powderTask.getTracker().getCurrentLocation());
 
 			if (town.getUuid().equals(townUUID)) {
@@ -330,7 +330,7 @@ public class TownyHandler implements Listener {
 			uuid = townyAPI.getPlayerUUID(resident);
 		}
 
-		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getCreatedPowderTasks()) {
+		for (PowderTask powderTask : PowderPlugin.get().getPowderHandler().getStationaryPowderTasks()) {
 			StationaryTracker tracker = (StationaryTracker) powderTask.getTracker();
 
 			UUID townUUID = townyAPI.getTownUUID(tracker.getCurrentLocation());

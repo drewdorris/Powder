@@ -8,6 +8,9 @@ import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.particle.PositionedPowderParticle;
 import com.ruinscraft.powder.model.particle.PowderParticle;
+import com.ruinscraft.powder.model.tracker.EntityTracker;
+import com.ruinscraft.powder.model.tracker.Tracker;
+
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.*;
 import org.bukkit.*;
@@ -556,6 +559,29 @@ public class PowderUtil {
 	// loads player from database
 	public static void loadAllUUIDs() {
 		loadUUIDs(PowderUtil.getOnlineUUIDs());
+	}
+
+	public static void refreshAndRestart(PowderTask powderTask) {
+		Powder oldPowder = powderTask.getPowder();
+		if (PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()) == null) return;
+		Powder powder = PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()).clone();
+		if (oldPowder.isLooping()) powder = powder.loop();
+
+		String taskName = powderTask.getName();
+		Tracker tracker = powderTask.getTracker();
+		Location location = tracker.getCurrentLocation().clone();
+		UUID creator = tracker.getCreator();
+
+		Bukkit.getScheduler().runTask(PowderPlugin.get(), () -> {
+			PowderPlugin.get().getPowderHandler().cancelPowderTask(powderTask);
+		});
+
+		if (tracker.getType() == Tracker.Type.STATIONARY) {
+			powder.spawn(taskName, location, creator);
+		} else {
+			EntityTracker entityTracker = (EntityTracker) tracker;
+			powder.spawn(entityTracker.getEntity(), creator);
+		}
 	}
 
 	// cancels all Powders for the given player

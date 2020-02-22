@@ -33,7 +33,6 @@ public class CreateCommand implements SubCommand {
 	public void command(Player player, String label, String[] args) {
 		PowderHandler powderHandler = PowderPlugin.get().getPowderHandler();
 
-		long time = System.nanoTime();
 		if (!player.hasPermission("powder.create")) {
 			PowderUtil.sendPrefixMessage(player,
 					Message.GENERAL_NO_PERMISSION, label, player.getName());
@@ -80,7 +79,6 @@ public class CreateCommand implements SubCommand {
 					powderHandler.getCreatedPowderTasks(player);
 			List<BaseComponent> createdText = new ArrayList<>();
 
-			long time1 = System.nanoTime();
 			for (PowderTask powderTask : created) {
 				boolean hasPermissionForPowder = false;
 				String location = null;
@@ -104,8 +102,6 @@ public class CreateCommand implements SubCommand {
 				}
 				createdText.add(baseComponent);
 			}
-			long time2 = System.nanoTime();
-			System.out.println("Going through created Powders: " + (time2 - time1));
 			PowderUtil.paginateAndSend(player, createdText, " create ", page, 7, label);
 			return;
 		}
@@ -116,9 +112,6 @@ public class CreateCommand implements SubCommand {
 			return;
 		}
 		if (!(player.hasPermission("powder.createany"))) {
-			long newTime = System.nanoTime();
-			System.out.println("createany " + (newTime - time));
-
 			if (PowderPlugin.get().hasTowny()) {
 				if (!PowderPlugin.get().getTownyHandler().checkLocation(newPowder, player)) {
 					PowderUtil.sendPrefixMessage(player, Message.CREATE_TOWNY_NO_PLACE, label,
@@ -133,6 +126,10 @@ public class CreateCommand implements SubCommand {
 					return;
 				}
 			}
+			if (PowderPlugin.get().getMaxCreatedPowders() < powderHandler.getPowderTasks(player.getUniqueId()).size()) {
+				// too many msg
+				return;
+			}
 		}
 		if (args.length > 3) {
 			if (args[3].equalsIgnoreCase("loop")) {
@@ -144,8 +141,6 @@ public class CreateCommand implements SubCommand {
 					label, player.getName(), name, powderName);
 			return;
 		}
-		long newTime = System.nanoTime();
-		System.out.println("ending " + (newTime - time));
 		newPowder.spawn(name, player.getLocation(), player.getUniqueId());
 		PowderUtil.sendPrefixMessage(player, Message.CREATE_SUCCESS, label,
 				player.getName(), powderName, name);

@@ -282,6 +282,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			}
 			for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
 				if (powder.getName().toLowerCase().startsWith(args[0].toLowerCase())) {
+					if (!PowderUtil.hasPermission(player, powder)) continue;
 					strings.add(powder.getName());
 				}
 			}
@@ -294,30 +295,37 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 				}
 			} else if (args[0].equalsIgnoreCase("attach")) {
 				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
-					if (powder.getName().toLowerCase().startsWith(args[1])) {
+					if (powder.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+						if (!PowderUtil.hasPermission(player, powder)) continue;
 						strings.add(powder.getName());
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("remove")) {
 				for (PowderTask task : PowderPlugin.get().getPowderHandler().getPowderTasks(player.getUniqueId())) {
-					if (task.getName().toLowerCase().startsWith(args[1])) {
+					if (task.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 						strings.add(task.getName());
 					}
 				}
 			} else if (args[0].equalsIgnoreCase("cancel")) {
 				for (PowderTask task : PowderPlugin.get().getPowderHandler().getPowderTasks(player.getUniqueId())) {
-					if (task.getPowder().getName().toLowerCase().startsWith(args[1])) {
+					if (task.getPowder().getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 						strings.add(task.getPowder().getName());
 					}
-					if (task.getName().toLowerCase().startsWith(args[1])) {
+					if (task.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
 						strings.add(task.getName());
 					}
+				}
+			} else if (args[0].equalsIgnoreCase("arrow")) {
+				String[] subCommands = { "trail", "hit", "removetrail", "removehit" };
+				for (String subCommand : subCommands) {
+					if (subCommand.startsWith(args[1].toLowerCase())) strings.add(subCommand);
 				}
 			} else {
 				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
 					for (String category : powder.getCategories()) {
 						if (category.equalsIgnoreCase(args[0])) {
-							if (powder.getName().toLowerCase().startsWith(args[1])) {
+							if (powder.getName().toLowerCase().startsWith(args[1].toLowerCase())) {
+								if (!PowderUtil.hasPermission(player, powder)) continue;
 								strings.add(powder.getName());
 							}
 						}
@@ -327,9 +335,25 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 		} else if (args.length == 3) {
 			if (args[0].equalsIgnoreCase("create")) {
 				for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
-					if (powder.getName().toLowerCase().startsWith(args[2])) {
+					if (powder.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
+						if (!PowderUtil.hasPermission(player, powder)) continue;
 						strings.add(powder.getName());
 					}
+				}
+			} else if (args[0].equalsIgnoreCase("arrow")) {
+				if (args[1].equalsIgnoreCase("hit") || args[1].equalsIgnoreCase("trail")) {
+					for (Powder powder : PowderPlugin.get().getPowderHandler().getPowders()) {
+						if (powder.getName().toLowerCase().startsWith(args[2].toLowerCase())) {
+							if (!PowderUtil.hasPermission(player, powder)) continue;
+							strings.add(powder.getName());
+						}
+					}
+				}
+			}
+		} else if (args.length == 4) {
+			if (args[0].equalsIgnoreCase("arrow")) {
+				if (args[1].equalsIgnoreCase("hit") || args[1].equalsIgnoreCase("trail")) {
+					strings.add("loop");
 				}
 			}
 		} else {
