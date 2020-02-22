@@ -69,7 +69,7 @@ public interface PowderElement extends Cloneable {
 	void setStartingTick();
 
 	/**
-	 * Get the time (in ticks) this element has been in existance
+	 * Get the time (in ticks) this element has been in existence
 	 * @return
 	 */
 	default int getTimeAlive() {

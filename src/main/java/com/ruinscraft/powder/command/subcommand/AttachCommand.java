@@ -114,7 +114,6 @@ public class AttachCommand implements SubCommand {
 				// too many msg
 				return;
 			}
-			// make sure that the player isnt above their limit or w.e
 		}
 
 		if (entity instanceof Player && player.hasPermission("powder.attachany")) {
