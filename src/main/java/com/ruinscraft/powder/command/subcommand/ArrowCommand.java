@@ -4,8 +4,10 @@ import org.bukkit.entity.Player;
 
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.command.SubCommand;
+import com.ruinscraft.powder.model.Message;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.util.ConfigUtil;
+import com.ruinscraft.powder.util.PowderUtil;
 
 public class ArrowCommand implements SubCommand {
 
@@ -18,34 +20,36 @@ public class ArrowCommand implements SubCommand {
 
 	@Override
 	public void command(Player player, String label, String[] args) {
-		// TODO Auto-generated method stub
 		if (args.length < 2) {
-			// msg
-			player.sendMessage("Please enter a subcommand. Try /powder arrow trail <Powder>");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_SYNTAX, label, player.getName(), label);
 			return;
 		}
 		String subCommand = args[1].toLowerCase();
 
 		if (subCommand.equals("removetrail")) {
 			ConfigUtil.unsetArrowTrail(player.getUniqueId());
-			player.sendMessage("Arrow trail removed.");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_TRAIL_REMOVED, label, player.getName());
 			return;
 		} else if (subCommand.equals("removehit")) {
 			ConfigUtil.unsetArrowHit(player.getUniqueId());
-			player.sendMessage("Arrow hit removed.");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_HIT_REMOVED, label, player.getName());
 			return;
 		}
 
 		if (args.length < 3) {
-			// msg
-			player.sendMessage("Please enter a Powder");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_SYNTAX_POWDER, label, player.getName());
 			return;
 		}
 
 		Powder powder = PowderPlugin.get().getPowderHandler().getPowder(args[2]);
 		if (powder == null) {
-			// msg
-			player.sendMessage("Unknown Powder");
+			// ARROW_UNKNOWN_POWDER
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_UNKNOWN_POWDER, label, player.getName(), args[2]);
 			return;
 		}
 
@@ -55,13 +59,16 @@ public class ArrowCommand implements SubCommand {
 
 		if (subCommand.equals("trail")) {
 			ConfigUtil.saveArrowTrail(player.getUniqueId(), powder);
-			player.sendMessage("Arrow trail Powder saved");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_TRAIL_SAVED, label, player.getName(), powder.getName());
 		} else if (subCommand.equals("hit")) {
 			ConfigUtil.saveArrowHit(player.getUniqueId(), powder);
-			player.sendMessage("Arrow hit Powder saved");
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_HIT_SAVED, label, player.getName(), powder.getName());
 		} else {
-			// msg
-			player.sendMessage("Unknown command. Try /powder arrow trail <Powder>");
+			// ARROW_SYNTAX
+			PowderUtil.sendPrefixMessage(player,
+					Message.ARROW_SYNTAX, label, player.getName(), label);
 			return;
 		}
 	}

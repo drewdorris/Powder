@@ -35,7 +35,7 @@ CANCEL_SUCCESS: '&7Successfully canceled ''{powder}''.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cCould not cancel this Powder.'
 ## {user} {powder}
-CREATE_TOWNY_NO_PLACE: '&cCould not create Powder due to Towny limits. Are you in a Town? Have you placed too many in the Town?'
+CREATE_TOWNY_NO_PLACE: '&cCould not create Powder due to Towny limits. Are you not in a Town? Have you placed too many in the Town?'
 ## {user} {powder}
 CREATE_PLOTSQUARED_NO_PLACE: '&cCould not create Powder due to PlotSquared limits. Are you in a road? Have you placed too many in the plot?'
 ## {user}
@@ -60,14 +60,36 @@ ATTACH_SYNTAX: '&c/{command} attach <Powder>'
 ATTACH_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ## {user}
 ATTACH_NO_ENTITY: '&cNo entity found within your line of sight.'
+## {user} {powder}
+ATTACH_ONE_POWDER_PER_ENTITY: '&cYou can only attach one Powder per entity!'
+## {user} {powder}
+ATTACH_TOWNY_NO_PLACE: '&cCould not attach Powder due to Towny limits. Are you not in a Town? Have you placed too many in the Town?'
+## {user} {powder}
+ATTACH_PLOTSQUARED_NO_PLACE: '&cCould not attach Powder due to PlotSquared limits. Are you in a road? Have you placed too many in the plot?'
+## {user} {powder} {amnt}
+ATTACH_TOO_MANY_CREATED: 'You have too many Powders created already. ({amnt})'
 ## {user} {powder} {player}
 ATTACH_SUCCESS_PLAYER: '&7Successfully assigned ''{powder}'' to ''{player}''.'
 ## {user} {powder} {entity}
 ATTACH_SUCCESS_ENTITY: '&7Successfully assigned ''{powder}'' to ''{entity}''.'
+## {user} {label}
+ARROW_SYNTAX: '&cPlease enter a proper subcommand. Try /powder arrow trail <Powder>'
+## {user}
+ARROW_TRAIL_REMOVED: '&7Arrow trail removed.'
+## {user}
+ARROW_HIT_REMOVED: '&7Arrow hit removed.'
+## {user}
+ARROW_SYNTAX_POWDER: '&cPlease enter a Powder.'
+## {user} {powder}
+ARROW_UNKNOWN_POWDER: '&cUnknown Powder.'
+## {user} {powder}
+ARROW_TRAIL_SAVED: '&7Arrow trail Powder saved.'
+## {user} {powder}
+ARROW_HIT_SAVED: '&7Arrow hit Powder saved.'
 ## {user} {command}
 CREATE_SYNTAX: '&c/{command} create <name> <Powder>'
 ## {user} {name} {powder}
-CREATE_ALREADY_EXISTS: '&cAn active Powder with this name is already active!'
+CREATE_ALREADY_EXISTS: '&cA Powder with this name is already active!'
 ## {user} {powder}
 CREATE_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ## {user} {powder} {name}

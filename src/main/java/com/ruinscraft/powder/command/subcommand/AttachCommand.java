@@ -92,26 +92,30 @@ public class AttachCommand implements SubCommand {
 
 		if (!player.hasPermission("powder.attachany")) {
 			if (powderHandler.getPowderTasks(entity.getUniqueId()).size() > 0) {
-				// send msg about only one powder per entity grrrr
+				PowderUtil.sendPrefixMessage(player,
+						Message.ATTACH_ONE_POWDER_PER_ENTITY, label, player.getName(), newPowder.getName());
 				return;
 			}
 
 			if (PowderPlugin.get().hasPlotSquared()) {
 				PlotSquaredHandler plotSquared = PowderPlugin.get().getPlotSquaredHandler();
 				if (!plotSquared.checkLocation(newPowder, player)) {
-					// cant do it msg
+					PowderUtil.sendPrefixMessage(player, 
+							Message.ATTACH_PLOTSQUARED_NO_PLACE, label, player.getName(), newPowder.getName());
 					return;
 				}
 			}
 			if (PowderPlugin.get().hasTowny()) {
 				TownyHandler towny = PowderPlugin.get().getTownyHandler();
 				if (!towny.checkLocation(newPowder, player)) {
-					// cant do it msg
+					PowderUtil.sendPrefixMessage(player, 
+							Message.ATTACH_TOWNY_NO_PLACE, label, player.getName(), newPowder.getName());
 					return;
 				}
 			}
 			if (PowderPlugin.get().getMaxCreatedPowders() < powderHandler.getPowderTasks(player.getUniqueId()).size()) {
-				// too many msg
+				PowderUtil.sendPrefixMessage(player, 
+						Message.ATTACH_TOO_MANY_CREATED, label, player.getName(), newPowder.getName());
 				return;
 			}
 		}

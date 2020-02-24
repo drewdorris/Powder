@@ -227,7 +227,7 @@ public class PowderPlugin extends JavaPlugin {
 				if (jarConfig != null) {
 					actualMessage = jarConfig.getString(message.name());
 					if (actualMessage == null) {
-						warning("Something broke!");
+						warning("Something broke! " + message.name());
 						continue;
 					}
 					locale.set(message.name(), actualMessage);

@@ -41,7 +41,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 
 	@Override
 	public boolean onCommand(CommandSender sender, Command cmd, String label, String[] args) {
-		long time = System.nanoTime();
 		// if console
 		if (!(sender instanceof Player)) {
 			try {
@@ -106,8 +105,6 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 			for (SubCommand subCommand : this.subCommands) {
 				if (eq(args[0], subCommand)) {
 					subCommand.command(player, label, args);
-					long time2 = System.nanoTime();
-					PowderPlugin.info("uhhhhhh " + (time2 - time));
 					return true;
 				}
 			}
