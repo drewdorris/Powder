@@ -8,7 +8,7 @@ import com.ruinscraft.powder.command.subcommand.AttachCommand;
 import com.ruinscraft.powder.command.subcommand.CancelCommand;
 import com.ruinscraft.powder.command.subcommand.CategoriesCommand;
 import com.ruinscraft.powder.command.subcommand.CategoryCommand;
-import com.ruinscraft.powder.command.subcommand.CreateCommand;
+import com.ruinscraft.powder.command.subcommand.StationCommand;
 import com.ruinscraft.powder.command.subcommand.CreatedCommand;
 import com.ruinscraft.powder.command.subcommand.HelpCommand;
 import com.ruinscraft.powder.command.subcommand.ListCommand;
@@ -36,7 +36,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 	private Set<SubCommand> subCommands = new HashSet<>(Arrays.asList(
 			new HelpCommand(), new ReloadCommand(), new ListCommand(), 
 			new CancelCommand(), new ActiveCommand(), new CategoriesCommand(), new CategoryCommand(),
-			new SearchCommand(), new AttachCommand(), new CreateCommand(), new CreatedCommand(),
+			new SearchCommand(), new AttachCommand(), new StationCommand(), new CreatedCommand(),
 			new RemoveCommand(), new NearbyCommand(), new ArrowCommand()));
 
 	@Override

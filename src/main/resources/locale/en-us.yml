@@ -34,10 +34,6 @@ CANCEL_UNKNOWN_SPECIFY: '&cUnknown Powder specified.'
 CANCEL_SUCCESS: '&7Successfully canceled ''{powder}''.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cCould not cancel this Powder.'
-## {user} {powder}
-CREATE_TOWNY_NO_PLACE: '&cCould not create Powder due to Towny limits. Are you not in a Town? Have you placed too many in the Town?'
-## {user} {powder}
-CREATE_PLOTSQUARED_NO_PLACE: '&cCould not create Powder due to PlotSquared limits. Are you in a road? Have you placed too many in the plot?'
 ## {user}
 ACTIVE_PREFIX: '&7Active Powders:'
 ## {user} {command} {powder}
@@ -72,6 +68,8 @@ ATTACH_TOO_MANY_CREATED: 'You have too many Powders created already. ({amnt})'
 ATTACH_SUCCESS_PLAYER: '&7Successfully assigned ''{powder}'' to ''{player}''.'
 ## {user} {powder} {entity}
 ATTACH_SUCCESS_ENTITY: '&7Successfully assigned ''{powder}'' to ''{entity}''.'
+## {user} {powder} {amnt}
+ATTACH_TOO_MANY_CREATED: 'You have too many Powders created already. ({amnt})'
 ## {user} {label}
 ARROW_SYNTAX: '&cPlease enter a proper subcommand. Try /powder arrow trail <Powder>'
 ## {user}
@@ -87,13 +85,19 @@ ARROW_TRAIL_SAVED: '&7Arrow trail Powder saved.'
 ## {user} {powder}
 ARROW_HIT_SAVED: '&7Arrow hit Powder saved.'
 ## {user} {command}
-CREATE_SYNTAX: '&c/{command} create <name> <Powder>'
+STATION_SYNTAX: '&c/{command} station <Powder> [reference name]'
 ## {user} {name} {powder}
-CREATE_ALREADY_EXISTS: '&cA Powder with this name is already active!'
+STATION_ALREADY_EXISTS: '&cOne with this name is already active!'
 ## {user} {powder}
-CREATE_UNKNOWN: '&cUnknown Powder ''{powder}''.'
+STATION_UNKNOWN: '&cUnknown Powder ''{powder}''.'
 ## {user} {powder} {name}
-CREATE_SUCCESS: '&7Successfully created ''{name}''.'
+STATION_SUCCESS: '&7Successfully stationed ''{name}''.'
+## {user} {powder}
+STATION_TOWNY_NO_PLACE: '&cCould not station Powder due to Towny limits. Are you not in a Town? Have you placed too many in the Town?'
+## {user} {powder}
+STATION_PLOTSQUARED_NO_PLACE: '&cCould not station Powder due to PlotSquared limits. Are you in a road? Have you placed too many in the plot?'
+## {user} {powder} {amnt}
+STATION_TOO_MANY_CREATED: 'You have too many Powders created already. ({amnt})'
 ## {user} {command}
 CREATED_PREFIX: '&7Created Powders:'
 ## {name} {location}

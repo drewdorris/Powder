@@ -112,7 +112,6 @@ public class PowderHandler {
 				EntityTracker entityTracker = (EntityTracker) powderTask.getTracker();
 				if (entityTracker.getUUID().equals(uuid) || entityTracker.getCreator().equals(uuid)) {
 					playerPowderTasks.add(powderTask);
-					break;
 				}
 			}
 		}
@@ -129,7 +128,6 @@ public class PowderHandler {
 					EntityTracker entityTracker = (EntityTracker) tracker;
 					if (entityTracker.getUUID().equals(uuid) || entityTracker.getCreator().equals(uuid)) {
 						playerPowderTasks.add(powderTask);
-						break;
 					}
 				}
 			}
@@ -171,7 +169,6 @@ public class PowderHandler {
 			UUID trackerUUID = stationaryTracker.getCreator();
 			if (trackerUUID.equals(uuid)) {
 				powderTasks.add(powderTask);
-				break;
 			}
 		}
 

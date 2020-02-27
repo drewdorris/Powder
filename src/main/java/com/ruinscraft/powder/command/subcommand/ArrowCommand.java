@@ -20,6 +20,12 @@ public class ArrowCommand implements SubCommand {
 
 	@Override
 	public void command(Player player, String label, String[] args) {
+		if (!player.hasPermission("powder.arrow")) {
+			PowderUtil.sendPrefixMessage(player,
+					Message.GENERAL_NO_PERMISSION, label, player.getName());
+			return;
+		}
+
 		if (args.length < 2) {
 			PowderUtil.sendPrefixMessage(player,
 					Message.ARROW_SYNTAX, label, player.getName(), label);
@@ -47,7 +53,6 @@ public class ArrowCommand implements SubCommand {
 
 		Powder powder = PowderPlugin.get().getPowderHandler().getPowder(args[2]);
 		if (powder == null) {
-			// ARROW_UNKNOWN_POWDER
 			PowderUtil.sendPrefixMessage(player,
 					Message.ARROW_UNKNOWN_POWDER, label, player.getName(), args[2]);
 			return;
@@ -66,7 +71,6 @@ public class ArrowCommand implements SubCommand {
 			PowderUtil.sendPrefixMessage(player,
 					Message.ARROW_HIT_SAVED, label, player.getName(), powder.getName());
 		} else {
-			// ARROW_SYNTAX
 			PowderUtil.sendPrefixMessage(player,
 					Message.ARROW_SYNTAX, label, player.getName(), label);
 			return;

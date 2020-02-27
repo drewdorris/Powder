@@ -19,11 +19,12 @@ permissions:
       powder.nearby: true
       powder.reload: true
       powder.attach: true
+      powder.arrow: true
       powder.cancel: true
-      powder.create: true
-      powder.addto: true
-      powder.removefrom: true
+      powder.station: true
+      powder.stationany: true
       powder.remove: true
+      powder.removeany: true
   powder.powder.*:
     default: op
     description: Allows usage of all Powders
@@ -48,18 +49,15 @@ permissions:
   powder.cancel:
     default: op
     description: Allows a user to cancel Powders which they did not create themselves
-  powder.create:
+  powder.arrow:
+    default: op
+    description: Allows a user to attach Powders to their arrows and attach Powders to the players those arrows hit
+  powder.station:
     default: op
     description: Creates a stationary Powder at your location
-  powder.createany:
+  powder.stationany:
     default: op
     description: Creates a stationary Powder at any location with no limit
-  powder.addto:
-    default: op
-    description: Adds a Powder to a created Powder
-  powder.removefrom:
-    default: op
-    description: Removes a Powder from a created Powder
   powder.remove:
     default: op
     description: Removes a stationary Powder you made
