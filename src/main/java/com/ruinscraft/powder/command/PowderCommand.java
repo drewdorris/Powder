@@ -68,7 +68,7 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 
 		if (PowderPlugin.isLoading()) {
 			PowderUtil.sendPrefixMessage(player, 
-					Message.GENERAL_NO_PERMISSION, label, player.getName());
+					Message.GENERAL_LOADING, label, player.getName());
 			return false;
 		}
 

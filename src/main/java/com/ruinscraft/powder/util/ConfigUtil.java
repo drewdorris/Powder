@@ -671,6 +671,7 @@ public class ConfigUtil {
 		}
 		String powderName = config.getString(newSection + ".powder");
 		String uuidString = config.getString(newSection + ".creator");
+		System.out.println(powderName + " " + uuidString);
 		UUID uuid = UUID.fromString(uuidString);
 		if (uuid == null) {
 			PowderPlugin.warning("Unknown creator of Powder '" +

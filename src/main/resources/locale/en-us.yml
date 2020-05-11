@@ -85,7 +85,7 @@ ARROW_TRAIL_SAVED: '&7Arrow trail Powder saved.'
 ## {user} {powder}
 ARROW_HIT_SAVED: '&7Arrow hit Powder saved.'
 ## {user} {command}
-STATION_SYNTAX: '&c/{command} station <Powder> [reference name]'
+STATION_SYNTAX: '&c/{command} station <Powder> [reference name] [loop]'
 ## {user} {name} {powder}
 STATION_ALREADY_EXISTS: '&cOne with this name is already active!'
 ## {user} {powder}
