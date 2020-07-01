@@ -108,6 +108,12 @@ public class StationCommand implements SubCommand {
 					player.getName(), powderName);
 			return;
 		}
+		// if no permission for the specific Powder
+		if (!PowderUtil.hasPermission(player, newPowder)) {
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_NO_PERMISSION,
+					label, args[0]);
+			return;
+		}
 		if (!(player.hasPermission("powder.createany"))) {
 			if (PowderPlugin.get().hasTowny()) {
 				if (!PowderPlugin.get().getTownyHandler().checkLocation(newPowder, player)) {

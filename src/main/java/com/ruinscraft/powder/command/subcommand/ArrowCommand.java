@@ -62,6 +62,13 @@ public class ArrowCommand implements SubCommand {
 			if (args[3].toLowerCase().equals("loop")) powder = powder.loop();
 		}
 
+		// if no permission for the specific Powder
+		if (!PowderUtil.hasPermission(player, powder)) {
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_NO_PERMISSION,
+					label, args[0]);
+			return;
+		}
+
 		if (subCommand.equals("trail")) {
 			ConfigUtil.saveArrowTrail(player.getUniqueId(), powder);
 			PowderUtil.sendPrefixMessage(player,

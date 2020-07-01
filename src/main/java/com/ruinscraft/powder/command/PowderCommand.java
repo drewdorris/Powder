@@ -120,6 +120,12 @@ public class PowderCommand implements CommandExecutor, TabCompleter {
 									loop = true;
 								}
 							}
+							// if no permission for the specific Powder
+							if (!PowderUtil.hasPermission(player, powder)) {
+								PowderUtil.sendPrefixMessage(player, Message.POWDER_NO_PERMISSION,
+										label, args[0]);
+								return false;
+							}
 							spawnPowderThroughCommand(powder, player, label, args[0], loop);
 							return true;
 						}

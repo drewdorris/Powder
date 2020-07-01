@@ -81,6 +81,13 @@ public class AttachCommand implements SubCommand {
 			return;
 		}
 
+		// if no permission for the specific Powder
+		if (!PowderUtil.hasPermission(player, newPowder)) {
+			PowderUtil.sendPrefixMessage(player, Message.POWDER_NO_PERMISSION,
+					label, args[0]);
+			return;
+		}
+
 		if (loop) newPowder = newPowder.loop();
 
 		Entity entity = PowderUtil.getNearestEntityInSight(player, 7);
