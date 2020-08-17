@@ -9,31 +9,31 @@ PREFIX_CLICK: '/{command}'
 ## {user}
 GENERAL_NO_PERMISSION: '&7No tienes permiso.'
 ## {user}
-GENERAL_LOADING: '&7Powder está cargando actualmente. ¡Por favor espere hasta que se cargue!'
+GENERAL_LOADING: '&7Powders está cargando actualmente. ¡Por favor espere hasta que se cargue!'
 ## {user}
 LOADING_ALERT: '&7Tus Powders fueron cancelados porque de una recarga.'
 ## {user}
-LOADING_ALREADY: '&c¡No puedes recarga cuando ya recargando!'
+LOADING_ALREADY: '&c¡No puedes recargar cuando ya esta recargando!'
 ## {user}
 LOADING_START: '&7Cargando Powders...'
 ## {user} {total} {list}
 LOADING_FINISH: '&7¡Todos Powders cargaron! ({total} total)'
 ## {user} {total} {list}
-LOADING_FINISH_HOVER: '&7Carga Powders: {list}.'
+LOADING_FINISH_HOVER: '&7Cargan Powders: {list}.'
 ## {user}
 STAR_USE_CANCEL: '&7Usa ''* cancel'' para cancelar todos Powders activos.'
 ## {user}
-STAR_NO_ACTIVE: '&cHay no Powders activos ahora mismo.'
+STAR_NO_ACTIVE: '&cNo hay Powders activos ahora mismo.'
 ## {user} {total}
-STAR_CANCEL_SUCCESS: '&7¡Cancelado todos Powders con éxito! ({total} total)'
+STAR_CANCEL_SUCCESS: '&7¡Todos los powders fueron cancelados con éxito! ({total} total)'
 ## {user}
 CANCEL_SPECIFY: '&cPor favor especifica un Powder.'
 ## {user} {powder}
-CANCEL_NO_ACTIVE: '&cHay nada de esto Powder activo ahora mismo.'
+CANCEL_NO_ACTIVE: '&cNo hay ningun Powder activo ahora mismo.'
 ## {user} {powder}
-CANCEL_UNKNOWN_SPECIFY: '&cPowder desconocido específica.'
+CANCEL_UNKNOWN_SPECIFY: '&cEspecifica powder.'
 ## {user} {powder}
-CANCEL_SUCCESS: '&7Cancelado ''{powder}'' con éxito.'
+CANCEL_SUCCESS: '&7''{powder}'' Cancelado  con éxito.'
 ## {user} {powder}
 CANCEL_FAILURE: '&cNo es posible cancelar esto Powder.'
 ## {user}
@@ -81,9 +81,9 @@ ADDTO_DOES_NOT_EXIST: '&cEl Powder activo ''{name}'' no existe.'
 ## {user} {powder} 
 ADDTO_UNKNOWN: '&cPowder desconocido ''{powder}''.'
 ## {user} {powder} {name}
-ADDTO_SUCCESS: '&7Añadido Powder ''{powder}'' a ''{name}'' con éxito.'
+ADDTO_SUCCESS: '&7Añadido Powder ''{powder}'' a ''{name}'' éxitosamente.'
 ## {user} {powder} {name}
-ADDTO_FAILURE: '&cNo puede añade Powder ''{powder}'' a ''{name}''.'
+ADDTO_FAILURE: '&cNo puede añadir Powder ''{powder}'' a ''{name}''.'
 ## {user} {command}
 REMOVEFROM_SYNTAX: '&c/{command} removefrom <name> <Powder>'
 ## {user} {name}
@@ -97,11 +97,11 @@ REMOVEFROM_FAILURE: '&cNo puede quitar Powder ''{powder}'' de ''{name}''.'
 ## {user} {command}
 REMOVE_SYNTAX: '&c/{command} remove <name> &7o &c/{command} remove user <username>'
 ## {user}
-REMOVE_INVALID_PLAYER: '&cEl usuario está inválido.'
+REMOVE_INVALID_PLAYER: '&cUsuario no valido.'
 ## {user} {player}
 REMOVE_USER_REMOVE_SUCCESS: '&7Quitó los Powders de {player} con éxito.'
 ## {user} {player}
-REMOVE_USER_REMOVE_FAILURE: '&cNo puede quitar los Powders de {player}.'
+REMOVE_USER_REMOVE_FAILURE: '&cNo pudo quitar los Powders de {player}.'
 ## {user} {player}
 REMOVE_USER_REMOVED_BY: '&cTus Powders fueron cancelados por otro usuario.'
 ## {user} {command}
@@ -120,23 +120,23 @@ NEARBY_HOVER: '&7Powders: {powders} || &aHaga clic a cancelar este Powder activo
 ## {command} {name}
 NEARBY_CLICK: '/{command} remove {name}'
 ## {powder}
-POWDER_NO_PERMISSION: '&cNo tienes permiso a usar el Powder ''{powder}''.'
+POWDER_NO_PERMISSION: '&cNo tienes permiso para usar el Powder ''{powder}''.'
 ## {user} {powder} {total}
-POWDER_CANCEL_SUCCESS: '&7¡Powder ''{powder}'' canceled! ({total} total)'
+POWDER_CANCEL_SUCCESS: '&7¡Powder ''{powder}'' cancelado! ({total} total)'
 ## {user} {powder}
-POWDER_CANCEL_FAILURE: '&cThere are no ''{powder}'' Powders you are running.'
+POWDER_CANCEL_FAILURE: '&cNo hay ''{powder}'' Powders que estes corriendo.'
 ## {user} {powder}
-POWDER_CANCEL_SINGLE_SUCCESS: '&7¡Powder ''{powder}'' está cancelado!'
+POWDER_CANCEL_SINGLE_SUCCESS: '&7¡El Powder ''{powder}'' está cancelado!'
 ## {user} {powder}
-POWDER_CANCEL_SINGLE_FAILURE: '&cHay no ''{powder}'' Powders activos.'
+POWDER_CANCEL_SINGLE_FAILURE: '&cNo hay ''{powder}'' Powders activos.'
 ## {user} {powder} {total}
-POWDER_MAX_PREFIX: '&c¡Tu ya tienes {total} Powders activan ahora mismo!'
+POWDER_MAX_PREFIX: '&c¡Ya tienes {total} Powders activan ahora mismo!'
 ## {user} {powder} {seconds}
 POWDER_WAIT: '&cPor favor espere {seconds} segundos antes de usar un Powder.'
 ## {user} {command} {powder}
 POWDER_CREATED: '&7¡Powder ''{powder}'' creado! Haga clic a cancelar.'
 ## {user} {command} {powder}
-POWDER_CREATED_HOVER: '&eHaga clic a cancelar ''{powder}''.'
+POWDER_CREATED_HOVER: '&eHaga clic paraa cancelar ''{powder}''.'
 ## {user} {command} {powder}
 POWDER_CREATED_CLICK: '/{command} {powder} cancel'
 ## {user} {command}
@@ -150,16 +150,16 @@ HELP_ACTIVE: '&d/powder active &7- Liste o cancele Powders activos'
 HELP_LIST: '&d/powder list [page] &7- Liste Powders por página'
 HELP_CATEGORIES: '&d/powder categories [page] &7- Liste todas categorías'
 HELP_CATEGORY: '&d/powder category <category> [page] &7- Liste todos Powders que están en una categoría'
-HELP_SEARCH: '&d/powder search <term> [page] &7- Busque para un Powder'
+HELP_SEARCH: '&d/powder search <term> [page] &7- Busque un Powder'
 HELP_RELOAD: '&d/powder reload &7- Recargue Powder'
-HELP_NEARBY: '&d/powder nearby &7- Mostre Powders cercanos'
-HELP_CREATE: '&d/powder create <name> <Powder> &7- Cree un Powder nombrado a tu posición'
-HELP_CREATED: '&d/powder created &7- Liste las Powders que has hecho'
+HELP_NEARBY: '&d/powder nearby &7- Muestra todos los Powders cercanos'
+HELP_CREATE: '&d/powder create <name> <Powder> &7- Cree un Powder nombrado a tu nombre'
+HELP_CREATED: '&d/powder created &7- Liste los Powders que has hecho'
 HELP_REMOVE: '&d/powder remove <name> &7- Quite un Powder nombrado'
-HELP_ATTACH: '&d/powder attach <Powder> &7- Adjunte un Powder a una entidad en frente de tu'
+HELP_ATTACH: '&d/powder attach <Powder> &7- Adjunte un Powder a una entidad en frente de tí'
 HELP_ADDTO: '&d/powder addto <name> <Powder> &7- Añada un Powder a un Powder ya creado'
 HELP_REMOVEFROM: '&d/powder removefrom <name> <Powder> &7- Quite un Powder desde un Powder ya creado'
-HELP_CANCEL: '&d/powder cancel <name> &7- Cancele alguno Powder activo con este nombre'
+HELP_CANCEL: '&d/powder cancel <name> &7- Cancele algun Powder activo con este nombre'
 HELP_EXTRA: '&7También es posible a &dclic cosas en /powder &7a crear o cancelar Powders. Haga clic el título en un mensaje a regresar al menú.'
 ## {command}
 HELP_TIP: '&7Use &c/{command} help &7para ayuda.'
@@ -181,13 +181,13 @@ LIST_GENERAL_RIGHT: '&d  >>'
 LIST_GENERAL_RIGHT_HOVER: '&dSiguiente Página'
 ## {command} {input} {page}
 LIST_GENERAL_RIGHT_CLICK: '/{command} {input} {page}'
-LIST_NO_ELEMENTS: '&cNingunas encontró.'
+LIST_NO_ELEMENTS: '&cNo se encontró nada.'
 ## {user} {powder}
 LIST_UNKNOWN_POWDER: '&cPowder desconocido ''{powder}''. Powders similares:'
 ## {powder}
 LIST_POWDER_NO_PERM: '&8{powder}'
 ## {powder}
-LIST_POWDER_NO_PERM_HOVER: '&cNo tienes permiso a usar ''{powder}''.'
+LIST_POWDER_NO_PERM_HOVER: '&cNo tienes permiso para usar ''{powder}''.'
 ## {command} {powder}
 LIST_POWDER_ACTIVE: '&a{powder}'
 ## {command} {powder}
@@ -197,15 +197,15 @@ LIST_POWDER_ACTIVE_CLICK: '/{command} {powder} cancel'
 ## {command} {powder}
 LIST_POWDER_REGULAR: '&7{powder}'
 ## {command} {powder}
-LIST_POWDER_REGULAR_HOVER: '&7Haga clic a usar ''{powder}''.'
+LIST_POWDER_REGULAR_HOVER: '&7Haga clic para usar ''{powder}''.'
 ## {command} {powder}
 LIST_POWDER_REGULAR_CLICK: '/{command} {powder}'
 ## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM: '&8{category}'
 ## {command} {category} {desc}
-LIST_CATEGORY_NO_PERM_HOVER_EMPTY: '&7{desc} - Esta categoría está vacío.'
+LIST_CATEGORY_NO_PERM_HOVER_EMPTY: '&7{desc} - Esta categoría está vacía.'
 ## {command} {category} {desc}
-LIST_CATEGORY_NO_PERM_HOVER_PERM: '&7{desc} - No tienes permiso a usar todos Powders en ''{category}''.'
+LIST_CATEGORY_NO_PERM_HOVER_PERM: '&7{desc} - No tienes permiso a usar todos los Powders en ''{category}''.'
 ## {command} {category} {desc}
 LIST_CATEGORY_NO_PERM_CLICK: '/{command} {category} 1'
 ## {command} {category} {desc}
