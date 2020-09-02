@@ -591,8 +591,14 @@ public class ConfigUtil {
 		} else {
 			return null;
 		}
+		// this statement runs if the playerdata file has never been created
 		if (config == null) {
-			return null;
+			try {
+				configFile.createNewFile();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			config = YamlConfiguration.loadConfiguration(configFile);
 		}
 		PowderPlugin.get().setPlayerDataFile(config);
 		Set<PowderTask> powderTasks = loadStationaryPowders();
