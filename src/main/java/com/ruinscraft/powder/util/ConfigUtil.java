@@ -43,7 +43,6 @@ public class ConfigUtil {
 		instance.reloadConfig();
 		config = instance.getConfig();
 		instance.setConfigVersion(config.getInt("configVersion", 0));
-		instance.setFastMode(config.getBoolean("fastMode", false));
 		instance.setAsyncMode(config.getBoolean("asyncMode", false));
 		instance.setMaxCreatedPowders(config.getInt("maxCreated", 100));
 		checkConfigVersion();

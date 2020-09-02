@@ -41,7 +41,6 @@ public class PowderPlugin extends JavaPlugin {
 	private static boolean isLoading;
 	private static boolean is1_13;
 
-	private boolean fastMode;
 	private boolean asyncMode;
 
 	private int maxCreatedPowders;
@@ -138,14 +137,6 @@ public class PowderPlugin extends JavaPlugin {
 
 	public static boolean isLoading() {
 		return isLoading;
-	}
-
-	public boolean fastMode() {
-		return fastMode;
-	}
-
-	public void setFastMode(boolean fastMode) {
-		this.fastMode = fastMode;
 	}
 
 	public boolean asyncMode() {
@@ -354,40 +345,21 @@ public class PowderPlugin extends JavaPlugin {
 		ConfigUtil.reloadCategories();
 
 		List<String> powderNames = new ArrayList<>();
-		if (!fastMode()) {
-			for (FileConfiguration powderConfig : powderConfigs) {
-				for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-					Powder powder = null;
-					try {
-						powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
-					} catch (Exception e) {
-						warning("Powder '" + s +
-								"' encountered an error and was not loaded:");
-						e.printStackTrace();
-						continue;
-					}
-					if (powder != null) {
-						getPowderHandler().addPowder(powder);
-						powderNames.add(powder.getName());
-					}
+
+		for (FileConfiguration powderConfig : powderConfigs) {
+			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
+				Powder powder = null;
+				try {
+					powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
+				} catch (Exception e) {
+					warning("Powder '" + s +
+							"' encountered an error and was not loaded:");
+					e.printStackTrace();
+					continue;
 				}
-			}
-		} else {
-			for (FileConfiguration powderConfig : powderConfigs) {
-				for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
-					Powder powder = null;
-					try {
-						powder = ConfigUtil.loadPowderShellFromConfig(powderConfig, s);
-					} catch (Exception e) {
-						warning("Powder '" + s +
-								"' encountered an error and was not loaded:");
-						e.printStackTrace();
-						continue;
-					}
-					if (powder != null) {
-						getPowderHandler().addPowder(powder);
-						powderNames.add(powder.getName());
-					}
+				if (powder != null) {
+					getPowderHandler().addPowder(powder);
+					powderNames.add(powder.getName());
 				}
 			}
 		}

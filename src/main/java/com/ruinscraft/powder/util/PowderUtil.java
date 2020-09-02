@@ -563,9 +563,16 @@ public class PowderUtil {
 
 	public static void refreshAndRestart(PowderTask powderTask) {
 		Powder oldPowder = powderTask.getPowder();
-		if (PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()) == null) return;
-		Powder powder = PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()).clone();
-		if (oldPowder.isLooping()) powder = powder.loop();
+		if (PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()) == null) {
+			Bukkit.getLogger().warning("Powder was null for some reason??");
+			return;
+		}
+		final Powder powder;
+		if (oldPowder.isLooping()) {
+			powder = PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()).clone().loop();
+		} else {
+			powder = PowderPlugin.get().getPowderHandler().getPowder(oldPowder.getName()).clone();
+		}
 
 		String taskName = powderTask.getName();
 		Tracker tracker = powderTask.getTracker();
@@ -574,14 +581,15 @@ public class PowderUtil {
 
 		Bukkit.getScheduler().runTask(PowderPlugin.get(), () -> {
 			PowderPlugin.get().getPowderHandler().cancelPowderTask(powderTask);
-		});
 
-		if (tracker.getType() == Tracker.Type.STATIONARY) {
-			powder.spawn(taskName, location, creator);
-		} else {
-			EntityTracker entityTracker = (EntityTracker) tracker;
-			powder.spawn(entityTracker.getEntity(), creator);
-		}
+			Bukkit.getLogger().info("Refreshing Powder " + taskName);
+			if (tracker.getType() == Tracker.Type.STATIONARY) {
+				powder.spawn(taskName, location, creator);
+			} else {
+				EntityTracker entityTracker = (EntityTracker) tracker;
+				powder.spawn(entityTracker.getEntity(), creator);
+			}
+		});
 	}
 
 	// cancels all Powders for the given player

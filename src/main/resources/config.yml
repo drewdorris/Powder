@@ -21,10 +21,6 @@ pageLength: 7
 ## If true, the console will send a list of all Powders loaded on startup/reload
 listOfLoadedPowders: true
 
-## If true, Powders will be loaded when they are created, instead of being loaded at startup
-## This will sometimes make Powder creation longer, but will reduce memory usage significantly if you have 50+ Powders, and will make startup load immediate
-fastMode: false
-
 ## If true, the main Powder creation task will be performed in a separate thread, resulting in an almost 100% performance increase 
 ## This mode has been thoroughly tested, but due to the nature of asynchronous tasks, use at your own risk
 asyncMode: false
