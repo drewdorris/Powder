@@ -399,7 +399,7 @@ public class ConfigUtil {
 								String urlName;
 								int width;
 								int height;
-								int xAdd = 0;
+								int xAdd = 0; // this is basically useless, should remove it
 								float size = 1F;
 								ssss = ssss.replace("img:", "");
 								urlName = ssss.substring(0, ssss.indexOf(";"));
@@ -409,15 +409,9 @@ public class ConfigUtil {
 								if (ssss.contains(";")) {
 									height = Integer.parseInt(ssss.substring(0, ssss.indexOf(";")));
 									ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
-								} else {
-									height = Integer.parseInt(ssss);
-								}
-								if (ssss.contains(";")) {
-									xAdd = Integer.parseInt(ssss.substring(0, ssss.indexOf(";")));
-									ssss = ssss.substring(ssss.indexOf(";") + 1, ssss.length());
 									size = Float.parseFloat(ssss);
 								} else {
-									xAdd = Integer.parseInt(ssss);
+									height = Integer.parseInt(ssss);
 								}
 								try {
 									particleMatrix.addParticles(
