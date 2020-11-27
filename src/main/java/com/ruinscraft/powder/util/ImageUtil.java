@@ -18,11 +18,11 @@ import java.util.List;
 public class ImageUtil {
 
 	public static List<PositionedPowderParticle> getRows(String name, int z,
-			int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
+			int yAdd, int xAdd, int resizedWidth, int resizedHeight, float particleSize) throws IOException {
 		if (name.contains("/")) {
-			return getRowsFromURL(name, z, yAdd, xAdd, resizedWidth, resizedHeight);
+			return getRowsFromURL(name, z, yAdd, xAdd, resizedWidth, resizedHeight, particleSize);
 		} else {
-			return getRowsFromPath(name, z, yAdd, xAdd, resizedWidth, resizedHeight);
+			return getRowsFromPath(name, z, yAdd, xAdd, resizedWidth, resizedHeight, particleSize);
 		}
 	}
 
@@ -32,7 +32,7 @@ public class ImageUtil {
 
 	// gets rows of a Layer from an image from a URL
 	public static List<PositionedPowderParticle> getRowsFromURL(String urlName,
-			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight, float particleSize) throws IOException {
 		URL url = PowderUtil.readURL(urlName);
 		List<PositionedPowderParticle> particles = new ArrayList<>();
 
@@ -42,7 +42,7 @@ public class ImageUtil {
 				throw new IOException("Error while attempting to read URL: " + url.toString());
 			}
 			BufferedImage bufferedImage = ImageIO.read(stream);
-			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight));
+			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight, particleSize));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
@@ -52,7 +52,7 @@ public class ImageUtil {
 
 	// gets rows of a Layer from an image from a path in the data folder
 	public static List<PositionedPowderParticle> getRowsFromPath(String fileName,
-			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) throws IOException {
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight, float particleSize) throws IOException {
 		List<PositionedPowderParticle> particles = new ArrayList<>();
 
 		try {
@@ -65,7 +65,7 @@ public class ImageUtil {
 			if (bufferedImage == null) {
 				throw new IOException("Error while attempting to read image: " + fileName);
 			}
-			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight));
+			particles.addAll(addToLayer(bufferedImage, z, yAdd, xAdd, resizedWidth, resizedHeight, particleSize));
 		} catch (IOException io) {
 			io.printStackTrace();
 		}
@@ -74,7 +74,8 @@ public class ImageUtil {
 	}
 
 	// scales an image to the given width/height (height is generally ignored)
-	public static BufferedImage getScaledImage(BufferedImage bufferedImage, int width, int height) {
+	public static BufferedImage getScaledImage(BufferedImage bufferedImage,
+											   int width, int height, float particleSize) {
 		int finalWidth = width;
 		int finalHeight = height;
 		double factor = 1.0;
@@ -98,8 +99,8 @@ public class ImageUtil {
 	// creates PowderParticles from pixels and adds them to the rows
 	// which are then added to the Layer
 	public static List<PositionedPowderParticle> addToLayer(BufferedImage bufferedImage,
-			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight) {
-		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight);
+			int z, int yAdd, int xAdd, int resizedWidth, int resizedHeight, float particleSize) {
+		BufferedImage newImage = getScaledImage(bufferedImage, resizedWidth, resizedHeight, particleSize);
 
 		List<PositionedPowderParticle> particles = new ArrayList<>();
 		for (int y = 0; y < newImage.getHeight(); y++) {
@@ -125,10 +126,10 @@ public class ImageUtil {
 					arr = 1;
 				}
 
-				Object data = (Void) null;
+				Object data = (Void) null; // this line is funny
 				if (PowderPlugin.is1_13()) {
 					data = new DustOptions(
-							org.bukkit.Color.fromRGB(arr, gee, bee), 1F);
+							org.bukkit.Color.fromRGB(arr, gee, bee), particleSize);
 				}
 
 				PositionedPowderParticle powderParticle = new PositionedPowderParticle(
