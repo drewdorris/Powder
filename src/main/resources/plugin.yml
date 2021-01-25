@@ -1,7 +1,7 @@
 main: ${mainClass}
 name: ${name}
 version: ${version}
-api-version: 1.13
+api-version: 1.16
 authors: [StupidDrew9, royalkingkb]
 softdepend: [Towny, PlotSquared, PlotCubed]
 commands:
