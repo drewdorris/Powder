@@ -39,7 +39,7 @@ public class PowderPlugin extends JavaPlugin {
 	private Storage storage;
 
 	private static boolean isLoading;
-	private static boolean is1_13;
+	private static boolean is1_13OrAbove;
 
 	private boolean asyncMode;
 
@@ -76,12 +76,18 @@ public class PowderPlugin extends JavaPlugin {
 		try {
 			Class.forName("org.bukkit.entity.Player$Spigot");
 		} catch (ClassNotFoundException e) {
-			warning("Powder requires Spigot! www.spigotmc.org");
+			warning("Powder requires Spigot/Paper! www.spigotmc.org");
 			getServer().getPluginManager().disablePlugin(this);
 			return;
 		}
 
-		is1_13 = Bukkit.getVersion().contains("1.13") ? true : false;
+		is1_13OrAbove = false;
+		String version = Bukkit.getVersion();
+		if (version.contains("1.13") || version.contains("1.14") ||
+				version.contains("1.15") || version.contains("1.16")) { // REALLY bad, find some other solution
+			is1_13OrAbove = true;
+		}
+
 		config = ConfigUtil.loadConfig();
 		creationTask = new PowdersCreationTask();
 		creationTask.runTaskTimer(PowderPlugin.get(), 0L, 1L);
@@ -235,8 +241,8 @@ public class PowderPlugin extends JavaPlugin {
 		}
 	}
 
-	public static boolean is1_13() {
-		return is1_13;
+	public static boolean is1_13OrAbove() {
+		return is1_13OrAbove;
 	}
 
 	public void loadIntegrations() {

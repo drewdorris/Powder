@@ -127,7 +127,7 @@ public class ImageUtil {
 				}
 
 				Object data = (Void) null; // this line is funny
-				if (PowderPlugin.is1_13()) {
+				if (PowderPlugin.is1_13OrAbove()) {
 					data = new DustOptions(
 							org.bukkit.Color.fromRGB(arr, gee, bee), particleSize);
 				}
