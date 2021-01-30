@@ -1,16 +1,5 @@
 package com.ruinscraft.powder.integration;
 
-import java.util.Arrays;
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Location;
-import org.bukkit.OfflinePlayer;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
 import com.palmergames.bukkit.towny.TownyAPI;
 import com.palmergames.bukkit.towny.event.PreDeleteTownEvent;
 import com.palmergames.bukkit.towny.event.TownRemoveResidentEvent;
@@ -25,6 +14,16 @@ import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
+import org.bukkit.Bukkit;
+import org.bukkit.Location;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import java.util.Arrays;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Handles Towny-related features and events
@@ -192,11 +191,12 @@ public class TownyHandler implements Listener {
 	 * @return
 	 * @throws NotRegisteredException
 	 */
+	// TODO:
 	public boolean checkPerms(Resident resident, Town town, TownyPermission permission) throws NotRegisteredException {
-		if (permission.residentBuild && resident.getTown().getUuid().equals(town.getUuid())) return true;
-		if (permission.nationBuild && resident.getTown().getNation().getUuid().equals(town.getNation().getUuid())) return true;
-		if (permission.allyBuild && resident.isAlliedWith(town.getMayor())) return true;
-		if (permission.outsiderBuild) return true;
+//		if (permission.residentBuild && resident.getTown().getUuid().equals(town.getUuid())) return true;
+//		if (permission.nationBuild && resident.getTown().getNation().getUuid().equals(town.getNation().getUuid())) return true;
+//		if (permission.allyBuild && resident.isAlliedWith(town.getMayor())) return true;
+//		if (permission.outsiderBuild) return true;
 		return false;
 	}
 
