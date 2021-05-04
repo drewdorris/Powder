@@ -39,6 +39,7 @@ public class PowderPlugin extends JavaPlugin {
 	private Storage storage;
 
 	private static boolean isLoading;
+	private static int loadingPercentage;
 	private static boolean is1_13OrAbove;
 
 	private boolean asyncMode;
@@ -143,6 +144,10 @@ public class PowderPlugin extends JavaPlugin {
 
 	public static boolean isLoading() {
 		return isLoading;
+	}
+
+	public static int getLoadingPercentage() {
+		return loadingPercentage;
 	}
 
 	public boolean asyncMode() {
@@ -353,13 +358,23 @@ public class PowderPlugin extends JavaPlugin {
 		List<String> powderNames = new ArrayList<>();
 
 		for (FileConfiguration powderConfig : powderConfigs) {
-			for (String s : powderConfig.getConfigurationSection("powders").getKeys(false)) {
+			Set<String> configSection = powderConfig.getConfigurationSection("powders").getKeys(false);
+			int totalSize = configSection.size();
+			int soFar = 0;
+			loadingPercentage = 0;
+			for (String s : configSection) {
+				soFar++;
+				loadingPercentage = (int) (((double) (soFar / totalSize)) * 100);
 				Powder powder = null;
 				try {
 					powder = ConfigUtil.loadPowderFromConfig(powderConfig, s);
 				} catch (Exception e) {
-					warning("Powder '" + s +
-							"' encountered an error and was not loaded:");
+					if (s == null) {
+						warning("An unknown Powder encountered an error and was not loaded:");
+					} else {
+						warning("Powder '" + s +
+								"' encountered an error and was not loaded:");
+					}
 					e.printStackTrace();
 					continue;
 				}
