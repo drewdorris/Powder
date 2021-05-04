@@ -1,26 +1,25 @@
 package com.ruinscraft.powder.integration;
 
-import java.util.List;
-import java.util.UUID;
-
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.Listener;
-
-import com.github.intellectualsites.plotsquared.api.PlotAPI;
-import com.github.intellectualsites.plotsquared.bukkit.events.PlayerPlotTrustedEvent;
-import com.github.intellectualsites.plotsquared.bukkit.events.PlotClearEvent;
-import com.github.intellectualsites.plotsquared.bukkit.events.PlotDeleteEvent;
-import com.github.intellectualsites.plotsquared.bukkit.events.PlotUnlinkEvent;
-import com.github.intellectualsites.plotsquared.plot.object.Location;
-import com.github.intellectualsites.plotsquared.plot.object.OfflinePlotPlayer;
-import com.github.intellectualsites.plotsquared.plot.object.Plot;
-import com.github.intellectualsites.plotsquared.plot.object.PlotPlayer;
+import com.plotsquared.core.PlotSquared;
+import com.plotsquared.core.events.PlayerPlotTrustedEvent;
+import com.plotsquared.core.events.PlotClearEvent;
+import com.plotsquared.core.events.PlotDeleteEvent;
+import com.plotsquared.core.events.PlotUnlinkEvent;
+import com.plotsquared.core.location.Location;
+import com.plotsquared.core.player.OfflinePlotPlayer;
+import com.plotsquared.core.player.PlotPlayer;
+import com.plotsquared.core.plot.Plot;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Powder;
 import com.ruinscraft.powder.model.PowderTask;
 import com.ruinscraft.powder.model.tracker.StationaryTracker;
 import com.ruinscraft.powder.model.tracker.Tracker;
+import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
+
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Handles PlotSquared-related features and events
@@ -28,11 +27,9 @@ import com.ruinscraft.powder.model.tracker.Tracker;
  */
 public class PlotSquaredHandler implements Listener {
 
-	private PlotAPI plotAPI;
 	private int maxPerPlot;
 
 	public PlotSquaredHandler(int maxPerPlot) {
-		this.plotAPI = new PlotAPI();
 		this.maxPerPlot = maxPerPlot;
 	}
 
@@ -51,7 +48,7 @@ public class PlotSquaredHandler implements Listener {
 	 * @return if they can place a Powder
 	 */
 	public boolean checkLocation(Powder powder, Player player) {
-		PlotPlayer plotPlayer = plotAPI.wrapPlayer(player.getUniqueId());
+		PlotPlayer plotPlayer = PlotPlayer.wrap(player);
 
 		if (!hasPermissionForPowder(plotPlayer)) return false;
 
@@ -93,7 +90,7 @@ public class PlotSquaredHandler implements Listener {
 		if (plot == null) return null;
 		if (!plot.hasOwner()) return null;
 		for (UUID owner : plot.getOwners()) {
-			OfflinePlotPlayer player = plotAPI.getUUIDWrapper().getOfflinePlayer(owner);
+			OfflinePlotPlayer player = PlotSquared.imp().getPlayerManager().getOfflinePlayer(owner);
 			return player.getName() + "'s plot";
 		}
 		return null;
