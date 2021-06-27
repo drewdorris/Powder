@@ -149,9 +149,9 @@ public class StationCommand implements SubCommand {
 		if (args.length > 2 && !args[2].equalsIgnoreCase("loop")) {
 			name = args[2];
 		} else {
-			name = player.getName() + "-st" + PowderUtil.generateID(5);
+			name = player.getName() + "-" + PowderUtil.generateID(5);
 		}
-		if (!(powderHandler.getPowderTask(name) == null)) {
+		if (powderHandler.getPowderTask(name) != null) {
 			PowderUtil.sendPrefixMessage(player, Message.STATION_ALREADY_EXISTS,
 					label, player.getName(), name, powderName);
 			return;
