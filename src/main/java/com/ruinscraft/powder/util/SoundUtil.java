@@ -3,11 +3,11 @@ package com.ruinscraft.powder.util;
 import com.ruinscraft.powder.PowderPlugin;
 import com.ruinscraft.powder.model.Sound;
 import com.ruinscraft.powder.model.SoundEffect;
-import com.xxmicloxx.NoteBlockAPI.Layer;
-import com.xxmicloxx.NoteBlockAPI.NBSDecoder;
-import com.xxmicloxx.NoteBlockAPI.Note;
-import com.xxmicloxx.NoteBlockAPI.Song;
+import com.xxmicloxx.NoteBlockAPI.model.Layer;
+import com.xxmicloxx.NoteBlockAPI.model.Note;
+import com.xxmicloxx.NoteBlockAPI.model.Song;
 import com.xxmicloxx.NoteBlockAPI.utils.InstrumentUtils;
+import com.xxmicloxx.NoteBlockAPI.utils.NBSDecoder;
 
 import java.io.File;
 import java.io.InputStream;
@@ -27,6 +27,7 @@ public class SoundUtil {
 				InputStream inputStream = PowderUtil.getInputStreamFromURL(url);
 				song = NBSDecoder.parse(inputStream);
 			} catch (Exception e) {
+				PowderPlugin.get().getLogger().info("AAAAA");
 				e.printStackTrace();
 				return null;
 			}
@@ -52,8 +53,8 @@ public class SoundUtil {
 		for (Integer integer : song.getLayerHashMap().keySet()) {
 			Layer layer = song.getLayerHashMap().get(integer);
 			for (int i = 0; i < volumeMultiplier; i++) {
-				for (Integer tick : layer.getHashMap().keySet()) {
-					Note note = layer.getHashMap().get(tick);
+				for (Integer tick : layer.getNotesAtTicks().keySet()) {
+					Note note = layer.getNote(tick);
 					String soundName = InstrumentUtils.getInstrumentName(note.getInstrument());
 					org.bukkit.Sound sound = Sound.getFromBukkitName(soundName);
 					float newVolume = (layer.getVolume() / 100F) * ((float) volume);
