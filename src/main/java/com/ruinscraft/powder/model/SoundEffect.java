@@ -3,6 +3,7 @@ package com.ruinscraft.powder.model;
 import com.ruinscraft.powder.PowdersCreationTask;
 import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.SoundCategory;
 import org.bukkit.World;
 
 public class SoundEffect implements PowderElement {
@@ -137,7 +138,7 @@ public class SoundEffect implements PowderElement {
 					location.add(Math.random() - .5, Math.random() - .5, Math.random() - .5),
 					sound, (float) volume, (float) pitch);
 		} else {
-			world.playSound(location, sound, (float) volume, (float) pitch);
+			world.playSound(location, sound, SoundCategory.RECORDS, (float) volume, (float) pitch);
 		}
 		/*/
 		 * other method for surroundSound, sounds a little blocky
